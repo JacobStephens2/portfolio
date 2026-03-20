@@ -119,6 +119,34 @@
             object-fit: cover;
             background: #f8f8f8;
             display: block;
+            cursor: pointer;
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            cursor: default;
         }
 
         .portfolio-content {
@@ -157,6 +185,22 @@
 
         .portfolio-link:hover {
             border-bottom-color: #1a1a1a;
+        }
+
+        .portfolio-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .portfolio-tag {
+            font-size: 0.7rem;
+            color: #666;
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 3px;
+            letter-spacing: 0.02em;
         }
 
         .footer {
@@ -217,10 +261,36 @@
         <div class="portfolio-grid" id="portfolio-grid">
             <!-- Portfolio items will be dynamically added here -->
             <div class="portfolio-item">
+                <img src="screenshots/creighton.stephens.page.png" alt="Creighton Cycle Tracker" class="portfolio-image" onerror="this.style.display='none'">
+                <div class="portfolio-content">
+                    <h2 class="portfolio-title">Creighton Cycle Tracker</h2>
+                    <p class="portfolio-description">Progressive Web App for fertility cycle tracking using the Creighton Model FertilityCare System. Features offline capability, auto-computed fertility stamps, chart and calendar views, server sync, and provider sharing.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">TypeScript</span>
+                        <span class="portfolio-tag">Vite</span>
+                        <span class="portfolio-tag">Express</span>
+                        <span class="portfolio-tag">SQLite</span>
+                        <span class="portfolio-tag">IndexedDB</span>
+                        <span class="portfolio-tag">PWA</span>
+                    </div>
+                    <div class="portfolio-links">
+                        <a href="https://creighton.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
+                        <a href="https://github.com/JacobStephens2/CreightonTrackingApp" class="portfolio-link" target="_blank">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
                 <img src="screenshots/wedding.stephens.page.png" alt="Wedding Website" class="portfolio-image" onerror="this.style.display='none'">
                 <div class="portfolio-content">
                     <h2 class="portfolio-title">Wedding Website</h2>
-                    <p class="portfolio-description">A beautiful wedding website with RSVP functionality, story timeline, and photo galleries. Features responsive design and database integration.</p>
+                    <p class="portfolio-description">Full-stack wedding website built with PHP and MySQL. Features invite-based RSVP with group lookup, guest management admin panel with stats and filtering, interactive registry with purchase tracking, photo gallery with admin uploads, relationship story timeline with carousels and embedded video, travel info with hotel blocks, and automated cron jobs for registry and uptime monitoring.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">PHP</span>
+                        <span class="portfolio-tag">MySQL</span>
+                        <span class="portfolio-tag">JavaScript</span>
+                        <span class="portfolio-tag">Apache</span>
+                    </div>
                     <div class="portfolio-links">
                         <a href="https://wedding.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
                         <a href="https://github.com/JacobStephens2" class="portfolio-link" target="_blank">GitHub</a>
@@ -233,8 +303,32 @@
                 <div class="portfolio-content">
                     <h2 class="portfolio-title">Daily Dozen</h2>
                     <p class="portfolio-description">Responsive mobile web application for nutrition tracking with intuitive user interface, implementing both frontend and backend functionality.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">Node.js</span>
+                        <span class="portfolio-tag">Express</span>
+                        <span class="portfolio-tag">JavaScript</span>
+                        <span class="portfolio-tag">PWA</span>
+                    </div>
                     <div class="portfolio-links">
                         <a href="https://dailydozen.jacobstephens.net/" class="portfolio-link" target="_blank">Visit Site</a>
+                        <a href="https://github.com/JacobStephens2" class="portfolio-link" target="_blank">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="screenshots/exodus40lite.stephens.page.png" alt="Exodus 40 Lite" class="portfolio-image" onerror="this.style.display='none'">
+                <div class="portfolio-content">
+                    <h2 class="portfolio-title">Exodus 40 Lite</h2>
+                    <p class="portfolio-description">Progressive Web App for a parish men's group to track their Lenten rule of life, adapted from Exodus 90. Features daily check-ins for prayer, fasting, almsgiving, and fraternity with progress tracking and offline support.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">JavaScript</span>
+                        <span class="portfolio-tag">PHP</span>
+                        <span class="portfolio-tag">MySQL</span>
+                        <span class="portfolio-tag">PWA</span>
+                    </div>
+                    <div class="portfolio-links">
+                        <a href="https://exodus40lite.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
                         <a href="https://github.com/JacobStephens2" class="portfolio-link" target="_blank">GitHub</a>
                     </div>
                 </div>
@@ -245,6 +339,11 @@
                 <div class="portfolio-content">
                     <h2 class="portfolio-title">Wadadli Flare Catering</h2>
                     <p class="portfolio-description">A catering website showcasing diverse culinary capabilities with clean, modern design and Caribbean-inspired colors. Features menu galleries and contact forms.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">PHP</span>
+                        <span class="portfolio-tag">JavaScript</span>
+                        <span class="portfolio-tag">CSS</span>
+                    </div>
                     <div class="portfolio-links">
                         <a href="https://wadadli.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
                         <a href="https://github.com/JacobStephens2" class="portfolio-link" target="_blank">GitHub</a>
@@ -257,8 +356,30 @@
                 <div class="portfolio-content">
                     <h2 class="portfolio-title">Chester County Life</h2>
                     <p class="portfolio-description">PCI-compliant subscription payment system using Stripe API integration, implementing payment processing and enabling automated recurring revenue functionality. Developed without AI.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">PHP</span>
+                        <span class="portfolio-tag">Stripe API</span>
+                        <span class="portfolio-tag">JavaScript</span>
+                    </div>
                     <div class="portfolio-links">
                         <a href="https://chestercounty-life.com/" class="portfolio-link" target="_blank">Visit Site</a>
+                        <a href="https://github.com/JacobStephens2" class="portfolio-link" target="_blank">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="screenshots/tourbot.etadventures.com.png" alt="Tourbot" class="portfolio-image" onerror="this.style.display='none'">
+                <div class="portfolio-content">
+                    <h2 class="portfolio-title">Tourbot</h2>
+                    <p class="portfolio-description">Full-stack tour management system built with PHP and MySQL for Educational Travel Adventures. Handles reservations, group bookings, vendor management, payment processing, document generation, AI-assisted chat, and operational reporting for a multi-million dollar travel business.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">PHP</span>
+                        <span class="portfolio-tag">MySQL</span>
+                        <span class="portfolio-tag">JavaScript</span>
+                        <span class="portfolio-tag">OpenClaw</span>
+                    </div>
+                    <div class="portfolio-links">
                         <a href="https://github.com/JacobStephens2" class="portfolio-link" target="_blank">GitHub</a>
                     </div>
                 </div>
@@ -269,6 +390,11 @@
                 <div class="portfolio-content">
                     <h2 class="portfolio-title">Artifact CMS</h2>
                     <p class="portfolio-description">Custom full-stack content management system with PHP backend and MySQL database, providing flexible content organization, user management, and administrative capabilities. Developed without AI.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">PHP</span>
+                        <span class="portfolio-tag">MySQL</span>
+                        <span class="portfolio-tag">JavaScript</span>
+                    </div>
                     <div class="portfolio-links">
                         <a href="https://artifact.stewardgoods.com/" class="portfolio-link" target="_blank">Visit Site</a>
                         <a href="https://github.com/JacobStephens2" class="portfolio-link" target="_blank">GitHub</a>
@@ -281,6 +407,12 @@
                 <div class="portfolio-content">
                     <h2 class="portfolio-title">Resume Website</h2>
                     <p class="portfolio-description">A clean, professional resume website showcasing work experience, education, and skills. Optimized for performance.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">HTML</span>
+                        <span class="portfolio-tag">CSS</span>
+                        <span class="portfolio-tag">JavaScript</span>
+                        <span class="portfolio-tag">PWA</span>
+                    </div>
                     <div class="portfolio-links">
                         <a href="https://resume.jacobstephens.net/" class="portfolio-link" target="_blank">Visit Site</a>
                         <a href="https://github.com/JacobStephens2" class="portfolio-link" target="_blank">GitHub</a>
@@ -294,8 +426,35 @@
         </footer>
     </div>
 
+    <div class="lightbox" id="lightbox">
+        <img src="" alt="">
+    </div>
+
     <script>
         document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = lightbox.querySelector('img');
+
+        document.querySelectorAll('.portfolio-image').forEach(img => {
+            img.addEventListener('click', () => {
+                lightboxImg.src = img.src;
+                lightboxImg.alt = img.alt;
+                lightbox.classList.add('active');
+            });
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target !== lightboxImg) {
+                lightbox.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                lightbox.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html>
