@@ -11,12 +11,13 @@ if (!fs.existsSync(screenshotsDir)) {
 }
 
 const projects = [
-    { url: 'file:///var/www/resume.jacobstephens.net/public/index.html', filename: 'resume.jacobstephens.net.png' },
+    { url: 'https://resume.stephens.page/', filename: 'resume.stephens.page.png' },
     { url: 'https://wedding.stephens.page', filename: 'wedding.stephens.page.png' },
     { url: 'https://dailydozen.jacobstephens.net/', filename: 'dailydozen.jacobstephens.net.png' },
     { url: 'https://wadadli.stephens.page', filename: 'wadadli.stephens.page.png' },
     { url: 'https://chestercounty-life.com/', filename: 'chestercounty-life.com.png' },
     { url: 'https://artifact.stewardgoods.com/', filename: 'artifact.stewardgoods.com.png' },
+    { url: 'https://channelzeronews.stephens.page', filename: 'channelzeronews.stephens.page.png' },
 ];
 
 async function captureScreenshots() {
