@@ -117,6 +117,7 @@
             width: 100%;
             height: 250px;
             object-fit: cover;
+            object-position: top;
             background: #f8f8f8;
             display: block;
             cursor: pointer;
@@ -261,6 +262,43 @@
         <div class="portfolio-grid" id="portfolio-grid">
             <!-- Portfolio items will be dynamically added here -->
             <div class="portfolio-item">
+                <img src="screenshots/tourbot.etadventures.com.png" alt="Tourbot" class="portfolio-image" onerror="this.style.display='none'">
+                <div class="portfolio-content">
+                    <h2 class="portfolio-title">Tourbot</h2>
+                    <p class="portfolio-description">Full-stack tour management system for Educational Travel Adventures, developed and extended over 4+ years. Handles reservations, group bookings, vendor management, payment processing, document generation, AI-assisted chat, and operational reporting for a multi-million dollar travel business.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">PHP</span>
+                        <span class="portfolio-tag">MySQL</span>
+                        <span class="portfolio-tag">JavaScript</span>
+                        <span class="portfolio-tag">OpenClaw</span>
+                    </div>
+                    <div class="portfolio-links">
+                        <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank">Visit Site</a>
+                        <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="screenshots/guides.etadventures.com.png" alt="ETA Guides Portal" class="portfolio-image" onerror="this.style.display='none'">
+                <div class="portfolio-content">
+                    <h2 class="portfolio-title">ETA Guides Portal</h2>
+                    <p class="portfolio-description">Mobile-first Progressive Web App for tour guide contractors at Educational Travel Adventures, developed and extended over 4+ years. Provides access to trip itineraries, medical information, expense reporting, tour summary reports, and document management with offline support and a manager admin panel.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">PHP</span>
+                        <span class="portfolio-tag">MySQL</span>
+                        <span class="portfolio-tag">Bootstrap</span>
+                        <span class="portfolio-tag">JavaScript</span>
+                        <span class="portfolio-tag">PWA</span>
+                    </div>
+                    <div class="portfolio-links">
+                        <a href="https://guides.etadventures.com" class="portfolio-link" target="_blank">Visit Site</a>
+                        <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
                 <img src="screenshots/creighton.stephens.page.png" alt="Creighton Cycle Tracker" class="portfolio-image" onerror="this.style.display='none'">
                 <div class="portfolio-content">
                     <h2 class="portfolio-title">Creighton Cycle Tracker</h2>
@@ -276,6 +314,26 @@
                     <div class="portfolio-links">
                         <a href="https://creighton.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
                         <a href="https://github.com/JacobStephens2/CreightonTrackingApp" class="portfolio-link" target="_blank">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="screenshots/macros.stephens.page.png" alt="Macros Tracker" class="portfolio-image" onerror="this.style.display='none'">
+                <div class="portfolio-content">
+                    <h2 class="portfolio-title">Macros Tracker</h2>
+                    <p class="portfolio-description">Self-hosted Progressive Web App for daily macronutrient tracking, replacing MyFitnessPal. Features barcode scanning, food search across Open Food Facts, USDA, and FatSecret APIs, custom foods and recipes, weight trend charts, per-meal targets, CSV export, dark mode, guest mode, and offline support.</p>
+                    <div class="portfolio-tags">
+                        <span class="portfolio-tag">TypeScript</span>
+                        <span class="portfolio-tag">Vite</span>
+                        <span class="portfolio-tag">Express</span>
+                        <span class="portfolio-tag">SQLite</span>
+                        <span class="portfolio-tag">Chart.js</span>
+                        <span class="portfolio-tag">PWA</span>
+                    </div>
+                    <div class="portfolio-links">
+                        <a href="https://macros.stephens.page/" class="portfolio-link" target="_blank">Visit Site</a>
+                        <a href="https://github.com/JacobStephens2/MacroTracker" class="portfolio-link" target="_blank">GitHub</a>
                     </div>
                 </div>
             </div>
@@ -369,23 +427,6 @@
             </div>
 
             <div class="portfolio-item">
-                <img src="screenshots/tourbot.etadventures.com.png" alt="Tourbot" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Tourbot</h2>
-                    <p class="portfolio-description">Full-stack tour management system built with PHP and MySQL for Educational Travel Adventures. Handles reservations, group bookings, vendor management, payment processing, document generation, AI-assisted chat, and operational reporting for a multi-million dollar travel business.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">PHP</span>
-                        <span class="portfolio-tag">MySQL</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                        <span class="portfolio-tag">OpenClaw</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://github.com/JacobStephens2" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item">
                 <img src="screenshots/artifact.stewardgoods.com.png" alt="Artifact CMS" class="portfolio-image" onerror="this.style.display='none'">
                 <div class="portfolio-content">
                     <h2 class="portfolio-title">Artifact CMS</h2>
@@ -435,13 +476,18 @@
 
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = lightbox.querySelector('img');
+        const images = Array.from(document.querySelectorAll('.portfolio-image'));
+        let currentIndex = 0;
 
-        document.querySelectorAll('.portfolio-image').forEach(img => {
-            img.addEventListener('click', () => {
-                lightboxImg.src = img.src;
-                lightboxImg.alt = img.alt;
-                lightbox.classList.add('active');
-            });
+        function showImage(index) {
+            currentIndex = index;
+            lightboxImg.src = images[index].src;
+            lightboxImg.alt = images[index].alt;
+            lightbox.classList.add('active');
+        }
+
+        images.forEach((img, i) => {
+            img.addEventListener('click', () => showImage(i));
         });
 
         lightbox.addEventListener('click', (e) => {
@@ -451,8 +497,13 @@
         });
 
         document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
             if (e.key === 'Escape') {
                 lightbox.classList.remove('active');
+            } else if (e.key === 'ArrowRight') {
+                showImage((currentIndex + 1) % images.length);
+            } else if (e.key === 'ArrowLeft') {
+                showImage((currentIndex - 1 + images.length) % images.length);
             }
         });
     </script>
