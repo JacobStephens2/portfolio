@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio - Jacob Stephens</title>
+    <title>Portfolio | Jacob Stephens</title>
+    <meta name="description" content="Selected systems and client work by Jacob Stephens, focused on automation, performance, and business-critical infrastructure.">
+    <meta property="og:title" content="Portfolio | Jacob Stephens">
+    <meta property="og:description" content="Selected systems and client work focused on automation, performance, and business-critical infrastructure.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stephens.page/portfolio.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Portfolio | Jacob Stephens">
+    <meta name="twitter:description" content="Selected systems and client work by Jacob Stephens.">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
     <script>
@@ -13,8 +21,18 @@
 
       gtag('config', 'G-W0D3PS27FK');
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #f6f1e8;
+            --panel: rgba(255, 252, 246, 0.88);
+            --text: #181512;
+            --muted: #625a52;
+            --line: rgba(24, 21, 18, 0.12);
+            --accent: #9b4d24;
+            --shadow: 0 24px 60px rgba(45, 32, 18, 0.12);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -23,150 +41,226 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #ffffff;
-            color: #1a1a1a;
-            line-height: 1.6;
+            background:
+                radial-gradient(circle at top left, rgba(155, 77, 36, 0.15), transparent 24%),
+                linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+            color: var(--text);
+            line-height: 1.65;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 4rem 2rem;
-            flex: 1;
+            padding: 2rem 1.25rem 4rem;
+            animation: fadeInUp 0.75s ease-out;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 4rem;
-            position: relative;
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 1px;
-            background: #1a1a1a;
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+            border-bottom: 1px solid transparent;
+            transition: color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--text);
+            border-color: var(--text);
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.8fr);
+            gap: 1.25rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .hero-card,
+        .hero-notes,
+        .section,
+        .footer {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-card,
+        .hero-notes,
+        .section {
+            padding: 1.6rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         h1 {
             font-family: 'Crimson Text', serif;
-            font-size: 2.5rem;
+            font-size: clamp(2.6rem, 5vw, 4.2rem);
+            line-height: 0.98;
+            letter-spacing: -0.05em;
+            margin-bottom: 0.9rem;
+            max-width: 11ch;
+        }
+
+        .hero-copy {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 62ch;
+        }
+
+        .hero-notes ul {
+            list-style: none;
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        .hero-notes li {
+            border-top: 1px solid var(--line);
+            padding-top: 0.85rem;
+            color: var(--muted);
+        }
+
+        .hero-notes li:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .hero-notes strong {
+            display: block;
+            margin-bottom: 0.2rem;
+            color: var(--text);
+        }
+
+        .section + .section {
+            margin-top: 1.25rem;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-heading h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
             font-weight: 400;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
-            color: #1a1a1a;
+            letter-spacing: -0.03em;
         }
 
-        .subtitle {
-            font-size: 0.95rem;
-            font-weight: 300;
-            color: #666;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 2rem;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: #1a1a1a;
-        }
-
-        .back-link::before {
-            content: '← ';
-            margin-right: 0.5rem;
+        .section-heading p {
+            color: var(--muted);
+            font-size: 0.92rem;
         }
 
         .portfolio-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 3rem;
-            margin-top: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.2rem;
         }
 
         .portfolio-item {
             display: flex;
             flex-direction: column;
-            border: 1px solid #f0f0f0;
-            border-radius: 4px;
             overflow: hidden;
-            transition: all 0.3s ease;
-            background: #fff;
+            border-radius: 18px;
+            border: 1px solid rgba(24, 21, 18, 0.1);
+            background: rgba(255, 255, 255, 0.7);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
         }
 
         .portfolio-item:hover {
-            border-color: #1a1a1a;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            border-color: rgba(24, 21, 18, 0.16);
+            box-shadow: 0 18px 40px rgba(45, 32, 18, 0.12);
+        }
+
+        .image-button {
+            border: none;
+            background: #efe7da;
+            cursor: zoom-in;
+            padding: 0;
         }
 
         .portfolio-image {
             width: 100%;
-            height: 250px;
+            height: 245px;
             object-fit: cover;
             object-position: top;
-            background: #f8f8f8;
             display: block;
-            cursor: pointer;
-        }
-
-        .lightbox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .lightbox.active {
-            display: flex;
-        }
-
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border-radius: 4px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            cursor: default;
         }
 
         .portfolio-content {
-            padding: 1.5rem;
+            padding: 1.35rem;
+            display: grid;
+            gap: 0.95rem;
         }
 
         .portfolio-title {
             font-family: 'Crimson Text', serif;
-            font-size: 1.5rem;
+            font-size: 1.55rem;
             font-weight: 400;
-            margin-bottom: 0.5rem;
-            color: #1a1a1a;
+            letter-spacing: -0.02em;
         }
 
-        .portfolio-description {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 1rem;
-            line-height: 1.6;
+        .portfolio-summary {
+            color: var(--muted);
+        }
+
+        .portfolio-block {
+            display: grid;
+            gap: 0.25rem;
+        }
+
+        .portfolio-block strong {
+            font-size: 0.84rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .portfolio-block span {
+            color: var(--text);
+        }
+
+        .portfolio-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+
+        .portfolio-tag {
+            font-size: 0.72rem;
+            color: var(--muted);
+            background: rgba(24, 21, 18, 0.05);
+            padding: 0.28rem 0.55rem;
+            border-radius: 999px;
+            letter-spacing: 0.03em;
         }
 
         .portfolio-links {
@@ -176,404 +270,339 @@
         }
 
         .portfolio-link {
-            font-size: 0.85rem;
-            color: #1a1a1a;
+            color: var(--text);
             text-decoration: none;
+            font-weight: 600;
             border-bottom: 1px solid transparent;
-            transition: border-color 0.3s ease;
-            font-weight: 400;
+            transition: border-color 0.25s ease, color 0.25s ease;
         }
 
-        .portfolio-link:hover {
-            border-bottom-color: #1a1a1a;
+        .portfolio-link:hover,
+        .portfolio-link:focus-visible {
+            color: var(--accent);
+            border-color: var(--accent);
         }
 
-        .section-heading {
-            font-family: 'Crimson Text', serif;
-            font-size: 1.6rem;
-            font-weight: 400;
-            color: #1a1a1a;
-            margin-top: 1rem;
-            margin-bottom: -1.5rem;
-            letter-spacing: -0.01em;
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: rgba(15, 12, 9, 0.84);
+            z-index: 1000;
         }
 
-        .portfolio-tags {
+        .lightbox.active {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 1rem;
         }
 
-        .portfolio-tag {
-            font-size: 0.7rem;
-            color: #666;
-            background: #f5f5f5;
-            padding: 2px 8px;
-            border-radius: 3px;
-            letter-spacing: 0.02em;
+        .lightbox-dialog {
+            position: relative;
+            max-width: 1100px;
+            width: 100%;
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .lightbox-close {
+            justify-self: end;
+            border: none;
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+            padding: 0.55rem 0.8rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 78vh;
+            border-radius: 16px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
         }
 
         .footer {
+            margin-top: 1.25rem;
+            padding: 1.2rem;
             text-align: center;
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .footer-text {
-            font-size: 0.8rem;
-            color: #999;
-            font-weight: 300;
-            letter-spacing: 0.05em;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 2rem 1.5rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .portfolio-grid {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-        }
-
-        /* Subtle animation for page load */
-        .container {
-            animation: fadeInUp 0.8s ease-out;
+            color: var(--muted);
+            font-size: 0.85rem;
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(18px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero-card,
+            .hero-notes,
+            .section,
+            .footer {
+                border-radius: 18px;
+                padding: 1.25rem;
+            }
+
+            h1 {
+                max-width: none;
+            }
+
+            .section-heading {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-link">Back to Home</a>
-        
-        <header class="header">
-            <h1>Portfolio</h1>
-            <div class="subtitle">Selected Projects</div>
-        </header>
-
-        <h2 class="section-heading">Professional Work</h2>
-        <div class="portfolio-grid">
-            <div class="portfolio-item">
-                <img src="screenshots/tourbot.etadventures.com.png" alt="Tourbot" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Tourbot</h2>
-                    <p class="portfolio-description">Full-stack tour management system for Educational Travel Adventures, developed and extended over 4+ years. Handles reservations, group bookings, vendor management, payment processing, document generation, AI-assisted chat, and operational reporting for a multi-million dollar travel business.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">PHP</span>
-                        <span class="portfolio-tag">MySQL</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                        <span class="portfolio-tag">OpenClaw</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item">
-                <img src="screenshots/guides.etadventures.com.png" alt="ETA Guides Portal" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">ETA Guides Portal</h2>
-                    <p class="portfolio-description">Mobile-first Progressive Web App for tour guide contractors at Educational Travel Adventures, developed and extended over 4+ years. Provides access to trip itineraries, medical information, expense reporting, tour summary reports, and document management with offline support and a manager admin panel.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">PHP</span>
-                        <span class="portfolio-tag">MySQL</span>
-                        <span class="portfolio-tag">Bootstrap</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                        <span class="portfolio-tag">PWA</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://guides.etadventures.com" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
+        <div class="topbar">
+            <a href="/" class="back-link">Back to home</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
         </div>
 
-        <h2 class="section-heading">Client Work</h2>
-        <div class="portfolio-grid">
-            <div class="portfolio-item">
-                <img src="screenshots/chestercounty-life.com.png" alt="Chester County Life" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Chester County Life</h2>
-                    <p class="portfolio-description">PCI-compliant subscription payment system using Stripe API integration, implementing payment processing and enabling automated recurring revenue functionality. Developed without AI.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">PHP</span>
-                        <span class="portfolio-tag">Stripe API</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://chestercounty-life.com/" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/chestercounty-life-wordpress-theme" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
+        <main>
+            <section class="hero">
+                <div class="hero-card">
+                    <div class="eyebrow">Portfolio</div>
+                    <h1>Systems work with visible operational results.</h1>
+                    <p class="hero-copy">This portfolio leans toward the kinds of systems that matter in real operations: booking engines, contractor tools, payment flows, subscription infrastructure, and client sites that have to be maintainable after launch.</p>
                 </div>
-            </div>
+                <aside class="hero-notes">
+                    <ul>
+                        <li>
+                            <strong>What to look for</strong>
+                            Outcome-first case studies, not just screenshots.
+                        </li>
+                        <li>
+                            <strong>Where the value is</strong>
+                            Automation, reliability, performance, and operational clarity.
+                        </li>
+                        <li>
+                            <strong>How to browse</strong>
+                            Open any screenshot for a larger preview and use the live links where public access makes sense.
+                        </li>
+                    </ul>
+                </aside>
+            </section>
 
-            <div class="portfolio-item">
-                <img src="screenshots/wadadli.stephens.page.png" alt="Wadadli Flare Catering" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Wadadli Flare Catering</h2>
-                    <p class="portfolio-description">A catering website showcasing diverse culinary capabilities with clean, modern design and Caribbean-inspired colors. Features menu galleries and contact forms.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">PHP</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                        <span class="portfolio-tag">CSS</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://wadadli.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/wadadliflarecatering.com" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
+            <section class="section">
+                <div class="section-heading">
+                    <h2>Professional Work</h2>
+                    <p>Production systems with operational and revenue impact.</p>
                 </div>
-            </div>
-        </div>
+                <div class="portfolio-grid">
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/tourbot.etadventures.com.png" data-title="Tourbot screenshot">
+                            <img src="screenshots/tourbot.etadventures.com.png" alt="Tourbot reservations and operations platform" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Tourbot</h3>
+                            <p class="portfolio-summary">A full-stack tour management system supporting reservations, group bookings, vendor workflows, payment processing, reporting, and operational admin work for a travel business.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>The business needed a system that could handle booking complexity, operational workflows, and financial processes without fragile manual coordination.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>Features and infrastructure across reservations, vendor management, documents, chat, payments, reporting, and the admin tools required to keep day-to-day operations moving.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>A business-critical platform that supported live operations across multiple functions over several years of ongoing development and maintenance.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">PHP</span>
+                                <span class="portfolio-tag">MySQL</span>
+                                <span class="portfolio-tag">JavaScript</span>
+                                <span class="portfolio-tag">Operations</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                            </div>
+                        </div>
+                    </article>
 
-        <h2 class="section-heading">Personal Projects</h2>
-        <div class="portfolio-grid">
-            <div class="portfolio-item">
-                <img src="screenshots/creighton.stephens.page.png" alt="Creighton Cycle Tracker" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Creighton Cycle Tracker</h2>
-                    <p class="portfolio-description">Progressive Web App for fertility cycle tracking using the Creighton Model FertilityCare System. Features offline capability, auto-computed fertility stamps, chart and calendar views, server sync, and provider sharing.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">TypeScript</span>
-                        <span class="portfolio-tag">Vite</span>
-                        <span class="portfolio-tag">Express</span>
-                        <span class="portfolio-tag">SQLite</span>
-                        <span class="portfolio-tag">IndexedDB</span>
-                        <span class="portfolio-tag">PWA</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://creighton.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/CreightonTrackingApp" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/guides.etadventures.com.png" data-title="ETA Guides Portal screenshot">
+                            <img src="screenshots/guides.etadventures.com.png" alt="ETA Guides Portal mobile-first contractor application" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">ETA Guides Portal</h3>
+                            <p class="portfolio-summary">A mobile-first PWA for tour guide contractors with itinerary access, medical information, document workflows, reporting, and manager-side administration.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>Field staff needed dependable mobile access to essential trip information and reporting tools while on the move.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>Core contractor workflows, document and itinerary access, expense tools, summary reporting, offline-friendly behavior, and the supporting admin functionality.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>A dedicated operational interface for contractors that reduced friction between the field and the internal team.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">PHP</span>
+                                <span class="portfolio-tag">MySQL</span>
+                                <span class="portfolio-tag">Bootstrap</span>
+                                <span class="portfolio-tag">PWA</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://guides.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                            </div>
+                        </div>
+                    </article>
                 </div>
-            </div>
+            </section>
 
-            <div class="portfolio-item">
-                <img src="screenshots/macros.stephens.page.png" alt="Macros Tracker" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Macros Tracker</h2>
-                    <p class="portfolio-description">Self-hosted Progressive Web App for daily macronutrient tracking, replacing MyFitnessPal. Features barcode scanning, food search across Open Food Facts, USDA, and FatSecret APIs, custom foods and recipes, weight trend charts, per-meal targets, CSV export, dark mode, guest mode, and offline support.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">TypeScript</span>
-                        <span class="portfolio-tag">Vite</span>
-                        <span class="portfolio-tag">Express</span>
-                        <span class="portfolio-tag">SQLite</span>
-                        <span class="portfolio-tag">Chart.js</span>
-                        <span class="portfolio-tag">PWA</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://macros.stephens.page/" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/MacroTracker" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
+            <section class="section">
+                <div class="section-heading">
+                    <h2>Client Work</h2>
+                    <p>Focused builds for payments, publishing, and straightforward business visibility.</p>
                 </div>
-            </div>
+                <div class="portfolio-grid">
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/chestercounty-life.com.png" data-title="Chester County Life screenshot">
+                            <img src="screenshots/chestercounty-life.com.png" alt="Chester County Life subscription website" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Chester County Life</h3>
+                            <p class="portfolio-summary">A subscription payment system with Stripe integration designed to support recurring revenue and secure transaction handling.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>The site needed reliable recurring billing rather than a one-off brochure presence.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>PCI-conscious subscription flows and supporting payment infrastructure tied into Stripe.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>A business site that could actually collect and manage recurring revenue, not just describe the offering.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">PHP</span>
+                                <span class="portfolio-tag">Stripe</span>
+                                <span class="portfolio-tag">Subscriptions</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://chestercounty-life.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                            </div>
+                        </div>
+                    </article>
 
-            <div class="portfolio-item">
-                <img src="screenshots/wedding.stephens.page.png" alt="Wedding Website" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Wedding Website</h2>
-                    <p class="portfolio-description">Full-stack wedding website featuring invite-based RSVP with group lookup, guest management admin panel with stats and filtering, interactive registry with purchase tracking, photo gallery with admin uploads, relationship story timeline with carousels and embedded video, travel info with hotel blocks, and automated cron jobs for registry and uptime monitoring.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">PHP</span>
-                        <span class="portfolio-tag">MySQL</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                        <span class="portfolio-tag">Apache</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://wedding.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/wedding.stephens.page" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/wadadli.stephens.page.png" data-title="Wadadli Flare Catering screenshot">
+                            <img src="screenshots/wadadli.stephens.page.png" alt="Wadadli Flare Catering website" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Wadadli Flare Catering</h3>
+                            <p class="portfolio-summary">A marketing site for a catering business focused on clear presentation, service visibility, and lead generation.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>The business needed a cleaner web presence that communicated the offering quickly and supported customer inquiry.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>A polished service website with a clearer structure, stronger visual presentation, and direct paths for interested customers.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>A more credible online front door for the business and a better platform for discovery and inquiries.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Frontend</span>
+                                <span class="portfolio-tag">Brand Presence</span>
+                                <span class="portfolio-tag">Lead Generation</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://wadadliflarecatering.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                            </div>
+                        </div>
+                    </article>
                 </div>
-            </div>
+            </section>
+        </main>
 
-            <div class="portfolio-item">
-                <img src="screenshots/magisterium-mcp-server.png" alt="Magisterium MCP Server" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Magisterium MCP Server</h2>
-                    <p class="portfolio-description">Model Context Protocol server that gives AI assistants access to the Magisterium API for authoritative Catholic Church teaching with citations. Exposes a query tool that any MCP-compatible client (Claude Desktop, Claude Code, Cursor) can call, returning formatted responses with source citations and related questions.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">TypeScript</span>
-                        <span class="portfolio-tag">Node.js</span>
-                        <span class="portfolio-tag">MCP</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://magisterium.stephens.page/" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/magisterium_mcp_server" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item">
-                <img src="screenshots/dailydozen.jacobstephens.net.png" alt="Daily Dozen" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Daily Dozen</h2>
-                    <p class="portfolio-description">Responsive mobile web application for nutrition tracking with intuitive user interface, implementing both frontend and backend functionality.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">Node.js</span>
-                        <span class="portfolio-tag">Express</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                        <span class="portfolio-tag">PWA</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://dailydozen.stephens.page/" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/daily_dozen" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item">
-                <img src="screenshots/exodus40lite.stephens.page.png" alt="Exodus 40 Lite" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Exodus 40 Lite</h2>
-                    <p class="portfolio-description">Progressive Web App for a parish men's group to track their Lenten rule of life, adapted from Exodus 90. Features daily check-ins for prayer, fasting, almsgiving, and fraternity with progress tracking and offline support.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">JavaScript</span>
-                        <span class="portfolio-tag">PHP</span>
-                        <span class="portfolio-tag">MySQL</span>
-                        <span class="portfolio-tag">PWA</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://exodus.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/exodus40lite" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item">
-                <img src="screenshots/artifact.stewardgoods.com.png" alt="Artifact CMS" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Artifact CMS</h2>
-                    <p class="portfolio-description">Custom full-stack content management system with PHP backend and MySQL database, providing flexible content organization, user management, and administrative capabilities. Developed without AI.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">PHP</span>
-                        <span class="portfolio-tag">MySQL</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://artifact.stewardgoods.com/" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/artifact-manager-web-app" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item">
-                <img src="screenshots/channelzeronews.stephens.page.png" alt="Channel Zero News" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Channel Zero News</h2>
-                    <p class="portfolio-description">Interactive party game where players submit improvised responses to prompts and perform them live as a mock news broadcast. Features a host control panel with real-time submission tracking, player response forms, and a Bootstrap carousel-based teleprompter for live performance.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">PHP</span>
-                        <span class="portfolio-tag">MySQL</span>
-                        <span class="portfolio-tag">Bootstrap</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://zero.stephens.page" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/ChannelZeroNews" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item">
-                <img src="screenshots/resume.stephens.page.png" alt="Resume Website" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Resume Website</h2>
-                    <p class="portfolio-description">A clean, professional resume website showcasing work experience, education, and skills. Optimized for performance.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">HTML</span>
-                        <span class="portfolio-tag">CSS</span>
-                        <span class="portfolio-tag">JavaScript</span>
-                        <span class="portfolio-tag">PWA</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://resume.stephens.page/" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/jacob-stephens-resume-webpage" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item">
-                <img src="screenshots/blog.stephens.page.png" alt="Personal Blog" class="portfolio-image" onerror="this.style.display='none'">
-                <div class="portfolio-content">
-                    <h2 class="portfolio-title">Personal Blog</h2>
-                    <p class="portfolio-description">A minimalist personal blog featuring essays and reflections, built with plain HTML and CSS.</p>
-                    <div class="portfolio-tags">
-                        <span class="portfolio-tag">HTML</span>
-                        <span class="portfolio-tag">CSS</span>
-                    </div>
-                    <div class="portfolio-links">
-                        <a href="https://blog.stephens.page/" class="portfolio-link" target="_blank">Visit Site</a>
-                        <a href="https://github.com/JacobStephens2/jacobstephens-blog" class="portfolio-link" target="_blank">GitHub</a>
-                    </div>
-                </div>
+        <div class="lightbox" id="lightbox" aria-hidden="true">
+            <div class="lightbox-dialog">
+                <button class="lightbox-close" id="lightbox-close" type="button">Close</button>
+                <img id="lightbox-image" src="" alt="">
             </div>
         </div>
 
         <footer class="footer">
-            <div class="footer-text">© <span id="current-year"></span> Jacob Stephens</div>
+            © <span id="current-year"></span> Jacob Stephens
         </footer>
     </div>
 
-    <div class="lightbox" id="lightbox">
-        <img src="" alt="">
-    </div>
-
     <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-
         const lightbox = document.getElementById('lightbox');
-        const lightboxImg = lightbox.querySelector('img');
-        const images = Array.from(document.querySelectorAll('.portfolio-image'));
-        let currentIndex = 0;
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const imageButtons = document.querySelectorAll('.image-button');
 
-        function showImage(index) {
-            currentIndex = index;
-            lightboxImg.src = images[index].src;
-            lightboxImg.alt = images[index].alt;
+        function openLightbox(imageSrc, imageTitle) {
+            lightboxImage.src = imageSrc;
+            lightboxImage.alt = imageTitle;
             lightbox.classList.add('active');
+            lightbox.setAttribute('aria-hidden', 'false');
         }
 
-        images.forEach((img, i) => {
-            img.addEventListener('click', () => showImage(i));
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            lightbox.setAttribute('aria-hidden', 'true');
+            lightboxImage.src = '';
+            lightboxImage.alt = '';
+        }
+
+        imageButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                openLightbox(button.dataset.image, button.dataset.title);
+            });
         });
 
-        lightbox.addEventListener('click', (e) => {
-            if (e.target !== lightboxImg) {
-                lightbox.classList.remove('active');
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (event) => {
+            if (event.target === lightbox) {
+                closeLightbox();
             }
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (!lightbox.classList.contains('active')) return;
-            if (e.key === 'Escape') {
-                lightbox.classList.remove('active');
-            } else if (e.key === 'ArrowRight') {
-                showImage((currentIndex + 1) % images.length);
-            } else if (e.key === 'ArrowLeft') {
-                showImage((currentIndex - 1 + images.length) % images.length);
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && lightbox.classList.contains('active')) {
+                closeLightbox();
             }
         });
+
+        document.getElementById('current-year').textContent = new Date().getFullYear();
     </script>
 </body>
 </html>
-
