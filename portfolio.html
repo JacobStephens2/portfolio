@@ -424,23 +424,27 @@
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Tourbot</h3>
-                            <p class="portfolio-summary">The central tour management system at Educational Travel Adventures — reservations, group bookings, vendor workflows, payment processing, reporting, and operational admin for a travel business.</p>
+                            <p class="portfolio-summary">The core operations platform at Educational Travel Adventures — a full-lifecycle group travel ERP handling sales pipeline and lead qualification, itinerary building, reservations, vendor management, passenger logistics, payment processing, communications, and 70+ reports across finance, sales, marketing, and operations.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
-                                <span>The business ran on this system daily. It had to handle booking complexity, financial processes, and operational workflows without manual coordination breaking down.</span>
+                                <span>A 40-person travel company needed a single system to run the entire business — from lead inquiry through post-trip reporting — covering sales, finance, operations, vendor coordination, and customer-facing portals without things falling through the cracks.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>Major features and infrastructure improvements across reservations, vendor management, documents, chat, payments, reporting, and the admin tools behind day-to-day operations.</span>
+                                <span>A sales pipeline with lead qualification and agency management. An itinerary and quote builder with vendor pricing. Full reservation lifecycle management with passenger manifests, rooming lists, and multi-stage payment schedules. A vendor portal for self-service. A communications center with email, SMS, and document generation. Credit card processing, accounts receivable/payable, and QuickBooks integration. Customer and group leader portals. Employee tools including timeclock and expense management. Insurance and waiver workflows. 70+ reports and integrations with Google Workspace, Slack, and Twilio.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
-                                <span>A platform strengthened through years of development, maintenance, and operational improvement — still running in production.</span>
+                                <span>An operational backbone that runs every part of the business daily — sales, booking, finance, logistics, and communications — still in production after years of continuous development.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">PHP</span>
                                 <span class="portfolio-tag">MySQL</span>
                                 <span class="portfolio-tag">JavaScript</span>
+                                <span class="portfolio-tag">jQuery</span>
+                                <span class="portfolio-tag">Monetra</span>
+                                <span class="portfolio-tag">Twilio</span>
+                                <span class="portfolio-tag">QuickBooks</span>
                                 <span class="portfolio-tag">Operations</span>
                             </div>
                             <div class="portfolio-links">
@@ -456,27 +460,63 @@
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">ETA Guides Portal</h3>
-                            <p class="portfolio-summary">A mobile-first PWA for tour guide contractors at Educational Travel Adventures — itinerary access, medical information, document workflows, reporting, and manager-side administration.</p>
+                            <p class="portfolio-summary">A mobile-first PWA for tour guide contractors at Educational Travel Adventures — itinerary and medical info access, document workflows, daily and summary reporting with live auto-save, expense tracking with receipt uploads, SMS messaging to travelers, calendar scheduling, and manager-side administration.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
-                                <span>Field staff needed dependable mobile access to trip information and reporting workflows while on the move.</span>
+                                <span>Independent contractor tour guides — with no access to the main system — needed a reliable mobile interface to view trip details, access passenger medical and dietary information, file reports and expenses, and communicate with travelers while in the field.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>Contractor workflows, document and itinerary access, expense tools, summary reporting, offline-friendly behavior, and supporting admin functionality.</span>
+                                <span>A full PWA with offline support and service worker caching. Tentative and final itinerary views, passenger manifests, medical conditions, allergies, and dietary reports. Daily reports and post-tour summary questionnaires with live auto-save. An expense system with categorization, receipt attachments, and driver gratuity forms. Twilio-powered SMS messaging to travelers and billing contacts. A calendar with unavailability scheduling. Tour confirmation and ride-along workflows. Manager admin tools for document management and report reassignment.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
-                                <span>Reduced friction between field staff and the internal team, with a reliable mobile interface contractors actually use daily.</span>
+                                <span>Guides in the field can view trip details, check passenger medical needs, text travelers, file reports as they go, and submit expenses with receipts — all from their phone, online or offline. Managers can administer documents and review reports without developer involvement.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">PHP</span>
                                 <span class="portfolio-tag">MySQL</span>
                                 <span class="portfolio-tag">Bootstrap</span>
+                                <span class="portfolio-tag">Twilio</span>
+                                <span class="portfolio-tag">Service Workers</span>
                                 <span class="portfolio-tag">PWA</span>
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://guides.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/tourbot_chat.png" data-title="Tourbot Chat screenshot">
+                            <img src="screenshots/tourbot_chat.png" alt="Tourbot Chat AI-powered manager intelligence system" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Tourbot Chat</h3>
+                            <p class="portfolio-summary">An AI-powered chat system built with OpenClaw and Claude, giving managers at Educational Travel Adventures natural-language access to business intelligence and the ability to safely modify the platform themselves.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>Managers needed to answer complex business questions — revenue breakdowns, booking trends, vendor performance — without waiting on developer time. They also wanted to experiment with reports and workflows on their own terms, without risking the production system.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>A multi-tenant infrastructure where each manager gets an isolated Tourbot instance (Docker container) with their own Claude-powered OpenClaw agent. Agents can query a nightly-synced replica of the production database, run analysis, and even modify PHP code — all sandboxed per-manager with allowlist-controlled command execution, dedicated database users, and a git-based review gate before any changes reach production.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>Non-technical managers can independently explore business data, generate custom reports, and prototype workflow changes through conversation — while the system enforces isolation, read-only data access, and code review boundaries that keep production safe.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">OpenClaw</span>
+                                <span class="portfolio-tag">Claude</span>
+                                <span class="portfolio-tag">Docker</span>
+                                <span class="portfolio-tag">PHP</span>
+                                <span class="portfolio-tag">MySQL</span>
+                                <span class="portfolio-tag">Traefik</span>
+                                <span class="portfolio-tag">AI Agents</span>
+                            </div>
+                            <div class="portfolio-links">
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
                             </div>
                         </div>
@@ -724,6 +764,31 @@
                             <div class="portfolio-links">
                                 <a href="https://exodus.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
                                 <a href="https://github.com/JacobStephens2/exodus40lite" class="portfolio-link" target="_blank" rel="noreferrer">GitHub</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/clowder.stephens.page.png" data-title="Clowder & Crest screenshot">
+                            <img src="screenshots/clowder.stephens.page.png" alt="Clowder & Crest cat guild management game" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <div class="portfolio-header">
+                                <h3>Clowder & Crest</h3>
+                                <span class="badge">Game</span>
+                            </div>
+                            <p>Medieval cat guild management game with 14 minigame types, explorable town map, 7-chapter narrative, and Fire Emblem-style bond conversations. 6 cat breeds with pixel art, 35 jobs across 6 categories, physics combat, stealth, nonogram puzzles, and a lock-picking heist mode. Build your guild from a lone stray to a renowned clowder.</p>
+                            <div class="tech-tags">
+                                <span>Phaser 3</span>
+                                <span>TypeScript</span>
+                                <span>Capacitor</span>
+                                <span>Matter.js</span>
+                                <span>PixelLab AI</span>
+                                <span>ElevenLabs</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://clowderandcrest.com" class="portfolio-link" target="_blank" rel="noreferrer">Play Now</a>
+                                <a href="https://github.com/JacobStephens2/clowder-and-crest" class="portfolio-link" target="_blank" rel="noreferrer">GitHub</a>
                             </div>
                         </div>
                     </article>
