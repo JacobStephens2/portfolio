@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" font-family="'Work Sans', system-ui, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7f8fa"/>
+      <stop offset="1" stop-color="#eef0f4"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1f2a44" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- canvas -->
+  <rect width="1200" height="760" fill="url(#bg)"/>
+
+  <!-- top bar -->
+  <rect x="0" y="0" width="1200" height="64" fill="#ffffff" stroke="#e7eaf0"/>
+  <text x="40" y="40" font-size="20" font-weight="700" fill="#0a3a66">ETA <tspan fill="#2d8059">Status</tspan></text>
+  <text x="1040" y="40" font-size="14" fill="#7c8492">jacob@vagabondtours.com</text>
+  <rect x="1116" y="22" width="56" height="24" rx="4" fill="#ffffff" stroke="#cdd2db"/>
+  <text x="1144" y="38" font-size="12" fill="#5a6473" text-anchor="middle">Sign out</text>
+
+  <!-- summary pills -->
+  <g transform="translate(40, 96)">
+    <g>
+      <rect x="0" y="0" width="118" height="32" rx="16" fill="#e6f0ea" stroke="#7fae8e"/>
+      <circle cx="18" cy="16" r="4" fill="#2d8059"/>
+      <text x="32" y="21" font-size="13" font-weight="600" fill="#2d8059">11 healthy</text>
+    </g>
+    <g transform="translate(130, 0)">
+      <rect x="0" y="0" width="124" height="32" rx="16" fill="#fbeed7" stroke="#d99e3a"/>
+      <circle cx="18" cy="16" r="4" fill="#c98a26"/>
+      <text x="32" y="21" font-size="13" font-weight="600" fill="#a87014">1 degraded</text>
+    </g>
+    <g transform="translate(266, 0)">
+      <rect x="0" y="0" width="86" height="32" rx="16" fill="#f6dcdc" stroke="#c34646"/>
+      <circle cx="18" cy="16" r="4" fill="#b03434"/>
+      <text x="32" y="21" font-size="13" font-weight="600" fill="#933030">0 down</text>
+    </g>
+    <text x="370" y="22" font-size="12" fill="#7c8492">last sweep 14s</text>
+  </g>
+
+  <!-- card grid -->
+  <g transform="translate(40, 152)">
+    <!-- card template macro implemented inline x9 -->
+
+    <!-- row 1 -->
+    <g transform="translate(0,0)" filter="url(#cardShadow)">
+      <rect width="362" height="172" rx="6" fill="#ffffff" stroke="#e7eaf0"/>
+      <rect width="3" height="172" fill="#2d8059"/>
+      <circle cx="22" cy="22" r="5" fill="#2d8059"/>
+      <text x="36" y="27" font-size="14" font-weight="700" fill="#0a3a66">mysql8.etadventures.com</text>
+      <text x="16" y="52" font-size="13" fill="#0a3a66">Primary production database (MySQL 8.4)</text>
+      <text x="16" y="70" font-size="11" fill="#7c8492">Rocky Linux 9.7 · 174.138.93.124</text>
+      <line x1="16" y1="84" x2="346" y2="84" stroke="#eef0f4"/>
+      <g font-size="11">
+        <text x="16" y="104" fill="#7c8492" letter-spacing="1">SSH</text>
+        <text x="346" y="104" fill="#2d8059" text-anchor="end">tcp 22 reachable · 31ms</text>
+        <text x="16" y="124" fill="#7c8492" letter-spacing="1">MYSQL8</text>
+        <text x="346" y="124" fill="#2d8059" text-anchor="end">SELECT 1 · 28ms</text>
+      </g>
+    </g>
+
+    <g transform="translate(376,0)" filter="url(#cardShadow)">
+      <rect width="362" height="172" rx="6" fill="#ffffff" stroke="#e7eaf0"/>
+      <rect width="3" height="172" fill="#2d8059"/>
+      <circle cx="22" cy="22" r="5" fill="#2d8059"/>
+      <text x="36" y="27" font-size="14" font-weight="700" fill="#0a3a66">tourbot.etadventures.com</text>
+      <text x="16" y="52" font-size="13" fill="#0a3a66">Primary production web (Apache · PHP 8.4)</text>
+      <text x="16" y="70" font-size="11" fill="#7c8492">Rocky Linux 9.5 · 159.203.127.200</text>
+      <line x1="16" y1="84" x2="346" y2="84" stroke="#eef0f4"/>
+      <g font-size="11">
+        <text x="16" y="104" fill="#7c8492" letter-spacing="1">SSH</text>
+        <text x="346" y="104" fill="#2d8059" text-anchor="end">tcp 22 reachable · 22ms</text>
+        <text x="16" y="124" fill="#7c8492" letter-spacing="1">HTTPS</text>
+        <text x="346" y="124" fill="#2d8059" text-anchor="end">HTTP 200 · 184ms</text>
+      </g>
+    </g>
+
+    <g transform="translate(752,0)" filter="url(#cardShadow)">
+      <rect width="368" height="172" rx="6" fill="#ffffff" stroke="#e7eaf0"/>
+      <rect width="3" height="172" fill="#c98a26"/>
+      <circle cx="22" cy="22" r="5" fill="#c98a26"/>
+      <text x="36" y="27" font-size="14" font-weight="700" fill="#0a3a66">mysql5.etadventures.com</text>
+      <text x="16" y="52" font-size="13" fill="#0a3a66">Old production database (MySQL 5.7)</text>
+      <text x="16" y="70" font-size="11" fill="#7c8492">CentOS 7 · 192.81.208.120</text>
+      <line x1="16" y1="84" x2="352" y2="84" stroke="#eef0f4"/>
+      <g font-size="11">
+        <text x="16" y="104" fill="#7c8492" letter-spacing="1">SSH</text>
+        <text x="352" y="104" fill="#2d8059" text-anchor="end">tcp 22 reachable · 41ms</text>
+        <text x="16" y="124" fill="#7c8492" letter-spacing="1">MYSQL5</text>
+        <text x="352" y="124" fill="#a87014" text-anchor="end">deprecating 2026-05-01</text>
+      </g>
+    </g>
+
+    <!-- row 2 -->
+    <g transform="translate(0,188)" filter="url(#cardShadow)">
+      <rect width="362" height="172" rx="6" fill="#ffffff" stroke="#e7eaf0"/>
+      <rect width="3" height="172" fill="#2d8059"/>
+      <circle cx="22" cy="22" r="5" fill="#2d8059"/>
+      <text x="36" y="27" font-size="14" font-weight="700" fill="#0a3a66">old.etadventures.com</text>
+      <text x="16" y="52" font-size="13" fill="#0a3a66">ACH cron processing (NACHA → M&amp;T)</text>
+      <text x="16" y="70" font-size="11" fill="#7c8492">CentOS 7 · 159.89.235.231</text>
+      <line x1="16" y1="84" x2="346" y2="84" stroke="#eef0f4"/>
+      <g font-size="11">
+        <text x="16" y="104" fill="#7c8492" letter-spacing="1">SSH</text>
+        <text x="346" y="104" fill="#2d8059" text-anchor="end">tcp 22 reachable · 44ms</text>
+        <text x="16" y="124" fill="#7c8492" letter-spacing="1">CRON</text>
+        <text x="346" y="124" fill="#2d8059" text-anchor="end">last run 02:00 · ok</text>
+      </g>
+    </g>
+
+    <g transform="translate(376,188)" filter="url(#cardShadow)">
+      <rect width="362" height="172" rx="6" fill="#ffffff" stroke="#e7eaf0"/>
+      <rect width="3" height="172" fill="#2d8059"/>
+      <circle cx="22" cy="22" r="5" fill="#2d8059"/>
+      <text x="36" y="27" font-size="14" font-weight="700" fill="#0a3a66">test.etadventures.com</text>
+      <text x="16" y="52" font-size="13" fill="#0a3a66">Test web bound to prod data (DEV_SERVER)</text>
+      <text x="16" y="70" font-size="11" fill="#7c8492">Rocky Linux 9.7 · 159.65.32.142</text>
+      <line x1="16" y1="84" x2="346" y2="84" stroke="#eef0f4"/>
+      <g font-size="11">
+        <text x="16" y="104" fill="#7c8492" letter-spacing="1">SSH</text>
+        <text x="346" y="104" fill="#2d8059" text-anchor="end">tcp 22 reachable · 19ms</text>
+        <text x="16" y="124" fill="#7c8492" letter-spacing="1">HTTPS</text>
+        <text x="346" y="124" fill="#2d8059" text-anchor="end">HTTP 200 · 142ms</text>
+      </g>
+    </g>
+
+    <g transform="translate(752,188)" filter="url(#cardShadow)">
+      <rect width="368" height="172" rx="6" fill="#ffffff" stroke="#e7eaf0"/>
+      <rect width="3" height="172" fill="#2d8059"/>
+      <circle cx="22" cy="22" r="5" fill="#2d8059"/>
+      <text x="36" y="27" font-size="14" font-weight="700" fill="#0a3a66">manager.etadventures.com</text>
+      <text x="16" y="52" font-size="13" fill="#0a3a66">Manager Tourbot sandboxes (Docker)</text>
+      <text x="16" y="70" font-size="11" fill="#7c8492">Rocky Linux 9.7 · 159.65.37.164</text>
+      <line x1="16" y1="84" x2="352" y2="84" stroke="#eef0f4"/>
+      <g font-size="11">
+        <text x="16" y="104" fill="#7c8492" letter-spacing="1">SSH</text>
+        <text x="352" y="104" fill="#2d8059" text-anchor="end">tcp 22 reachable · 18ms</text>
+        <text x="16" y="124" fill="#7c8492" letter-spacing="1">CONTAINERS</text>
+        <text x="352" y="124" fill="#2d8059" text-anchor="end">4 / 4 running</text>
+      </g>
+    </g>
+
+    <!-- row 3 -->
+    <g transform="translate(0,376)" filter="url(#cardShadow)">
+      <rect width="362" height="172" rx="6" fill="#ffffff" stroke="#e7eaf0"/>
+      <rect width="3" height="172" fill="#2d8059"/>
+      <circle cx="22" cy="22" r="5" fill="#2d8059"/>
+      <text x="36" y="27" font-size="14" font-weight="700" fill="#0a3a66">db-replica.etadventures.com</text>
+      <text x="16" y="52" font-size="13" fill="#0a3a66">Sandbox database (replica of prod)</text>
+      <text x="16" y="70" font-size="11" fill="#7c8492">Rocky Linux 9.7 · 138.197.92.184</text>
+      <line x1="16" y1="84" x2="346" y2="84" stroke="#eef0f4"/>
+      <g font-size="11">
+        <text x="16" y="104" fill="#7c8492" letter-spacing="1">MYSQL</text>
+        <text x="346" y="104" fill="#2d8059" text-anchor="end">SELECT 1 · 36ms</text>
+        <text x="16" y="124" fill="#7c8492" letter-spacing="1">REPLICATION</text>
+        <text x="346" y="124" fill="#2d8059" text-anchor="end">last sync 03:11</text>
+      </g>
+    </g>
+
+    <g transform="translate(376,376)" filter="url(#cardShadow)">
+      <rect width="362" height="172" rx="6" fill="#ffffff" stroke="#e7eaf0"/>
+      <rect width="3" height="172" fill="#2d8059"/>
+      <circle cx="22" cy="22" r="5" fill="#2d8059"/>
+      <text x="36" y="27" font-size="14" font-weight="700" fill="#0a3a66">assets.etadventures.com</text>
+      <text x="16" y="52" font-size="13" fill="#0a3a66">Asset / file server (PHP 7.2)</text>
+      <text x="16" y="70" font-size="11" fill="#7c8492">CentOS 7 · 157.230.1.23</text>
+      <line x1="16" y1="84" x2="346" y2="84" stroke="#eef0f4"/>
+      <g font-size="11">
+        <text x="16" y="104" fill="#7c8492" letter-spacing="1">SSH</text>
+        <text x="346" y="104" fill="#2d8059" text-anchor="end">tcp 22 reachable · 27ms</text>
+        <text x="16" y="124" fill="#7c8492" letter-spacing="1">HTTPS</text>
+        <text x="346" y="124" fill="#2d8059" text-anchor="end">HTTP 200 · 121ms</text>
+      </g>
+    </g>
+
+    <g transform="translate(752,376)" filter="url(#cardShadow)">
+      <rect width="368" height="172" rx="6" fill="#ffffff" stroke="#e7eaf0"/>
+      <rect width="3" height="172" fill="#2d8059"/>
+      <circle cx="22" cy="22" r="5" fill="#2d8059"/>
+      <text x="36" y="27" font-size="14" font-weight="700" fill="#0a3a66">orchestration.etadventures.com</text>
+      <text x="16" y="52" font-size="13" fill="#0a3a66">Agent orchestration · Caddy · Flask</text>
+      <text x="16" y="70" font-size="11" fill="#7c8492">Rocky Linux 9.7 · 192.241.157.189</text>
+      <line x1="16" y1="84" x2="352" y2="84" stroke="#eef0f4"/>
+      <g font-size="11">
+        <text x="16" y="104" fill="#7c8492" letter-spacing="1">DASHBOARD</text>
+        <text x="352" y="104" fill="#2d8059" text-anchor="end">HTTP 200 · 9ms</text>
+        <text x="16" y="124" fill="#7c8492" letter-spacing="1">SQLITE</text>
+        <text x="352" y="124" fill="#2d8059" text-anchor="end">tokens.sqlite ok</text>
+      </g>
+    </g>
+  </g>
+
+  <text x="600" y="724" font-size="12" fill="#7c8492" text-anchor="middle">Auto-refreshes every 60 seconds · Probes also run every 60 seconds in the background</text>
+</svg>
