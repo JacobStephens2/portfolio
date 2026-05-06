@@ -521,6 +521,146 @@
                             </div>
                         </div>
                     </article>
+
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/status.etadventures.com.svg" data-title="ETA Status Dashboard screenshot">
+                            <img src="screenshots/status.etadventures.com.svg" alt="ETA status dashboard with live probe results across the company's servers" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">ETA Orchestration &amp; Status</h3>
+                            <p class="portfolio-summary">A Python and Flask service running at status.etadventures.com that probes Educational Travel Adventures' fleet of web, database, and cron servers and renders a single-page health view — paired with a hardened Linux host that lets a Claude Code agent operate safely across that infrastructure.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>A dozen production and supporting servers — MySQL 8 and 5.7, Apache, ACH cron processing, Docker-hosted manager sandboxes, an asset host — with no single place to see whether they were reachable, which probes were green, and what was degrading. And no clean way to give an AI agent multi-server access without leaking credentials or muddying audit logs.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>A Flask app behind Caddy (TLS via Let's Encrypt) running under gunicorn and systemd, with a background thread sweeping TCP, HTTP, and MySQL probes every 60 seconds against an inventory mirrored from the company's infrastructure document. A two-step gate — bcrypt-hashed shared password plus single-use SQLite-backed magic-link tokens emailed only to whitelisted addresses — protects the dashboard. The same VM hosts a `conductor` service-account pipeline: 1Password service-account secrets injected at launch via `op inject`, MySQL grants pinned to the host's IP, and a sudo-elevated wrapper so engineers trigger the agent without picking up its credentials themselves. Auditing reads as "the orchestrator did X," not "Engineer Y did X via the orchestrator."</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>One URL to check fleet health, refreshed in the background so page loads never block on a probe — and a controlled launchpad from which an AI agent can coordinate work between web and database servers with credentials it never sees on disk.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Python</span>
+                                <span class="portfolio-tag">Flask</span>
+                                <span class="portfolio-tag">SQLite</span>
+                                <span class="portfolio-tag">gunicorn</span>
+                                <span class="portfolio-tag">Caddy</span>
+                                <span class="portfolio-tag">systemd</span>
+                                <span class="portfolio-tag">Linux</span>
+                                <span class="portfolio-tag">1Password</span>
+                                <span class="portfolio-tag">Claude Code</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://status.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/customerweb.etadventures.com.png" data-title="ETA Customer Portal screenshot">
+                            <img src="screenshots/customerweb.etadventures.com.png" alt="ETA Customer Portal — group leader and traveler self-service" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">ETA Customer Portal</h3>
+                            <p class="portfolio-summary">The customer-facing side of Educational Travel Adventures — group leaders, parents, and travelers self-serve account creation, trip registration, payment plans, and communication. Inherited from a previous IT team and substantially rebuilt by me and the team I lead.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>The original portal — built years earlier — had drifted out of step with the rest of the platform: payment integrations were aging, the UI looked dated next to the modern Tourbot interface, and security and PCI posture needed real work as ETA shifted between merchant processors. It needed to keep running every day for paying customers while we modernized it underneath.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>Led the rebuild while keeping the existing portal in production. Migrated the credit-card flow across processors (TranSafe, Monetra, NMI) with bank-account encryption and PCI-conscious handling. Re-engineered registration, payment-plan, and refund flows. Modernized the front-end with a Tailwind-based component layer alongside legacy markup. Added in-portal chat, conference-call hooks, and customer-account export/import for cross-database migration. Tightened the API surface and aligned auth with the broader Tourbot platform.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>A portal that customers actually trust to take their money — clearer flows, modernized payments, current PCI posture — with continuity for the thousands of registrations and payments already in flight when the rebuild started.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">PHP</span>
+                                <span class="portfolio-tag">MySQL</span>
+                                <span class="portfolio-tag">JavaScript</span>
+                                <span class="portfolio-tag">Tailwind</span>
+                                <span class="portfolio-tag">NMI</span>
+                                <span class="portfolio-tag">TranSafe</span>
+                                <span class="portfolio-tag">Monetra</span>
+                                <span class="portfolio-tag">PCI</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://tourbot.etadventures.com/customerweb/" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/ach-nacha-automation.svg" data-title="ACH NACHA automation screenshot">
+                            <img src="screenshots/ach-nacha-automation.svg" alt="Diagram of NACHA file generation and bank submission pipeline" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">ACH &amp; NACHA Bank-File Automation</h3>
+                            <p class="portfolio-summary">The cron-driven pipeline that turns scheduled customer payments into NACHA-formatted batch files and submits them to M&amp;T Bank for ACH processing — the system that actually moves the money. Inherited the original implementation; took ownership, modernized the runtime, and kept it running through platform migrations.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>The ACH side of the business depends on producing correctly-formatted NACHA files, uploading them to the bank on a schedule, and reconciling return files when entries fail. The original cron host was stuck on CentOS 7 and PHP 5.6, the code had drifted from the rest of the platform, and the bank doesn't tolerate malformed batches — a bad file is a failed payment day.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>Took over the bank-file generator and the surrounding cron fleet (`nacha_files_to_upload`, `nacha_returnfiles`, vendor ACH batches, and recurring-payment crons). Modernized the code paths against current PHP, migrated the MySQL backend across versions, added monitoring around the daily cron schedule, and integrated NMI as a routing target for recurring card payments alongside the ACH flow. Kept the bank-facing format and submission cadence rock-steady the entire time.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>Customer ACH payments and refunds clear the bank on schedule, return files are processed back into the system, and the pipeline is now legible and modifiable instead of a black box only the original author understood.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">PHP</span>
+                                <span class="portfolio-tag">MySQL</span>
+                                <span class="portfolio-tag">NACHA</span>
+                                <span class="portfolio-tag">ACH</span>
+                                <span class="portfolio-tag">Cron</span>
+                                <span class="portfolio-tag">M&amp;T Bank</span>
+                                <span class="portfolio-tag">Linux</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/legacy-modernization.svg" data-title="Legacy modernization screenshot">
+                            <img src="screenshots/legacy-modernization.svg" alt="Diagram of PHP 5 to PHP 8 and MySQL 5.7 to 8.4 modernization" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Legacy Modernization: PHP 5 → 8, MySQL 5.7 → 8.4, CentOS → Rocky</h3>
+                            <p class="portfolio-summary">A multi-year, codebase-wide modernization of Educational Travel Adventures' platform — PHP 5.6 to PHP 8, MySQL 5.7 to MySQL 8.4 LTS, and CentOS 7 to Rocky Linux 9 — done in production, without freezing the company.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>A 40-person travel business was running on a stack whose security and support runway was visibly running out: PHP 5.6 long past EOL, MySQL 5.7 past its window, and CentOS 7 about to age out. Every other piece of the platform — payments, ACH, the customer portal, internal Tourbot, the guides PWA — had to keep shipping the entire time.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>Directed and executed an enterprise-wide PHP 5 → 8 migration across the codebase, removing magic quotes, deprecated `mysql_*` calls, and dynamic-property warnings; declaring properties on long-lived models; tightening type signatures. Wrote and shipped the MySQL 5.7 → 8.4 migration plan and the CentOS 7 → Rocky Linux 9 cutover, including production deployment notes, schema-compatibility audits, and per-server runbooks. Coordinated cross-database export/import for customer accounts, dual-running the old and new database servers during transition. Modernized server roles in step (db deprecation, ACH host migration, manager-tourbot Docker host). Mentored the developer working alongside me on the same codebase.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>A current, supported stack — PHP 8, MySQL 8.4 LTS, Rocky Linux 9 — across the production fleet, completed without an outage that customers or staff would have noticed. The same migration also unblocked downstream work: containerized manager sandboxes, an AI-agent orchestrator, and the modernized customer portal all assume the new baseline.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">PHP 8</span>
+                                <span class="portfolio-tag">MySQL 8.4</span>
+                                <span class="portfolio-tag">Rocky Linux</span>
+                                <span class="portfolio-tag">CentOS</span>
+                                <span class="portfolio-tag">Migration</span>
+                                <span class="portfolio-tag">Refactoring</span>
+                                <span class="portfolio-tag">Production Ops</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                            </div>
+                        </div>
+                    </article>
                 </div>
             </section>
 
