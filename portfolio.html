@@ -317,6 +317,40 @@
             font: inherit;
         }
 
+        .lightbox-nav-row {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .lightbox-nav-row.active {
+            display: flex;
+        }
+
+        .lightbox-nav {
+            border: none;
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .lightbox-nav:hover,
+        .lightbox-nav:focus-visible {
+            background: rgba(255, 255, 255, 0.24);
+        }
+
+        .lightbox-counter {
+            color: #fff;
+            font-size: 0.92rem;
+            opacity: 0.8;
+            min-width: 3.5rem;
+            text-align: center;
+        }
+
         .lightbox img {
             display: block;
             justify-self: center;
@@ -418,7 +452,7 @@
                     <p>Production systems with operational and revenue impact.</p>
                 </div>
                 <div class="portfolio-grid">
-                    <article class="portfolio-item">
+                    <article class="portfolio-item" id="tourbot">
                         <button class="image-button" type="button" data-image="screenshots/tourbot.etadventures.com.png" data-title="Tourbot screenshot">
                             <img src="screenshots/tourbot.etadventures.com.png" alt="Tourbot reservations and operations platform" class="portfolio-image">
                         </button>
@@ -449,7 +483,7 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
                     </article>
@@ -483,12 +517,12 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://guides.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
                     </article>
 
-                    <article class="portfolio-item">
+                    <article class="portfolio-item" id="tourbot-chat">
                         <button class="image-button" type="button" data-image="screenshots/tourbot_chat.png" data-title="Tourbot Chat screenshot">
                             <img src="screenshots/tourbot_chat.png" alt="Tourbot Chat AI-powered manager intelligence system" class="portfolio-image">
                         </button>
@@ -517,14 +551,14 @@
                                 <span class="portfolio-tag">AI Agents</span>
                             </div>
                             <div class="portfolio-links">
-                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
                     </article>
 
                     <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/status.etadventures.com.svg" data-title="ETA Status Dashboard screenshot">
-                            <img src="screenshots/status.etadventures.com.svg" alt="ETA status dashboard with live probe results across the company's servers" class="portfolio-image">
+                        <button class="image-button" type="button" data-image="screenshots/status.etadventures.com.png" data-title="ETA Status Dashboard screenshot">
+                            <img src="screenshots/status.etadventures.com.png" alt="ETA status dashboard with live probe results across the company's servers" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">ETA Orchestration &amp; Status</h3>
@@ -558,7 +592,7 @@
                         </div>
                     </article>
 
-                    <article class="portfolio-item">
+                    <article class="portfolio-item" id="eta-customer-portal">
                         <button class="image-button" type="button" data-image="screenshots/customerweb.etadventures.com.png" data-title="ETA Customer Portal screenshot">
                             <img src="screenshots/customerweb.etadventures.com.png" alt="ETA Customer Portal — group leader and traveler self-service" class="portfolio-image">
                         </button>
@@ -589,12 +623,12 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://tourbot.etadventures.com/customerweb/" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
                     </article>
 
-                    <article class="portfolio-item">
+                    <article class="portfolio-item" id="ach-nacha-automation">
                         <button class="image-button" type="button" data-image="screenshots/ach-nacha-automation.svg" data-title="ACH NACHA automation screenshot">
                             <img src="screenshots/ach-nacha-automation.svg" alt="Diagram of NACHA file generation and bank submission pipeline" class="portfolio-image">
                         </button>
@@ -623,7 +657,7 @@
                                 <span class="portfolio-tag">Linux</span>
                             </div>
                             <div class="portfolio-links">
-                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
                     </article>
@@ -653,12 +687,12 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
                     </article>
 
-                    <article class="portfolio-item">
+                    <article class="portfolio-item" id="legacy-modernization">
                         <button class="image-button" type="button" data-image="screenshots/legacy-modernization.svg" data-title="Legacy modernization screenshot">
                             <img src="screenshots/legacy-modernization.svg" alt="Diagram of PHP 5 to PHP 8 and MySQL 5.7 to 8.4 modernization" class="portfolio-image">
                         </button>
@@ -687,7 +721,7 @@
                                 <span class="portfolio-tag">Production Ops</span>
                             </div>
                             <div class="portfolio-links">
-                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
                     </article>
@@ -726,6 +760,7 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://chestercounty-life.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/JacobStephens2/chestercounty-life-wordpress-theme" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
@@ -756,6 +791,7 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://wadadliflarecatering.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/JacobStephens2/wadadliflarecatering.com" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
@@ -793,7 +829,7 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://clowderandcrest.com" class="portfolio-link" target="_blank" rel="noreferrer">Play Now</a>
-                                <a href="https://github.com/JacobStephens2/clowder-and-crest" class="portfolio-link" target="_blank" rel="noreferrer">GitHub</a>
+                                <a href="https://github.com/JacobStephens2/clowder-and-crest" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
@@ -821,14 +857,14 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://magisterium.stephens.page/" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/magisterium_mcp_server" class="portfolio-link" target="_blank" rel="noreferrer">GitHub</a>
+                                <a href="https://github.com/JacobStephens2/magisterium_mcp_server" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
 
                     <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/creighton.stephens.page.png" data-title="Creighton Cycle Tracker screenshot">
-                            <img src="screenshots/creighton.stephens.page.png" alt="Creighton Cycle Tracker application" class="portfolio-image">
+                        <button class="image-button" type="button" data-image="screenshots/creightontracker.com.png" data-images="screenshots/creightontracker.com.png,screenshots/creightontracker.com-light.png" data-title="Creighton Cycle Tracker screenshot">
+                            <img src="screenshots/creightontracker.com.png" alt="Creighton Cycle Tracker application" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Creighton Cycle Tracker</h3>
@@ -849,14 +885,14 @@
                                 <span class="portfolio-tag">PWA</span>
                             </div>
                             <div class="portfolio-links">
-                                <a href="https://creighton.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/CreightonTrackingApp" class="portfolio-link" target="_blank" rel="noreferrer">GitHub</a>
+                                <a href="https://creightontracker.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/JacobStephens2/CreightonTrackingApp" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
 
                     <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/macros.stephens.page.png" data-title="Macros Tracker screenshot">
+                        <button class="image-button" type="button" data-image="screenshots/macros.stephens.page.png" data-images="screenshots/macros.stephens.page.png,screenshots/macros.stephens.page-2.png" data-title="Macros Tracker screenshot">
                             <img src="screenshots/macros.stephens.page.png" alt="Macros Tracker application" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
@@ -879,35 +915,35 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://macros.stephens.page/" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/MacroTracker" class="portfolio-link" target="_blank" rel="noreferrer">GitHub</a>
+                                <a href="https://github.com/JacobStephens2/MacroTracker" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
 
                     <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/wedding.stephens.page.png" data-title="Wedding platform screenshot">
-                            <img src="screenshots/wedding.stephens.page.png" alt="Wedding platform and RSVP application" class="portfolio-image">
+                        <button class="image-button" type="button" data-image="screenshots/dailydozen.stephens.page.png" data-title="Daily Dozen Tracker screenshot">
+                            <img src="screenshots/dailydozen.stephens.page.png" alt="Daily Dozen Tracker progressive web app" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
-                            <h3 class="portfolio-title">Wedding Platform</h3>
-                            <p class="portfolio-summary">A full-stack wedding site — invite-based RSVPs, guest management, registry tracking, photo uploads, travel details, and admin tooling.</p>
+                            <h3 class="portfolio-title">Daily Dozen Tracker</h3>
+                            <p class="portfolio-summary">A progressive web app for tracking Dr. Greger's Daily Dozen food recommendations — offline support, progress visualization, and a Catholic stewardship framing of daily nutrition.</p>
                             <div class="portfolio-block">
                                 <strong>Why it matters</strong>
-                                <span>What is usually a brochure site becomes a real application with workflows, data, and event operations behind it.</span>
+                                <span>Turns an evidence-based nutrition checklist into a sustained daily habit with the right cadence and a gratitude framing that fits a faith context.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What stands out</strong>
-                                <span>Group lookup logic, admin views, cron-backed monitoring, and an operationally complete personal project.</span>
+                                <span>Node.js / Express backend with JWT auth and transactional email; PWA frontend with offline-first persistence and installable shortcut on mobile.</span>
                             </div>
                             <div class="portfolio-tags">
-                                <span class="portfolio-tag">PHP</span>
-                                <span class="portfolio-tag">MySQL</span>
                                 <span class="portfolio-tag">JavaScript</span>
-                                <span class="portfolio-tag">Operations</span>
+                                <span class="portfolio-tag">Node.js</span>
+                                <span class="portfolio-tag">Express</span>
+                                <span class="portfolio-tag">PWA</span>
                             </div>
                             <div class="portfolio-links">
-                                <a href="https://wedding.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/wedding-platform" class="portfolio-link" target="_blank" rel="noreferrer">GitHub</a>
+                                <a href="https://dailydozen.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/JacobStephens2/daily_dozen" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
@@ -929,13 +965,13 @@
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">PHP</span>
-                                <span class="portfolio-tag">MySQL</span>
                                 <span class="portfolio-tag">JavaScript</span>
                                 <span class="portfolio-tag">PWA</span>
+                                <span class="portfolio-tag">Android (Capacitor)</span>
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://exodus.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/exodus40lite" class="portfolio-link" target="_blank" rel="noreferrer">GitHub</a>
+                                <a href="https://github.com/JacobStephens2/exodus" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
@@ -965,7 +1001,35 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://artifact.stewardgoods.com/" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/artifact-manager-web-app" class="portfolio-link" target="_blank" rel="noreferrer">GitHub</a>
+                                <a href="https://github.com/JacobStephens2/artifact-manager-web-app" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item">
+                        <button class="image-button" type="button" data-image="screenshots/wedding.stephens.page.png" data-title="Wedding platform screenshot">
+                            <img src="screenshots/wedding.stephens.page.png" alt="Wedding platform and RSVP application" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Wedding Platform</h3>
+                            <p class="portfolio-summary">A full-stack wedding site — invite-based RSVPs, guest management, registry tracking, photo uploads, travel details, and admin tooling.</p>
+                            <div class="portfolio-block">
+                                <strong>Why it matters</strong>
+                                <span>What is usually a brochure site becomes a real application with workflows, data, and event operations behind it.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What stands out</strong>
+                                <span>Group lookup logic, admin views, cron-backed monitoring, and an operationally complete personal project.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">PHP</span>
+                                <span class="portfolio-tag">MySQL</span>
+                                <span class="portfolio-tag">JavaScript</span>
+                                <span class="portfolio-tag">Operations</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://wedding.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/JacobStephens2/wedding-platform" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
@@ -977,6 +1041,11 @@
             <div class="lightbox-dialog">
                 <button class="lightbox-close" id="lightbox-close" type="button">Close</button>
                 <img id="lightbox-image" src="" alt="">
+                <div class="lightbox-nav-row" id="lightbox-nav-row">
+                    <button class="lightbox-nav" id="lightbox-prev" type="button" aria-label="Previous image">&lsaquo; Prev</button>
+                    <span class="lightbox-counter" id="lightbox-counter">1 / 1</span>
+                    <button class="lightbox-nav" id="lightbox-next" type="button" aria-label="Next image">Next &rsaquo;</button>
+                </div>
             </div>
         </div>
 
@@ -989,11 +1058,35 @@
         const lightbox = document.getElementById('lightbox');
         const lightboxImage = document.getElementById('lightbox-image');
         const lightboxClose = document.getElementById('lightbox-close');
+        const lightboxNavRow = document.getElementById('lightbox-nav-row');
+        const lightboxPrev = document.getElementById('lightbox-prev');
+        const lightboxNext = document.getElementById('lightbox-next');
+        const lightboxCounter = document.getElementById('lightbox-counter');
         const imageButtons = document.querySelectorAll('.image-button');
 
-        function openLightbox(imageSrc, imageTitle) {
-            lightboxImage.src = imageSrc;
-            lightboxImage.alt = imageTitle;
+        let currentImages = [];
+        let currentIndex = 0;
+        let currentTitle = '';
+
+        function renderCurrent() {
+            if (!currentImages.length) return;
+            lightboxImage.src = currentImages[currentIndex];
+            lightboxImage.alt = currentTitle;
+            lightboxCounter.textContent = (currentIndex + 1) + ' / ' + currentImages.length;
+            lightboxPrev.disabled = false;
+            lightboxNext.disabled = false;
+            if (currentImages.length > 1) {
+                lightboxNavRow.classList.add('active');
+            } else {
+                lightboxNavRow.classList.remove('active');
+            }
+        }
+
+        function openLightbox(images, imageTitle) {
+            currentImages = images;
+            currentIndex = 0;
+            currentTitle = imageTitle || '';
+            renderCurrent();
             lightbox.classList.add('active');
             lightbox.setAttribute('aria-hidden', 'false');
         }
@@ -1003,15 +1096,36 @@
             lightbox.setAttribute('aria-hidden', 'true');
             lightboxImage.src = '';
             lightboxImage.alt = '';
+            lightboxNavRow.classList.remove('active');
+            currentImages = [];
+            currentIndex = 0;
+        }
+
+        function nextImage() {
+            if (currentImages.length < 2) return;
+            currentIndex = (currentIndex + 1) % currentImages.length;
+            renderCurrent();
+        }
+
+        function prevImage() {
+            if (currentImages.length < 2) return;
+            currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+            renderCurrent();
         }
 
         imageButtons.forEach((button) => {
             button.addEventListener('click', () => {
-                openLightbox(button.dataset.image, button.dataset.title);
+                const multi = button.dataset.images;
+                const images = multi
+                    ? multi.split(',').map((s) => s.trim()).filter(Boolean)
+                    : [button.dataset.image];
+                openLightbox(images, button.dataset.title);
             });
         });
 
         lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev.addEventListener('click', prevImage);
+        lightboxNext.addEventListener('click', nextImage);
         lightbox.addEventListener('click', (event) => {
             if (event.target === lightbox) {
                 closeLightbox();
@@ -1019,9 +1133,10 @@
         });
 
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && lightbox.classList.contains('active')) {
-                closeLightbox();
-            }
+            if (!lightbox.classList.contains('active')) return;
+            if (event.key === 'Escape') closeLightbox();
+            else if (event.key === 'ArrowRight') nextImage();
+            else if (event.key === 'ArrowLeft') prevImage();
         });
 
         document.getElementById('current-year').textContent = new Date().getFullYear();
