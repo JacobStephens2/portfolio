@@ -628,6 +628,36 @@
                         </div>
                     </article>
 
+                    <article class="portfolio-item" id="performance-tuning">
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Tourbot Alert Performance Tuning</h3>
+                            <p class="portfolio-summary">A performance pass on Tourbot's internal alerts page — a heavily-trafficked screen that staff hit repeatedly throughout the day — taking load times from 5–10 seconds down to under 1 second by replacing per-request query fan-out with a pre-computed cache table.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>The alerts page calculated every alert from scratch on every request. Each load fanned out into 100+ MySQL queries against the same booking, item, and product-alert tables, with no reuse across users. With every staff member hitting it many times a day, 5–10 second loads were normal, the database was carrying a lot of avoidable repeat work, and the slowness was eroding trust in the rest of Tourbot.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>Started by profiling the request path and going after the worst offenders: added composite indexes covering the booking / item / product-alert joins, and rewrote per-reservation loops into batched IN&nbsp;(…) queries to kill the N+1 pattern. Then went further and pre-computed the alerts themselves into a dedicated MySQL cache table, populated by a background PHP daemon, so the page itself just reads pre-shaped rows. Invalidation is layered — writes in the relevant flows (booking uploads, item cancellations, alert state changes) kick off a per-reservation recompute in the background, page loads opportunistically refresh stale caches against a one-hour freshness window, and a nightly cron does a full rebuild. The visible behavior of the page didn't change, so nothing for users to relearn.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>Page loads dropped from 5–10 seconds to under 1 second, and the per-page query count dropped from over 100 to a small handful — most of the work now happens off the request path. The same cache table later became the read source for the SPM group page and the sales dashboard, so the win rippled past the original page.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">PHP</span>
+                                <span class="portfolio-tag">MySQL</span>
+                                <span class="portfolio-tag">Caching</span>
+                                <span class="portfolio-tag">Query Optimization</span>
+                                <span class="portfolio-tag">Performance</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer">Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
                     <article class="portfolio-item">
                         <button class="image-button" type="button" data-image="screenshots/legacy-modernization.svg" data-title="Legacy modernization screenshot">
                             <img src="screenshots/legacy-modernization.svg" alt="Diagram of PHP 5 to PHP 8 and MySQL 5.7 to 8.4 modernization" class="portfolio-image">
