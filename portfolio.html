@@ -676,7 +676,7 @@
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
-                                <span>Production page load dropped from 5&ndash;7 seconds to about 1 second. SQL statements per page load went from about 2,650 to 183 (&minus;93%), and MySQL connections per page from 118 to 1. The rendered HTML was verified byte-for-byte identical to baseline at the end of every round, so the page looks and behaves exactly the same to users while doing a fraction of the database work.</span>
+                                <span>Production page load dropped from 5&ndash;7 seconds to about 1 second. SQL statements per page load went from about 2,650 to 183 (&minus;93%), and the 118 dedicated <code>mysqli</code> opens the manifest hot path used to make collapsed into the shared PDO handle the page already had open. The rendered HTML was verified byte-for-byte identical to baseline at the end of every round, so the page looks and behaves exactly the same to users while doing a fraction of the database work. Re-validated end-to-end against a 244-sub-reservation outlier group on production data, where the same code took the page from about 10 seconds to about 3 seconds and from roughly 11,800 SQL statements per render to about 2,400 &mdash; still byte-identical &mdash; confirming the wins scale to the worst real-world cases.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">PHP</span>

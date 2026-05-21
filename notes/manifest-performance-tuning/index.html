@@ -237,7 +237,7 @@
 
             <p>The Tourbot manifest page is the operational document staff print before every trip &mdash; passengers, payments, waivers, payment schedules, and the full cancellation history, all rolled up in one render for a group reservation. Production loads were taking 5&ndash;7 seconds, and the page is hit constantly: every manifest review, every expense check, every pre-trip print.</p>
 
-            <p>I spent a few days giving it a profile-driven performance pass. After six rounds of changes, production loads are 0.9&ndash;1.1 seconds. SQL statements per page load dropped from around 2,650 to 183. MySQL connections opened per page dropped from 118 to 1. The HTML output is byte-identical to the original.</p>
+            <p>I spent a few days giving it a profile-driven performance pass. After six rounds of changes, production loads are 0.9&ndash;1.1 seconds. SQL statements per page load dropped from around 2,650 to 183. The 118 dedicated <code>mysqli</code> opens the manifest hot path used to make collapsed into the shared PDO handle the page already had open. The HTML output is byte-identical to the original.</p>
 
             <h2>The loop</h2>
 
