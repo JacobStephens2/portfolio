@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Six Rounds of Profiling: Cutting a 7-Second Page to 1 Second | Jacob Stephens</title>
+    <meta name="description" content="A profile-driven performance pass on Tourbot's group manifest page, cutting load time from 5-7 seconds to about 1 second and SQL statements per request from 2,650 to 183.">
+    <meta property="og:title" content="Six Rounds of Profiling: Cutting a 7-Second Page to 1 Second">
+    <meta property="og:description" content="A profile-driven performance pass on Tourbot's group manifest page, cutting load time from 5-7 seconds to about 1 second and SQL statements per request from 2,650 to 183.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/notes/manifest-performance-tuning/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Six Rounds of Profiling: Cutting a 7-Second Page to 1 Second">
+    <meta name="twitter:description" content="A profile-driven performance pass on Tourbot's group manifest page.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f6f1e8;
+            --panel: rgba(255, 252, 246, 0.88);
+            --text: #181512;
+            --muted: #625a52;
+            --line: rgba(24, 21, 18, 0.12);
+            --accent: #9b4d24;
+            --shadow: 0 24px 60px rgba(45, 32, 18, 0.12);
+            --code-bg: rgba(24, 21, 18, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(155, 77, 36, 0.15), transparent 24%),
+                linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+            animation: fadeInUp 0.75s ease-out;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+            border-bottom: 1px solid transparent;
+            transition: color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--text);
+            border-color: var(--text);
+        }
+
+        article.note {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            padding: 2.4rem 2.2rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(2rem, 4vw, 2.9rem);
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .meta strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(155, 77, 36, 0.35);
+            transition: border-color 0.25s ease, color 0.25s ease;
+        }
+
+        a:hover,
+        a:focus-visible {
+            border-color: var(--accent);
+        }
+
+        .ai-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: rgba(24, 21, 18, 0.04);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            article.note {
+                padding: 1.6rem 1.35rem;
+                border-radius: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/notes/" class="back-link">&larr; All notes</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; Performance</div>
+            <h1 class="title">Six Rounds of Profiling: Cutting a 7-Second Page to 1 Second</h1>
+            <p class="meta"><strong>May 21, 2026</strong> &middot; ~900 words &middot; Tourbot manifest page (group reservations)</p>
+
+            <p>The Tourbot manifest page is the operational document staff print before every trip &mdash; passengers, payments, waivers, payment schedules, and the full cancellation history, all rolled up in one render for a group reservation. Production loads were taking 5&ndash;7 seconds, and the page is hit constantly: every manifest review, every expense check, every pre-trip print.</p>
+
+            <p>I spent a few days giving it a profile-driven performance pass. After six rounds of changes, production loads are 0.9&ndash;1.1 seconds. SQL statements per page load dropped from around 2,650 to 183. MySQL connections opened per page dropped from 118 to 1. The HTML output is byte-identical to the original.</p>
+
+            <h2>The loop</h2>
+
+            <p>Every round followed the same loop:</p>
+
+            <ol>
+                <li>Run an xdebug profile of <code>manifest.php</code> from the CLI with a wrapper that sets <code>$_REQUEST</code>, includes the page, and writes a cachegrind file.</li>
+                <li>Use <code>callgrind_annotate</code> plus a small Python script to pick the dominant call site or N+1 pattern.</li>
+                <li>Apply a surgical fix &mdash; whatever the profile pointed to, and nothing else.</li>
+                <li>Re-run the profile and diff the rendered HTML against the original to confirm zero behavioral change.</li>
+                <li>Repeat.</li>
+            </ol>
+
+            <p>The byte-identical HTML diff was the cheapest possible regression test. Six rounds, six confirmations. Anything that changed the output stopped the round until I understood why.</p>
+
+            <h2>What was actually slow</h2>
+
+            <p>The first profile was the most useful one. It showed a few patterns that, in retrospect, were obvious once named:</p>
+
+            <p>One hundred and eighteen fresh MySQL connections per page load. The <code>Booking</code> constructor was calling a payment-methods helper that opened a brand-new <code>mysqli</code> connection instead of reusing the shared PDO handle the rest of the app uses. Switching that one call to the shared handle was a 490 ms win &mdash; about 12% of the request, from a single line of code.</p>
+
+            <p>Fifty-two <code>Price_statement</code> instances, each firing roughly thirty small queries. A page that displays one row per passenger had a price-statement object per row, and each object was independently re-fetching the same payment, accounts-pay, credit-card-fee, insurance, and item rows for the same group.</p>
+
+            <p>A waiver-completeness check that built a full <code>Booking</code> object per passenger just to read one column.</p>
+
+            <p>A reservation-history query that filtered with <code>Action LIKE '%Auto cancellation by payment notification program%'</code>. Leading wildcards can't use an index, so MySQL was fetching every row in the IN-predicate and applying the LIKE in memory.</p>
+
+            <h2>The biggest lever: batched in-request prefetch</h2>
+
+            <p>The first two rounds were small caches, request-scope memoization, and the connection fix. The third round was the structural one.</p>
+
+            <p>I added a <code>Price_statement::prefetch(array $resNums)</code> method that runs about a dozen batched <code>WHERE &hellip; IN (&hellip;)</code> queries once, and stores the results in static caches keyed by reservation number. Each instance's old per-row queries got replaced with cache lookups that fall back to the original per-instance query when the cache wasn't warmed. <code>Manifest::__construct</code> warms the cache once, before any per-passenger work starts. Non-manifest callers &mdash; cancellation analysis, payment-reminder previews, the price-statement viewer &mdash; keep working unchanged.</p>
+
+            <p>One subtlety: the gross-total loop mutates a price-statement field on family-plan rows, so the cache returns clones, not references. Without that, the cache would have been corrupted for downstream consumers reading from it later in the request. That kind of detail is what makes byte-identical-output diffing such a useful regression test &mdash; you find these problems immediately, not three weeks later when a manager prints a manifest with weird totals.</p>
+
+            <p>Rounds 4 and 5 extended the same pattern. The payment-schedule helper got the prefetch treatment too. A memoization key that had been keyed by sub-reservation number got switched to be keyed by the resolved master reservation &mdash; 52 sub-reservations sharing a single master collapsed from 52 DB hits to 1. The waiver-completeness check moved its expensive lookups inside the international-trip branch that actually used them.</p>
+
+            <h2>The one schema change</h2>
+
+            <p>Round 6 was the only schema-level change in the pass. The leading-wildcard LIKE in the cancellation-history query wasn't going to get faster with smarter SQL &mdash; that predicate cannot use an index. So I added an <code>Action_Type</code> column to <code>tblHistory</code> and <code>tblHistoryArchive</code>, with a composite index on <code>(Action_Type, ResNum)</code>, and backfilled the existing rows. The write side &mdash; one helper that runs on every history insert &mdash; derives the right value automatically, so the cron jobs that produce these rows now classify them at write time.</p>
+
+            <p>The read side replaced the two <code>Action LIKE '%&hellip;%'</code> predicates with <code>Action_Type = 'auto_cancel'</code>. EXPLAIN rows examined per ResNum: 4,165 to 1.</p>
+
+            <h2>What I'd take with me</h2>
+
+            <p>A few patterns from this work that I'd reach for again:</p>
+
+            <p><strong>Profile first, and only fix what's hot.</strong> Every change in this pass is justified by a specific number from a cachegrind output. The single biggest win was a one-line change to a payment-methods helper, and it would have been hard to find without a profile. Speculative refactors don't help.</p>
+
+            <p><strong>Byte-identical output diffing is the cheapest regression test you can have on a read-only page.</strong> It catches cache-mutation bugs, missing edge-case branches, and subtle reordering instantly. I'd want this on every performance pass I do on a render path.</p>
+
+            <p><strong>Batched cache plus per-row fallback is low-risk.</strong> Adding a prefetch layer with a fall-through to the original query meant the manifest hot path could use batched data while every other caller of the same classes kept working unchanged. No flag day, no coordinated migration.</p>
+
+            <p><strong>Memoize by the right key.</strong> A memo keyed by sub-reservation that should have been keyed by master was technically correct but functionally useless &mdash; it never deduped anything because the inputs were always distinct. Memoization is only useful when the cache key matches the function's actual dependency surface.</p>
+
+            <div class="ai-note">
+                Drafted from my profiling reports and commit notes with help from Claude. The work and the decisions are mine; the prose is collaborative.
+            </div>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
