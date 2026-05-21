@@ -662,6 +662,38 @@
                         </div>
                     </article>
 
+                    <article class="portfolio-item" id="manifest-performance-tuning">
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Tourbot Manifest Performance Tuning</h3>
+                            <p class="portfolio-summary">A six-round, profile-driven performance pass on Tourbot's group manifest page — the operational document staff print before every trip — taking page loads from 5&ndash;7 seconds down to about 1 second by eliminating N+1 query patterns, batching in-request prefetches across passengers, and adding a targeted history-table schema and index change.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>The manifest page rolls up everything operations needs about a group reservation in one render — passengers, payments, waivers, payment schedules, and the cancellation history. Each load was firing roughly 2,650 SQL statements and opening 118 fresh MySQL connections, because the constructors for `Booking`, `Price_statement`, and `ReturnPaySked` each ran their own helper queries per row of a 50-passenger group. The slowness compounded across every manifest review, expense check, and pre-trip print, and the load on the database was avoidable repeat work.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>Six rounds of profile-driven changes, each starting from an xdebug cachegrind capture and ending with a byte-identical HTML diff against the original. Collapsed 118 per-request MySQL connections into one by routing a stray `new mysqli()` through the shared PDO handle. Made `Booking::__construct` skippable for child-row loads so 50 passengers could be hydrated by one batched `IN(&hellip;)` query rather than 50 sets of constructor helpers. Built a `Price_statement::prefetch()` layer — 13 static caches and a dozen batched `WHERE &hellip; IN (&hellip;)` queries warmed once before the per-passenger loop, with per-instance fallbacks so non-manifest callers kept working unchanged. Extended the same pattern to `ReturnPaySked` and `Waiver::isComplete`. Replaced a leading-wildcard `Action LIKE '%&hellip;%'` predicate in the cancellation-history query with a new `Action_Type` column and composite index, dropping EXPLAIN's rows-examined per ResNum from 4,165 to 1.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>Production page load dropped from 5&ndash;7 seconds to about 1 second. SQL statements per page load went from about 2,650 to 183 (&minus;93%), and MySQL connections per page from 118 to 1. The rendered HTML was verified byte-for-byte identical to baseline at the end of every round, so the page looks and behaves exactly the same to users while doing a fraction of the database work.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">PHP</span>
+                                <span class="portfolio-tag">MySQL</span>
+                                <span class="portfolio-tag">xdebug</span>
+                                <span class="portfolio-tag">Profiling</span>
+                                <span class="portfolio-tag">Query Optimization</span>
+                                <span class="portfolio-tag">Schema &amp; Indexing</span>
+                                <span class="portfolio-tag">Performance</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
                     <article class="portfolio-item" id="performance-tuning">
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Tourbot Alert Performance Tuning</h3>
