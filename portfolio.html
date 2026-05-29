@@ -248,6 +248,39 @@
             color: var(--text);
         }
 
+        .portfolio-collapse {
+            display: grid;
+            gap: 0.95rem;
+            max-height: 2000px;
+            transition: max-height 0.4s ease;
+        }
+
+        .portfolio-collapse.is-collapsed {
+            max-height: 9.5rem;
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+        }
+
+        .read-more-btn {
+            justify-self: start;
+            background: none;
+            border: 0;
+            padding: 0;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.84rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            transition: color 0.2s ease;
+        }
+
+        .read-more-btn:hover {
+            text-decoration: underline;
+        }
+
         .portfolio-tags {
             display: flex;
             flex-wrap: wrap;
@@ -1200,6 +1233,40 @@
         });
 
         document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Collapse long card descriptions behind a "Read more" toggle so every
+        // card presents at a similar height. Blocks stay in place when expanded.
+        (function () {
+            const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            const COLLAPSED_REM = 9.5;
+            document.querySelectorAll('.portfolio-content').forEach((content) => {
+                const summary = content.querySelector('.portfolio-summary');
+                const blocks = content.querySelectorAll('.portfolio-block');
+                if (!summary || !blocks.length) return;
+
+                const wrap = document.createElement('div');
+                wrap.className = 'portfolio-collapse';
+                content.insertBefore(wrap, summary);
+                wrap.appendChild(summary);
+                blocks.forEach((b) => wrap.appendChild(b));
+
+                // Only add a toggle when the content is actually taller than the clamp.
+                if (wrap.scrollHeight <= COLLAPSED_REM * remPx + 24) return;
+
+                wrap.classList.add('is-collapsed');
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'read-more-btn';
+                btn.textContent = 'Read more';
+                btn.setAttribute('aria-expanded', 'false');
+                btn.addEventListener('click', () => {
+                    const collapsed = wrap.classList.toggle('is-collapsed');
+                    btn.textContent = collapsed ? 'Read more' : 'Read less';
+                    btn.setAttribute('aria-expanded', String(!collapsed));
+                });
+                wrap.after(btn);
+            });
+        })();
     </script>
 </body>
 </html>
