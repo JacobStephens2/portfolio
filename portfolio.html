@@ -417,7 +417,7 @@
 <body>
     <div class="container">
         <div class="topbar">
-            <a href="/" class="back-link">Back to home</a>
+            <a href="https://stephens.page/" class="back-link">Back to home</a>
             <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
         </div>
 
@@ -528,18 +528,18 @@
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Tourbot Chat</h3>
-                            <p class="portfolio-summary">An AI-powered chat system built with OpenClaw and Claude, giving managers at Educational Travel Adventures natural-language access to business intelligence and the ability to safely modify the platform themselves.</p>
+                            <p class="portfolio-summary">An AI-powered chat system built with OpenClaw and Claude, giving managers at Educational Travel Adventures natural-language access to business intelligence and the ability to safely prototype platform changes themselves — each in an isolated, sandboxed copy of Tourbot.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
                                 <span>Managers needed to answer complex business questions — revenue breakdowns, booking trends, vendor performance — without waiting on developer time. They also wanted to experiment with reports and workflows on their own terms, without risking the production system.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>A multi-tenant infrastructure where each manager gets an isolated Tourbot instance (Docker container) with their own Claude-powered OpenClaw agent. Agents can query a nightly-synced replica of the production database, run analysis, and even modify PHP code — all sandboxed per-manager with allowlist-controlled command execution, dedicated database users, and a git-based review gate before any changes reach production.</span>
+                                <span>A multi-tenant infrastructure where each manager gets an isolated Tourbot instance — its own Docker container fronted by Traefik — with a dedicated Claude-powered OpenClaw agent. Agents query a nightly-synced replica of the production database, run analysis, generate reports, and even modify PHP code, all sandboxed per-manager: allowlist-controlled command execution, dedicated least-privilege database users, and a git-based review gate so nothing reaches production unreviewed. Each container is provisioned from a shared compose definition, so standing up a new manager sandbox is a one-command operation.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
-                                <span>Non-technical managers can independently explore business data, generate custom reports, and prototype workflow changes through conversation — while the system enforces isolation, read-only data access, and code review boundaries that keep production safe.</span>
+                                <span>Non-technical managers can independently explore business data, generate custom reports, and prototype workflow changes through plain conversation — no developer in the loop for routine questions — while the system enforces per-manager isolation, read-only data access, and code-review boundaries that keep the production platform safe from accidental or unreviewed change.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">OpenClaw</span>
@@ -565,11 +565,11 @@
                             <p class="portfolio-summary">A Python and Flask service running at status.etadventures.com that probes Educational Travel Adventures' fleet of web, database, and cron servers and renders a single-page health view — paired with a hardened Linux host that lets a Claude Code agent operate safely across that infrastructure.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
-                                <span>A dozen production and supporting servers — MySQL 8 and 5.7, Apache, ACH cron processing, Docker-hosted manager sandboxes, an asset host — with no single place to see whether they were reachable, which probes were green, and what was degrading. And no clean way to give an AI agent multi-server access without leaking credentials or muddying audit logs.</span>
+                                <span>A dozen production and supporting servers — MySQL 8 and 5.7, Apache, ACH cron processing, Docker-hosted manager sandboxes, an asset host — with no single place to see what was reachable, green, or degrading, and no clean way to give an AI agent multi-server access without leaking credentials or muddying audit logs.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>A Flask app behind Caddy (TLS via Let's Encrypt) running under gunicorn and systemd, with a background thread sweeping TCP, HTTP, and MySQL probes every 60 seconds against an inventory mirrored from the company's infrastructure document. A two-step gate — bcrypt-hashed shared password plus single-use SQLite-backed magic-link tokens emailed only to whitelisted addresses — protects the dashboard. The same VM hosts a `conductor` service-account pipeline: 1Password service-account secrets injected at launch via `op inject`, MySQL grants pinned to the host's IP, and a sudo-elevated wrapper so engineers trigger the agent without picking up its credentials themselves. Auditing reads as "the orchestrator did X," not "Engineer Y did X via the orchestrator."</span>
+                                <span>A Flask app behind Caddy and gunicorn that sweeps TCP, HTTP, and MySQL probes every 60 seconds across the fleet, with deploy controls, fleet-wide tmux management, and a web terminal — all gated by single-use magic-link tokens. The same VM runs a hardened service-account pipeline: 1Password secrets injected at launch via <code>op inject</code>, MySQL grants pinned to the host's IP, and a sudo-elevated wrapper so engineers trigger the agent without ever handling its credentials. Auditing reads as "the orchestrator did X," not "Engineer Y did X via it."</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
@@ -665,18 +665,18 @@
                     <article class="portfolio-item" id="manifest-performance-tuning">
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Tourbot Manifest Performance Tuning</h3>
-                            <p class="portfolio-summary">A six-round, profile-driven performance pass on Tourbot's group manifest page — the operational document staff print before every trip — taking page loads from 5&ndash;7 seconds down to about 1 second by eliminating N+1 query patterns, batching in-request prefetches across passengers, and adding a targeted history-table schema and index change.</p>
+                            <p class="portfolio-summary">A six-round, profile-driven performance pass on Tourbot's group manifest page — the document staff print before every trip — taking page loads from 5&ndash;7 seconds to about 1 second by eliminating N+1 queries, batching in-request prefetches, and adding a targeted history-table index.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
-                                <span>The manifest page rolls up everything operations needs about a group reservation in one render — passengers, payments, waivers, payment schedules, and the cancellation history. Each load was firing roughly 2,650 SQL statements and opening 118 fresh MySQL connections, because the constructors for `Booking`, `Price_statement`, and `ReturnPaySked` each ran their own helper queries per row of a 50-passenger group. The slowness compounded across every manifest review, expense check, and pre-trip print, and the load on the database was avoidable repeat work.</span>
+                                <span>The manifest page renders everything operations needs about a group reservation in one shot — passengers, payments, waivers, schedules, cancellation history. Each load fired ~2,650 SQL statements and opened 118 fresh MySQL connections, because the <code>Booking</code>, <code>Price_statement</code>, and <code>ReturnPaySked</code> constructors each ran helper queries per row of a 50-passenger group — almost all of it avoidable repeat work.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>Six rounds of profile-driven changes, each starting from an xdebug cachegrind capture and ending with a byte-identical HTML diff against the original. Collapsed 118 per-request MySQL connections into one by routing a stray `new mysqli()` through the shared PDO handle. Made `Booking::__construct` skippable for child-row loads so 50 passengers could be hydrated by one batched `IN(&hellip;)` query rather than 50 sets of constructor helpers. Built a `Price_statement::prefetch()` layer — 13 static caches and a dozen batched `WHERE &hellip; IN (&hellip;)` queries warmed once before the per-passenger loop, with per-instance fallbacks so non-manifest callers kept working unchanged. Extended the same pattern to `ReturnPaySked` and `Waiver::isComplete`. Replaced a leading-wildcard `Action LIKE '%&hellip;%'` predicate in the cancellation-history query with a new `Action_Type` column and composite index, dropping EXPLAIN's rows-examined per ResNum from 4,165 to 1.</span>
+                                <span>Six rounds, each starting from an xdebug cachegrind capture and ending with a byte-identical HTML diff. Collapsed 118 per-request MySQL connections into one via the shared PDO handle. Made <code>Booking::__construct</code> skippable so 50 passengers hydrate from a single batched <code>IN(…)</code> query, and added a <code>Price_statement::prefetch()</code> layer — static caches and batched queries warmed once per request, with per-instance fallbacks for other callers. Replaced a leading-wildcard <code>LIKE</code> in the cancellation-history query with an <code>Action_Type</code> column and composite index, cutting EXPLAIN's rows-examined from 4,165 to 1.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
-                                <span>Production page load dropped from 5&ndash;7 seconds to about 1 second. SQL statements per page load went from about 2,650 to 183 (&minus;93%), and the 118 dedicated <code>mysqli</code> opens the manifest hot path used to make collapsed into the shared PDO handle the page already had open. The rendered HTML was verified byte-for-byte identical to baseline at the end of every round, so the page looks and behaves exactly the same to users while doing a fraction of the database work. Re-validated end-to-end against a 244-sub-reservation outlier group on production data, where the same code took the page from about 10 seconds to about 3 seconds and from roughly 11,800 SQL statements per render to about 2,400 &mdash; still byte-identical &mdash; confirming the wins scale to the worst real-world cases.</span>
+                                <span>Production page load dropped from 5–7s to about 1s, SQL statements per request from ~2,650 to 183 (&minus;93%), with rendered HTML byte-identical at every step. Re-validated on a 244-sub-reservation outlier group: ~10s → ~3s and ~11,800 statements → ~2,400, still byte-identical — so the wins scale to worst-case data.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">PHP</span>
@@ -700,15 +700,15 @@
                             <p class="portfolio-summary">A performance pass on Tourbot's internal alerts page — a heavily-trafficked screen that staff hit repeatedly throughout the day — taking load times from 5–10 seconds down to under 1 second by replacing per-request query fan-out with a pre-computed cache table.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
-                                <span>The alerts page calculated every alert from scratch on every request. Each load fanned out into 100+ MySQL queries against the same booking, item, and product-alert tables, with no reuse across users. With every staff member hitting it many times a day, 5–10 second loads were normal, the database was carrying a lot of avoidable repeat work, and the slowness was eroding trust in the rest of Tourbot.</span>
+                                <span>The alerts page recalculated every alert from scratch on each request, fanning out into 100+ MySQL queries against the same booking, item, and product-alert tables with no reuse across users. With staff hitting it many times a day, 5–10 second loads were normal and the slowness was eroding trust in the rest of Tourbot.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>Started by profiling the request path and going after the worst offenders: added composite indexes covering the booking / item / product-alert joins, and rewrote per-reservation loops into batched IN&nbsp;(…) queries to kill the N+1 pattern. Then went further and pre-computed the alerts themselves into a dedicated MySQL cache table, populated by a background PHP daemon, so the page itself just reads pre-shaped rows. Invalidation is layered — writes in the relevant flows (booking uploads, item cancellations, alert state changes) kick off a per-reservation recompute in the background, page loads opportunistically refresh stale caches against a one-hour freshness window, and a nightly cron does a full rebuild. The visible behavior of the page didn't change, so nothing for users to relearn.</span>
+                                <span>Profiled the request path and hit the worst offenders first: composite indexes on the booking / item / product-alert joins, and per-reservation loops rewritten as batched IN&nbsp;(…) queries to kill the N+1 pattern. Then went further — pre-computed the alerts into a dedicated MySQL cache table populated by a background PHP daemon, so the page just reads pre-shaped rows. Invalidation is layered: writes trigger per-reservation recomputes, page loads refresh stale caches against a one-hour window, and a nightly cron rebuilds fully. Visible behavior didn't change.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
-                                <span>Page loads dropped from 5–10 seconds to under 1 second, and the per-page query count dropped from over 100 to a small handful — most of the work now happens off the request path. The same cache table later became the read source for the SPM group page and the sales dashboard, so the win rippled past the original page.</span>
+                                <span>Page loads dropped from 5–10 seconds to under 1 second and per-page queries from 100+ to a handful, with most of the work now off the request path. The same cache table later became the read source for the SPM group page and the sales dashboard, so the win rippled outward.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">PHP</span>
@@ -733,11 +733,11 @@
                             <p class="portfolio-summary">A multi-year, codebase-wide modernization of Educational Travel Adventures' platform — PHP 5.6 to PHP 8, MySQL 5.7 to MySQL 8.4 LTS, and CentOS 7 to Rocky Linux 9 — done in production, without freezing the company.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
-                                <span>A 40-person travel business was running on a stack whose security and support runway was visibly running out: PHP 5.6 long past EOL, MySQL 5.7 past its window, and CentOS 7 about to age out. Every other piece of the platform — payments, ACH, the customer portal, internal Tourbot, the guides PWA — had to keep shipping the entire time.</span>
+                                <span>A 40-person travel business was running on a stack whose support runway was visibly running out: PHP 5.6 long past EOL, MySQL 5.7 past its window, CentOS 7 aging out. Every other piece of the platform — payments, ACH, the customer portal, internal Tourbot, the guides PWA — had to keep shipping throughout.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>Directed and executed an enterprise-wide PHP 5 → 8 migration across the codebase, removing magic quotes, deprecated `mysql_*` calls, and dynamic-property warnings; declaring properties on long-lived models; tightening type signatures. Wrote and shipped the MySQL 5.7 → 8.4 migration plan and the CentOS 7 → Rocky Linux 9 cutover, including production deployment notes, schema-compatibility audits, and per-server runbooks. Coordinated cross-database export/import for customer accounts, dual-running the old and new database servers during transition. Modernized server roles in step (db deprecation, ACH host migration, manager-tourbot Docker host). Mentored the developer working alongside me on the same codebase.</span>
+                                <span>Executed an enterprise-wide PHP 5 → 8 migration across the codebase: removed magic quotes and deprecated <code>mysql_*</code> calls, declared properties on long-lived models, tightened type signatures. Shipped the MySQL 5.7 → 8.4 migration plan and the CentOS 7 → Rocky Linux 9 cutover, with deployment notes, schema-compatibility audits, and per-server runbooks. Coordinated cross-database export/import for customer accounts, dual-running old and new database servers during transition. Mentored the developer working alongside me on the same codebase.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
@@ -836,6 +836,65 @@
                     <p>A curated set of personal builds. The broader archive lives at <a href="https://blog.stephens.page/projects/" class="portfolio-link">blog.stephens.page/projects/</a>.</p>
                 </div>
                 <div class="portfolio-grid">
+                    <article class="portfolio-item" id="creighton-tracker">
+                        <button class="image-button" type="button" data-image="screenshots/creightontracker.com.png" data-images="screenshots/creightontracker.com.png,screenshots/creightontracker.com-light.png" data-title="Creighton Cycle Tracker screenshot">
+                            <img src="screenshots/creightontracker.com.png" alt="Creighton Cycle Tracker application" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Creighton Cycle Tracker</h3>
+                            <p class="portfolio-summary">A fertility tracking PWA built around the Creighton Model — offline support, auto-computed charting, syncing, and provider sharing.</p>
+                            <div class="portfolio-block">
+                                <strong>Why it matters</strong>
+                                <span>Product thinking around a sensitive, real-world workflow where accuracy, offline access, and long-term usability are non-negotiable. Found organically through search and used by real people beyond me.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What stands out</strong>
+                                <span>Local-first architecture, server sync, and domain-specific interface logic — not generic CRUD.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">TypeScript</span>
+                                <span class="portfolio-tag">Vite</span>
+                                <span class="portfolio-tag">Express</span>
+                                <span class="portfolio-tag">SQLite</span>
+                                <span class="portfolio-tag">PWA</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://creightontracker.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/JacobStephens2/CreightonTrackerClient" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="portfolio-item" id="cascade">
+                        <button class="image-button" type="button" data-image="screenshots/cascade.stephens.page.png" data-title="Cascade screenshot">
+                            <img src="screenshots/cascade.stephens.page.png" alt="Cascade waterfall white-noise player" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Cascade</h3>
+                            <p class="portfolio-summary">A waterfall white-noise player for focus and sleep — one headless Rust core driving six native shells: web (PWA), Android, macOS, Windows, iOS, and watchOS.</p>
+                            <div class="portfolio-block">
+                                <strong>Why it matters</strong>
+                                <span>A daily-use focus/sleep sound app, and an architecture kata: prove a single Rust core can power genuinely native UIs across every major platform without a web wrapper. The core owns all behavior — state, pomodoro/sleep timers, custom durations, volume, persisted settings, and time via explicit tick events — and never touches an audio API.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What stands out</strong>
+                                <span>A coarse <code>dispatch(command) &rarr; {snapshot, effects}</code> boundary serialized as one JSON wire shape across four binding mechanisms — wasm-bindgen (web), UniFFI (Kotlin &amp; Swift), and a hand-rolled C ABI + P/Invoke (C#). GitHub Actions compiles the Windows and Apple shells in CI; the watch is a thin WatchConnectivity remote. Native media integration per platform (Web Audio, Media3, AVAudioEngine, SMTC) plus an installable, offline PWA.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Rust</span>
+                                <span class="portfolio-tag">WebAssembly</span>
+                                <span class="portfolio-tag">React</span>
+                                <span class="portfolio-tag">UniFFI</span>
+                                <span class="portfolio-tag">Jetpack Compose</span>
+                                <span class="portfolio-tag">SwiftUI</span>
+                                <span class="portfolio-tag">WinUI 3</span>
+                                <span class="portfolio-tag">PWA</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://cascade.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/JacobStephens2/cascade" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Source</a>
+                            </div>
+                        </div>
+                    </article>
                     <article class="portfolio-item">
                         <button class="image-button" type="button" data-image="screenshots/clowder.stephens.page.png" data-title="Clowder & Crest screenshot">
                             <img src="screenshots/clowder.stephens.page.png" alt="Clowder & Crest cat guild management game" class="portfolio-image">
@@ -890,35 +949,6 @@
                             <div class="portfolio-links">
                                 <a href="https://magisterium.stephens.page/" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
                                 <a href="https://github.com/JacobStephens2/magisterium_mcp_server" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/creightontracker.com.png" data-images="screenshots/creightontracker.com.png,screenshots/creightontracker.com-light.png" data-title="Creighton Cycle Tracker screenshot">
-                            <img src="screenshots/creightontracker.com.png" alt="Creighton Cycle Tracker application" class="portfolio-image">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">Creighton Cycle Tracker</h3>
-                            <p class="portfolio-summary">A fertility tracking PWA built around the Creighton Model — offline support, auto-computed charting, syncing, and provider sharing.</p>
-                            <div class="portfolio-block">
-                                <strong>Why it matters</strong>
-                                <span>Product thinking around a sensitive, real-world workflow where accuracy, offline access, and long-term usability are non-negotiable.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What stands out</strong>
-                                <span>Local-first architecture, server sync, and domain-specific interface logic — not generic CRUD.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">TypeScript</span>
-                                <span class="portfolio-tag">Vite</span>
-                                <span class="portfolio-tag">Express</span>
-                                <span class="portfolio-tag">SQLite</span>
-                                <span class="portfolio-tag">PWA</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://creightontracker.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/CreightonTrackerClient" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>
                     </article>
