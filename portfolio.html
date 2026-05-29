@@ -870,14 +870,14 @@
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Cascade</h3>
-                            <p class="portfolio-summary">A waterfall white-noise player for focus and sleep — one headless Rust core driving six native shells: web (PWA), Android, macOS, Windows, iOS, and watchOS.</p>
+                            <p class="portfolio-summary">A waterfall white-noise player for focus and sleep — shipped as web (PWA) and Android shells driven by one headless Rust core, with the same core architected to extend to macOS, Windows, iOS, and watchOS.</p>
                             <div class="portfolio-block">
                                 <strong>Why it matters</strong>
-                                <span>A daily-use focus/sleep sound app, and an architecture kata: prove a single Rust core can power genuinely native UIs across every major platform without a web wrapper. The core owns all behavior — state, pomodoro/sleep timers, custom durations, volume, persisted settings, and time via explicit tick events — and never touches an audio API.</span>
+                                <span>A daily-use focus/sleep sound app, and an architecture kata: prove a single Rust core can power genuinely native UIs across platforms without a web wrapper. The core owns all behavior — state, pomodoro/sleep timers, custom durations, volume, persisted settings, and time via explicit tick events — and never touches an audio API.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What stands out</strong>
-                                <span>A coarse <code>dispatch(command) &rarr; {snapshot, effects}</code> boundary serialized as one JSON wire shape across four binding mechanisms — wasm-bindgen (web), UniFFI (Kotlin &amp; Swift), and a hand-rolled C ABI + P/Invoke (C#). GitHub Actions compiles the Windows and Apple shells in CI; the watch is a thin WatchConnectivity remote. Native media integration per platform (Web Audio, Media3, AVAudioEngine, SMTC) plus an installable, offline PWA.</span>
+                                <span>A coarse <code>dispatch(command) &rarr; {snapshot, effects}</code> boundary serialized as one JSON wire shape, so every shell is a thin native UI over shared Rust logic. Shipped today: the web (PWA) and Android shells, bound via wasm-bindgen and UniFFI (Kotlin) with native media integration (Web Audio, Media3) and an installable, offline PWA. The same boundary is designed to extend to the Apple and Windows shells (UniFFI/Swift, a hand-rolled C ABI + P/Invoke) — in progress.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">Rust</span>
@@ -885,8 +885,6 @@
                                 <span class="portfolio-tag">React</span>
                                 <span class="portfolio-tag">UniFFI</span>
                                 <span class="portfolio-tag">Jetpack Compose</span>
-                                <span class="portfolio-tag">SwiftUI</span>
-                                <span class="portfolio-tag">WinUI 3</span>
                                 <span class="portfolio-tag">PWA</span>
                             </div>
                             <div class="portfolio-links">
