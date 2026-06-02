@@ -509,13 +509,11 @@
                                 <span class="portfolio-tag">MySQL</span>
                                 <span class="portfolio-tag">JavaScript</span>
                                 <span class="portfolio-tag">jQuery</span>
-                                <span class="portfolio-tag">Monetra</span>
                                 <span class="portfolio-tag">Twilio</span>
                                 <span class="portfolio-tag">QuickBooks</span>
                                 <span class="portfolio-tag">Operations</span>
                             </div>
                             <div class="portfolio-links">
-                                <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
@@ -590,19 +588,16 @@
                     </article>
 
                     <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/status.etadventures.com.png" data-title="ETA Status Dashboard screenshot">
-                            <img src="screenshots/status.etadventures.com.png" alt="ETA status dashboard with live probe results across the company's servers" class="portfolio-image">
-                        </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">ETA Orchestration &amp; Status</h3>
-                            <p class="portfolio-summary">A Python and Flask service running at status.etadventures.com that probes Educational Travel Adventures' fleet of web, database, and cron servers and renders a single-page health view — paired with a hardened Linux host that lets a Claude Code agent operate safely across that infrastructure.</p>
+                            <p class="portfolio-summary">A Python and Flask service that probes Educational Travel Adventures' fleet of web, database, and cron servers and renders a single-page health view — paired with a hardened Linux host that lets a Claude Code agent operate safely across that infrastructure.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
                                 <span>A dozen production and supporting servers — MySQL 8 and 5.7, Apache, ACH cron processing, Docker-hosted manager sandboxes, an asset host — with no single place to see what was reachable, green, or degrading, and no clean way to give an AI agent multi-server access without leaking credentials or muddying audit logs.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>A Flask app behind Caddy and gunicorn that sweeps TCP, HTTP, and MySQL probes every 60 seconds across the fleet, with deploy controls, fleet-wide tmux management, and a web terminal — all gated by single-use magic-link tokens. The same VM runs a hardened service-account pipeline: 1Password secrets injected at launch via <code>op inject</code>, MySQL grants pinned to the host's IP, and a sudo-elevated wrapper so engineers trigger the agent without ever handling its credentials. Auditing reads as "the orchestrator did X," not "Engineer Y did X via it."</span>
+                                <span>A Flask app behind Caddy and gunicorn that sweeps TCP, HTTP, and MySQL probes every 60 seconds across the fleet, with deploy controls, fleet-wide tmux management, and a web terminal — all gated by single-use magic-link tokens. The same VM runs a hardened service-account pipeline: secrets injected at launch from a managed vault, database grants scoped to least privilege, and a wrapper that lets engineers trigger the agent without ever handling its credentials. Auditing reads as "the orchestrator did X," not "Engineer Y did X via it."</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
@@ -618,9 +613,6 @@
                                 <span class="portfolio-tag">Linux</span>
                                 <span class="portfolio-tag">1Password</span>
                                 <span class="portfolio-tag">Claude Code</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://status.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
                             </div>
                         </div>
                     </article>
@@ -638,7 +630,7 @@
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>Led the rebuild while keeping the existing portal in production. Migrated the credit-card flow across processors (TranSafe, Monetra, NMI) with bank-account encryption and PCI-conscious handling. Re-engineered registration, payment-plan, and refund flows. Modernized the front-end with a Tailwind-based component layer alongside legacy markup. Added in-portal chat, conference-call hooks, and customer-account export/import for cross-database migration. Tightened the API surface and aligned auth with the broader Tourbot platform.</span>
+                                <span>Led the rebuild while keeping the existing portal in production. Migrated the credit-card flow across multiple processors with bank-account encryption and PCI-conscious handling. Re-engineered registration, payment-plan, and refund flows. Modernized the front-end with a Tailwind-based component layer alongside legacy markup. Added in-portal chat, conference-call hooks, and customer-account export/import for cross-database migration. Tightened the API surface and aligned auth with the broader Tourbot platform.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
@@ -649,9 +641,6 @@
                                 <span class="portfolio-tag">MySQL</span>
                                 <span class="portfolio-tag">JavaScript</span>
                                 <span class="portfolio-tag">Tailwind</span>
-                                <span class="portfolio-tag">NMI</span>
-                                <span class="portfolio-tag">TranSafe</span>
-                                <span class="portfolio-tag">Monetra</span>
                                 <span class="portfolio-tag">PCI</span>
                             </div>
                             <div class="portfolio-links">
@@ -667,14 +656,14 @@
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">ACH &amp; NACHA Bank-File Automation</h3>
-                            <p class="portfolio-summary">The cron-driven pipeline that turns scheduled customer payments into NACHA-formatted batch files and submits them to M&amp;T Bank for ACH processing — the system that actually moves the money. Inherited the original implementation; took ownership, modernized the runtime, and kept it running through platform migrations.</p>
+                            <p class="portfolio-summary">The cron-driven pipeline that turns scheduled customer payments into NACHA-formatted batch files and submits them to the bank for ACH processing — the system that actually moves the money. Inherited the original implementation; took ownership, modernized the runtime, and kept it running through platform migrations.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
                                 <span>The ACH side of the business depends on producing correctly-formatted NACHA files, uploading them to the bank on a schedule, and reconciling return files when entries fail. The original cron host was stuck on CentOS 7 and PHP 5.6, the code had drifted from the rest of the platform, and the bank doesn't tolerate malformed batches — a bad file is a failed payment day.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>Took over the bank-file generator and the surrounding cron fleet (`nacha_files_to_upload`, `nacha_returnfiles`, vendor ACH batches, and recurring-payment crons). Modernized the code paths against current PHP, migrated the MySQL backend across versions, added monitoring around the daily cron schedule, and integrated NMI as a routing target for recurring card payments alongside the ACH flow. Kept the bank-facing format and submission cadence rock-steady the entire time.</span>
+                                <span>Took over the bank-file generator and the surrounding cron fleet (`nacha_files_to_upload`, `nacha_returnfiles`, vendor ACH batches, and recurring-payment crons). Modernized the code paths against current PHP, migrated the MySQL backend across versions, added monitoring around the daily cron schedule, and integrated a card-payment processor as a routing target for recurring payments alongside the ACH flow. Kept the bank-facing format and submission cadence rock-steady the entire time.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
@@ -686,7 +675,6 @@
                                 <span class="portfolio-tag">NACHA</span>
                                 <span class="portfolio-tag">ACH</span>
                                 <span class="portfolio-tag">Cron</span>
-                                <span class="portfolio-tag">M&amp;T Bank</span>
                                 <span class="portfolio-tag">Linux</span>
                             </div>
                             <div class="portfolio-links">
@@ -721,7 +709,6 @@
                                 <span class="portfolio-tag">Performance</span>
                             </div>
                             <div class="portfolio-links">
-                                <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
@@ -751,7 +738,6 @@
                                 <span class="portfolio-tag">Performance</span>
                             </div>
                             <div class="portfolio-links">
-                                <a href="https://tourbot.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
