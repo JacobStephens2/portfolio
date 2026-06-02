@@ -445,6 +445,8 @@
                 align-items: flex-start;
             }
         }
+            .cs-callout{display:flex;flex-wrap:wrap;align-items:center;gap:0.75rem;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:0.85rem 1.1rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+        .cs-callout span{color:var(--muted);font-size:0.95rem;}
     </style>
 </head>
 <body>
@@ -484,7 +486,38 @@
                     <h2>Professional Work</h2>
                     <p>Production systems with operational and revenue impact.</p>
                 </div>
+                <div class="cs-callout">
+                    <span>A connected case study tying these systems together &mdash; architecture, the legacy&rarr;modern arc, and engineering highlights.</span>
+                    <a href="/eta-platform.html" class="portfolio-link">Read the ETA Platform case study &rarr;</a>
+                </div>
                 <div class="portfolio-grid">
+                    <article class="portfolio-item" id="prospectforge">
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">ProspectForge</h3>
+                            <p class="portfolio-summary">An internal contact-sourcing platform that replaced a third-party SaaS vendor &mdash; FastAPI and Next.js over PostgreSQL, with a self-hosted scraping stack, on Docker Compose.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>ETA paid for a third-party SaaS tool to find and qualify prospective schools and trip leaders. The recurring cost and limited control argued for an in-house replacement that could feed leads straight into Tourbot.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>A FastAPI backend (SQLAlchemy 2.0, Alembic migrations) on PostgreSQL with a Next.js review UI, plus a self-hosted Firecrawl scraping stack &mdash; composed as a multi-service Docker Compose deployment. Sourced contacts move through a review workflow before export into Tourbot's lead pipeline.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>An owned, extensible sourcing pipeline that removes a SaaS dependency and routes qualified prospects directly into the booking system.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">FastAPI</span>
+                                <span class="portfolio-tag">SQLAlchemy 2.0</span>
+                                <span class="portfolio-tag">PostgreSQL</span>
+                                <span class="portfolio-tag">Next.js</span>
+                                <span class="portfolio-tag">Firecrawl</span>
+                                <span class="portfolio-tag">Docker Compose</span>
+                            </div>
+                        </div>
+                    </article>
+
                     <article class="portfolio-item" id="tourbot">
                         <button class="image-button" type="button" data-image="screenshots/tourbot.etadventures.com.png" data-title="Tourbot screenshot">
                             <img src="screenshots/tourbot.etadventures.com.png" alt="Tourbot reservations and operations platform" class="portfolio-image">
