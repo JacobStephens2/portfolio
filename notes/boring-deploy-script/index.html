@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Boring Deploy Script | Jacob Stephens</title>
+    <meta name="description" content="Why I deploy a single-server PHP app with about 200 lines of bash instead of a hosted CI/CD pipeline, and the guardrails that make the boring choice the right one.">
+    <meta property="og:title" content="The Boring Deploy Script">
+    <meta property="og:description" content="About 200 lines of bash, all guardrails, deploys a single-server PHP app. Choosing the boring tool on purpose, and knowing exactly when you would switch.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/notes/boring-deploy-script/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="The Boring Deploy Script">
+    <meta name="twitter:description" content="About 200 lines of bash, all guardrails, deploys a single-server PHP app. Choosing the boring tool on purpose, and knowing exactly when you would switch.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f6f1e8;
+            --panel: rgba(255, 252, 246, 0.88);
+            --text: #181512;
+            --muted: #625a52;
+            --line: rgba(24, 21, 18, 0.12);
+            --accent: #9b4d24;
+            --shadow: 0 24px 60px rgba(45, 32, 18, 0.12);
+            --code-bg: rgba(24, 21, 18, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(155, 77, 36, 0.15), transparent 24%),
+                linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+            animation: fadeInUp 0.75s ease-out;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+            border-bottom: 1px solid transparent;
+            transition: color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--text);
+            border-color: var(--text);
+        }
+
+        article.note {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            padding: 2.4rem 2.2rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(2rem, 4vw, 2.9rem);
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .meta strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(155, 77, 36, 0.35);
+            transition: border-color 0.25s ease, color 0.25s ease;
+        }
+
+        a:hover,
+        a:focus-visible {
+            border-color: var(--accent);
+        }
+
+        .ai-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: rgba(24, 21, 18, 0.04);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            article.note {
+                padding: 1.6rem 1.35rem;
+                border-radius: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/notes/" class="back-link">&larr; All notes</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; DevOps</div>
+            <h1 class="title">The Boring Deploy Script</h1>
+            <p class="meta"><strong>June 3, 2026</strong> &middot; ~660 words &middot; Single-server PHP deployment</p>
+
+            <p>For a single-server PHP application, I deploy with a shell script. Not a hosted CI/CD pipeline, not a container orchestrator, not a deploy platform - about 200 lines of bash that I can read in one sitting. People sometimes read that as "hasn't gotten around to setting up real CI." It's the opposite: it's a deliberate choice, and this note is really about <em>why you'd choose the boring thing on purpose.</em></p>
+
+            <h2>What the script actually does</h2>
+
+            <p>The job is small and specific: get the right commit onto this one box, atomically, without two deploys colliding or a bad ref going live. So the script is mostly guardrails:</p>
+
+            <ul>
+                <li><strong>Dirty-worktree rejection.</strong> If the live checkout has uncommitted local changes, refuse to deploy. You never want a deploy quietly burying a hotfix someone made on the box at 2 a.m.</li>
+                <li><strong><code>flock</code>-based serialization.</strong> Take an exclusive lock; if another deploy holds it, fail fast instead of interleaving two deploys into a corrupt state.</li>
+                <li><strong>Ancestor-only ref enforcement.</strong> The target commit must be a fast-forward of what's deployed. You cannot accidentally ship a divergent or rewound branch. There's an explicit override flag for the rare intentional case, because a guardrail you can't bypass on purpose becomes a guardrail people route around.</li>
+                <li><strong>Post-deploy healthcheck.</strong> After moving the code, actually hit the app and confirm it serves before declaring success.</li>
+                <li><strong>Rollback pointer.</strong> Record the previous commit and expose a one-command rollback to it. Recovery is "run this," not "figure out what was deployed."</li>
+                <li><strong>A structured deploy log.</strong> Every deploy and every failure appends who, what, and when. When something's weird, the log is the first and usually last place you look.</li>
+            </ul>
+
+            <p>Tests and static checks run separately, in hosted CI on push. Deploy and verify are deliberately split: CI answers "is this commit good?", the deploy script answers "get this good commit onto the box safely." Conflating them is how you end up unable to deploy because a runner is down.</p>
+
+            <h2>Why not "real" CI/CD?</h2>
+
+            <p>Because every tool you add to the release path is a thing that can fail in the release path. A hosted runner means: runner availability is now in your critical path, your deploy secrets live with a third party, and a one-server deploy now makes a network round-trip to go nowhere. For a fleet, blue/green, or a team where many people ship, those costs buy real things - parallelism, a marketplace of actions, audited multi-environment promotion. For one app on one server, they buy mostly overhead.</p>
+
+            <p>The honest trade-off:</p>
+
+            <ul>
+                <li><strong>You give up:</strong> matrix builds, parallelism, the actions ecosystem, multi-environment promotion, and the social proof of a recognizable pipeline.</li>
+                <li><strong>You gain:</strong> zero external dependencies in the release path, a pipeline you can fully read and reason about, and guardrails tailored to exactly your failure modes instead of a tool's defaults.</li>
+            </ul>
+
+            <h2>When I'd change my mind</h2>
+
+            <p>This is the part that makes it an engineering decision rather than a preference. I'd reach for a managed pipeline the moment any of these became true:</p>
+
+            <ul>
+                <li>More than one server, or a need for blue/green or canary releases.</li>
+                <li>A team where several people deploy and the shared mental model frays.</li>
+                <li>A compliance need for audited, gated promotion across environments.</li>
+            </ul>
+
+            <p>None of those are true here, so the boring script wins. The point isn't that shell scripts are better than CI/CD. It's that "what does this specific system need?" beats "what does everyone use?" - and being able to say <em>when</em> you'd switch is what separates a chosen default from a cargo-culted one.</p>
+
+            <h2>The actual lesson</h2>
+
+            <p>The value was never the script. It's the habit of writing down what you give up, what you gain, and the conditions under which you'd decide differently. Do that for your deploy path and you'll do it for your database, your queue, and your architecture - which is most of the job.</p>
+
+            <div class="ai-note">
+                Drafted from my deploy script and working notes with help from Claude. The work and the decisions are mine; the prose is collaborative.
+            </div>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
