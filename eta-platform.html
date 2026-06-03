@@ -622,7 +622,8 @@
                     <div class="cs-row"><b>Server-side deploy script + PHPUnit/CI</b> &mdash; for a single-server PHP app, a guarded shell pipeline (dirty-tree, flock, ancestor-only, healthcheck, one-command rollback) beats a hosted runner; CI runs the suite across PHP 8.1&ndash;8.4.</div>
                     <div class="cs-row"><b>File-based cron registry + drift monitor</b> &mdash; 100-plus scheduled jobs become legible and tamper-evident instead of a black box.</div>
                 </div>
-                <p class="cs-note">Confidentiality: the repositories behind this work are private per employer agreement. Architecture is described here at a high level and omits hostnames, network addresses, credential mechanisms, and vendor specifics.</p>
+                <p class="cs-note">Open source: I upstreamed the MySQL&nbsp;8.4 <code>caching_sha2_password</code> auth-handshake fix this stack needed into <a href="https://github.com/krowinski/php-mysql-replication/pull/148" target="_blank" rel="noopener">php-mysql-replication</a> (PR&nbsp;#148).</p>
+                    <p class="cs-note">Confidentiality: the repositories behind this work are private per employer agreement. Architecture is described here at a high level and omits hostnames, network addresses, credential mechanisms, and vendor specifics.</p>
             </section>
 
             <section class="section">
