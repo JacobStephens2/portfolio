@@ -298,11 +298,23 @@
         .footer {
             text-align: center;
             margin-top: 2rem;
-            padding-top: 1.2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--line);
             color: var(--muted);
             font-size: 0.82rem;
             letter-spacing: 0.04em;
+            line-height: 1.85;
         }
+
+        .footer strong { color: var(--text); }
+
+        .footer a {
+            color: var(--muted);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .footer a:hover { color: var(--text); border-color: var(--text); }
 
         .container {
             animation: fadeInUp 0.8s ease-out;
@@ -427,6 +439,13 @@
                         </div>
                         <span class="nav-arrow" aria-hidden="true">↗</span>
                     </a>
+                    <a href="/apps.html" class="nav-item">
+                        <div class="nav-main">
+                            <span class="nav-label">Apps</span>
+                            <span class="nav-description">Apps built and published by Stephens Page LLC for web, Android, and iOS.</span>
+                        </div>
+                        <span class="nav-arrow" aria-hidden="true">↗</span>
+                    </a>
                     <a href="/eta-platform.html" class="nav-item">
                         <div class="nav-main">
                             <span class="nav-label">ETA Platform case study</span>
@@ -481,7 +500,10 @@
         </main>
 
         <footer class="footer">
-            © <span id="current-year"></span> Jacob Stephens
+            <p><strong>Stephens Page LLC</strong> &middot; Software studio</p>
+            <p>3965 Lancaster Ave, Suite 305, Philadelphia, PA 19104</p>
+            <p><a href="tel:+12673205474">+1&nbsp;267-320-5474</a> &middot; <a href="mailto:jacob@stephens.page">jacob@stephens.page</a></p>
+            <p>&copy; <span id="current-year"></span> Stephens Page LLC</p>
         </footer>
     </div>
 

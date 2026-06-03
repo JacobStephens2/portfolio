@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apps | Stephens Page LLC</title>
+    <meta name="description" content="Apps built and published by Stephens Page LLC - local-first trackers, cross-platform tools, and games for web, Android, and iOS.">
+    <meta property="og:title" content="Apps | Stephens Page LLC">
+    <meta property="og:description" content="Apps built and published by Stephens Page LLC - local-first trackers, cross-platform tools, and games for web, Android, and iOS.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stephens.page/apps.html">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Apps | Stephens Page LLC">
+    <meta name="twitter:description" content="Apps built and published by Stephens Page LLC.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f6f1e8;
+            --panel: rgba(255, 252, 246, 0.88);
+            --text: #181512;
+            --muted: #625a52;
+            --line: rgba(24, 21, 18, 0.12);
+            --accent: #9b4d24;
+            --accent-soft: rgba(155, 77, 36, 0.12);
+            --shadow: 0 24px 60px rgba(45, 32, 18, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(155, 77, 36, 0.18), transparent 28%),
+                radial-gradient(circle at top right, rgba(84, 111, 98, 0.18), transparent 24%),
+                linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .back-link, .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+            border-bottom: 1px solid transparent;
+            transition: color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .back-link:hover, .contact-link:hover {
+            color: var(--text);
+            border-color: var(--text);
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 0.9rem;
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(2.4rem, 5vw, 3.4rem);
+            line-height: 1.02;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.8rem;
+        }
+
+        .lede {
+            color: var(--muted);
+            font-size: 1.08rem;
+            max-width: 64ch;
+            margin-bottom: 2.25rem;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.1rem;
+        }
+
+        .app-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 1.5rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-name {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .app-desc {
+            color: var(--muted);
+            font-size: 0.97rem;
+            line-height: 1.55;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .app-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .app-tags span {
+            font-size: 0.72rem;
+            letter-spacing: 0.03em;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 0.18rem 0.55rem;
+            border-radius: 999px;
+        }
+
+        .app-links a {
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.92rem;
+            text-decoration: none;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 1px;
+        }
+
+        .app-links a:hover { color: var(--accent); }
+
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        .footer strong { color: var(--text); }
+
+        .footer a {
+            color: var(--muted);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .footer a:hover { color: var(--text); border-color: var(--text); }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 1.5rem 1rem 2.5rem; }
+            .topbar { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/" class="back-link">Back to home</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <header>
+            <div class="eyebrow">Stephens Page LLC</div>
+            <h1>Apps</h1>
+            <p class="lede">Software built and published by Stephens Page LLC - local-first trackers, cross-platform tools, and games for web, Android, and iOS. Each is shaped by firsthand daily use rather than a generic template.</p>
+        </header>
+
+        <main class="apps-grid">
+            <div class="app-card">
+                <div class="app-name">Quadrille</div>
+                <p class="app-desc">A local-first, cross-platform weightlifting tracker that digitizes the paper quadrille-grid workflow - reusable templates, a set-logging grid, and wall-clock rest timers that survive backgrounding.</p>
+                <div class="app-tags"><span>Flutter</span><span>Dart</span><span>Drift</span><span>iOS / Android / Web</span></div>
+                <div class="app-links"><a href="https://quadrille.app">Visit &#8599;</a></div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-name">Creighton Cycle Tracker</div>
+                <p class="app-desc">A fertility-tracking PWA built around the Creighton Model - offline support, auto-computed charting, server sync, and provider sharing. Found organically through search and used by real people.</p>
+                <div class="app-tags"><span>TypeScript</span><span>Vite</span><span>Express</span><span>PWA</span></div>
+                <div class="app-links"><a href="https://creightontracker.com">Visit &#8599;</a></div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-name">Cascade</div>
+                <p class="app-desc">A waterfall white-noise player for focus and sleep, shipped as web (PWA) and Android shells driven by one headless Rust core - the same core architected to extend to macOS, Windows, iOS, and watchOS.</p>
+                <div class="app-tags"><span>Rust</span><span>WebAssembly</span><span>UniFFI</span><span>Jetpack Compose</span></div>
+                <div class="app-links"><a href="https://cascade.stephens.page">Visit &#8599;</a></div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-name">Clowder &amp; Crest</div>
+                <p class="app-desc">A medieval cat-guild management game - 14 minigame types, an explorable town map, a 7-chapter narrative arc, and Fire Emblem-style bond conversations, shipped from concept to native Android.</p>
+                <div class="app-tags"><span>Phaser 3</span><span>TypeScript</span><span>Capacitor</span><span>Android</span></div>
+                <div class="app-links"><a href="https://clowderandcrest.com">Visit &#8599;</a></div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-name">Daily Dozen Tracker</div>
+                <p class="app-desc">A PWA for tracking Dr. Greger's Daily Dozen food recommendations - offline support, progress visualization, and a stewardship framing that turns an evidence-based checklist into a daily habit.</p>
+                <div class="app-tags"><span>Node.js</span><span>Express</span><span>PWA</span></div>
+                <div class="app-links"><a href="https://dailydozen.stephens.page">Visit &#8599;</a></div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-name">Macros Tracker</div>
+                <p class="app-desc">A self-hosted nutrition tracker built as a MyFitnessPal replacement - barcode scanning, recipe management, API-backed food search, charts, and offline support.</p>
+                <div class="app-tags"><span>TypeScript</span><span>Express</span><span>SQLite</span><span>PWA</span></div>
+                <div class="app-links"><a href="https://macros.stephens.page">Visit &#8599;</a></div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-name">Exodus 40 Lite</div>
+                <p class="app-desc">A PWA for a parish men's group, tracking prayer, fasting, almsgiving, and fraternity through a shared Lenten rule of life - built for sustained participation, not one-time visits.</p>
+                <div class="app-tags"><span>PHP</span><span>JavaScript</span><span>PWA</span><span>Capacitor</span></div>
+                <div class="app-links"><a href="https://exodus.stephens.page">Visit &#8599;</a></div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-name">Artifact Manager</div>
+                <p class="app-desc">A multi-tenant possessions tracker that operationalizes the Minimalists' 90/90 Rule - log when you use what you own, see what's due next, and decide what to declutter.</p>
+                <div class="app-tags"><span>PHP</span><span>MySQL</span><span>REST API</span><span>PWA</span></div>
+                <div class="app-links"><a href="https://artifact.stewardgoods.com/">Visit &#8599;</a></div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-name">Magisterium MCP Server</div>
+                <p class="app-desc">An MCP server that gives AI assistants access to the Magisterium API, returning Catholic Church teaching with source citations - a clean bridge between authoritative data and assistant workflows.</p>
+                <div class="app-tags"><span>TypeScript</span><span>Node.js</span><span>MCP</span><span>AI Tooling</span></div>
+                <div class="app-links"><a href="https://magisterium.stephens.page/">Visit &#8599;</a></div>
+            </div>
+
+            <div class="app-card">
+                <div class="app-name">Event Operations Platform</div>
+                <p class="app-desc">A full-stack event-operations platform - invite-based RSVPs, guest management, registry tracking, photo uploads, travel details, and admin tooling - turning a brochure site into a real application.</p>
+                <div class="app-tags"><span>PHP</span><span>MySQL</span><span>JavaScript</span></div>
+                <div class="app-links"><a href="https://wedding.stephens.page">Visit &#8599;</a></div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p><strong>Stephens Page LLC</strong> &middot; Software studio</p>
+            <p>3965 Lancaster Ave, Suite 305, Philadelphia, PA 19104</p>
+            <p><a href="tel:+12673205474">+1 267-320-5474</a> &middot; <a href="mailto:jacob@stephens.page">jacob@stephens.page</a></p>
+            <p>&copy; <span id="current-year"></span> Stephens Page LLC</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
