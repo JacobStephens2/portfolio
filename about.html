@@ -262,7 +262,18 @@
             text-align: center;
             color: var(--muted);
             font-size: 0.85rem;
+            line-height: 1.85;
         }
+
+        .footer strong { color: var(--text); }
+
+        .footer a {
+            color: var(--muted);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .footer a:hover { color: var(--text); border-color: var(--text); }
 
         @keyframes fadeInUp {
             from {
@@ -324,6 +335,7 @@
                     <div class="eyebrow">About</div>
                     <h1>I build the systems that keep businesses running.</h1>
                     <p class="hero-copy">Payment flows, automations, queues, internal tooling, and the ongoing work of improving older codebases. I focus on the infrastructure that protects revenue and replaces manual effort with reliable software.</p>
+                    <p class="hero-copy">I'm Jacob Stephens, Managing Member of <strong>Stephens Page LLC</strong> - a one-person software studio in Philadelphia, and the entity that publishes my <a href="/apps.html">apps</a>.</p>
                 </div>
                 <aside class="hero-points">
                     <div class="hero-point">
@@ -441,7 +453,10 @@
         </main>
 
         <footer class="footer">
-            © <span id="current-year"></span> Jacob Stephens
+            <p><strong>Stephens Page LLC</strong> &middot; Software studio</p>
+            <p>3965 Lancaster Ave, Suite 305, Philadelphia, PA 19104</p>
+            <p><a href="tel:+12673205474">+1&nbsp;267-320-5474</a> &middot; <a href="mailto:jacob@stephens.page">jacob@stephens.page</a></p>
+            <p>&copy; <span id="current-year"></span> Stephens Page LLC</p>
         </footer>
     </div>
 
