@@ -13,8 +13,8 @@
     </marker>
   </defs>
   <rect width="1200" height="760" fill="url(#bg)"/>
-  <text x="40" y="50" font-size="22" font-weight="700" fill="#e6e9ef">ACH Pipeline · NACHA file generation → M&amp;T Bank</text>
-  <text x="40" y="74" font-size="13" fill="#8a93a4">old.etadventures.com · cron-driven · runs nightly</text>
+  <text x="40" y="50" font-size="22" font-weight="700" fill="#e6e9ef">ACH Pipeline · NACHA file generation → the originating bank</text>
+  <text x="40" y="74" font-size="13" fill="#8a93a4">legacy ACH host · cron-driven · runs nightly</text>
 
   <!-- stage cards -->
   <g filter="url(#sh)">
@@ -38,7 +38,7 @@
   <g filter="url(#sh)">
     <rect x="600" y="120" width="240" height="140" rx="8" fill="#1a2640" stroke="#2c3e63"/>
     <text x="620" y="148" font-size="13" font-weight="700" fill="#7fb1ff" letter-spacing="1">3 · UPLOAD</text>
-    <text x="620" y="174" font-size="14" fill="#e6e9ef">Ship to M&amp;T Bank</text>
+    <text x="620" y="174" font-size="14" fill="#e6e9ef">Ship to the originating bank</text>
     <text x="620" y="194" font-size="12" fill="#8a93a4">Authenticated submission,</text>
     <text x="620" y="210" font-size="12" fill="#8a93a4">retry on transport failure</text>
     <text x="620" y="240" font-size="11" font-family="monospace" fill="#5db384">SFTP · cron 02:00</text>
@@ -64,12 +64,12 @@
     <circle cx="64" cy="346" r="6" fill="#ff5f56"/>
     <circle cx="84" cy="346" r="6" fill="#ffbd2e"/>
     <circle cx="104" cy="346" r="6" fill="#27c93f"/>
-    <text x="130" y="350" font-size="12" fill="#7c8492" font-family="monospace">old.etadventures.com — daily-ach.log</text>
+    <text x="130" y="350" font-size="12" fill="#7c8492" font-family="monospace">legacy ACH host — daily-ach.log</text>
     <g font-family="monospace" font-size="13">
-      <text x="60" y="392" fill="#8a93a4">02:00:01</text> <text x="160" y="392" fill="#7fb1ff">[ach.collect]</text>     <text x="320" y="392" fill="#e6e9ef">418 entries due · $214,309.42 total</text>
+      <text x="60" y="392" fill="#8a93a4">02:00:01</text> <text x="160" y="392" fill="#7fb1ff">[ach.collect]</text>     <text x="320" y="392" fill="#e6e9ef">418 entries due · ~$214K total</text>
       <text x="60" y="416" fill="#8a93a4">02:00:04</text> <text x="160" y="416" fill="#7fb1ff">[nacha.build]</text>      <text x="320" y="416" fill="#e6e9ef">batch ETA-26-04-06-A · 412 PPD · 6 CCD</text>
       <text x="60" y="440" fill="#8a93a4">02:00:04</text> <text x="160" y="440" fill="#7fb1ff">[nacha.build]</text>      <text x="320" y="440" fill="#e6e9ef">control hash 8423917610 · totals balanced</text>
-      <text x="60" y="464" fill="#8a93a4">02:00:05</text> <text x="160" y="464" fill="#7fb1ff">[nacha.upload]</text>     <text x="320" y="464" fill="#e6e9ef">sftp m&amp;t · 9.31 MB · accepted</text>
+      <text x="60" y="464" fill="#8a93a4">02:00:05</text> <text x="160" y="464" fill="#7fb1ff">[nacha.upload]</text>     <text x="320" y="464" fill="#e6e9ef">sftp · 9.31 MB · accepted</text>
       <text x="60" y="488" fill="#8a93a4">02:00:06</text> <text x="160" y="488" fill="#5db384">[nacha.upload]</text>     <text x="320" y="488" fill="#5db384">OK · receipt #ETA-D-26-04-06-A</text>
       <text x="60" y="512" fill="#8a93a4">02:00:07</text> <text x="160" y="512" fill="#7fb1ff">[returns.fetch]</text>    <text x="320" y="512" fill="#e6e9ef">prior batch returns · 3 R01 · 1 R03</text>
       <text x="60" y="536" fill="#8a93a4">02:00:08</text> <text x="160" y="536" fill="#7fb1ff">[returns.apply]</text>    <text x="320" y="536" fill="#e6e9ef">flagged 4 entries · ops notified</text>
