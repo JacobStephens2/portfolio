@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart35 - Case Study | Jacob Stephens</title>
+    <meta name="description" content="Case study: Chart35, a privacy-first fertility-cycle charting app for the Creighton Model - local-first PWA, auto-computed CrMS stamps, and end-to-end encrypted sync where the server only ever stores ciphertext.">
+    <meta property="og:title" content="Chart35 - Case Study | Jacob Stephens">
+    <meta property="og:description" content="A privacy-first, local-first CrMS charting app with end-to-end encrypted sync. The server never sees plaintext health data.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stephens.page/chart35.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Chart35 - Case Study | Jacob Stephens">
+    <meta name="twitter:description" content="A privacy-first, local-first CrMS charting app with end-to-end encrypted sync.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f6f1e8;
+            --panel: rgba(255, 252, 246, 0.88);
+            --text: #181512;
+            --muted: #625a52;
+            --line: rgba(24, 21, 18, 0.12);
+            --accent: #9b4d24;
+            --shadow: 0 24px 60px rgba(45, 32, 18, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(155, 77, 36, 0.15), transparent 24%),
+                linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+            color: var(--text);
+            line-height: 1.65;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+            animation: fadeInUp 0.75s ease-out;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link, .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+            border-bottom: 1px solid transparent;
+            transition: color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .back-link:hover, .back-link:focus-visible,
+        .contact-link:hover, .contact-link:focus-visible {
+            color: var(--text);
+            border-color: var(--text);
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.8fr);
+            gap: 1.25rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .hero-card, .hero-notes, .section, .footer {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-card, .hero-notes, .section { padding: 1.6rem; }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(2.4rem, 5vw, 3.9rem);
+            line-height: 1.0;
+            letter-spacing: -0.04em;
+            margin-bottom: 0.9rem;
+            max-width: 15ch;
+        }
+
+        .hero-copy { color: var(--muted); font-size: 1.05rem; max-width: 62ch; }
+
+        .hero-notes ul { list-style: none; display: grid; gap: 0.85rem; }
+        .hero-notes li { border-top: 1px solid var(--line); padding-top: 0.85rem; color: var(--muted); }
+        .hero-notes li:first-child { border-top: none; padding-top: 0; }
+        .hero-notes strong { display: block; margin-bottom: 0.2rem; color: var(--text); }
+        .hero-notes a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+        .hero-notes a:hover { border-color: var(--accent); }
+
+        .section + .section { margin-top: 1.25rem; }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-heading h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: -0.03em;
+        }
+
+        .section-heading p { color: var(--muted); font-size: 0.92rem; }
+
+        .footer { margin-top: 1.25rem; padding: 1.2rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+
+        @media (max-width: 640px) {
+            .container { padding: 1.25rem 1rem 2.5rem; }
+            .topbar { flex-direction: column; align-items: flex-start; }
+            .hero-card, .hero-notes, .section, .footer { border-radius: 18px; padding: 1.25rem; }
+            h1 { max-width: none; }
+            .section-heading { flex-direction: column; align-items: flex-start; }
+        }
+
+        /* --- case study --- */
+        .cs-diagram { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0 0; box-shadow: var(--shadow); }
+        .cs-diagram svg { width: 100%; height: auto; display: block; }
+        .cs-narrative p { margin-bottom: 0.9rem; max-width: 70ch; }
+        .cs-highlight { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.25rem; margin-bottom: 0.9rem; }
+        .cs-highlight h3 { margin-bottom: 0.5rem; }
+        .cs-highlight .cs-line { display: block; margin-bottom: 0.3rem; }
+        .cs-highlight .cs-line strong { color: var(--accent); }
+        .cs-stack { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
+        .cs-stack .cs-row { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 1rem; }
+        .cs-stack .cs-row b { color: var(--accent); }
+        .cs-note { font-size: 0.92rem; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 0.9rem; margin-top: 1.25rem; max-width: 70ch; }
+        @media (min-width: 760px) { .cs-stack { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="https://stephens.page/" class="back-link">Back to home</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <main>
+            <section class="hero">
+                <div class="hero-card">
+                    <div class="eyebrow">Case Study &#183; Chart35 &#183; 2026</div>
+                    <h1>A privacy-first fertility chart, encrypted on your device.</h1>
+                    <p class="hero-copy">Chart35 (<a href="https://chart35.com" style="color:inherit;border-bottom:1px solid currentColor">chart35.com</a>) is a fertility-cycle charting app for the Creighton Model FertilityCare System. It is local-first, works offline, auto-computes the method's stamps and codes, and - when you choose to sync - encrypts everything on your device so the server only ever stores ciphertext.</p>
+                </div>
+                <aside class="hero-notes">
+                    <ul>
+                        <li><strong>Role</strong> Solo designer &amp; engineer</li>
+                        <li><strong>Stack</strong> TypeScript, Vite, Dexie/IndexedDB, Web Crypto, Capacitor (Android)</li>
+                        <li><strong>Users</strong> Found organically through search and used by real people beyond me</li>
+                        <li><strong>Live &amp; open</strong> <a href="https://chart35.com" target="_blank" rel="noopener">chart35.com</a> &#183; <a href="https://github.com/JacobStephens2/Chart35Client" target="_blank" rel="noopener">client source (AGPL)</a></li>
+                    </ul>
+                </aside>
+            </section>
+
+            <section class="section">
+                <div class="section-heading">
+                    <h2>How it works</h2>
+                    <p>The trust boundary is the whole point: plaintext never leaves the device.</p>
+                </div>
+                <div class="cs-diagram"><svg viewBox="0 0 980 470" role="img" aria-label="Chart35 architecture: device-side plaintext and encryption, server stores ciphertext only">
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#9b4d24"></path>
+    </marker>
+    <style>
+      .box{fill:#fffcf6;stroke:#9b4d24;stroke-width:1.5;}
+      .grp{fill:rgba(155,77,36,0.06);stroke:rgba(155,77,36,0.35);stroke-width:1;stroke-dasharray:4 3;}
+      .t{font-family:Inter,sans-serif;fill:#181512;font-size:14px;}
+      .tb{font-family:Inter,sans-serif;fill:#181512;font-size:14px;font-weight:600;}
+      .tm{font-family:Inter,sans-serif;fill:#625a52;font-size:12px;}
+      .lbl{font-family:Inter,sans-serif;fill:#9b4d24;font-size:12px;font-weight:600;letter-spacing:.04em;}
+      .ln{stroke:#9b4d24;stroke-width:1.6;fill:none;}
+      .bnd{stroke:#625a52;stroke-width:1.4;stroke-dasharray:6 4;fill:none;}
+    </style>
+  </defs>
+
+  <!-- device group -->
+  <text x="20" y="34" class="lbl">YOUR DEVICE &#160;·&#160; BROWSER (PWA) / ANDROID</text>
+  <rect class="grp" x="20" y="44" width="560" height="386" rx="12"></rect>
+
+  <rect class="box" x="44" y="70" width="240" height="50" rx="10"></rect>
+  <text x="60" y="94" class="tb">Daily observation entry</text><text x="60" y="111" class="tm">bleeding, mucus, peak, notes</text>
+
+  <rect class="box" x="316" y="70" width="240" height="50" rx="10"></rect>
+  <text x="332" y="94" class="tb">CrMS stamp &amp; code logic</text><text x="332" y="111" class="tm">pure, unit-tested</text>
+
+  <rect class="box" x="44" y="150" width="240" height="60" rx="10"></rect>
+  <text x="60" y="176" class="tb">IndexedDB (Dexie)</text><text x="60" y="194" class="tm">source of truth, plaintext, on-device</text>
+
+  <rect class="box" x="316" y="150" width="240" height="60" rx="10"></rect>
+  <text x="332" y="176" class="tb">Chart &amp; calendar render</text><text x="332" y="194" class="tm">35-column CrMS chart</text>
+
+  <rect class="box" x="44" y="246" width="512" height="58" rx="10"></rect>
+  <text x="60" y="271" class="tb">Web Crypto - PBKDF2 + AES-256-GCM</text>
+  <text x="60" y="290" class="tm">encrypts a payload from a passphrase-derived key, on the device</text>
+
+  <rect class="box" x="44" y="338" width="512" height="58" rx="10"></rect>
+  <text x="60" y="363" class="tb">Service worker (PWA)</text>
+  <text x="60" y="382" class="tm">offline-always; installable; Capacitor wraps the same app on Android</text>
+
+  <!-- trust boundary -->
+  <line class="bnd" x1="610" y1="40" x2="610" y2="432"></line>
+  <text x="624" y="34" class="lbl">HTTPS - CIPHERTEXT ONLY</text>
+
+  <!-- server group -->
+  <text x="640" y="34" class="lbl" style="opacity:0"> </text>
+  <rect class="grp" x="640" y="120" width="320" height="240" rx="12"></rect>
+  <text x="660" y="112" class="lbl">SYNC SERVER &#160;·&#160; PRIVATE REPO</text>
+
+  <rect class="box" x="664" y="146" width="272" height="52" rx="10"></rect>
+  <text x="680" y="170" class="tb">Node + Express + JWT</text><text x="680" y="187" class="tm">accounts, email verification</text>
+
+  <rect class="box" x="664" y="216" width="272" height="58" rx="10"></rect>
+  <text x="680" y="241" class="tb">SQLite - encrypted blobs only</text><text x="680" y="259" class="tm">server never sees plaintext health data</text>
+
+  <rect class="box" x="664" y="292" width="272" height="52" rx="10"></rect>
+  <text x="680" y="316" class="tb">Transactional email</text><text x="680" y="333" class="tm">verification, password reset</text>
+
+  <!-- provider share -->
+  <text x="20" y="452" class="tm">Provider sharing: a time-limited, read-only share link renders a filtered chart for a FertilityCare Practitioner - no account, no write access, expires.</text>
+
+  <!-- arrows -->
+  <path class="ln" d="M284,95 L316,95" marker-end="url(#arr)"></path>
+  <path class="ln" d="M164,120 L164,150" marker-end="url(#arr)"></path>
+  <path class="ln" d="M300,210 L300,246" marker-end="url(#arr)"></path>
+  <path class="ln" d="M556,275 L664,240" marker-end="url(#arr)"></path>
+  <path class="ln" d="M664,250 L560,285" marker-end="url(#arr)"></path>
+</svg></div>
+            </section>
+
+            <section class="section cs-narrative">
+                <div class="section-heading">
+                    <h2>Why I built it</h2>
+                    <p>Sensitive data, a precise method, and no good private option.</p>
+                </div>
+                <p>The Creighton Model is a fertility-awareness method with a strict charting system: each day's observations map onto a colored stamp and a set of codes, and the rules are exact. Tracking it on paper works but is unforgiving, and the existing apps generally require an account and a cloud round-trip to log a single day - putting some of the most sensitive health data a person has on someone else's server in plaintext.</p>
+                <p>Chart35 keeps the precision of the paper method and adds the conveniences software is good at - auto-computed stamps, instant charts, backup across devices - without that privacy cost. The data lives on your device; sync is optional; and when you do sync, the server is treated as untrusted with respect to your health data. It was found organically through search and is used by real people beyond me, which is the bar I cared about.</p>
+            </section>
+
+            <section class="section">
+                <div class="section-heading">
+                    <h2>Engineering highlights</h2>
+                    <p>Four pieces, each problem &rarr; approach &rarr; outcome.</p>
+                </div>
+
+                <div class="cs-highlight">
+                    <h3>Faithful CrMS computation</h3>
+                    <span class="cs-line"><strong>Problem.</strong> A wrong stamp is not a cosmetic bug - it is incorrect health information.</span>
+                    <span class="cs-line"><strong>Approach.</strong> The clinical logic (stamps: green/red/white/yellow, peak day, post-peak count 1/2/3, Base Infertile Pattern) lives in pure, unit-tested functions separate from storage and UI, implemented to the authoritative reference, with manual overrides for cycle start, peak, and BIP.</span>
+                    <span class="cs-line"><strong>Outcome.</strong> A chart that matches the method, computed automatically but correctable by the user.</span>
+                </div>
+
+                <div class="cs-highlight">
+                    <h3>End-to-end encrypted sync</h3>
+                    <span class="cs-line"><strong>Problem.</strong> Cross-device backup is useful, but the server must never be able to read a user's observations.</span>
+                    <span class="cs-line"><strong>Approach.</strong> A passphrase-derived key (PBKDF2) encrypts payloads with AES-256-GCM via the Web Crypto API, on the device. Only ciphertext crosses the network; the server stores encrypted blobs, layered under its own at-rest protection.</span>
+                    <span class="cs-line"><strong>Outcome.</strong> Even a fully compromised server yields opaque ciphertext. In-app Delete Account wipes the server row, encrypted blobs, share tokens, and on-device cache in one transaction.</span>
+                </div>
+
+                <div class="cs-highlight">
+                    <h3>Local-first, offline-always</h3>
+                    <span class="cs-line"><strong>Problem.</strong> A daily tracker has to be instant and work with no connection and no account.</span>
+                    <span class="cs-line"><strong>Approach.</strong> IndexedDB (via Dexie) is the source of truth; the app is a full PWA with a service worker and is installable, with a Capacitor wrapper on Android. Accounts and sync are purely additive.</span>
+                    <span class="cs-line"><strong>Outcome.</strong> Offline is the normal mode, not a degraded one; you can log an entire cycle in airplane mode.</span>
+                </div>
+
+                <div class="cs-highlight">
+                    <h3>Provider sharing</h3>
+                    <span class="cs-line"><strong>Problem.</strong> Users need to show their chart to a FertilityCare Practitioner without handing over their account.</span>
+                    <span class="cs-line"><strong>Approach.</strong> A separate read-only entry point renders a filtered chart from a time-limited share link - no write access, and it expires.</span>
+                    <span class="cs-line"><strong>Outcome.</strong> Practitioners review the chart in a browser; the link can't mutate data and lapses on its own.</span>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-heading">
+                    <h2>Stack &amp; why</h2>
+                    <p>The reasoning, not just the list.</p>
+                </div>
+                <div class="cs-stack">
+                    <div class="cs-row"><b>TypeScript, no UI framework</b> - a small, auditable client; views render to the DOM directly, so there is less between a reader and the privacy-critical code.</div>
+                    <div class="cs-row"><b>Dexie / IndexedDB</b> - local-first source of truth, so the app is fully functional offline and the network is optional.</div>
+                    <div class="cs-row"><b>Web Crypto - PBKDF2 + AES-256-GCM</b> - end-to-end encryption so the server is untrusted for health data, not just "encrypted at rest."</div>
+                    <div class="cs-row"><b>vite-plugin-pwa</b> - installable, offline-capable, with a service worker caching the shell.</div>
+                    <div class="cs-row"><b>Capacitor (Android)</b> - a native wrapper over chart35.com to ship to the Play Store from the same codebase.</div>
+                    <div class="cs-row"><b>AGPL-3.0</b> - anyone who redeploys a modified version as a service must publish their changes, which keeps every deployed build auditable for a privacy app.</div>
+                </div>
+                <p class="cs-note">Auditability: the entire client - the encryption, the IndexedDB layer, the chart rendering, the provider-share filtering - is open at <a href="https://github.com/JacobStephens2/Chart35Client" target="_blank" rel="noopener">github.com/JacobStephens2/Chart35Client</a> (see its <a href="https://github.com/JacobStephens2/Chart35Client/blob/main/ARCHITECTURE.md" target="_blank" rel="noopener">ARCHITECTURE.md</a>). The sync server is a separate private repository; the client talks to it only over documented HTTPS endpoints.</p>
+                <p class="cs-note">The Creighton Model FertilityCare System is a trademark of FertilityCare Centers of America, used here descriptively only. Chart35 is an independent project, not affiliated with or endorsed by them.</p>
+            </section>
+
+            <section class="section">
+                <div class="section-heading"><h2></h2></div>
+                <p><a href="https://stephens.page/portfolio.html" class="back-link">&larr; Back to portfolio</a></p>
+            </section>
+        </main>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
