@@ -393,6 +393,14 @@
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
         }
 
+        .lightbox-caption {
+            margin: 0.85rem auto 0;
+            color: rgba(255, 255, 255, 0.92);
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+            text-align: center;
+        }
+
         .footer {
             margin-top: 1.25rem;
             padding: 1.2rem;
@@ -491,36 +499,6 @@
                     <a href="/eta-platform.html" class="portfolio-link">Read the ETA Platform case study &rarr;</a>
                 </div>
                 <div class="portfolio-grid">
-                    <article class="portfolio-item" id="prospectforge">
-                        <button class="image-button" type="button" data-image="screenshots/prospectforge.png" data-title="ProspectForge run screenshot">
-                            <img src="screenshots/prospectforge.png" alt="ProspectForge crawl run - live progress with budget and page-count hard caps" class="portfolio-image">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">ProspectForge</h3>
-                            <p class="portfolio-summary">An internal contact-sourcing platform built to replace CivicIQ, ETA's third-party prospecting tool - FastAPI and Next.js over PostgreSQL, with a self-hosted scraping stack, on Docker Compose; review-ready, pending management approval.</p>
-                            <div class="portfolio-block">
-                                <strong>Problem</strong>
-                                <span>ETA pays for CivicIQ, a third-party SaaS tool, to find and qualify prospective schools and trip leaders. The recurring cost and limited control argued for an in-house alternative that could feed leads straight into Tourbot.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What I Built</strong>
-                                <span>A FastAPI backend (SQLAlchemy 2.0, Alembic migrations) on PostgreSQL with a Next.js review UI, plus a self-hosted Firecrawl scraping stack - composed as a multi-service Docker Compose deployment. Sourced contacts move through a review workflow before export into Tourbot's lead pipeline.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>Result</strong>
-                                <span>A review-ready, in-house sourcing pipeline that - once approved - would replace CivicIQ and route qualified prospects directly into the booking system.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">FastAPI</span>
-                                <span class="portfolio-tag">SQLAlchemy 2.0</span>
-                                <span class="portfolio-tag">PostgreSQL</span>
-                                <span class="portfolio-tag">Next.js</span>
-                                <span class="portfolio-tag">Firecrawl</span>
-                                <span class="portfolio-tag">Docker Compose</span>
-                            </div>
-                        </div>
-                    </article>
-
                     <article class="portfolio-item" id="tourbot">
                         <button class="image-button" type="button" data-image="screenshots/tourbot.png" data-title="Tourbot screenshot">
                             <img src="screenshots/tourbot.png" alt="Tourbot reservations and operations platform" class="portfolio-image">
@@ -723,6 +701,9 @@
                     </article>
 
                     <article class="portfolio-item" id="manifest-performance-tuning">
+                        <button class="image-button" type="button" data-image="screenshots/manifest.png" data-title="Tourbot group manifest">
+                            <img src="screenshots/manifest.png" alt="Tourbot group manifest page" class="portfolio-image">
+                        </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Tourbot Manifest Performance Tuning</h3>
                             <p class="portfolio-summary">A six-round, profile-driven performance pass on Tourbot's group manifest page - the document staff print before every trip - taking page loads from 5-7 seconds to about 1 second by eliminating N+1 queries, batching in-request prefetches, and adding a targeted history-table index.</p>
@@ -754,9 +735,12 @@
                     </article>
 
                     <article class="portfolio-item" id="performance-tuning">
+                        <button class="image-button" type="button" data-image="screenshots/alerts-board.png" data-images="screenshots/alerts-board.png,screenshots/alerts-board-table.png" data-title="Tourbot alerts board (cached)">
+                            <img src="screenshots/alerts-board.png" alt="Tourbot pre-computed alerts board and table views" class="portfolio-image">
+                        </button>
                         <div class="portfolio-content">
-                            <h3 class="portfolio-title">Tourbot Alert Performance Tuning</h3>
-                            <p class="portfolio-summary">A performance pass on Tourbot's internal alerts page - a heavily-trafficked screen that staff hit repeatedly throughout the day - taking load times from 5-10 seconds down to under 1 second by replacing per-request query fan-out with a pre-computed cache table.</p>
+                            <h3 class="portfolio-title">Tourbot Alerts: Pre-Computed Cache Architecture</h3>
+                            <p class="portfolio-summary">An architectural rework of Tourbot's internal alerts page - a screen staff hit constantly throughout the day - that moves alert computation off the request path entirely. A background PHP daemon pre-computes every alert into a dedicated cache table, so the page just reads pre-shaped rows - cutting load times from 5-10 seconds to under 1 second.</p>
                             <div class="portfolio-block">
                                 <strong>Problem</strong>
                                 <span>The alerts page recalculated every alert from scratch on each request, fanning out into 100+ MySQL queries against the same booking, item, and product-alert tables with no reuse across users. With staff hitting it many times a day, 5-10 second loads were normal and the slowness was eroding trust in the rest of Tourbot.</span>
@@ -778,6 +762,36 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item" id="prospectforge">
+                        <button class="image-button" type="button" data-image="screenshots/prospectforge.png" data-title="ProspectForge run screenshot">
+                            <img src="screenshots/prospectforge.png" alt="ProspectForge crawl run - live progress with budget and page-count hard caps" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">ProspectForge</h3>
+                            <p class="portfolio-summary">An internal contact-sourcing platform built to replace CivicIQ, ETA's third-party prospecting tool - FastAPI and Next.js over PostgreSQL, with a self-hosted scraping stack, on Docker Compose; review-ready, pending management approval.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>ETA pays for CivicIQ, a third-party SaaS tool, to find and qualify prospective schools and trip leaders. The recurring cost and limited control argued for an in-house alternative that could feed leads straight into Tourbot.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>A FastAPI backend (SQLAlchemy 2.0, Alembic migrations) on PostgreSQL with a Next.js review UI, plus a self-hosted Firecrawl scraping stack - composed as a multi-service Docker Compose deployment. Sourced contacts move through a review workflow before export into Tourbot's lead pipeline.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>A review-ready, in-house sourcing pipeline that - once approved - would replace CivicIQ and route qualified prospects directly into the booking system.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">FastAPI</span>
+                                <span class="portfolio-tag">SQLAlchemy 2.0</span>
+                                <span class="portfolio-tag">PostgreSQL</span>
+                                <span class="portfolio-tag">Next.js</span>
+                                <span class="portfolio-tag">Firecrawl</span>
+                                <span class="portfolio-tag">Docker Compose</span>
                             </div>
                         </div>
                     </article>
@@ -895,8 +909,8 @@
                 </div>
                 <div class="portfolio-grid">
                     <article class="portfolio-item" id="quadrille">
-                        <button class="image-button" type="button" data-image="screenshots/quadrille.app.png" data-images="screenshots/quadrille.app.png" data-title="Quadrille screenshot">
-                            <img src="screenshots/quadrille.app.png" alt="Quadrille application" class="portfolio-image">
+                        <button class="image-button" type="button" data-image="screenshots/Quadrille-Android-Chrome-workout-screenshot.jpg" data-images="screenshots/Quadrille-Android-Chrome-workout-screenshot.jpg,screenshots/quadrille.app.png" data-title="Quadrille screenshot">
+                            <img src="screenshots/Quadrille-Android-Chrome-workout-screenshot.jpg" alt="Quadrille application" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Quadrille</h3>
@@ -923,8 +937,8 @@
                         </div>
                     </article>
                     <article class="portfolio-item" id="creighton-tracker">
-                        <button class="image-button" type="button" data-image="screenshots/creightontracker.com.png" data-images="screenshots/creightontracker.com.png,screenshots/creightontracker.com-light.png" data-title="Chart35 screenshot">
-                            <img src="screenshots/creightontracker.com.png" alt="Chart35 application" class="portfolio-image">
+                        <button class="image-button" type="button" data-image="screenshots/Chart35-Android-Chrome-chart-screenshot.jpg" data-images="screenshots/Chart35-Android-Chrome-chart-screenshot.jpg,screenshots/creightontracker.com.png,screenshots/creightontracker.com-light.png" data-title="Chart35 screenshot">
+                            <img src="screenshots/Chart35-Android-Chrome-chart-screenshot.jpg" alt="Chart35 application" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Chart35</h3>
@@ -953,7 +967,7 @@
                         </div>
                     </article>
                     <article class="portfolio-item" id="cascade">
-                        <button class="image-button" type="button" data-image="screenshots/cascade.stephens.page.png" data-title="Cascade screenshot">
+                        <button class="image-button" type="button" data-image="screenshots/cascade.stephens.page.png" data-images="screenshots/cascade.stephens.page.png,screenshots/Cascade-Android-screenshot.jpg,screenshots/Cascade-macOS-screenshot.png" data-captions="Web app,Android app,macOS app" data-title="Cascade screenshot">
                             <img src="screenshots/cascade.stephens.page.png" alt="Cascade waterfall white-noise player" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
@@ -982,7 +996,7 @@
                         </div>
                     </article>
                     <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/clowder.stephens.page.png" data-title="Clowder & Crest screenshot">
+                        <button class="image-button" type="button" data-image="screenshots/clowder.stephens.page.png" data-images="screenshots/clowder.stephens.page.png,screenshots/clowder-and-crest-brawl.jpg,screenshots/clowder-and-crest-chase.jpg" data-title="Clowder & Crest screenshot">
                             <img src="screenshots/clowder.stephens.page.png" alt="Clowder & Crest cat guild management game" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
@@ -1068,8 +1082,8 @@
                     </article>
 
                     <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/dailydozen.stephens.page.png" data-title="Daily Dozen Tracker screenshot">
-                            <img src="screenshots/dailydozen.stephens.page.png" alt="Daily Dozen Tracker progressive web app" class="portfolio-image">
+                        <button class="image-button" type="button" data-image="screenshots/daily-dozen-android-screenshot.jpg" data-images="screenshots/daily-dozen-android-screenshot.jpg,screenshots/dailydozen.stephens.page.png" data-captions="Android app,Web app" data-title="Daily Dozen Tracker screenshot">
+                            <img src="screenshots/daily-dozen-android-screenshot.jpg" alt="Daily Dozen Tracker progressive web app" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Daily Dozen Tracker</h3>
@@ -1154,7 +1168,7 @@
                     </article>
 
                     <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/wedding.stephens.page.png" data-title="Wedding platform screenshot">
+                        <button class="image-button" type="button" data-image="screenshots/wedding.stephens.page.png" data-images="screenshots/wedding.stephens.page.png,screenshots/guest-manager.png" data-captions="Guest-facing event site,Admin: guest management" data-title="Event Operations Platform screenshot">
                             <img src="screenshots/wedding.stephens.page.png" alt="Wedding platform and RSVP application" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
@@ -1188,6 +1202,7 @@
             <div class="lightbox-dialog">
                 <button class="lightbox-close" id="lightbox-close" type="button">Close</button>
                 <img id="lightbox-image" src="" alt="">
+                <div class="lightbox-caption" id="lightbox-caption"></div>
                 <div class="lightbox-nav-row" id="lightbox-nav-row">
                     <button class="lightbox-nav" id="lightbox-prev" type="button" aria-label="Previous image">&lsaquo; Prev</button>
                     <span class="lightbox-counter" id="lightbox-counter">1 / 1</span>
@@ -1209,16 +1224,21 @@
         const lightboxPrev = document.getElementById('lightbox-prev');
         const lightboxNext = document.getElementById('lightbox-next');
         const lightboxCounter = document.getElementById('lightbox-counter');
+        const lightboxCaption = document.getElementById('lightbox-caption');
         const imageButtons = document.querySelectorAll('.image-button');
 
         let currentImages = [];
         let currentIndex = 0;
         let currentTitle = '';
+        let currentCaptions = [];
 
         function renderCurrent() {
             if (!currentImages.length) return;
             lightboxImage.src = currentImages[currentIndex];
             lightboxImage.alt = currentTitle;
+            const cap = currentCaptions[currentIndex] || '';
+            lightboxCaption.textContent = cap;
+            lightboxCaption.style.display = cap ? 'block' : 'none';
             lightboxCounter.textContent = (currentIndex + 1) + ' / ' + currentImages.length;
             lightboxPrev.disabled = false;
             lightboxNext.disabled = false;
@@ -1229,10 +1249,11 @@
             }
         }
 
-        function openLightbox(images, imageTitle) {
+        function openLightbox(images, imageTitle, captions) {
             currentImages = images;
             currentIndex = 0;
             currentTitle = imageTitle || '';
+            currentCaptions = captions || [];
             renderCurrent();
             lightbox.classList.add('active');
             lightbox.setAttribute('aria-hidden', 'false');
@@ -1243,6 +1264,7 @@
             lightbox.setAttribute('aria-hidden', 'true');
             lightboxImage.src = '';
             lightboxImage.alt = '';
+            lightboxCaption.textContent = '';
             lightboxNavRow.classList.remove('active');
             currentImages = [];
             currentIndex = 0;
@@ -1266,7 +1288,11 @@
                 const images = multi
                     ? multi.split(',').map((s) => s.trim()).filter(Boolean)
                     : [button.dataset.image];
-                openLightbox(images, button.dataset.title);
+                const capData = button.dataset.captions;
+                const captions = capData
+                    ? capData.split(',').map((s) => s.trim())
+                    : [];
+                openLightbox(images, button.dataset.title, captions);
             });
         });
 
