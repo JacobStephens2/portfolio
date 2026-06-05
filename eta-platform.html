@@ -459,6 +459,12 @@
         .cs-stack .cs-row b { color: var(--accent); }
         .cs-note { font-size: 0.92rem; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 0.9rem; margin-top: 1.25rem; max-width: 70ch; }
         @media (min-width: 760px) { .cs-stack { grid-template-columns: 1fr 1fr; } }
+        .cs-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
+        .cs-metric { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; }
+        .cs-metric .cs-num { font-family: 'Crimson Text', serif; font-size: 1.85rem; line-height: 1.05; letter-spacing: -0.02em; color: var(--accent); display: block; }
+        .cs-metric .cs-cap { font-size: 0.85rem; color: var(--muted); margin-top: 0.35rem; display: block; }
+        .cs-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+        .cs-links a { font-weight: 600; }
 
     </style>
 </head>
@@ -576,6 +582,23 @@
 
             <section class="section">
                 <div class="section-heading">
+                    <h2>By the numbers</h2>
+                    <p>Selected, verifiable outcomes from the work below.</p>
+                </div>
+                <div class="cs-metrics">
+                    <div class="cs-metric"><span class="cs-num">2,650 &rarr; 183</span><span class="cs-cap">SQL statements per manifest render</span></div>
+                    <div class="cs-metric"><span class="cs-num">~1s</span><span class="cs-cap">manifest load, down from 5-7s</span></div>
+                    <div class="cs-metric"><span class="cs-num">4</span><span class="cs-cap">user-facing portals on one shared core</span></div>
+                    <div class="cs-metric"><span class="cs-num">14</span><span class="cs-cap">manager-prototyped features shipped to production</span></div>
+                    <div class="cs-metric"><span class="cs-num">77</span><span class="cs-cap">field guides on the guides PWA this season</span></div>
+                    <div class="cs-metric"><span class="cs-num">3,300+</span><span class="cs-cap">traveler SMS sent from the field</span></div>
+                    <div class="cs-metric"><span class="cs-num">~$154K</span><span class="cs-cap">guide expenses reconciled this season</span></div>
+                    <div class="cs-metric"><span class="cs-num">100+</span><span class="cs-cap">scheduled jobs under drift monitoring</span></div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-heading">
                     <h2>Engineering highlights</h2>
                     <p>Four representative pieces, each problem &rarr; approach &rarr; outcome.</p>
                 </div>
@@ -623,12 +646,21 @@
                     <div class="cs-row"><b>File-based cron registry + drift monitor</b> - 100-plus scheduled jobs become legible and tamper-evident instead of a black box.</div>
                 </div>
                 <p class="cs-note">Open source: I upstreamed the MySQL&nbsp;8.4 <code>caching_sha2_password</code> auth-handshake fix this stack needed into <a href="https://github.com/krowinski/php-mysql-replication/pull/148" target="_blank" rel="noopener">php-mysql-replication</a> (PR&nbsp;#148).</p>
+                    <p class="cs-note">Architecture decisions: the non-obvious trade-offs here - tenant isolation, the data tier, the deploy pipeline, agent identity - are written up as sanitized ADRs in <a href="https://github.com/JacobStephens2/infrastructure-patterns" target="_blank" rel="noopener">infrastructure-patterns</a>.</p>
                     <p class="cs-note">Confidentiality: the repositories behind this work are private per employer agreement. Architecture is described here at a high level and omits hostnames, network addresses, credential mechanisms, and vendor specifics.</p>
             </section>
 
             <section class="section">
-                <div class="section-heading"><h2></h2></div>
-                <p><a href="https://stephens.page/portfolio.html" class="back-link">&larr; Back to portfolio</a></p>
+                <div class="section-heading">
+                    <h2>Read further</h2>
+                    <p>The reasoning, the r&eacute;sum&eacute;, and the rest of the work.</p>
+                </div>
+                <div class="cs-links">
+                    <a class="portfolio-link" href="https://github.com/JacobStephens2/infrastructure-patterns" target="_blank" rel="noopener">Architecture decisions (ADRs) &rarr;</a>
+                    <a class="portfolio-link" href="https://resume.stephens.page/">R&eacute;sum&eacute; &rarr;</a>
+                    <a class="portfolio-link" href="https://stephens.page/portfolio.html">Full portfolio &rarr;</a>
+                    <a class="portfolio-link" href="mailto:jacob@stephens.page">Contact &rarr;</a>
+                </div>
             </section>
         </main>
 
