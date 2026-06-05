@@ -588,7 +588,7 @@
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>A multi-tenant infrastructure where each manager gets an isolated Tourbot instance - its own Docker container fronted by Traefik - with a dedicated Claude-powered OpenClaw agent. Agents query a nightly-synced replica of the production database, run analysis, generate reports, and even modify PHP code, all sandboxed per-manager: allowlist-controlled command execution, dedicated least-privilege database users, and a git-based review gate so nothing reaches production unreviewed. Each container is provisioned from a shared compose definition, so standing up a new manager sandbox is a one-command operation.</span>
+                                <span>A multi-tenant infrastructure where each manager gets an isolated Tourbot instance - its own Docker container fronted by Traefik - with a dedicated Claude-powered OpenClaw agent. Agents query a replica of the production database synced every few hours, run analysis, generate reports, and even modify PHP code, all sandboxed per-manager: allowlist-controlled command execution, dedicated least-privilege database users, and a git-based review gate so nothing reaches production unreviewed. Each container is provisioned from a shared compose definition, so standing up a new manager sandbox is a one-command operation.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>

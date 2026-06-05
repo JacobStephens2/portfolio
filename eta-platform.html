@@ -540,7 +540,7 @@
   <rect class="box" x="690" y="248" width="250" height="50" rx="10"></rect>
   <text x="706" y="272" class="tb">MySQL 8 - primary</text><text x="706" y="289" class="tm">reservations, payments, manifests</text>
   <rect class="box" x="690" y="308" width="250" height="50" rx="10"></rect>
-  <text x="706" y="332" class="tb">Nightly mirror</text><text x="706" y="349" class="tm">feeds sandboxes &amp; analytics</text>
+  <text x="706" y="332" class="tb">Periodic mirror</text><text x="706" y="349" class="tm">feeds sandboxes &amp; analytics</text>
 
   <!-- ops / AI tier -->
   <text x="20" y="416" class="lbl">OPS &amp; AI INFRASTRUCTURE</text>
@@ -620,7 +620,7 @@
                 <div class="cs-highlight">
                     <h3>Multi-tenant AI assistants for managers</h3>
                     <span class="cs-line"><strong>Problem.</strong> Non-technical managers wanted to query business data and prototype changes without waiting on developer time - safely.</span>
-                    <span class="cs-line"><strong>Approach.</strong> Per-manager sandboxed Tourbot instances (Docker, Traefik) with isolated databases, nightly refresh from a production mirror, per-container resource limits, allowlist-constrained (default-deny) agent command execution, and AI work isolated on per-role branches with a manual promotion step.</span>
+                    <span class="cs-line"><strong>Approach.</strong> Per-manager sandboxed Tourbot instances (Docker, Traefik) with isolated databases, refreshed every few hours from a production mirror, per-container resource limits, allowlist-constrained (default-deny) agent command execution, and AI work isolated on per-role branches with a manual promotion step.</span>
                     <span class="cs-line"><strong>Outcome.</strong> Managers explore data and draft workflow changes through conversation; isolation and a human gate keep production safe.</span>
                 </div>
 
