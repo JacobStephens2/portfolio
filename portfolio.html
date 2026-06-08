@@ -510,6 +510,13 @@
         }
         .card-dot.is-active { background: #fff; transform: scale(1.2); }
         .card-dot:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .seven { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 12px; padding: 1.1rem 1.3rem; margin-bottom: 1.25rem; box-shadow: var(--shadow); }
+        .seven-head strong { display: block; font-family: 'Crimson Text', serif; font-size: 1.3rem; letter-spacing: -0.01em; }
+        .seven-head span { display: block; color: var(--muted); font-size: 0.92rem; margin: 0.15rem 0 0.9rem; }
+        .seven-list { margin: 0 0 0.9rem; padding-left: 1.4rem; display: grid; gap: 0.4rem; }
+        .seven-list li { color: var(--muted); font-size: 0.95rem; }
+        .seven-list li b { color: var(--text); }
+        @media (min-width: 720px) { .seven-list { grid-template-columns: 1fr 1fr; column-gap: 1.6rem; } }
     </style>
 </head>
 <body>
@@ -555,6 +562,22 @@
                         <a href="/eta-platform.html" class="portfolio-link">Read the ETA Platform case study &rarr;</a>
                         <a href="https://github.com/JacobStephens2/infrastructure-patterns" class="portfolio-link" target="_blank" rel="noopener">Architecture decisions (ADRs) &rarr;</a>
                     </div>
+                </div>
+                <div class="seven">
+                    <div class="seven-head">
+                        <strong>The seven-boundary agent-safety checklist</strong>
+                        <span>How an AI agent is allowed to touch a revenue-critical legacy system - and where a human stays in command.</span>
+                    </div>
+                    <ol class="seven-list">
+                        <li><b>Isolation</b> - each agent runs in its own per-role container; no shared filesystem or database.</li>
+                        <li><b>Data</b> - a snapshot-refreshed replica with least-privilege, read-only DB users; production write paths are off-limits.</li>
+                        <li><b>Command</b> - default-deny execution; only an explicit allowlist of commands runs.</li>
+                        <li><b>Code promotion</b> - nothing reaches production without a human merge and review gate.</li>
+                        <li><b>Audit</b> - every action is logged and attributable; the trail reads "the system did X," and is reversible.</li>
+                        <li><b>Rollback</b> - every change ships with a kill switch or manual fallback.</li>
+                        <li><b>Upstream &amp; downstream</b> - known model provenance, a labor-impact note, and an explicit not-delegated list: no agent approves, merges, deploys, pays, or alters revenue-critical data without a named human.</li>
+                    </ol>
+                    <a href="https://github.com/JacobStephens2/infrastructure-patterns" class="portfolio-link" target="_blank" rel="noopener">The boundaries as sanitized ADRs &rarr;</a>
                 </div>
                 <div class="portfolio-grid">
                     <article class="portfolio-item" id="tourbot">
