@@ -1146,14 +1146,14 @@
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">Cascade</h3>
-                            <p class="portfolio-summary">A waterfall white-noise player for focus and sleep - shipped as web (PWA) and Android shells driven by one headless Rust core, with the same core architected to extend to macOS, Windows, iOS, and watchOS.</p>
+                            <p class="portfolio-summary">A waterfall white-noise player for focus and sleep - one headless Rust core driving native shells on web (PWA), Android, macOS, and Windows, with iOS and watchOS in progress on the same core.</p>
                             <div class="portfolio-block">
                                 <strong>Why it matters</strong>
                                 <span>A daily-use focus/sleep sound app, and an architecture kata: prove a single Rust core can power genuinely native UIs across platforms without a web wrapper. The core owns all behavior - state, pomodoro/sleep timers, custom durations, volume, persisted settings, and time via explicit tick events - and never touches an audio API.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>What stands out</strong>
-                                <span>A coarse <code>dispatch(command) &rarr; {snapshot, effects}</code> boundary serialized as one JSON wire shape, so every shell is a thin native UI over shared Rust logic. Shipped today: the web (PWA) and Android shells, bound via wasm-bindgen and UniFFI (Kotlin) with native media integration (Web Audio, Media3) and an installable, offline PWA. The same boundary is designed to extend to the Apple and Windows shells (UniFFI/Swift, a hand-rolled C ABI + P/Invoke) - in progress.</span>
+                                <span>A coarse <code>dispatch(command) &rarr; {snapshot, effects}</code> boundary serialized as one JSON wire shape, so every shell is a thin native UI over shared Rust logic. Running today across web (PWA), Android, macOS, and Windows - the core bound via wasm-bindgen (web), UniFFI/Kotlin (Android, Media3), UniFFI/Swift (macOS), and a hand-rolled C ABI + P/Invoke (Windows), each a thin native UI with the web shell installable and offline. The iOS and watchOS shells reuse the same boundary and are in progress.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">Rust</span>
