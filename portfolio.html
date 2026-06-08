@@ -460,6 +460,56 @@
         }
             .cs-callout{display:flex;flex-wrap:wrap;align-items:center;gap:0.75rem;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:0.85rem 1.1rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
         .cs-callout span{color:var(--muted);font-size:0.95rem;}
+        .image-frame { position: relative; }
+        .card-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 999px;
+            background: rgba(15, 12, 9, 0.5);
+            color: #fff;
+            font-size: 1.35rem;
+            line-height: 1;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s ease, background 0.2s ease;
+            z-index: 3;
+        }
+        .image-frame:hover .card-nav { opacity: 1; }
+        .card-nav:hover { background: rgba(15, 12, 9, 0.8); }
+        .card-nav:focus-visible { opacity: 1; outline: 2px solid #fff; outline-offset: 2px; }
+        .card-nav--prev { left: 0.5rem; }
+        .card-nav--next { right: 0.5rem; }
+        .card-dots {
+            position: absolute;
+            bottom: 0.6rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.4rem;
+            padding: 0.3rem 0.5rem;
+            border-radius: 999px;
+            background: rgba(15, 12, 9, 0.4);
+            z-index: 3;
+        }
+        .card-dot {
+            width: 0.45rem;
+            height: 0.45rem;
+            padding: 0;
+            border: none;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.55);
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .card-dot.is-active { background: #fff; transform: scale(1.2); }
+        .card-dot:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
     </style>
 </head>
 <body>
@@ -1350,9 +1400,9 @@
             }
         }
 
-        function openLightbox(images, imageTitle, captions) {
+        function openLightbox(images, imageTitle, captions, startIndex) {
             currentImages = images;
-            currentIndex = 0;
+            currentIndex = startIndex || 0;
             currentTitle = imageTitle || '';
             currentCaptions = captions || [];
             renderCurrent();
@@ -1384,16 +1434,59 @@
         }
 
         imageButtons.forEach((button) => {
+            const multi = button.dataset.images;
+            const images = multi
+                ? multi.split(',').map((s) => s.trim()).filter(Boolean)
+                : [button.dataset.image];
+            const capData = button.dataset.captions;
+            const captions = capData
+                ? capData.split(',').map((s) => s.trim())
+                : [];
+            const cardImg = button.querySelector('img');
+            let idx = 0;
+
+            // Cards with more than one image get inline arrows + dots so the
+            // viewer can flip through on the card. Clicking the image still
+            // opens the full-page lightbox at whatever image is showing.
+            if (images.length > 1) {
+                const frame = document.createElement('div');
+                frame.className = 'image-frame';
+                button.parentNode.insertBefore(frame, button);
+                frame.appendChild(button);
+
+                const show = (i) => {
+                    idx = (i + images.length) % images.length;
+                    if (cardImg) cardImg.src = images[idx];
+                    frame.querySelectorAll('.card-dot').forEach((d, di) =>
+                        d.classList.toggle('is-active', di === idx));
+                };
+                const arrow = (cls, label, glyph, step) => {
+                    const a = document.createElement('button');
+                    a.type = 'button';
+                    a.className = 'card-nav ' + cls;
+                    a.setAttribute('aria-label', label);
+                    a.innerHTML = glyph;
+                    a.addEventListener('click', (e) => { e.stopPropagation(); show(idx + step); });
+                    return a;
+                };
+                frame.appendChild(arrow('card-nav--prev', 'Previous image', '&lsaquo;', -1));
+                frame.appendChild(arrow('card-nav--next', 'Next image', '&rsaquo;', 1));
+
+                const dots = document.createElement('div');
+                dots.className = 'card-dots';
+                images.forEach((_, di) => {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = 'card-dot' + (di === 0 ? ' is-active' : '');
+                    dot.setAttribute('aria-label', 'Show image ' + (di + 1));
+                    dot.addEventListener('click', (e) => { e.stopPropagation(); show(di); });
+                    dots.appendChild(dot);
+                });
+                frame.appendChild(dots);
+            }
+
             button.addEventListener('click', () => {
-                const multi = button.dataset.images;
-                const images = multi
-                    ? multi.split(',').map((s) => s.trim()).filter(Boolean)
-                    : [button.dataset.image];
-                const capData = button.dataset.captions;
-                const captions = capData
-                    ? capData.split(',').map((s) => s.trim())
-                    : [];
-                openLightbox(images, button.dataset.title, captions);
+                openLightbox(images, button.dataset.title, captions, idx);
             });
         });
 
