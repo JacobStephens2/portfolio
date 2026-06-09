@@ -1085,6 +1085,41 @@
                         </div>
                     </article>
 
+                    <article class="portfolio-item" id="k3s-demo">
+                        <button class="image-button" type="button" data-image="screenshots/k3s-demo.svg" data-title="k3s demo architecture: Cloudflare DNS to an AWS EC2 k3s node running a stateless app Deployment in front of a Redis StatefulSet, TLS via cert-manager">
+                            <img src="screenshots/k3s-demo.svg" alt="Kubernetes demo architecture: browser over HTTPS to Cloudflare DNS to an AWS EC2 k3s node; Traefik ingress to a 2-pod app Deployment and a Redis StatefulSet with a PVC; provisioned by Terraform and cert-manager" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Kubernetes on k3s (live demo)</h3>
+                            <p class="portfolio-summary">A live, HTTPS-secured two-tier Kubernetes app on a single k3s node - a stateless web Deployment in front of a Redis StatefulSet - provisioned end to end by Terraform and cloud-init. A deliberate Kubernetes exercise, kept separate from my systemd-based production fleet.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>I run production as systemd services on one VPS, which is the right tool for a single box - an orchestrator there would add control-plane and networking complexity for no benefit. But I wanted a genuine, running Kubernetes artifact that demonstrates real cluster operations, without putting an orchestrator under live services.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>A small stateless FastAPI service (multi-stage, non-root image) fronting a Redis StatefulSet with a PersistentVolumeClaim, with production-grade manifests: a rolling-update Deployment with liveness/readiness probes, CPU/memory limits, a hardened securityContext (non-root, read-only root filesystem, dropped capabilities), ConfigMap and Secret injected via envFrom, a HorizontalPodAutoscaler, a Traefik ingress, and kustomize. Terraform plus cloud-init provision an AWS EC2 node and bootstrap k3s and the app; cert-manager and Let's Encrypt issue TLS. The manifests are schema-validated with kubeconform in CI.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>A clickable, TLS-secured demo where <code>/count</code> increments a counter held in Redis and shared across both app pods - the whole path from <code>terraform apply</code> to a running, HTTPS-terminated cluster, as code.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Kubernetes</span>
+                                <span class="portfolio-tag">k3s</span>
+                                <span class="portfolio-tag">Terraform</span>
+                                <span class="portfolio-tag">AWS EC2</span>
+                                <span class="portfolio-tag">Docker</span>
+                                <span class="portfolio-tag">cert-manager</span>
+                                <span class="portfolio-tag">Redis</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://k3s-demo.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Live site</a>
+                                <a href="https://github.com/JacobStephens2/k3s-demo" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Repo</a>
+                            </div>
+                        </div>
+                    </article>
+
                     <article class="portfolio-item" id="lector">
                         <button class="image-button" type="button" data-image="screenshots/lector.png" data-title="lector - paste markdown, choose a voice, convert to an MP3, narrated by a self-hosted neural TTS model">
                             <img src="screenshots/lector.png" alt="lector web app: a markdown input box, a voice selector, sample voice players, and a Convert to audio button" class="portfolio-image">
