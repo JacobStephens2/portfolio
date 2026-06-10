@@ -257,7 +257,10 @@
         .portfolio-collapse {
             display: grid;
             gap: 0.95rem;
-            max-height: 2000px;
+            /* Expanded cap must exceed the tallest card at mobile width -
+               long entries pushed past the old 2000px and overflowed onto
+               the tags below. Kept finite so the collapse still animates. */
+            max-height: 6000px;
             transition: max-height 0.4s ease;
         }
 
