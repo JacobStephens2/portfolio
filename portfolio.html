@@ -651,6 +651,37 @@
                         </div>
                     </article>
 
+                    <article class="portfolio-item" id="tourbot-terminal">
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Tourbot Terminal: Coding Agents as a Platform Service</h3>
+                            <p class="portfolio-summary">A browser terminal built into the ERP itself - persistent Claude Code and Codex CLI sessions running inside each manager's own sandbox, opened from the Tourbot menu like any other page. Where Tourbot Chat gives managers an assistant, the Terminal hands them the same coding agents an engineer uses - with the platform supplying the guardrails.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>The strongest building tools are terminal agents - Claude Code, Codex CLI - but they assume a shell, SSH, and tmux, none of which a business manager has. The chat assistant covers questions and prototypes, but its API-metered usage costs more per unit of work than subscription-based agent CLIs, and the CLIs are simply better at sustained building. The gap was access, not capability.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>An xterm.js terminal embedded in Tourbot behind a dedicated permission, connected over a token-authenticated WebSocket bridge (Node, node-pty) into the manager's sandbox container. Every session is a persistent tmux session - close the laptop, the agent keeps working; reconnect from any device, including a phone. A session manager spans both agent families (Claude Code and Codex sessions side by side), with file upload into the agent's workspace, full-scrollback copy, lightweight pane polling for idle detection, and one-click session reset. Under the hood, privilege separation: Claude Code runs under a dedicated non-root account via a sudo wrapper - it refuses to run as root - while other session types stay isolated on a separate tmux server.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>The general manager and marketing managers run real coding agents against their own sandboxed Tourbot - doing their own building, at subscription cost instead of API metering - while every Tourbot Chat boundary still holds: container isolation, a replica database, and the human merge gate before anything reaches production. The terminal is the access layer; the sandbox remains the safety. Platform engineering in the literal sense - taking a capability that required an engineer's toolchain and shipping it as a permissioned, self-service feature of the business system.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">xterm.js</span>
+                                <span class="portfolio-tag">WebSockets</span>
+                                <span class="portfolio-tag">node-pty</span>
+                                <span class="portfolio-tag">tmux</span>
+                                <span class="portfolio-tag">Claude Code</span>
+                                <span class="portfolio-tag">Codex CLI</span>
+                                <span class="portfolio-tag">AI Agents</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://stephens.page/notes/human-in-the-loop-ai-agents/" class="portfolio-link" target="_blank" rel="noopener">The boundary pattern it runs inside &rarr;</a>
+                            </div>
+                        </div>
+                    </article>
+
                     <article class="portfolio-item">
                         <button class="image-button" type="button" data-image="screenshots/guides.etadventures.com.png" data-title="ETA Guides Portal screenshot">
                             <img src="screenshots/guides.etadventures.com.png" alt="ETA Guides Portal mobile-first contractor application" class="portfolio-image">
