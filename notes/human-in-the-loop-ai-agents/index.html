@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human-in-the-Loop AI Agents for Legacy Business Systems | Jacob Stephens</title>
+    <meta name="description" content="The six-boundary pattern that let non-technical managers ship 14 AI-prototyped features against a 25-year-old ERP with zero agent-caused incidents: isolation, data, command surface, code promotion, audit, rollback - and the human list that must never be automated.">
+    <meta property="og:title" content="Human-in-the-loop AI agents for legacy business systems">
+    <meta property="og:description" content="Assume the agent will eventually do something wrong; build so the wrong thing is bounded, visible, and reversible. Six boundaries, one hard tradeoff, and a copyable checklist.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/notes/human-in-the-loop-ai-agents/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Human-in-the-loop AI agents for legacy business systems">
+    <meta name="twitter:description" content="Six boundaries, one hard tradeoff, and a copyable checklist for safe agents over legacy systems.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f6f1e8;
+            --panel: rgba(255, 252, 246, 0.88);
+            --text: #181512;
+            --muted: #625a52;
+            --line: rgba(24, 21, 18, 0.12);
+            --accent: #9b4d24;
+            --shadow: 0 24px 60px rgba(45, 32, 18, 0.12);
+            --code-bg: rgba(24, 21, 18, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(155, 77, 36, 0.15), transparent 24%),
+                linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+            animation: fadeInUp 0.75s ease-out;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+            border-bottom: 1px solid transparent;
+            transition: color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--text);
+            border-color: var(--text);
+        }
+
+        article.note {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            padding: 2.4rem 2.2rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(2rem, 4vw, 2.9rem);
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .meta strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1rem 1.1rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.74rem;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(155, 77, 36, 0.35);
+            transition: border-color 0.25s ease, color 0.25s ease;
+        }
+
+        a:hover,
+        a:focus-visible {
+            border-color: var(--accent);
+        }
+
+        .ai-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: rgba(24, 21, 18, 0.04);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            article.note {
+                padding: 1.6rem 1.35rem;
+                border-radius: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/notes/" class="back-link">&larr; All notes</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; AI Infrastructure</div>
+            <h1 class="title">Human-in-the-Loop AI Agents for Legacy Business Systems</h1>
+            <p class="meta"><strong>June 10, 2026</strong> &middot; ~2,100 words &middot; Isolation, auditability, and review gates</p>
+
+            <p>Over the past year I gave non-technical managers at a 40-person travel operator direct AI-agent access to a 25-year-old PHP/MySQL ERP that processes the company's reservations, payments, and payroll-adjacent expense flows - and 14 manager-prototyped features have shipped to production with zero agent-caused incidents. The interesting part is not the AI. The interesting part is the set of boundaries that made it safe to say yes.</p>
+
+            <p>We are a two-engineer company, and the infrastructure side - the servers, the deploy pipeline, the database operations, and all of the agent access described here - is mine. The stakes are personal: if an agent corrupts the reservations table, I am the one restoring backups at 2 a.m., and the people whose paychecks route through the systems it touches are my coworkers. That constraint - no platform team, no SRE rotation, real money, one infrastructure owner's attention - is exactly the constraint most small businesses face when they consider letting AI touch their systems of record. This post is the pattern I built under it, written so you can copy it.</p>
+
+            <h2>The dangerous combination</h2>
+
+            <p>Legacy business systems and AI agents are individually manageable and jointly dangerous. The legacy system has no test coverage to speak of, no staging environment that faithfully mirrors production, and decades of accumulated implicit behavior - the kind where a column named <code>Status</code> means four different things depending on a second column. The agent, meanwhile, is confident, fast, and tireless. Give it production credentials and it will cheerfully "fix" things at a rate no human can review.</p>
+
+            <p>The naive responses are both wrong. "Never let AI near the ERP" forfeits real value - my managers prototype real features now instead of writing me wish-list emails. "Trust the model, it's very good now" mistakes capability for alignment with <em>your</em> definition of safe. The model is very good. It is also not the one who answers to your coworkers when payroll is wrong.</p>
+
+            <p>The correct response is architectural: assume the agent will eventually do something wrong, and build the system so that the wrong thing is bounded, visible, and reversible.</p>
+
+            <h2>Six boundaries, one diagram</h2>
+
+            <p>Every agent in this system operates inside six concentric boundaries. A seventh, which is about people rather than processes, gets its own section below.</p>
+
+            <pre><code>┌─────────────────────────────────────────────┐
+│ 6 ROLLBACK    deploy gate + healthcheck +    │
+│               revert path + kill switch      │
+│  ┌─────────────────────────────────────────┐ │
+│  │ 5 AUDIT     every query attributable to  │ │
+│  │             an identity + host + time    │ │
+│  │  ┌─────────────────────────────────────┐ │ │
+│  │  │ 4 CODE PROMOTION   agent proposes,  │ │ │
+│  │  │             human merges - always   │ │ │
+│  │  │  ┌─────────────────────────────────┐│ │ │
+│  │  │  │ 3 COMMAND SURFACE   default-deny ││ │ │
+│  │  │  │  ┌─────────────────────────────┐ ││ │ │
+│  │  │  │  │ 2 DATA   snapshot copy,     │ ││ │ │
+│  │  │  │  │   least-privilege DB user   │ ││ │ │
+│  │  │  │  │  ┌─────────────────────────┐│ ││ │ │
+│  │  │  │  │  │ 1 ISOLATION  one agent, ││ ││ │ │
+│  │  │  │  │  │   one container, one    ││ ││ │ │
+│  │  │  │  │  │   role, resource limits ││ ││ │ │
+│  │  │  │  │  └─────────────────────────┘│ ││ │ │
+│  │  │  │  └─────────────────────────────┘ ││ │ │
+│  │  │  └─────────────────────────────────┘│ │ │
+│  │  └─────────────────────────────────────┘ │ │
+│  └─────────────────────────────────────────┘ │
+└─────────────────────────────────────────────┘</code></pre>
+
+            <p><strong>1 - Isolation.</strong> Each manager gets their own container running their own agent session against their own copy of the application. One agent, one container, one human role. Containers carry CPU and memory limits, so a runaway loop degrades one sandbox, not the host. Nothing an agent does in one sandbox is visible to another. This is the cheapest boundary to build and the one that makes every other boundary enforceable, because "the agent" is now a specific OS-level identity you can constrain, meter, and kill.</p>
+
+            <p><strong>2 - Data.</strong> Agents never see the production database. Each sandbox points at a snapshot-refreshed copy, synced every few hours, through a database user that holds the minimum grants for that role - and those grants are pinned to the sandbox host, so the credential is useless anywhere else. A leaked sandbox credential gets an attacker read access to hours-old copy data from one specific machine. That is a contained, survivable failure.</p>
+
+            <p><strong>3 - Command surface.</strong> Default-deny. The agent's shell allowlist names the commands it may run; everything else is refused. It cannot reach package managers, cannot open arbitrary outbound connections, cannot SSH onward to other hosts. When a new legitimate need appears, a human adds the specific command to the allowlist - the surface only grows by deliberate decision, never by agent initiative.</p>
+
+            <p><strong>4 - Code promotion.</strong> This is the load-bearing boundary. Agents propose changes as pull requests; a human reviews and merges - always, with no exceptions for "trivial" changes, because the agent does not get to decide what is trivial. Code reaches production only through the same deploy pipeline a human uses: gated, healthchecked, logged. The agent's work product is a <em>proposal</em>, never an <em>action</em> on the system of record.</p>
+
+            <p><strong>5 - Audit.</strong> Every database connection is attributable: which identity, from which host, at what time. Agent transcripts persist, so "what did the agent actually do and why" is answerable after the fact, not reconstructable from guesswork. A practical rule that has paid for itself: make the automated identity connect <em>remotely</em> under its own user even when a local socket would work, because local-socket connections inherit ambient privileges and blur exactly the attribution you will want during an incident.</p>
+
+            <p><strong>6 - Rollback.</strong> Deploys run through a script with a post-deploy healthcheck and a documented revert path. The kill switch for any agent is one command - stop the container - and the kill switch for all of them is not much longer. Schema changes use online DDL with the rollback statement written down <em>before</em> the change is applied. If you cannot say in one sentence how you would undo an automation, the automation is not ready.</p>
+
+            <h2>The "do not automate" line</h2>
+
+            <p>One rule survives every iteration of this system, and I would adopt it before any of the technology: <strong>no agent approves, merges, deploys, pays, hires, fires, disciplines, denies service, or materially alters revenue-critical data without a named human gate.</strong> Write the list down. Publish it where the people affected can read it. The list is short, it costs nothing, and it converts "we use AI responsibly" from a slogan into a checkable claim - anyone can ask "who was the named human on this change?" and the audit boundary above means there is always an answer.</p>
+
+            <h2>What this actually shipped</h2>
+
+            <p>The payoff is concrete. Managers who previously queued feature requests through me now prototype them directly: they describe what they want, the agent builds it against their sandbox, they iterate until it behaves, and I review a working pull request instead of interpreting a wish-list email. Fourteen of those manager-prototyped features have shipped. The quality of what reaches my review queue went <em>up</em> - a PR that a manager has already exercised against realistic data is a far better artifact than a specification written from memory.</p>
+
+            <p>And the boundaries earned their keep in the boring way: not by preventing a dramatic incident, but by making whole categories of incident structurally impossible, so that my review attention - the scarcest resource in a shop with no platform team - goes to "is this feature right" instead of "could this destroy something."</p>
+
+            <h2>The hard tradeoff: the human gate is a bottleneck, on purpose</h2>
+
+            <p>Honesty requires naming the cost. Boundary 4 routes every change through one person's review, and that person is me. The gate caps throughput: a manager whose prototype works on Tuesday may wait until Thursday for production. During my vacation, the queue simply holds. Fourteen features in a year is the number <em>with</em> that latency included - a platform team running evals and graduated autonomy would ship faster.</p>
+
+            <p>I keep the gate anyway, for a reason that is easy to underrate: review-at-promotion is the only boundary on this list that checks <em>intent</em>, not just <em>blast radius</em>. Boundaries 1-3 limit what a wrong action can damage; boundary 5 tells you what happened; boundary 6 lets you undo it. Only the human gate asks "should this change exist at all" - and in a business where the data is people's reservations and money, I want that question asked by someone who can be embarrassed at the staff meeting. The day the queue latency genuinely hurts, the fix is a second reviewer, not a softer gate.</p>
+
+            <h2>When I'd choose differently</h2>
+
+            <p>This pattern is tuned for a specific situation: revenue-critical legacy state, sensitive data, and a team too small for dedicated platform engineering. Change the situation and the design should change with it.</p>
+
+            <ul>
+                <li><strong>Greenfield SaaS with real test coverage and staging:</strong> let agents run more autonomously against ephemeral environments and lean on CI plus evals instead of per-change human review. The merge gate earns its cost from the <em>absence</em> of a safety net underneath; if you have the net, the gate can loosen.</li>
+                <li><strong>Non-sensitive data:</strong> the snapshot-copy boundary matters much less. Live read replicas are simpler to operate and fresher.</li>
+                <li><strong>A real platform team:</strong> graduated autonomy - agents earn wider permissions per-task-class as eval evidence accumulates - beats my static allowlists, which are a single-infrastructure-owner simplification.</li>
+                <li><strong>No one available to review at all:</strong> then do not deploy agents against the system of record, full stop. The pattern's floor is one accountable human; below that floor, the honest answer is "not yet."</li>
+            </ul>
+
+            <h2>The labor note</h2>
+
+            <p>Two things belong in any honest write-up of this kind, and they are usually omitted.</p>
+
+            <p>First, downstream: this automation changed my coworkers' work, and the direction of that change was the design goal, not a side effect. Managers went from supplicants in a feature queue to builders of their own tools - more agency, not less. The pattern aims every automation at removing drudgery rather than monitoring people; nothing in this system surveils an employee, scores an employee, or paces an employee's work. If your version of it does, you have built a different thing and should say so plainly.</p>
+
+            <p>Second, upstream: the agents run on frontier models trained and tuned with substantial human labor - data annotation and safety work whose conditions and wages I cannot verify from vendor disclosures. I mark that opaque rather than pretending otherwise. "Cheap magic" is not an honest description of what powers these systems, and small-business operators adopting them should at least know what they cannot currently know.</p>
+
+            <h2>The copyable checklist</h2>
+
+            <p>Before any AI agent touches a business system you are responsible for:</p>
+
+            <ol>
+                <li><strong>Isolation</strong> - one agent, one container, one human role; resource limits set.</li>
+                <li><strong>Data</strong> - copy or replica, never production; least-privilege DB user; credentials pinned to host.</li>
+                <li><strong>Command surface</strong> - default-deny allowlist; grows only by human decision.</li>
+                <li><strong>Code promotion</strong> - agent proposes, named human merges; no exceptions.</li>
+                <li><strong>Audit</strong> - every action attributable to identity + host + time; transcripts kept.</li>
+                <li><strong>Rollback</strong> - healthchecked deploys; revert path written before the change; one-command kill switch.</li>
+                <li><strong>People</strong> - the "do not automate" list published; downstream work changed toward agency, not surveillance; upstream labor opacity acknowledged.</li>
+            </ol>
+
+            <p>If you run a small business on an old system and the AI vendors are telling you it is all upside, the checklist above is what the upside actually costs to capture safely. In my experience the cost is modest, mostly paid once, and dramatically smaller than one bad incident.</p>
+
+            <p>What I have not solved: the human gate does not scale past a reviewer or two, my allowlists are maintained by hand, and I still lack a principled way to decide when an agent has <em>earned</em> a wider surface rather than just not having failed yet. If you have run graduated autonomy against a legacy system with real consequences and have evidence about what works, I would genuinely like to hear it.</p>
+
+            <p>A shorter companion note on the sandbox layer specifically - the per-manager containers and the four-hourly database rebuild - is at <a href="/notes/sandboxing-ai-agents/">Sandboxing AI Agents per Business Role</a>.</p>
+
+            <div class="ai-note">
+                Drafted from my architecture notes with help from Claude. The design and the decisions are mine; the prose is collaborative.
+            </div>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
