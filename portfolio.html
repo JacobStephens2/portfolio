@@ -633,7 +633,7 @@
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
-                                <span>Non-technical managers can independently explore business data, generate custom reports, and prototype workflow changes through plain conversation - no developer in the loop for routine questions - while the system enforces per-manager isolation, read-only data access, and code-review boundaries that keep the production platform safe from accidental or unreviewed change.</span>
+                                <span>Non-technical managers independently explore business data, generate custom reports, and prototype workflow changes through plain conversation - 14 manager-prototyped features have shipped to production through the human merge gate, across all four roles (sales, marketing, GM, IT), with zero agent-caused incidents - while the system enforces per-manager isolation, read-only data access, and code-review boundaries that keep the production platform safe from accidental or unreviewed change.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">OpenClaw</span>
@@ -645,6 +645,7 @@
                                 <span class="portfolio-tag">AI Agents</span>
                             </div>
                             <div class="portfolio-links">
+                                <a href="https://stephens.page/notes/human-in-the-loop-ai-agents/" class="portfolio-link" target="_blank" rel="noopener">Pattern write-up &rarr;</a>
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
@@ -845,6 +846,36 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item" id="fleet-observability">
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Fleet Observability &amp; Measured Database Tuning</h3>
+                            <p class="portfolio-summary">A Prometheus, Grafana, and Alertmanager stack on a dedicated Terraform-provisioned droplet, instrumenting Educational Travel Adventures' 14-host fleet - followed by a measurement-driven tuning pass that removed ~80% of the production database's query load.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>The bespoke status prober answered "is it up?" but not "why is database CPU at 65%?" - no metrics history, no capacity trends, and paging logic embedded in a dashboard rather than a dedicated alert pipeline. Performance work was anecdotal: pages felt slow, but nothing measured where the query time actually went.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>Node, mysqld, and blackbox exporters across all 14 hosts - covering host metrics, MySQL replication health, public-endpoint uptime, and TLS certificate expiry - scraped by Prometheus on a dedicated monitoring droplet provisioned with Terraform, visualized in Grafana, and paged through Alertmanager via email and Twilio SMS. The full rule-to-SMS chain was verified end to end with a live test alert before the old dashboard pager was switched off, so there was never a coverage gap. Then, with the database instrumented, a <code>performance_schema</code>-driven pass ranked 27 days of production queries by total time: three full-table-scan hot queries dominated, and three composite indexes - applied with online DDL (INPLACE, LOCK=NONE), EXPLAIN-verified before and after, rollback written first - eliminated them. The remaining load was diagnosed as application-level N+1 call volume and deliberately left for an app-layer fix rather than papered over with infrastructure.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>One paging pipeline with a single source of alerting truth; capacity questions answered from dashboards instead of SSH sessions; and ~80% of measured production query time (~404K of ~500K query-seconds) removed by three indexes that took under a second each to apply, with zero downtime. "It got faster" became a before/after with a graph behind it.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Prometheus</span>
+                                <span class="portfolio-tag">Grafana</span>
+                                <span class="portfolio-tag">Alertmanager</span>
+                                <span class="portfolio-tag">Terraform</span>
+                                <span class="portfolio-tag">MySQL</span>
+                                <span class="portfolio-tag">performance_schema</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://github.com/JacobStephens2/infrastructure-patterns/blob/main/adr/0011-instrumented-metrics-stack-over-bespoke-prober.md" class="portfolio-link" target="_blank" rel="noopener">ADR 0011: why a metrics stack &rarr;</a>
                             </div>
                         </div>
                     </article>
@@ -1099,7 +1130,7 @@
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>A small stateless FastAPI service (multi-stage, non-root image) fronting a Redis StatefulSet with a PersistentVolumeClaim, with production-grade manifests: a rolling-update Deployment with liveness/readiness probes, CPU/memory limits, a hardened securityContext (non-root, read-only root filesystem, dropped capabilities), ConfigMap and Secret injected via envFrom, a HorizontalPodAutoscaler, a Traefik ingress, and kustomize. Terraform plus cloud-init provision an AWS EC2 node and bootstrap k3s and the app; cert-manager and Let's Encrypt issue TLS. The manifests are schema-validated with kubeconform in CI.</span>
+                                <span>A small stateless FastAPI service (multi-stage, non-root image) fronting a Redis StatefulSet with a PersistentVolumeClaim, with production-grade manifests: a rolling-update Deployment with liveness/readiness probes, CPU/memory limits, a hardened securityContext (non-root, read-only root filesystem, dropped capabilities), ConfigMap and Secret injected via envFrom, a HorizontalPodAutoscaler, a Traefik ingress, and kustomize. Terraform plus cloud-init provision an AWS EC2 node and bootstrap k3s and the app; cert-manager and Let's Encrypt issue TLS. The manifests are schema-validated with kubeconform in CI, and a five-rule OPA Gatekeeper admission layer (non-root, resource limits, no <code>:latest</code>, the hardening triad, required probes) enforces the same posture at the API server - rejected-if-violated, not trusted-by-convention - with one rule re-expressed as a built-in ValidatingAdmissionPolicy in CEL to make the engine choice legible.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
@@ -1112,6 +1143,7 @@
                                 <span class="portfolio-tag">AWS EC2</span>
                                 <span class="portfolio-tag">Docker</span>
                                 <span class="portfolio-tag">cert-manager</span>
+                                <span class="portfolio-tag">OPA Gatekeeper</span>
                                 <span class="portfolio-tag">Redis</span>
                             </div>
                             <div class="portfolio-links">
@@ -1155,34 +1187,6 @@
                         </div>
                     </article>
 
-                    <article class="portfolio-item" id="quadrille">
-                        <button class="image-button" type="button" data-image="screenshots/Quadrille-Android-app-screenshot.jpg" data-images="screenshots/Quadrille-Android-app-screenshot.jpg,screenshots/Quadrille-Android-Chrome-workout-screenshot.jpg,screenshots/quadrille.app.png" data-captions="Android app,Mobile web,Web app" data-title="Quadrille screenshot">
-                            <img src="screenshots/Quadrille-Android-app-screenshot.jpg" alt="Quadrille application" class="portfolio-image portfolio-image--portrait">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">Quadrille</h3>
-                            <p class="portfolio-summary">A local-first, cross-platform weightlifting tracker that digitizes the paper quadrille-grid workflow - reusable templates, a set-logging grid, and wall-clock rest timers that survive backgrounding.</p>
-                            <div class="portfolio-block">
-                                <strong>Why it matters</strong>
-                                <span>A daily-use training tool shipped to web and mobile from a single codebase - product thinking around a dense, spreadsheet-like logging workflow most fitness apps get wrong, with a rest timer that stays correct no matter what the OS does to the app.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What stands out</strong>
-                                <span>One Flutter/Dart codebase across iOS, Android, and web with a Drift/SQLite local-first store; a deadline-based wall-clock rest timer that survives backgrounding and process death, extracted as the open-source countdown_ring package.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">Flutter</span>
-                                <span class="portfolio-tag">Dart</span>
-                                <span class="portfolio-tag">Drift</span>
-                                <span class="portfolio-tag">Riverpod</span>
-                                <span class="portfolio-tag">PWA</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://quadrille.app" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/quadrille-showcase" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
-                            </div>
-                        </div>
-                    </article>
 
                     <article class="portfolio-item" id="creighton-tracker">
                         <button class="image-button" type="button" data-image="screenshots/Chart35-Android-app-screenshot.jpg" data-images="screenshots/Chart35-Android-app-screenshot.jpg,screenshots/Chart35-Android-Chrome-chart-screenshot.jpg,screenshots/creightontracker.com.png,screenshots/creightontracker.com-light.png" data-captions="Android app,Mobile web,Web app (dark),Web app (light)" data-title="Chart35 screenshot">
@@ -1275,177 +1279,11 @@
                         </div>
                     </article>
 
-                    <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/Android-Artifact-app-screenshot.jpg" data-images="screenshots/Android-Artifact-app-screenshot.jpg,screenshots/artifact.stewardgoods.com.png" data-captions="Android app,Web app" data-title="Artifact Manager screenshot">
-                            <img src="screenshots/Android-Artifact-app-screenshot.jpg" alt="Artifact Manager personal possessions tracker" class="portfolio-image portfolio-image--portrait">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">Artifact Manager</h3>
-                            <p class="portfolio-summary">A multi-tenant possessions tracker that operationalizes the Minimalists' 90/90 Rule - log when you use the things you own, see what's due to be used next, and decide what to declutter.</p>
-                            <div class="portfolio-block">
-                                <strong>Why it matters</strong>
-                                <span>Translates a specific philosophy ("if you haven't used something in 90 days and won't use it in 90, let it go") into a working personal-informatics tool. Domain-aware UX - sweet spots, playgroups, candidate exploration, aversions - instead of generic CRUD over a "things I own" table.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What stands out</strong>
-                                <span>Multi-tenant PWA with offline support; REST API with JWT auth, rate limiting, cursor pagination, and structured request logging; PHPUnit test suite; daily cron emails users their "due to use" items; OOP data layer with per-domain query modules.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">PHP</span>
-                                <span class="portfolio-tag">MySQL</span>
-                                <span class="portfolio-tag">REST API</span>
-                                <span class="portfolio-tag">JWT</span>
-                                <span class="portfolio-tag">PWA</span>
-                                <span class="portfolio-tag">PHPUnit</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://artifact.stephens.page/login.php?redirectURL=%2F" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/artifact-manager-web-app" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
-                            </div>
-                        </div>
-                    </article>
 
-                    <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/wedding.stephens.page.png" data-images="screenshots/wedding.stephens.page.png,screenshots/guest-manager.png" data-captions="Guest-facing event site,Admin: guest management" data-title="Event Operations Platform screenshot">
-                            <img src="screenshots/wedding.stephens.page.png" alt="Wedding platform and RSVP application" class="portfolio-image">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">Event Operations Platform</h3>
-                            <p class="portfolio-summary">A full-stack event-operations platform (built for a wedding) - invite-based RSVPs, guest management, registry tracking, photo uploads, travel details, and admin tooling.</p>
-                            <div class="portfolio-block">
-                                <strong>Why it matters</strong>
-                                <span>What is usually a brochure site becomes a real application with workflows, data, and event operations behind it.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What stands out</strong>
-                                <span>Group lookup logic, admin views, cron-backed monitoring, and an operationally complete personal project.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">PHP</span>
-                                <span class="portfolio-tag">MySQL</span>
-                                <span class="portfolio-tag">JavaScript</span>
-                                <span class="portfolio-tag">Operations</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://wedding.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/wedding-platform" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
-                            </div>
-                        </div>
-                    </article>
 
-                    <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/clowder-and-crest-brawl.jpg" data-images="screenshots/clowder-and-crest-brawl.jpg,screenshots/clowder-and-crest-chase.jpg,screenshots/clowder.stephens.page.png" data-captions="Brawl minigame,Chase minigame,Web app" data-title="Clowder & Crest screenshot">
-                            <img src="screenshots/clowder-and-crest-brawl.jpg" alt="Clowder & Crest cat guild management game" class="portfolio-image portfolio-image--portrait">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">Clowder & Crest</h3>
-                            <p class="portfolio-summary">A medieval cat guild management game - 14 minigame types, an explorable town map, a 7-chapter narrative arc, and Fire Emblem-style bond conversations between cats.</p>
-                            <div class="portfolio-block">
-                                <strong>Why it matters</strong>
-                                <span>A complete game shipped from concept to native Android - game design, pixel art, audio composition, minigame variety, narrative writing, and deployment all in one project.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What stands out</strong>
-                                <span>14 distinct minigame types each authored against the design pillars of its genre; resilient Playwright playtest harness for every scene; AI-assisted asset pipeline (PixelLab sprites, ElevenLabs SFX, Suno music); Capacitor wrapper with native haptics, notifications, and lifecycle hooks.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">Phaser 3</span>
-                                <span class="portfolio-tag">TypeScript</span>
-                                <span class="portfolio-tag">Capacitor</span>
-                                <span class="portfolio-tag">Playwright</span>
-                                <span class="portfolio-tag">PixelLab</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://clowderandcrest.com" class="portfolio-link" target="_blank" rel="noreferrer">Play Now</a>
-                                <a href="https://github.com/JacobStephens2/clowder-and-crest" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
-                            </div>
-                        </div>
-                    </article>
 
-                    <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/Macro-Tracker-Android-app-screenshot.jpg" data-images="screenshots/Macro-Tracker-Android-app-screenshot.jpg,screenshots/Macro-Tracker-Portrait-Screenshot.png,screenshots/macros.stephens.page.png,screenshots/macros.stephens.page-2.png" data-captions="Android app,Mobile web,Web app,Web app (detail)" data-title="Macros Tracker screenshot">
-                            <img src="screenshots/Macro-Tracker-Android-app-screenshot.jpg" alt="Macros Tracker application" class="portfolio-image portfolio-image--portrait">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">Macros Tracker</h3>
-                            <p class="portfolio-summary">A self-hosted nutrition tracker built as a MyFitnessPal replacement - barcode scanning, recipe management, API-backed food search, charts, and offline support.</p>
-                            <div class="portfolio-block">
-                                <strong>Why it matters</strong>
-                                <span>Replaced a mainstream SaaS workflow with a personal tool shaped by actual daily use.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What stands out</strong>
-                                <span>Multi-source food data integration, practical daily-use UX, exports, and a product scope driven by firsthand usage.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">TypeScript</span>
-                                <span class="portfolio-tag">Express</span>
-                                <span class="portfolio-tag">SQLite</span>
-                                <span class="portfolio-tag">Chart.js</span>
-                                <span class="portfolio-tag">PWA</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://macros.stephens.page/" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/MacroTracker" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
-                            </div>
-                        </div>
-                    </article>
 
-                    <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/daily-dozen-android-screenshot.jpg" data-images="screenshots/daily-dozen-android-screenshot.jpg,screenshots/dailydozen.stephens.page.png" data-captions="Android app,Web app" data-title="Daily Dozen Tracker screenshot">
-                            <img src="screenshots/daily-dozen-android-screenshot.jpg" alt="Daily Dozen Tracker progressive web app" class="portfolio-image portfolio-image--portrait">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">Daily Dozen Tracker</h3>
-                            <p class="portfolio-summary">A progressive web app for tracking Dr. Greger's Daily Dozen food recommendations - offline support, progress visualization, and a Catholic stewardship framing of daily nutrition.</p>
-                            <div class="portfolio-block">
-                                <strong>Why it matters</strong>
-                                <span>Turns an evidence-based nutrition checklist into a sustained daily habit with the right cadence and a gratitude framing that fits a faith context.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What stands out</strong>
-                                <span>Node.js / Express backend with JWT auth and transactional email; PWA frontend with offline-first persistence and installable shortcut on mobile.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">JavaScript</span>
-                                <span class="portfolio-tag">Node.js</span>
-                                <span class="portfolio-tag">Express</span>
-                                <span class="portfolio-tag">PWA</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://dailydozen.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/daily_dozen" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
-                            </div>
-                        </div>
-                    </article>
 
-                    <article class="portfolio-item">
-                        <button class="image-button" type="button" data-image="screenshots/exodus-android-app-screenshot.jpg" data-images="screenshots/exodus-android-app-screenshot.jpg,screenshots/exodus40lite.stephens.page.png" data-captions="Android app,Web app" data-title="Exodus screenshot">
-                            <img src="screenshots/exodus-android-app-screenshot.jpg" alt="Exodus group habit tracking application" class="portfolio-image portfolio-image--portrait">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">Exodus</h3>
-                            <p class="portfolio-summary">A PWA for a parish men's group - tracking prayer, fasting, almsgiving, and fraternity through a shared Lenten rule of life.</p>
-                            <div class="portfolio-block">
-                                <strong>Why it matters</strong>
-                                <span>Turns a niche communal practice into a usable digital workflow for a real small-group context.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What stands out</strong>
-                                <span>Progress tracking, offline support, and a product scope built for sustained participation, not one-time visits.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">PHP</span>
-                                <span class="portfolio-tag">JavaScript</span>
-                                <span class="portfolio-tag">PWA</span>
-                                <span class="portfolio-tag">Android (Capacitor)</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://exodus.stephens.page" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/JacobStephens2/exodus" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
-                            </div>
-                        </div>
-                    </article>
                 </div>
             </section>
         </main>
