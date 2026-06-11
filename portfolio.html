@@ -604,6 +604,10 @@
                                 <strong>Result</strong>
                                 <span>An operational backbone that runs every part of the business daily - sales, booking, finance, logistics, and communications - still in production after years of continuous development.</span>
                             </div>
+                            <div class="portfolio-block" id="webhook-auth">
+                                <strong>Webhook Authentication</strong>
+                                <span>Inbound webhooks are HMAC-verified before any processing: the payment processor's settlement posts carry a nonce-prefixed HMAC-SHA256 signature checked with a timing-safe compare, and Mandrill email-event posts are verified against the URL-plus-sorted-params HMAC-SHA1 scheme. Tourbot also signs its own outbound service-to-service webhooks with HMAC-SHA256 over the raw body. The verifiers are published as <a href="https://github.com/JacobStephens2/webhook-verify" target="_blank" rel="noopener">webhook-verify</a>, with the write-up in <a href="/notes/hmac-signed-webhooks/">notes</a>.</span>
+                            </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">PHP</span>
                                 <span class="portfolio-tag">MySQL</span>

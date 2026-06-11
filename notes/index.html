@@ -232,6 +232,13 @@
 
             <section class="section">
                 <ul class="notes-list">
+                    <li>
+                        <a href="/notes/hmac-signed-webhooks/">
+                            <div class="note-meta">June 11, 2026 &middot; Security</div>
+                            <div class="note-title">HMAC-Signed Webhooks: One Primitive, Three Dialects</div>
+                            <p class="note-summary">Every webhook receiver I run verifies an HMAC signature before processing a byte - and Stripe's, Twilio's, Mandrill's, and GitHub's schemes turn out to be one primitive in three dialects. The signing bases, the five gotchas that actually bite (raw bytes, timing-safe compares, the proxy URL trap, tolerance windows, failing closed), and the verifiers extracted into a zero-dependency TypeScript library.</p>
+                        </a>
+                    </li>
                                         <li>
                         <a href="/notes/human-in-the-loop-ai-agents/">
                             <div class="note-meta">June 10, 2026 &middot; AI Infrastructure</div>

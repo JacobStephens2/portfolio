@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMAC-Signed Webhooks: One Primitive, Three Dialects | Jacob Stephens</title>
+    <meta name="description" content="Every webhook receiver I run verifies an HMAC signature before processing a byte - and Stripe's, Twilio's, Mandrill's, and GitHub's schemes are the same primitive in three dialects. The signing bases, the five gotchas that actually bite, and the extracted verifiers.">
+    <meta property="og:title" content="HMAC-Signed Webhooks: One Primitive, Three Dialects">
+    <meta property="og:description" content="Stripe's, Twilio's, Mandrill's, and GitHub's webhook signatures are one primitive in three dialects. The signing bases, the five gotchas that actually bite, and the extracted verifiers.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/notes/hmac-signed-webhooks/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="HMAC-Signed Webhooks: One Primitive, Three Dialects">
+    <meta name="twitter:description" content="Stripe's, Twilio's, Mandrill's, and GitHub's webhook signatures are one primitive in three dialects. The signing bases, the five gotchas that actually bite, and the extracted verifiers.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f6f1e8;
+            --panel: rgba(255, 252, 246, 0.88);
+            --text: #181512;
+            --muted: #625a52;
+            --line: rgba(24, 21, 18, 0.12);
+            --accent: #9b4d24;
+            --shadow: 0 24px 60px rgba(45, 32, 18, 0.12);
+            --code-bg: rgba(24, 21, 18, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(155, 77, 36, 0.15), transparent 24%),
+                linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+            animation: fadeInUp 0.75s ease-out;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+            border-bottom: 1px solid transparent;
+            transition: color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--text);
+            border-color: var(--text);
+        }
+
+        article.note {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            padding: 2.4rem 2.2rem;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Crimson Text', serif;
+            font-size: clamp(2rem, 4vw, 2.9rem);
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .meta strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.93rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.5rem 0.6rem 0.5rem 0;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(155, 77, 36, 0.35);
+            transition: border-color 0.25s ease, color 0.25s ease;
+        }
+
+        a:hover,
+        a:focus-visible {
+            border-color: var(--accent);
+        }
+
+        .ai-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: rgba(24, 21, 18, 0.04);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            article.note {
+                padding: 1.6rem 1.35rem;
+                border-radius: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/notes/" class="back-link">&larr; All notes</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; Security</div>
+            <h1 class="title">HMAC-Signed Webhooks: One Primitive, Three Dialects</h1>
+            <p class="meta"><strong>June 11, 2026</strong> &middot; ~750 words &middot; Webhook authentication</p>
+
+            <p>Every webhook receiver I run in production verifies an HMAC signature before processing a single byte, and after implementing the scheme for four different senders - a card processor's settlement posts, Mandrill message events, Twilio status callbacks, and webhooks my own services sign - the surprise is how little variety there is. It's one primitive wearing three outfits, and the bugs are never in the crypto. They're in what you feed it.</p>
+
+            <p>The problem the signature solves is blunt: a webhook endpoint is a URL on the public internet that mutates your system, and anyone can POST to it. A payment-settlement receiver that trusts unauthenticated JSON will record settlements for whoever finds the URL. The fix is a shared secret: the sender computes an HMAC over material both sides can reconstruct, puts it in a header, and the receiver recomputes and compares. One check buys you authenticity (it came from the key holder) and integrity (nothing in transit changed it).</p>
+
+            <h2>The three dialects</h2>
+
+            <table>
+                <tr>
+                    <th>Dialect</th>
+                    <th>Signing base</th>
+                    <th>Seen in</th>
+                </tr>
+                <tr>
+                    <td>Raw body</td>
+                    <td>HMAC-SHA256 over the exact request bytes</td>
+                    <td>GitHub's <code>X-Hub-Signature-256</code>; the service-to-service webhooks my own apps sign</td>
+                </tr>
+                <tr>
+                    <td>Timestamped</td>
+                    <td>HMAC-SHA256 over <code>"&lt;t&gt;.&lt;body&gt;"</code>, sent as <code>t=...,v1=...</code></td>
+                    <td>Stripe; my card processor's settlement webhook (a nonce variant of the same shape)</td>
+                </tr>
+                <tr>
+                    <td>URL + sorted params</td>
+                    <td>base64 HMAC-SHA1 over the public webhook URL with every POST param appended in key order</td>
+                    <td>Twilio's <code>X-Twilio-Signature</code>, Mandrill's <code>X-Mandrill-Signature</code></td>
+                </tr>
+            </table>
+
+            <p>The second dialect exists for a reason the other two ignore: replay. A captured raw-body request verifies forever - the signature has no notion of <em>when</em>. Prefixing a timestamp and rejecting anything outside a tolerance window (Stripe defaults to five minutes) bounds how long a recorded request stays useful.</p>
+
+            <h2>The five gotchas that actually bite</h2>
+
+            <ol>
+                <li><strong>Verify the raw bytes.</strong> The signature covers the exact bytes on the wire. Framework middleware that parses JSON and hands you a re-serialized object has already destroyed the signing base - key order, whitespace, and unicode escapes all shift. Capture the raw body, verify it, <em>then</em> parse.</li>
+                <li><strong>Compare in constant time.</strong> <code>hash_equals</code> in PHP, <code>hmac.compare_digest</code> in Python, <code>crypto.timingSafeEqual</code> in Node. A plain <code>==</code> against an attacker-supplied signature is a timing oracle that leaks how many leading characters matched.</li>
+                <li><strong>URL dialects sign the sender's view of the URL.</strong> Twilio and Mandrill signed <code>https://app.example.com/webhooks/mandrill</code> - but behind Apache or Caddy your app sees an internal scheme, host, and port. Reconstruct the public URL from configuration, not from the request. This is the one that bites the first time you deploy behind a proxy, because it worked fine in development.</li>
+                <li><strong>Tolerance windows cut both ways.</strong> Too tight and ordinary clock skew rejects legitimate traffic; absent and you have no replay defense at all. Check the timestamp in both directions - a request from the future is as wrong as one from last week.</li>
+                <li><strong>Fail closed.</strong> A missing header, a malformed header, or - the scary one - an unset signing key in your own config must reject the request. The failure mode to design against is the receiver that silently stops verifying and keeps processing.</li>
+            </ol>
+
+            <h2>What the signature doesn't give you</h2>
+
+            <p>A valid HMAC authenticates the sender. It does not authorize the payload's contents - your business rules still apply. It does not dedupe - Mandrill retries on any non-200, so event-level idempotency is your job. And it does not replace TLS - the signature proves origin, but the payload itself still crosses the wire and deserves encryption in transit.</p>
+
+            <h2>The verifiers, extracted</h2>
+
+            <p>I pulled all three dialects into <a href="https://github.com/JacobStephens2/webhook-verify" target="_blank" rel="noopener">webhook-verify</a>, a zero-dependency TypeScript library: <code>verifyGitHub</code>, <code>signTimestamped</code>/<code>verifyTimestamped</code> with a replay-tolerance window, <code>verifyTwilio</code>, and <code>verifyMandrill</code>, every comparison constant-time, with 27 tests covering the tamper, replay, and malformed-header cases above.</p>
+
+            <p>The part I haven't solved is shared-secret sprawl: one secret per sender per environment, each a credential that has to be stored, injected, and rotated. Asymmetric webhook signatures (Ed25519, as Svix uses) fix the distribution problem - the receiver holds only a public key - but none of the providers I depend on offer them. At the moment the honest answer is a secrets manager and rotation discipline, which is a process, not a primitive.</p>
+
+            <div class="ai-note">
+                Drafted from my webhook receivers and working notes with help from Claude. The work and the decisions are mine; the prose is collaborative.
+            </div>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
