@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HMAC-Signed Webhooks: One Primitive, Three Dialects | Jacob Stephens</title>
-    <meta name="description" content="Every webhook receiver I run verifies an HMAC signature before processing a byte - and Stripe's, Twilio's, Mandrill's, and GitHub's schemes are the same primitive in three dialects. The signing bases, the five gotchas that actually bite, and the extracted verifiers.">
+    <meta name="description" content="Stripe's, Twilio's, Mandrill's, and GitHub's webhook signature schemes are the same primitive in three dialects. The signing bases, the five gotchas that actually bite, and the verifiers extracted from production receivers.">
     <meta property="og:title" content="HMAC-Signed Webhooks: One Primitive, Three Dialects">
     <meta property="og:description" content="Stripe's, Twilio's, Mandrill's, and GitHub's webhook signatures are one primitive in three dialects. The signing bases, the five gotchas that actually bite, and the extracted verifiers.">
     <meta property="og:type" content="article">
@@ -251,9 +251,9 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Security</div>
             <h1 class="title">HMAC-Signed Webhooks: One Primitive, Three Dialects</h1>
-            <p class="meta"><strong>June 11, 2026</strong> &middot; ~750 words &middot; Webhook authentication</p>
+            <p class="meta"><strong>June 11, 2026</strong> &middot; ~800 words &middot; Webhook authentication</p>
 
-            <p>Every webhook receiver I run in production verifies an HMAC signature before processing a single byte, and after implementing the scheme for four different senders - a card processor's settlement posts, Mandrill message events, Twilio status callbacks, and webhooks my own services sign - the surprise is how little variety there is. It's one primitive wearing three outfits, and the bugs are never in the crypto. They're in what you feed it.</p>
+            <p>Three of the webhook receivers I run in production verify an HMAC signature before processing a single byte - a card processor's settlement posts, Mandrill message events, and service-to-service webhooks my own apps sign - and after implementing those three schemes the surprise is how little variety there is. It's one primitive wearing three outfits, and the bugs are never in the crypto. They're in what you feed it.</p>
 
             <p>The problem the signature solves is blunt: a webhook endpoint is a URL on the public internet that mutates your system, and anyone can POST to it. A payment-settlement receiver that trusts unauthenticated JSON will record settlements for whoever finds the URL. The fix is a shared secret: the sender computes an HMAC over material both sides can reconstruct, puts it in a header, and the receiver recomputes and compares. One check buys you authenticity (it came from the key holder) and integrity (nothing in transit changed it).</p>
 
@@ -293,6 +293,8 @@
                 <li><strong>Tolerance windows cut both ways.</strong> Too tight and ordinary clock skew rejects legitimate traffic; absent and you have no replay defense at all. Check the timestamp in both directions - a request from the future is as wrong as one from last week.</li>
                 <li><strong>Fail closed.</strong> A missing header, a malformed header, or - the scary one - an unset signing key in your own config must reject the request. The failure mode to design against is the receiver that silently stops verifying and keeps processing.</li>
             </ol>
+
+            <p>A sixth gotcha earned its place while I wrote this. The first draft of the opening line claimed every receiver I run verifies a signature - and fact-checking my own claim against the codebase proved it false. Older receivers, written before I held this standard, turned up without verification and became the next hardening item. Receivers you wrote years ago don't inherit the discipline you have today unless you go back and look.</p>
 
             <h2>What the signature doesn't give you</h2>
 

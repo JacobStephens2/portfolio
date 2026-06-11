@@ -606,7 +606,7 @@
                             </div>
                             <div class="portfolio-block" id="webhook-auth">
                                 <strong>Webhook Authentication</strong>
-                                <span>Inbound webhooks are HMAC-verified with a timing-safe comparison before any processing - the payment processor's settlement posts, Mandrill email events, and Tourbot's own signed outbound service-to-service webhooks. The verifiers are extracted as <a href="https://github.com/JacobStephens2/webhook-verify" target="_blank" rel="noopener">webhook-verify</a>, with the write-up in <a href="/notes/hmac-signed-webhooks/">notes</a>.</span>
+                                <span>Webhook authentication spans senders and receivers: the payment processor's settlement posts are signature-verified with a timing-safe comparison, Tourbot signs its outbound service-to-service webhooks, and the parent-engagement portal verifies those plus Mandrill's email-event signatures. The verifiers are extracted as <a href="https://github.com/JacobStephens2/webhook-verify" target="_blank" rel="noopener">webhook-verify</a>, with the write-up in <a href="/notes/hmac-signed-webhooks/">notes</a>.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">PHP</span>
