@@ -200,6 +200,129 @@
             .container { padding: 1.5rem 1rem 2.5rem; }
             .topbar { flex-direction: column; align-items: flex-start; }
         }
+
+        .image-button {
+            border: none;
+            background: #efe7da;
+            cursor: zoom-in;
+            padding: 0;
+            display: block;
+            width: 100%;
+            margin-bottom: 1.1rem;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .image-button .app-shot { margin-bottom: 0; border: none; border-radius: 0; }
+
+        .image-frame { position: relative; display: block; width: 100%; margin-bottom: 1.1rem; }
+        .image-frame > .image-button { margin-bottom: 0; }
+        .card-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 999px;
+            background: rgba(15, 12, 9, 0.5);
+            color: #fff;
+            font-size: 1.35rem;
+            line-height: 1;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s ease, background 0.2s ease;
+            z-index: 3;
+        }
+        .image-frame:hover .card-nav { opacity: 1; }
+        .card-nav:hover { background: rgba(15, 12, 9, 0.8); }
+        .card-nav:focus-visible { opacity: 1; outline: 2px solid #fff; outline-offset: 2px; }
+        .card-nav--prev { left: 0.5rem; }
+        .card-nav--next { right: 0.5rem; }
+        .card-dots {
+            position: absolute;
+            bottom: 0.6rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.4rem;
+            padding: 0.3rem 0.5rem;
+            border-radius: 999px;
+            background: rgba(15, 12, 9, 0.4);
+            z-index: 3;
+        }
+        .card-dot {
+            width: 0.45rem;
+            height: 0.45rem;
+            padding: 0;
+            border: none;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.55);
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .card-dot.is-active { background: #fff; transform: scale(1.2); }
+        .card-dot:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: rgba(15, 12, 9, 0.84);
+            z-index: 1000;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox-dialog {
+            position: relative;
+            max-width: 1100px;
+            width: 100%;
+            display: grid;
+            gap: 0.8rem;
+        }
+        .lightbox-close {
+            justify-self: end;
+            border: none;
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+            padding: 0.55rem 0.8rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font: inherit;
+        }
+        .lightbox-nav-row { display: none; justify-content: center; align-items: center; gap: 0.6rem; }
+        .lightbox-nav-row.active { display: flex; }
+        .lightbox-nav {
+            border: none;
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font: inherit;
+        }
+        .lightbox-nav:hover, .lightbox-nav:focus-visible { background: rgba(255, 255, 255, 0.24); }
+        .lightbox-counter { color: #fff; font-size: 0.92rem; opacity: 0.8; min-width: 3.5rem; text-align: center; }
+        .lightbox img {
+            display: block;
+            justify-self: center;
+            max-width: 100%;
+            max-height: 78vh;
+            border-radius: 16px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+            background: #fff;
+        }
+        .lightbox-caption {
+            margin: 0 auto;
+            color: rgba(255, 255, 255, 0.92);
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -217,7 +340,7 @@
 
         <main class="apps-grid">
             <div class="app-card">
-                <img class="app-shot" src="screenshots/quadrille.app.png" alt="Quadrille weightlifting tracker" loading="lazy">
+                <button class="image-button" type="button" data-image="screenshots/Quadrille-Android-app-screenshot.jpg" data-images="screenshots/Quadrille-Android-app-screenshot.jpg,screenshots/Quadrille-Android-Chrome-workout-screenshot.jpg,screenshots/quadrille.app.png" data-captions="Android app,Mobile web,Web app" data-title="Quadrille"><img class="app-shot" src="screenshots/Quadrille-Android-app-screenshot.jpg" alt="Quadrille screenshot" loading="lazy"></button>
                 <div class="app-name">Quadrille</div>
                 <p class="app-desc">A local-first, cross-platform weightlifting tracker that digitizes the paper quadrille-grid workflow - reusable templates, a set-logging grid, and wall-clock rest timers that survive backgrounding.</p>
                 <div class="app-tags"><span>Flutter</span><span>Dart</span><span>Drift</span><span>iOS / Android / Web</span></div>
@@ -225,7 +348,7 @@
             </div>
 
             <div class="app-card">
-                <img class="app-shot" src="screenshots/creightontracker.com-light.png" alt="Chart35 fertility charting app" loading="lazy">
+                <button class="image-button" type="button" data-image="screenshots/Chart35-Android-app-screenshot.jpg" data-images="screenshots/Chart35-Android-app-screenshot.jpg,screenshots/Chart35-Android-Chrome-chart-screenshot.jpg,screenshots/creightontracker.com.png,screenshots/creightontracker.com-light.png" data-captions="Android app,Mobile web,Web app (dark),Web app (light)" data-title="Chart35"><img class="app-shot" src="screenshots/Chart35-Android-app-screenshot.jpg" alt="Chart35 screenshot" loading="lazy"></button>
                 <div class="app-name">Chart35</div>
                 <p class="app-desc">A privacy-first fertility-cycle charting app for the Creighton Model - local-first and offline, with auto-computed CrMS stamps and end-to-end encrypted sync where the server stores ciphertext only. Found organically through search and used by real people.</p>
                 <div class="app-tags"><span>TypeScript</span><span>Vite</span><span>IndexedDB</span><span>Web Crypto</span><span>PWA</span></div>
@@ -233,7 +356,7 @@
             </div>
 
             <div class="app-card">
-                <img class="app-shot" src="screenshots/cascade.stephens.page.png" alt="Cascade white-noise player" loading="lazy">
+                <button class="image-button" type="button" data-image="screenshots/Cascade-macOS-screenshot.png" data-images="screenshots/Cascade-macOS-screenshot.png,screenshots/cascade-windows-narrow-player.png,screenshots/cascade-web-player.png,screenshots/Cascade-Android-screenshot.jpg,screenshots/cascade-core-architecture.png" data-captions="macOS app,Windows app,Web app,Android app,Architecture" data-title="Cascade"><img class="app-shot" src="screenshots/Cascade-macOS-screenshot.png" alt="Cascade screenshot" loading="lazy"></button>
                 <div class="app-name">Cascade</div>
                 <p class="app-desc">A waterfall white-noise player for focus and sleep, shipped as web (PWA) and Android shells driven by one headless Rust core - the same core architected to extend to macOS, Windows, iOS, and watchOS.</p>
                 <div class="app-tags"><span>Rust</span><span>WebAssembly</span><span>UniFFI</span><span>Jetpack Compose</span></div>
@@ -241,7 +364,7 @@
             </div>
 
             <div class="app-card">
-                <img class="app-shot" src="screenshots/clowder.stephens.page.png" alt="Clowder &amp; Crest cat guild game" loading="lazy">
+                <button class="image-button" type="button" data-image="screenshots/clowder-and-crest-brawl.jpg" data-images="screenshots/clowder-and-crest-brawl.jpg,screenshots/clowder-and-crest-chase.jpg,screenshots/clowder.stephens.page.png" data-captions="Brawl minigame,Chase minigame,Web app" data-title="Clowder &amp; Crest"><img class="app-shot" src="screenshots/clowder-and-crest-brawl.jpg" alt="Clowder &amp; Crest screenshot" loading="lazy"></button>
                 <div class="app-name">Clowder &amp; Crest</div>
                 <p class="app-desc">A medieval cat-guild management game - 14 minigame types, an explorable town map, a 7-chapter narrative arc, and Fire Emblem-style bond conversations, shipped from concept to native Android.</p>
                 <div class="app-tags"><span>Phaser 3</span><span>TypeScript</span><span>Capacitor</span><span>Android</span></div>
@@ -249,7 +372,7 @@
             </div>
 
             <div class="app-card">
-                <img class="app-shot" src="screenshots/dailydozen.stephens.page.png" alt="Daily Dozen Tracker food checklist" loading="lazy">
+                <button class="image-button" type="button" data-image="screenshots/daily-dozen-android-screenshot.jpg" data-images="screenshots/daily-dozen-android-screenshot.jpg,screenshots/dailydozen.stephens.page.png" data-captions="Android app,Web app" data-title="Daily Dozen Tracker"><img class="app-shot" src="screenshots/daily-dozen-android-screenshot.jpg" alt="Daily Dozen Tracker screenshot" loading="lazy"></button>
                 <div class="app-name">Daily Dozen Tracker</div>
                 <p class="app-desc">A PWA for tracking Dr. Greger's Daily Dozen food recommendations - offline support, progress visualization, and a stewardship framing that turns an evidence-based checklist into a daily habit.</p>
                 <div class="app-tags"><span>Node.js</span><span>Express</span><span>PWA</span></div>
@@ -257,7 +380,7 @@
             </div>
 
             <div class="app-card">
-                <img class="app-shot" src="screenshots/macros.stephens.page-2.png" alt="Macros Tracker nutrition app" loading="lazy">
+                <button class="image-button" type="button" data-image="screenshots/Macro-Tracker-Android-app-screenshot.jpg" data-images="screenshots/Macro-Tracker-Android-app-screenshot.jpg,screenshots/Macro-Tracker-Portrait-Screenshot.png,screenshots/macros.stephens.page.png,screenshots/macros.stephens.page-2.png" data-captions="Android app,Mobile web,Web app,Web app (detail)" data-title="Macros Tracker"><img class="app-shot" src="screenshots/Macro-Tracker-Android-app-screenshot.jpg" alt="Macros Tracker screenshot" loading="lazy"></button>
                 <div class="app-name">Macros Tracker</div>
                 <p class="app-desc">A self-hosted nutrition tracker built as a MyFitnessPal replacement - barcode scanning, recipe management, API-backed food search, charts, and offline support.</p>
                 <div class="app-tags"><span>TypeScript</span><span>Express</span><span>SQLite</span><span>PWA</span></div>
@@ -265,7 +388,7 @@
             </div>
 
             <div class="app-card">
-                <img class="app-shot" src="screenshots/exodus40lite.stephens.page.png" alt="Exodus Lenten accountability tracker" loading="lazy">
+                <button class="image-button" type="button" data-image="screenshots/exodus-android-app-screenshot.jpg" data-images="screenshots/exodus-android-app-screenshot.jpg,screenshots/exodus40lite.stephens.page.png" data-captions="Android app,Web app" data-title="Exodus"><img class="app-shot" src="screenshots/exodus-android-app-screenshot.jpg" alt="Exodus screenshot" loading="lazy"></button>
                 <div class="app-name">Exodus</div>
                 <p class="app-desc">A PWA for a parish men's group, tracking prayer, fasting, almsgiving, and fraternity through a shared Lenten rule of life - built for sustained participation, not one-time visits.</p>
                 <div class="app-tags"><span>PHP</span><span>JavaScript</span><span>PWA</span><span>Capacitor</span></div>
@@ -273,7 +396,7 @@
             </div>
 
             <div class="app-card">
-                <img class="app-shot" src="screenshots/artifact.stewardgoods.com.png" alt="Artifact Manager possessions tracker" loading="lazy">
+                <button class="image-button" type="button" data-image="screenshots/Android-Artifact-app-screenshot.jpg" data-images="screenshots/Android-Artifact-app-screenshot.jpg,screenshots/artifact.stewardgoods.com.png" data-captions="Android app,Web app" data-title="Artifact Manager"><img class="app-shot" src="screenshots/Android-Artifact-app-screenshot.jpg" alt="Artifact Manager screenshot" loading="lazy"></button>
                 <div class="app-name">Artifact Manager</div>
                 <p class="app-desc">A multi-tenant possessions tracker that operationalizes the Minimalists' 90/90 Rule - log when you use what you own, see what's due next, and decide what to declutter.</p>
                 <div class="app-tags"><span>PHP</span><span>MySQL</span><span>REST API</span><span>PWA</span></div>
@@ -281,7 +404,7 @@
             </div>
 
             <div class="app-card">
-                <img class="app-shot" src="screenshots/wedding.stephens.page.png" alt="Event operations platform" loading="lazy">
+                <button class="image-button" type="button" data-image="screenshots/wedding.stephens.page.png" data-images="screenshots/wedding.stephens.page.png,screenshots/guest-manager.png" data-captions="Guest-facing event site,Admin: guest management" data-title="Event Operations Platform"><img class="app-shot" src="screenshots/wedding.stephens.page.png" alt="Event Operations Platform screenshot" loading="lazy"></button>
                 <div class="app-name">Event Operations Platform</div>
                 <p class="app-desc">A full-stack event-operations platform - invite-based RSVPs, guest management, registry tracking, photo uploads, travel details, and admin tooling - turning a brochure site into a real application.</p>
                 <div class="app-tags"><span>PHP</span><span>MySQL</span><span>JavaScript</span></div>
@@ -297,7 +420,145 @@
         </footer>
     </div>
 
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+        <div class="lightbox-dialog">
+            <button class="lightbox-close" id="lightbox-close" type="button">Close</button>
+            <img id="lightbox-image" src="" alt="">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+            <div class="lightbox-nav-row" id="lightbox-nav-row">
+                <button class="lightbox-nav" id="lightbox-prev" type="button" aria-label="Previous image">&lsaquo; Prev</button>
+                <span class="lightbox-counter" id="lightbox-counter">1 / 1</span>
+                <button class="lightbox-nav" id="lightbox-next" type="button" aria-label="Next image">Next &rsaquo;</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const lightboxNavRow = document.getElementById('lightbox-nav-row');
+        const lightboxPrev = document.getElementById('lightbox-prev');
+        const lightboxNext = document.getElementById('lightbox-next');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const imageButtons = document.querySelectorAll('.image-button');
+
+        let currentImages = [];
+        let currentIndex = 0;
+        let currentTitle = '';
+        let currentCaptions = [];
+
+        function renderCurrent() {
+            if (!currentImages.length) return;
+            lightboxImage.src = currentImages[currentIndex];
+            lightboxImage.alt = currentTitle;
+            const cap = currentCaptions[currentIndex] || '';
+            lightboxCaption.textContent = cap;
+            lightboxCaption.style.display = cap ? 'block' : 'none';
+            lightboxCounter.textContent = (currentIndex + 1) + ' / ' + currentImages.length;
+            if (currentImages.length > 1) lightboxNavRow.classList.add('active');
+            else lightboxNavRow.classList.remove('active');
+        }
+
+        function openLightbox(images, imageTitle, captions, startIndex) {
+            currentImages = images;
+            currentIndex = startIndex || 0;
+            currentTitle = imageTitle || '';
+            currentCaptions = captions || [];
+            renderCurrent();
+            lightbox.classList.add('active');
+            lightbox.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            lightbox.setAttribute('aria-hidden', 'true');
+            lightboxImage.src = '';
+            lightboxImage.alt = '';
+            lightboxCaption.textContent = '';
+            lightboxNavRow.classList.remove('active');
+            currentImages = [];
+            currentIndex = 0;
+        }
+
+        function nextImage() {
+            if (currentImages.length < 2) return;
+            currentIndex = (currentIndex + 1) % currentImages.length;
+            renderCurrent();
+        }
+
+        function prevImage() {
+            if (currentImages.length < 2) return;
+            currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+            renderCurrent();
+        }
+
+        imageButtons.forEach((button) => {
+            const multi = button.dataset.images;
+            const images = multi
+                ? multi.split(',').map((s) => s.trim()).filter(Boolean)
+                : [button.dataset.image];
+            const capData = button.dataset.captions;
+            const captions = capData ? capData.split(',').map((s) => s.trim()) : [];
+            const cardImg = button.querySelector('img');
+            let idx = 0;
+
+            if (images.length > 1) {
+                const frame = document.createElement('div');
+                frame.className = 'image-frame';
+                button.parentNode.insertBefore(frame, button);
+                frame.appendChild(button);
+
+                const show = (i) => {
+                    idx = (i + images.length) % images.length;
+                    if (cardImg) cardImg.src = images[idx];
+                    frame.querySelectorAll('.card-dot').forEach((d, di) =>
+                        d.classList.toggle('is-active', di === idx));
+                };
+                const arrow = (cls, label, glyph, step) => {
+                    const a = document.createElement('button');
+                    a.type = 'button';
+                    a.className = 'card-nav ' + cls;
+                    a.setAttribute('aria-label', label);
+                    a.innerHTML = glyph;
+                    a.addEventListener('click', (e) => { e.stopPropagation(); show(idx + step); });
+                    return a;
+                };
+                frame.appendChild(arrow('card-nav--prev', 'Previous image', '&lsaquo;', -1));
+                frame.appendChild(arrow('card-nav--next', 'Next image', '&rsaquo;', 1));
+
+                const dots = document.createElement('div');
+                dots.className = 'card-dots';
+                images.forEach((_, di) => {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = 'card-dot' + (di === 0 ? ' is-active' : '');
+                    dot.setAttribute('aria-label', 'Show image ' + (di + 1));
+                    dot.addEventListener('click', (e) => { e.stopPropagation(); show(di); });
+                    dots.appendChild(dot);
+                });
+                frame.appendChild(dots);
+            }
+
+            button.addEventListener('click', () => {
+                openLightbox(images, button.dataset.title, captions, idx);
+            });
+        });
+
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev.addEventListener('click', prevImage);
+        lightboxNext.addEventListener('click', nextImage);
+        lightbox.addEventListener('click', (event) => {
+            if (event.target === lightbox) closeLightbox();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (!lightbox.classList.contains('active')) return;
+            if (event.key === 'Escape') closeLightbox();
+            else if (event.key === 'ArrowRight') nextImage();
+            else if (event.key === 'ArrowLeft') prevImage();
+        });
+
         document.getElementById('current-year').textContent = new Date().getFullYear();
     </script>
 </body>
