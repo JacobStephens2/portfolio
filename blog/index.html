@@ -21,16 +21,15 @@
 
       gtag('config', 'G-W0D3PS27FK');
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f6f1e8;
-            --panel: rgba(255, 252, 246, 0.88);
-            --text: #181512;
+            --ink: #181512;
+            --brand: #9b4d24;
             --muted: #625a52;
-            --line: rgba(24, 21, 18, 0.12);
-            --accent: #9b4d24;
-            --shadow: 0 24px 60px rgba(45, 32, 18, 0.12);
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
         }
 
         * {
@@ -40,20 +39,29 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background:
-                radial-gradient(circle at top left, rgba(155, 77, 36, 0.15), transparent 24%),
-                linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
-            color: var(--text);
-            line-height: 1.65;
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            line-height: 1.7;
             min-height: 100vh;
         }
 
+        a {
+            color: var(--brand);
+            text-decoration: none;
+        }
+
+        a:hover,
+        a:focus-visible {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
         .container {
-            max-width: 880px;
+            max-width: 760px;
             margin: 0 auto;
             padding: 2rem 1.25rem 4rem;
-            animation: fadeInUp 0.75s ease-out;
         }
 
         .topbar {
@@ -61,7 +69,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
         }
 
         .back-link,
@@ -69,51 +77,42 @@
             color: var(--muted);
             text-decoration: none;
             font-size: 0.92rem;
-            border-bottom: 1px solid transparent;
-            transition: color 0.25s ease, border-color 0.25s ease;
         }
 
         .back-link:hover,
         .back-link:focus-visible,
         .contact-link:hover,
         .contact-link:focus-visible {
-            color: var(--text);
-            border-color: var(--text);
+            color: var(--brand);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
         }
 
-        .hero-card,
-        .section,
-        .footer {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 22px;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
-        }
-
-        .hero-card,
-        .section {
-            padding: 1.8rem;
-            margin-bottom: 1.25rem;
+        .hero-card {
+            padding-bottom: 1.75rem;
+            margin-bottom: 1.75rem;
+            border-bottom: 1px solid var(--rule);
         }
 
         .eyebrow {
             display: inline-block;
-            margin-bottom: 1rem;
-            color: var(--accent);
-            font-size: 0.8rem;
-            font-weight: 600;
+            margin-bottom: 0.9rem;
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
             letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
         h1 {
-            font-family: 'Crimson Text', serif;
-            font-size: clamp(2.4rem, 4.5vw, 3.6rem);
-            line-height: 1;
-            letter-spacing: -0.04em;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2.2rem, 4.5vw, 3rem);
+            line-height: 1.05;
+            letter-spacing: -0.01em;
             margin-bottom: 0.9rem;
-            max-width: 14ch;
+            max-width: 16ch;
         }
 
         .hero-copy {
@@ -126,70 +125,72 @@
             margin-top: 0.7rem;
         }
 
+        .hero-copy a {
+            color: var(--brand);
+        }
+
         .notes-list {
             list-style: none;
             display: grid;
-            gap: 1rem;
+            gap: 0;
         }
 
         .notes-list li {
-            border: 1px solid rgba(24, 21, 18, 0.1);
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.7);
-            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            border-bottom: 1px solid var(--rule);
         }
 
-        .notes-list li:hover {
-            transform: translateY(-2px);
-            border-color: rgba(24, 21, 18, 0.16);
-            box-shadow: 0 14px 32px rgba(45, 32, 18, 0.1);
+        .notes-list li:last-child {
+            border-bottom: 0;
         }
 
         .notes-list a {
             display: block;
-            padding: 1.2rem 1.35rem;
+            padding: 1.3rem 0;
             text-decoration: none;
-            color: var(--text);
+            color: var(--ink);
         }
 
-        .note-title {
-            font-family: 'Crimson Text', serif;
-            font-size: 1.4rem;
-            font-weight: 400;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.45rem;
+        .notes-list a:hover,
+        .notes-list a:focus-visible {
+            text-decoration: none;
         }
 
         .note-meta {
-            font-size: 0.82rem;
-            letter-spacing: 0.05em;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 0.55rem;
+            color: var(--brand);
+            margin-bottom: 0.5rem;
+        }
+
+        .note-title {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.45rem;
+        }
+
+        .notes-list a:hover .note-title,
+        .notes-list a:focus-visible .note-title {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
         }
 
         .note-summary {
             color: var(--muted);
-            line-height: 1.55;
+            line-height: 1.6;
         }
 
         .footer {
-            margin-top: 1.25rem;
-            padding: 1.2rem;
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
             text-align: center;
             color: var(--muted);
             font-size: 0.85rem;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(18px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         @media (max-width: 640px) {
@@ -200,13 +201,6 @@
             .topbar {
                 flex-direction: column;
                 align-items: flex-start;
-            }
-
-            .hero-card,
-            .section,
-            .footer {
-                border-radius: 18px;
-                padding: 1.35rem;
             }
 
             h1 {

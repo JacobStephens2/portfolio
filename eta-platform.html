@@ -21,16 +21,15 @@
 
       gtag('config', 'G-W0D3PS27FK');
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f6f1e8;
-            --panel: rgba(255, 252, 246, 0.88);
-            --text: #181512;
+            --ink: #181512;
+            --brand: #9b4d24;
             --muted: #625a52;
-            --line: rgba(24, 21, 18, 0.12);
-            --accent: #9b4d24;
-            --shadow: 0 24px 60px rgba(45, 32, 18, 0.12);
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
         }
 
         * {
@@ -40,20 +39,21 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background:
-                radial-gradient(circle at top left, rgba(155, 77, 36, 0.15), transparent 24%),
-                linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
-            color: var(--text);
-            line-height: 1.65;
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            background: var(--surface);
+            color: var(--ink);
+            line-height: 1.6;
             min-height: 100vh;
         }
 
+        a { color: var(--brand); text-decoration: none; }
+        a:hover, a:focus-visible { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em; }
+
         .container {
-            max-width: 1280px;
+            max-width: 760px;
             margin: 0 auto;
-            padding: 2rem 1.25rem 4rem;
-            animation: fadeInUp 0.75s ease-out;
+            padding: 1.5rem 1.1rem 3rem;
         }
 
         .topbar {
@@ -67,67 +67,53 @@
         .back-link,
         .contact-link {
             color: var(--muted);
-            text-decoration: none;
             font-size: 0.92rem;
-            border-bottom: 1px solid transparent;
-            transition: color 0.25s ease, border-color 0.25s ease;
         }
 
         .back-link:hover,
         .back-link:focus-visible,
         .contact-link:hover,
         .contact-link:focus-visible {
-            color: var(--text);
-            border-color: var(--text);
+            color: var(--brand);
         }
 
         .hero {
-            display: grid;
-            grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.8fr);
-            gap: 1.25rem;
-            margin-bottom: 1.4rem;
+            margin-bottom: 1.5rem;
         }
 
-        .hero-card,
-        .hero-notes,
-        .section,
-        .footer {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 22px;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
-        }
-
-        .hero-card,
-        .hero-notes,
-        .section {
-            padding: 1.6rem;
+        .hero-card {
+            margin-bottom: 1.25rem;
         }
 
         .eyebrow {
-            display: inline-block;
-            margin-bottom: 1rem;
-            color: var(--accent);
-            font-size: 0.8rem;
-            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
             letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
         h1 {
-            font-family: 'Crimson Text', serif;
-            font-size: clamp(2.6rem, 5vw, 4.2rem);
-            line-height: 0.98;
-            letter-spacing: -0.05em;
-            margin-bottom: 0.9rem;
-            max-width: 11ch;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 2.6rem);
+            line-height: 1.05;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.7rem;
         }
 
         .hero-copy {
             color: var(--muted);
             font-size: 1.05rem;
-            max-width: 62ch;
+            max-width: 64ch;
+        }
+
+        .hero-notes {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
         }
 
         .hero-notes ul {
@@ -137,7 +123,7 @@
         }
 
         .hero-notes li {
-            border-top: 1px solid var(--line);
+            border-top: 1px solid var(--rule);
             padding-top: 0.85rem;
             color: var(--muted);
         }
@@ -150,273 +136,61 @@
         .hero-notes strong {
             display: block;
             margin-bottom: 0.2rem;
-            color: var(--text);
+            color: var(--ink);
         }
 
-        .section + .section {
-            margin-top: 1.25rem;
+        .section {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
         }
 
         .section-heading {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            gap: 1rem;
             margin-bottom: 1rem;
         }
 
         .section-heading h2 {
-            font-family: 'Crimson Text', serif;
-            font-size: 2rem;
-            font-weight: 400;
-            letter-spacing: -0.03em;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--brand);
+            letter-spacing: -0.01em;
         }
 
         .section-heading p {
             color: var(--muted);
             font-size: 0.92rem;
-        }
-
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.2rem;
-        }
-
-        .portfolio-item {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border-radius: 18px;
-            border: 1px solid rgba(24, 21, 18, 0.1);
-            background: rgba(255, 255, 255, 0.7);
-            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-        }
-
-        .portfolio-item:hover {
-            transform: translateY(-3px);
-            border-color: rgba(24, 21, 18, 0.16);
-            box-shadow: 0 18px 40px rgba(45, 32, 18, 0.12);
-        }
-
-        .image-button {
-            border: none;
-            background: #efe7da;
-            cursor: zoom-in;
-            padding: 0;
-        }
-
-        .portfolio-image {
-            width: 100%;
-            height: 245px;
-            object-fit: cover;
-            object-position: top;
-            display: block;
-        }
-
-        .portfolio-content {
-            padding: 1.35rem;
-            display: grid;
-            gap: 0.95rem;
-        }
-
-        .portfolio-title {
-            font-family: 'Crimson Text', serif;
-            font-size: 1.55rem;
-            font-weight: 400;
-            letter-spacing: -0.02em;
-        }
-
-        .portfolio-summary {
-            color: var(--muted);
-        }
-
-        .portfolio-block {
-            display: grid;
-            gap: 0.25rem;
-        }
-
-        .portfolio-block strong {
-            font-size: 0.84rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--accent);
-        }
-
-        .portfolio-block span {
-            color: var(--text);
-        }
-
-        .portfolio-collapse {
-            display: grid;
-            gap: 0.95rem;
-            max-height: 2000px;
-            transition: max-height 0.4s ease;
-        }
-
-        .portfolio-collapse.is-collapsed {
-            max-height: 9.5rem;
-            overflow: hidden;
-            -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
-            mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
-        }
-
-        .read-more-btn {
-            justify-self: start;
-            background: none;
-            border: 0;
-            padding: 0;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.84rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--accent);
-            transition: color 0.2s ease;
-        }
-
-        .read-more-btn:hover {
-            text-decoration: underline;
-        }
-
-        .portfolio-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.45rem;
-        }
-
-        .portfolio-tag {
-            font-size: 0.72rem;
-            color: var(--muted);
-            background: rgba(24, 21, 18, 0.05);
-            padding: 0.28rem 0.55rem;
-            border-radius: 999px;
-            letter-spacing: 0.03em;
-        }
-
-        .portfolio-links {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .portfolio-link {
-            color: var(--text);
-            text-decoration: none;
-            font-weight: 600;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.25s ease, color 0.25s ease;
-        }
-
-        .portfolio-link:hover,
-        .portfolio-link:focus-visible {
-            color: var(--accent);
-            border-color: var(--accent);
-        }
-
-        .lightbox {
-            position: fixed;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            background: rgba(15, 12, 9, 0.84);
-            z-index: 1000;
-        }
-
-        .lightbox.active {
-            display: flex;
-        }
-
-        .lightbox-dialog {
-            position: relative;
-            max-width: 1100px;
-            width: 100%;
-            display: grid;
-            gap: 0.8rem;
-        }
-
-        .lightbox-close {
-            justify-self: end;
-            border: none;
-            background: rgba(255, 255, 255, 0.14);
-            color: #fff;
-            padding: 0.55rem 0.8rem;
-            border-radius: 999px;
-            cursor: pointer;
-            font: inherit;
-        }
-
-        .lightbox-nav-row {
-            display: none;
-            justify-content: center;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .lightbox-nav-row.active {
-            display: flex;
-        }
-
-        .lightbox-nav {
-            border: none;
-            background: rgba(255, 255, 255, 0.14);
-            color: #fff;
-            padding: 0.45rem 0.85rem;
-            border-radius: 999px;
-            cursor: pointer;
-            font: inherit;
-        }
-
-        .lightbox-nav:hover,
-        .lightbox-nav:focus-visible {
-            background: rgba(255, 255, 255, 0.24);
-        }
-
-        .lightbox-counter {
-            color: #fff;
-            font-size: 0.92rem;
-            opacity: 0.8;
-            min-width: 3.5rem;
-            text-align: center;
-        }
-
-        .lightbox img {
-            display: block;
-            justify-self: center;
-            max-width: 100%;
-            max-height: 78vh;
-            border-radius: 16px;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+            margin-top: 0.25rem;
         }
 
         .footer {
-            margin-top: 1.25rem;
-            padding: 1.2rem;
-            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
             color: var(--muted);
             font-size: 0.85rem;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(18px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 900px) {
-            .hero {
-                grid-template-columns: 1fr;
-            }
-        }
+        /* --- ETA case study --- */
+        .cs-diagram { background: var(--soft); border: 1px solid var(--rule); border-radius: 8px; padding: 1.25rem; margin: 1.25rem 0 0; }
+        .cs-diagram svg { width: 100%; height: auto; display: block; }
+        .cs-narrative p { margin-bottom: 0.9rem; max-width: 70ch; }
+        .cs-highlight { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 1.1rem 1.25rem; margin-bottom: 0.9rem; }
+        .cs-highlight h3 { font-family: 'Source Serif 4', Georgia, serif; font-weight: 600; margin-bottom: 0.5rem; }
+        .cs-highlight .cs-line { display: block; margin-bottom: 0.3rem; }
+        .cs-highlight .cs-line strong { color: var(--brand); }
+        .cs-stack { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
+        .cs-stack .cs-row { background: var(--soft); border: 1px solid var(--rule); border-radius: 8px; padding: 0.7rem 1rem; }
+        .cs-stack .cs-row b { color: var(--brand); }
+        .cs-note { font-size: 0.92rem; color: var(--muted); border-left: 3px solid var(--brand); padding-left: 0.9rem; margin-top: 1.25rem; max-width: 70ch; }
+        @media (min-width: 760px) { .cs-stack { grid-template-columns: 1fr 1fr; } }
+        .cs-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
+        .cs-metric { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem 1.1rem; }
+        .cs-metric .cs-num { font-family: 'Source Serif 4', Georgia, serif; font-weight: 700; font-size: 1.85rem; line-height: 1.05; letter-spacing: -0.01em; color: var(--brand); display: block; }
+        .cs-metric .cs-cap { font-size: 0.85rem; color: var(--muted); margin-top: 0.35rem; display: block; }
+        .cs-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+        .cs-links a { font-weight: 700; }
+        .portfolio-link { font-weight: 700; }
 
         @media (max-width: 640px) {
             .container {
@@ -427,45 +201,7 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
-
-            .hero-card,
-            .hero-notes,
-            .section,
-            .footer {
-                border-radius: 18px;
-                padding: 1.25rem;
-            }
-
-            h1 {
-                max-width: none;
-            }
-
-            .section-heading {
-                flex-direction: column;
-                align-items: flex-start;
-            }
         }
-    
-        /* --- ETA case study --- */
-        .cs-diagram { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0 0; box-shadow: var(--shadow); }
-        .cs-diagram svg { width: 100%; height: auto; display: block; }
-        .cs-narrative p { margin-bottom: 0.9rem; max-width: 70ch; }
-        .cs-highlight { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.25rem; margin-bottom: 0.9rem; }
-        .cs-highlight h3 { margin-bottom: 0.5rem; }
-        .cs-highlight .cs-line { display: block; margin-bottom: 0.3rem; }
-        .cs-highlight .cs-line strong { color: var(--accent); }
-        .cs-stack { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
-        .cs-stack .cs-row { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 1rem; }
-        .cs-stack .cs-row b { color: var(--accent); }
-        .cs-note { font-size: 0.92rem; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 0.9rem; margin-top: 1.25rem; max-width: 70ch; }
-        @media (min-width: 760px) { .cs-stack { grid-template-columns: 1fr 1fr; } }
-        .cs-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
-        .cs-metric { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; }
-        .cs-metric .cs-num { font-family: 'Crimson Text', serif; font-size: 1.85rem; line-height: 1.05; letter-spacing: -0.02em; color: var(--accent); display: block; }
-        .cs-metric .cs-cap { font-size: 0.85rem; color: var(--muted); margin-top: 0.35rem; display: block; }
-        .cs-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
-        .cs-links a { font-weight: 600; }
-
     </style>
 </head>
 <body>
@@ -502,12 +238,12 @@
       <path d="M0,0 L7,3 L0,6 Z" fill="#9b4d24"></path>
     </marker>
     <style>
-      .box{fill:#fffcf6;stroke:#9b4d24;stroke-width:1.5;rx:10;}
-      .grp{fill:rgba(155,77,36,0.06);stroke:rgba(155,77,36,0.35);stroke-width:1;stroke-dasharray:4 3;rx:12;}
-      .t{font-family:Inter,sans-serif;fill:#181512;font-size:14px;}
-      .tb{font-family:Inter,sans-serif;fill:#181512;font-size:14px;font-weight:600;}
-      .tm{font-family:Inter,sans-serif;fill:#625a52;font-size:12px;}
-      .lbl{font-family:Inter,sans-serif;fill:#9b4d24;font-size:12px;font-weight:600;letter-spacing:.04em;}
+      .box{fill:#ffffff;stroke:#9b4d24;stroke-width:1.5;rx:8;}
+      .grp{fill:rgba(155,77,36,0.06);stroke:rgba(155,77,36,0.35);stroke-width:1;stroke-dasharray:4 3;rx:8;}
+      .t{font-family:'Source Sans 3',Arial,sans-serif;fill:#181512;font-size:14px;}
+      .tb{font-family:'Source Sans 3',Arial,sans-serif;fill:#181512;font-size:14px;font-weight:700;}
+      .tm{font-family:'Source Sans 3',Arial,sans-serif;fill:#625a52;font-size:12px;}
+      .lbl{font-family:'Source Sans 3',Arial,sans-serif;fill:#9b4d24;font-size:12px;font-weight:700;letter-spacing:.04em;}
       .ln{stroke:#9b4d24;stroke-width:1.6;fill:none;}
     </style>
   </defs>
