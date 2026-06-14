@@ -1,2 +1,3 @@
 private/reports/*.md
-node_modules/stack/
+node_modules/
+stack/
