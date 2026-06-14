@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes | Jacob Stephens</title>
+    <title>Blog | Jacob Stephens</title>
     <meta name="description" content="Writeups of selected engineering work by Jacob Stephens - performance tuning, platform migrations, and infrastructure changes, drafted from working notes with AI assistance.">
-    <meta property="og:title" content="Notes | Jacob Stephens">
+    <meta property="og:title" content="Blog | Jacob Stephens">
     <meta property="og:description" content="Writeups of selected engineering work by Jacob Stephens.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://stephens.page/notes/">
+    <meta property="og:url" content="https://stephens.page/blog/">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Notes | Jacob Stephens">
+    <meta name="twitter:title" content="Blog | Jacob Stephens">
     <meta name="twitter:description" content="Writeups of selected engineering work by Jacob Stephens.">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
@@ -224,7 +224,7 @@
 
         <main>
             <section class="hero-card">
-                <div class="eyebrow">Notes</div>
+                <div class="eyebrow">Blog</div>
                 <h1>Writeups of work I've done.</h1>
                 <p class="hero-copy">Short, practical narratives of selected engineering changes - performance tuning, platform migrations, schema work, and the like - expanded from my working notes.</p>
                 <p class="hero-copy">These are drafted with AI assistance from my own profiling reports and commit notes. The decisions and the work are mine; the prose is collaborative. I keep <a href="https://blog.stephens.page/" style="color: inherit; border-bottom: 1px solid currentColor;">blog.stephens.page</a> for hand-written essays, fiction, and longer-form personal writing.</p>
@@ -233,21 +233,21 @@
             <section class="section">
                 <ul class="notes-list">
                     <li>
-                        <a href="/notes/measuring-real-authorship/">
+                        <a href="/blog/measuring-real-authorship/">
                             <div class="note-meta">June 13, 2026 &middot; Measurement</div>
                             <div class="note-title">Byte Counts Lie: Measuring What I Actually Wrote</div>
                             <p class="note-summary">A portfolio stats page that sums GitHub's byte counts credits you for code you inherited. Measuring real authorship in a platform built since the 1990s meant git blame over its full history - including the pre-2023 Bitbucket history from before the migration - and the surprise was which language the byte count had really been overstating.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/notes/hmac-signed-webhooks/">
+                        <a href="/blog/hmac-signed-webhooks/">
                             <div class="note-meta">June 11, 2026 &middot; Security</div>
                             <div class="note-title">HMAC-Signed Webhooks: One Primitive, Three Dialects</div>
                             <p class="note-summary">Stripe's, Twilio's, Mandrill's, and GitHub's webhook signature schemes turn out to be one primitive in three dialects. The signing bases, the five gotchas that actually bite (raw bytes, timing-safe compares, the proxy URL trap, tolerance windows, failing closed), the verifiers extracted into a zero-dependency TypeScript library - and what fact-checking my own opening line taught me.</p>
                         </a>
                     </li>
                                         <li>
-                        <a href="/notes/human-in-the-loop-ai-agents/">
+                        <a href="/blog/human-in-the-loop-ai-agents/">
                             <div class="note-meta">June 10, 2026 &middot; AI Infrastructure</div>
                             <div class="note-title">Human-in-the-Loop AI Agents for Legacy Business Systems</div>
                             <p class="note-summary">The full pattern behind the manager sandboxes: six concentric boundaries - isolation, data, command surface, code promotion, audit, rollback - plus the list of things no agent is allowed to do. With the hard tradeoff named (the human gate is a bottleneck, on purpose) and a copyable checklist.</p>
@@ -268,28 +268,28 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/notes/tracking-listening-time-six-platforms/">
+                        <a href="/blog/tracking-listening-time-six-platforms/">
                             <div class="note-meta">June 5, 2026 &middot; Distributed Systems</div>
                             <div class="note-title">Tracking Listening Time Across Six Platforms — Without Building a Surveillance Tool</div>
                             <p class="note-summary">One pure Rust core driving six native shells, a G-Counter CRDT that makes concurrent devices add instead of overwrite, and a schema that structurally can't store when you listened - only how much.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/notes/sandboxing-ai-agents/">
+                        <a href="/blog/sandboxing-ai-agents/">
                             <div class="note-meta">June 3, 2026 &middot; AI Infrastructure</div>
                             <div class="note-title">Sandboxing AI Agents per Business Role</div>
                             <p class="note-summary">Each business manager gets a sandboxed instance of our internal app with its own AI assistant. The safety comes from the shape of the system - one container per manager, a private database rebuilt every four hours, default-deny command execution, and an honest human merge gate - not from asking the agent nicely.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/notes/boring-deploy-script/">
+                        <a href="/blog/boring-deploy-script/">
                             <div class="note-meta">June 3, 2026 &middot; DevOps</div>
                             <div class="note-title">The Boring Deploy Script</div>
                             <p class="note-summary">Why I deploy a single-server PHP app with about 200 lines of guardrail-heavy bash instead of a hosted CI/CD pipeline - dirty-worktree rejection, flock serialization, ancestor-only refs, a healthcheck, one-command rollback - and the exact conditions under which I'd switch.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/notes/manifest-performance-tuning/">
+                        <a href="/blog/manifest-performance-tuning/">
                             <div class="note-meta">May 21, 2026 &middot; Performance</div>
                             <div class="note-title">Six Rounds of Profiling: Cutting a 7-Second Page to 1 Second</div>
                             <p class="note-summary">A profile-driven performance pass on Tourbot's group manifest page - six rounds, byte-identical HTML at the end of each, taking page loads from 5-7 seconds to about 1 second and SQL statements per request from ~2,650 to ~183.</p>
