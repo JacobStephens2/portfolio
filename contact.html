@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#9b4d24">
+    <title>Contact | Jacob Stephens</title>
+    <meta name="description" content="Get in touch with Jacob Stephens about platform engineering, infrastructure, payment systems, and AI automation work.">
+    <meta property="og:title" content="Contact | Jacob Stephens">
+    <meta property="og:description" content="Get in touch about platform engineering, infrastructure, payment systems, and AI automation work.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stephens.page/contact.html">
+    <meta property="og:site_name" content="Jacob Stephens">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Contact | Jacob Stephens">
+    <meta name="twitter:description" content="Get in touch about platform engineering, infrastructure, payment systems, and AI automation work.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--ink);
+            background: var(--surface);
+        }
+
+        a { color: var(--brand); text-decoration: none; }
+        a:hover, a:focus-visible { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em; }
+
+        .container {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 1.5rem 1.1rem 3rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            text-decoration: underline;
+            text-underline-offset: 0.12em;
+        }
+
+        .eyebrow {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--brand);
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: 2.4rem;
+            line-height: 1.05;
+            letter-spacing: -0.01em;
+            margin: 0.1rem 0 0.7rem;
+        }
+
+        .hero-intro {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 64ch;
+            margin: 0 0 1.2rem;
+        }
+
+        .cta-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0.55rem 1.05rem;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .cta:hover, .cta:focus-visible { text-decoration: none; }
+        .cta-primary { background: var(--brand); color: #fff; }
+        .cta-primary:hover { background: #874020; }
+        .cta-secondary { color: var(--ink); background: #fff; border: 1px solid var(--rule); }
+        .cta-secondary:hover { border-color: var(--brand); color: var(--brand); }
+
+        .links-panel {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+        }
+
+        .links-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.9rem;
+        }
+
+        .nav-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--rule);
+            color: var(--ink);
+        }
+        .nav-item:last-child { border-bottom: 0; }
+        .nav-item:hover { text-decoration: none; }
+
+        .nav-main { flex: 1; }
+
+        .nav-label {
+            display: block;
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.08rem;
+            color: var(--brand);
+        }
+        .nav-item:hover .nav-label { text-decoration: underline; text-underline-offset: 0.12em; }
+
+        .nav-value {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--ink);
+            margin-top: 0.1rem;
+        }
+
+        .nav-description {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-top: 0.15rem;
+        }
+
+        .nav-arrow { color: var(--brand); font-size: 1rem; }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+            color: var(--muted);
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+        .footer p { margin: 0 0 0.15rem; }
+        .footer strong { color: var(--ink); }
+        .footer a { color: var(--muted); }
+
+        @media (max-width: 640px) {
+            .topbar { flex-direction: column; align-items: flex-start; }
+            h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/" class="back-link">Back to home</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <main>
+            <section class="hero">
+                <div class="eyebrow">Contact</div>
+                <h1>Let's talk.</h1>
+                <p class="hero-intro">Email is the fastest way to reach me. Tell me what you are building or what is breaking, and I will tell you honestly whether I am the right person for it. I read everything sent to jacob@stephens.page and reply to anything that needs a person.</p>
+                <div class="cta-row">
+                    <a href="mailto:jacob@stephens.page" class="cta cta-primary">Email jacob@stephens.page</a>
+                    <a href="https://www.linkedin.com/in/jacob-c-stephens" class="cta cta-secondary">LinkedIn</a>
+                    <a href="https://stephens.page/resume/" class="cta cta-secondary">Resume</a>
+                </div>
+            </section>
+
+            <section class="links-panel">
+                <div class="links-title">Ways to reach me</div>
+                <nav class="navigation" aria-label="Contact methods">
+                    <a href="mailto:jacob@stephens.page" class="nav-item">
+                        <div class="nav-main">
+                            <span class="nav-label">Email</span>
+                            <span class="nav-value">jacob@stephens.page</span>
+                            <span class="nav-description">Best for project inquiries, contract work, and roles. I reply to real messages.</span>
+                        </div>
+                        <span class="nav-arrow" aria-hidden="true">↗</span>
+                    </a>
+                    <a href="tel:+12673205474" class="nav-item">
+                        <div class="nav-main">
+                            <span class="nav-label">Phone</span>
+                            <span class="nav-value">+1&nbsp;267-320-5474</span>
+                            <span class="nav-description">Call or text during business hours, Eastern time.</span>
+                        </div>
+                        <span class="nav-arrow" aria-hidden="true">↗</span>
+                    </a>
+                    <a href="https://www.linkedin.com/in/jacob-c-stephens" class="nav-item">
+                        <div class="nav-main">
+                            <span class="nav-label">LinkedIn</span>
+                            <span class="nav-description">Professional profile, work history, and the easiest place to connect.</span>
+                        </div>
+                        <span class="nav-arrow" aria-hidden="true">↗</span>
+                    </a>
+                    <a href="https://github.com/JacobStephens2" class="nav-item" rel="me">
+                        <div class="nav-main">
+                            <span class="nav-label">GitHub</span>
+                            <span class="nav-description">Open-source projects and code you can inspect directly.</span>
+                        </div>
+                        <span class="nav-arrow" aria-hidden="true">↗</span>
+                    </a>
+                </nav>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p><strong>Stephens Page LLC</strong> &middot; Software studio</p>
+            <p>3965 Lancaster Ave, Suite 305, Philadelphia, PA 19104</p>
+            <p><a href="tel:+12673205474">+1&nbsp;267-320-5474</a> &middot; <a href="mailto:jacob@stephens.page">jacob@stephens.page</a></p>
+            <p>&copy; <span id="current-year"></span> Stephens Page LLC</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
