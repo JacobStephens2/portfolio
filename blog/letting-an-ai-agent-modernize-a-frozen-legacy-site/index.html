@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letting an AI Agent Modernize a Frozen Legacy Site, Safely | Jacob Stephens</title>
+    <meta name="description" content="How I let an AI coding agent refactor a live, client-owned legacy website at speed without shipping a single visible regression: six boundaries, and a pixel-equality gate that measures the rendered output instead of the markup.">
+    <meta property="og:title" content="Letting an AI Agent Modernize a Frozen Legacy Site, Safely">
+    <meta property="og:description" content="Six boundaries that make it safe to let an AI coding agent edit a live legacy site, and the one that does the real work: pixel-diff every page to AE 0 before a human is asked to look.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/blog/letting-an-ai-agent-modernize-a-frozen-legacy-site/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Letting an AI Agent Modernize a Frozen Legacy Site, Safely">
+    <meta name="twitter:description" content="Six boundaries that make it safe to let an AI coding agent edit a live legacy site, and the one that does the real work: pixel-diff every page to AE 0 before a human is asked to look.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
+            --code-bg: #efe9df;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--brand);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        article.note {
+            padding: 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 0.9rem;
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.08;
+            letter-spacing: -0.01em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .meta strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--brand);
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.93rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.5rem 0.6rem 0.5rem 0;
+            border-bottom: 1px solid var(--rule);
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: 700;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1rem 1.1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        strong {
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--brand);
+            text-decoration: none;
+        }
+
+        a:hover,
+        a:focus-visible {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/blog/" class="back-link">&larr; All posts</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; Infrastructure</div>
+            <h1 class="title">Letting an AI Agent Modernize a Frozen Legacy Site, Safely</h1>
+            <p class="meta"><strong>June 5, 2026</strong> &middot; ~1300 words &middot; Safe AI agents on a live legacy site</p>
+
+            <p>You can hand a live, client-owned website to an AI coding agent, let it refactor the markup at speed, and have the client never see a regression you did not intend. The trick is not a smarter agent. It is six boundaries that make the agent's reach safe by construction, so that "an agent edited my production site" goes from reckless to routine. I built this while modernizing <a href="https://coachscall.org">coachscall.org</a>, a real client site, and the boundaries are what let me move fast without once gambling on the agent being right.</p>
+
+            <h2>The job: a website nobody can safely read</h2>
+
+            <p>coachscall.org is a frozen front end. It is a Gatsby static export, compiled HTML, CSS, and JavaScript, with the source long gone. It still needs changes, it is owned by a non-technical client, and it is served edit-in-place from the live document root, no build step and no staging by default. Each page is 440 to 500 KB of inlined, machine-generated markup, full of sharp edges: en-spaces masquerading as regular spaces around separators, the <code>&amp;nbsp;</code> entity sitting next to a literal U+00A0, tab indentation that drifts to spaces from one page to the next, duplicated IDs, attribute casing the browser silently rewrites. Hand-editing it is archaeology. Every structural change risks a visual regression you will not notice until the client does.</p>
+
+            <p>Now add an AI coding agent doing the edits. That multiplies throughput, and it multiplies the blast radius by exactly the same factor. So the question I had to answer before letting it touch anything was specific: what boundaries make it safe to let an agent modernize a live, client-owned legacy site, fast, without the client ever eating a regression I did not intend?</p>
+
+            <h2>Six boundaries, not trust</h2>
+
+            <p>Safety here does not come from asking the agent nicely. It comes from the shape of the system around it. I wrapped the agent's work in six boundaries. None of them is novel on its own; the point is that all six together are what change the risk profile. The first five are the standard agent-safety checklist. The sixth is the one that specifically tames opaque, frozen markup.</p>
+
+            <table>
+                <thead>
+                    <tr><th>#</th><th>Boundary</th><th>How it works on coachscall.org</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><strong>Isolation</strong></td>
+                        <td>Work happens in a <code>git worktree</code> on a <code>refactor/*</code> branch, served from a separate staging subdomain (<code>coachscall.stephens.page</code>, its own vhost and cert, <code>noindex</code>). Production stays on <code>master</code> in its own document root and is never touched until promotion.</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><strong>Data</strong></td>
+                        <td>Secrets and runtime state are gitignored and unreachable: <code>private/</code> is <code>Deny from all</code>; the editor's writable data directory is setgid, group-owned by the web group, least privilege; staging gets its own environment, so internal links stay on staging.</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><strong>Command and scope</strong></td>
+                        <td>The agent only edits files in the worktree. Edits are surgical and byte-aware (exact-string and verified-range replacements), never a broad sed over everything. No destructive operation touches prod.</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><strong>Human gate</strong></td>
+                        <td>Promotion is a human decision: the client reviews the staging URL and approves; then a <code>git merge</code> of the branch into <code>master</code> is the deploy. The non-technical owner is the merge gate.</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><strong>Audit</strong></td>
+                        <td>Every change is an atomic, signed commit with a plain-English message. The entire modernization is a reviewable diff history, not a mystery.</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><strong>Rollback and visual-regression gate</strong></td>
+                        <td>Before promotion: delete the branch, and prod never moved. After: one <code>git revert</code>. And the gate that makes opaque-markup refactors safe, pixel-diff every page, staging versus prod, target AE 0, before a human is ever asked to look.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>The boundary that does the real work: measure pixels, not bytes</h2>
+
+            <p>Refactoring frozen, machine-generated HTML is dangerous for one specific reason: you cannot read it well enough to be sure a change is inert. A diff that looks alarming often renders identically, and a diff that looks harmless can shift the layout. So I stopped trying to certify changes by reading them and measured the result instead. Render each page on production and on staging at fixed viewports, compare with an absolute-error pixel metric, and treat <code>AE 0</code> as the contract: provably identical to what is live. Only after the pixel diff is clean does a human get asked to approve.</p>
+
+            <p>This caught two things during the coachscall.org refactor that reading the bytes would have missed or misjudged.</p>
+
+            <p>Extracting the duplicated footer into one shared partial produced a non-zero diff on the home page only. The pixels showed why, where the bytes would have hidden it: the home page's copy of the footer carried a stray space (<code>Call &lt;/a&gt;</code> instead of <code>Call&lt;/a&gt;</code>) that the other five pages did not, nudging the separators about 1 pixel. The "regression" was the refactor removing a pre-existing inconsistency. That is exactly the kind of call you want a human to make on evidence, not a guess.</p>
+
+            <p>A 4,000-pixel difference on the About page turned out to be a webfont-load race in the screenshotter, not a content change. Re-shot with the fonts settled, it went to <code>AE 0</code>. The gate tells a real change apart from measurement noise instead of letting either slip through. The per-page active-nav markers (<code>aria-current="page"</code>) that vary from page to page were preserved by parameterizing the shared partial rather than dropped, and the same gate verified that each page still emitted byte-for-byte what it did before.</p>
+
+            <h2>What it costs, and when it is worth it</h2>
+
+            <p>Costs, plainly: standing up the staging mirror and the diff harness is about an hour of one-time infrastructure per site. For a single throwaway edit, that is overkill. For ongoing modernization of a site that carries revenue or reputation, it pays for itself the first time the gate catches something. The other honest limit is that the pixel gate proves visual equality and nothing else. A dropped <code>aria-current</code>, a broken link, a change in JavaScript behavior, none of those show up as a pixel. Pixels are necessary, not sufficient; semantics still need their own checks.</p>
+
+            <p>What you buy is the thing that matters. The owner can move fast without trusting the agent blindly: they approve a visible, isolated preview, and they never absorb an unintended regression. Reversibility is total and cheap at every stage, a branch delete before promotion and one revert after. And the work is more legible than most human-run deploys, because signed atomic commits plus a visual-diff record is a better audit trail than "I changed some HTML and it looked fine to me."</p>
+
+            <h2>The checklist, if you want to steal it</h2>
+
+            <p>Before letting an agent modernize a live legacy site:</p>
+
+            <ol>
+                <li><strong>Isolate.</strong> Branch, worktree, staging host; prod untouched.</li>
+                <li><strong>Wall off data.</strong> Secrets gitignored, runtime directory least-privilege, staging gets its own config.</li>
+                <li><strong>Keep edits surgical.</strong> Exact, verifiable changes; no blast-radius commands.</li>
+                <li><strong>Gate promotion on a human</strong> reviewing an isolated preview.</li>
+                <li><strong>Make every change an atomic, signed, plain-English commit.</strong></li>
+                <li><strong>Pixel-diff staging versus prod to <code>AE 0</code></strong> before a human is asked to look; treat any non-zero result as a finding to explain, not a number to wave through.</li>
+            </ol>
+
+            <p>Promotion is a merge. Rollback is a revert. The client sees nothing until it is proven.</p>
+
+            <p>I keep the terse decision-and-tradeoffs version of the sixth boundary as an architecture decision record, <a href="https://github.com/JacobStephens2/infrastructure-patterns/blob/main/adr/0010-pixel-equality-gate-over-diff-review-for-generated-markup.md">ADR 0010 in my infrastructure-patterns repo</a>, alongside the other patterns this one composes with.</p>
+
+            <p>The open edge I am still working on: this whole scheme certifies that nothing visible changed, which is the right contract for modernizing frozen markup, but it says nothing about whether the change was a good idea. A refactor can be pixel-perfect and still make the next change harder. Measuring the pixels was the easy part. Knowing which refactors are worth doing to markup you have decided to keep alive, rather than replace, is the part I do not have a metric for yet.</p>
+
+            <p>If you are sitting on a frozen site that still has to change and you would rather not gamble on an agent, this is the kind of work I do. You can reach me at <a href="mailto:jacob@stephens.page">jacob@stephens.page</a>.</p>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

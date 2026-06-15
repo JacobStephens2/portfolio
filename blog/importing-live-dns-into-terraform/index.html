@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importing Live DNS into Terraform Without Downtime | Jacob Stephens</title>
+    <meta name="description" content="If your DNS already serves traffic and you want it in Terraform, import the records - do not recreate them. The recreate path risks duplicate records and the silent deletion of anything your desired-state list forgot.">
+    <meta property="og:title" content="Importing Live DNS into Terraform Without Downtime">
+    <meta property="og:description" content="Why I imported ~220 live DNS records into Terraform instead of recreating them, the zero-change plan that proves it worked, and the SRV gotcha along the way.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/blog/importing-live-dns-into-terraform/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Importing Live DNS into Terraform Without Downtime">
+    <meta name="twitter:description" content="Why I imported ~220 live DNS records into Terraform instead of recreating them, the zero-change plan that proves it worked, and the SRV gotcha along the way.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
+            --code-bg: #efe9df;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--brand);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        article.note {
+            padding: 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 0.9rem;
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.08;
+            letter-spacing: -0.01em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .meta strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--brand);
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.93rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.5rem 0.6rem 0.5rem 0;
+            border-bottom: 1px solid var(--rule);
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: 700;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1rem 1.1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        strong {
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--brand);
+            text-decoration: none;
+        }
+
+        a:hover,
+        a:focus-visible {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/blog/" class="back-link">&larr; All posts</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; Infrastructure</div>
+            <h1 class="title">Importing Live DNS into Terraform Without Downtime</h1>
+            <p class="meta"><strong>June 9, 2026</strong> &middot; ~850 words &middot; Cloudflare DNS in Terraform</p>
+
+            <p>If your DNS already serves traffic and you want it under Terraform, import the records - do not recreate them. I moved ~220 records across 9 zones onto Cloudflare and into Terraform this way, and the whole migration changed exactly nothing that resolves. The point of this post is the one decision that makes that true: adopt the live records, rather than declaring a desired state and letting Terraform converge to it.</p>
+
+            <h2>The recreate trap</h2>
+
+            <p>The obvious way to put existing infrastructure into code is to write a desired-state list - here are the records I want - and <code>terraform apply</code> it. Against records that are already live, that is the wrong default, for two reasons.</p>
+
+            <p>First, Terraform's create path will try to make records that already exist. Depending on the provider you get duplicate records or an API error, neither of which you want mid-migration.</p>
+
+            <p>Second, and worse: anything your hand-authored list <em>forgot</em> gets deleted as drift. DNS is exactly the place you forget things. An obscure DKIM selector a vendor set up two years ago, an <code>_acme-challenge</code> TXT, a verification record for some SaaS - none of them are in your head, all of them matter, and a desired-state apply silently removes every one you didn't transcribe. The web record you remember keeps working; the mail domain you forgot about quietly breaks. That is a bad trade for tidier source files.</p>
+
+            <h2>Import instead</h2>
+
+            <p>Importing inverts the direction. Instead of declaring what should exist and deleting the rest, you take what already exists and write configuration that matches it, changing nothing.</p>
+
+            <p>The mechanical recipe, with Terraform 1.5+:</p>
+
+            <ol>
+                <li>Pull every record from the provider's API and emit one <code>import</code> block per record (<code>to</code> the resource address, <code>id</code> the provider's record id). A short script does this and stays useful afterward as a drift audit.</li>
+                <li>Run <code>terraform plan -generate-config-out=generated.tf</code>. Terraform writes the matching resource configuration for every imported record, derived from reality rather than guessed.</li>
+                <li>Review the generated config, then run a plain <code>plan</code>.</li>
+            </ol>
+
+            <h2>The plan that proves it</h2>
+
+            <p>Drive it until the plan says this:</p>
+
+            <p><code>Plan: 221 to import, 0 to add, 0 to change, 0 to destroy.</code></p>
+
+            <p>That row of zeros is the acceptance test. It means the code now matches what is actually serving traffic - no record created, none deleted, none modified. From that point the baseline plan is a no-op, which is the property you actually wanted: the next time <code>plan</code> shows a change, the change is real and intended, and the diff means something. A configuration you cannot trust to be a no-op is a configuration you cannot use to review changes.</p>
+
+            <h2>The gotcha: SRV records</h2>
+
+            <p>Generated config is not always valid config. For my SRV records, the generator emitted both a <code>content</code> string and a structured <code>data</code> block, and the provider rejects the two together as mutually exclusive. The fix was a deterministic post-process that strips the redundant <code>content</code> from any block that has a <code>data</code>. Worth noting the general shape: importing surfaces provider quirks at import time, all at once, instead of ambushing you on some unrelated edit six months later. I would rather meet them on day one.</p>
+
+            <h2>When recreating is actually fine</h2>
+
+            <p>The import-first rule is for adopting infrastructure that is already serving traffic. For a <em>greenfield</em> zone with no live records, recreate is correct: author the desired state and let Terraform build it, no import dance. The same holds for a record set small enough to recreate inside a planned maintenance window where a brief inconsistency is acceptable. The distinction is just whether real users are resolving those names right now.</p>
+
+            <h2>What it costs</h2>
+
+            <p>Honesty about the price: generated config is verbose and machine-named. Importing 200-some records gives you 200-some resource blocks with generated identifiers, not the hand-curated names you would write greenfield. You can rename them in state afterward, but that is separate work, and I have not yet decided it is worth doing for records I rarely touch by hand. The tidiness I gave up is real; the zero-downtime adoption I bought is worth more. Whether the rename cleanup ever earns its keep is a question I am leaving open until the verbosity actually gets in my way.</p>
+
+            <p>The full sanitized setup - Terraform, the import generator, the Ansible roles - is on <a href="https://github.com/JacobStephens2/terraform-cloudflare-dns">GitHub</a>, and the longer reasoning is written up as <a href="https://github.com/JacobStephens2/infrastructure-patterns/blob/main/adr/0014-import-live-dns-over-recreating-it.md">ADR 0014</a>.</p>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

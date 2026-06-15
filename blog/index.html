@@ -221,7 +221,7 @@
                 <div class="eyebrow">Blog</div>
                 <h1>Writeups of work I've done.</h1>
                 <p class="hero-copy">Short, practical narratives of selected engineering changes - performance tuning, platform migrations, schema work, and the like - expanded from my working notes.</p>
-                <p class="hero-copy">These are drafted with AI assistance from my own profiling reports and commit notes. The decisions and the work are mine; the prose is collaborative. I keep <a href="https://blog.stephens.page/" style="color: inherit; border-bottom: 1px solid currentColor;">blog.stephens.page</a> for hand-written essays, fiction, and longer-form personal writing.</p>
+                <p class="hero-copy">These are drafted with AI assistance from my own profiling reports and commit notes. The decisions and the work are mine; the prose is collaborative. I keep <a href="https://jacobstephens.net/blog/" style="color: inherit; border-bottom: 1px solid currentColor;">jacobstephens.net/blog</a> for hand-written essays, fiction, and longer-form personal writing.</p>
             </section>
 
             <section class="section">
@@ -248,6 +248,13 @@
                         </a>
                     </li>
                     <li>
+                        <a href="/blog/importing-live-dns-into-terraform/">
+                            <div class="note-meta">June 9, 2026 &middot; Infrastructure</div>
+                            <div class="note-title">Importing Live DNS into Terraform Without Downtime</div>
+                            <p class="note-summary">Why I imported ~220 live DNS records across 9 zones into Terraform instead of recreating them - the recreate path silently deletes anything your desired-state list forgot - the zero-change plan that proves it worked, and the SRV gotcha along the way.</p>
+                        </a>
+                    </li>
+                    <li>
                         <a href="/eta-platform.html">
                             <div class="note-meta">Case Study &middot; Educational Travel Adventures</div>
                             <div class="note-title">One Engineer, a Platform of Production Systems</div>
@@ -266,6 +273,13 @@
                             <div class="note-meta">June 5, 2026 &middot; Distributed Systems</div>
                             <div class="note-title">Tracking Listening Time Across Six Platforms — Without Building a Surveillance Tool</div>
                             <p class="note-summary">One pure Rust core driving six native shells, a G-Counter CRDT that makes concurrent devices add instead of overwrite, and a schema that structurally can't store when you listened - only how much.</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/blog/letting-an-ai-agent-modernize-a-frozen-legacy-site/">
+                            <div class="note-meta">June 5, 2026 &middot; Infrastructure</div>
+                            <div class="note-title">Letting an AI Agent Modernize a Frozen Legacy Site, Safely</div>
+                            <p class="note-summary">Six boundaries that make it safe to let an AI coding agent refactor a live, client-owned legacy site - and the one that does the real work: pixel-diff every page to AE 0 before a human is ever asked to look.</p>
                         </a>
                     </li>
                     <li>
