@@ -1,3 +1,4 @@
 private/reports/*.md
 node_modules/
 stack/
+private/.env

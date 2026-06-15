@@ -25,6 +25,7 @@
       gtag('config', 'G-W0D3PS27FK');
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         :root {
             --ink: #181512;
@@ -187,6 +188,32 @@
         .footer strong { color: var(--ink); }
         .footer a { color: var(--muted); }
 
+        .contact-form { display: flex; flex-direction: column; gap: 1rem; max-width: 32rem; }
+        .contact-form .field { display: flex; flex-direction: column; gap: 0.3rem; }
+        .contact-form label { font-size: 0.85rem; font-weight: 600; color: var(--ink); }
+        .contact-form input,
+        .contact-form textarea {
+            font: inherit;
+            color: var(--ink);
+            background: #fff;
+            border: 1px solid var(--rule);
+            border-radius: 4px;
+            padding: 0.6rem 0.7rem;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: 2px solid var(--brand);
+            outline-offset: 0;
+            border-color: var(--brand);
+        }
+        .contact-form textarea { resize: vertical; min-height: 8rem; }
+        .contact-form button.cta { font-family: inherit; border: 0; cursor: pointer; }
+        .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+        .form-actions { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+        .form-status { font-size: 0.92rem; color: var(--muted); }
+        .form-status.is-success { color: #2f7d32; }
+        .form-status.is-error { color: #b3261e; }
+
         @media (max-width: 640px) {
             .topbar { flex-direction: column; align-items: flex-start; }
             h1 { font-size: 2rem; }
@@ -210,6 +237,33 @@
                     <a href="https://www.linkedin.com/in/jacob-c-stephens" class="cta cta-secondary">LinkedIn</a>
                     <a href="https://stephens.page/resume/" class="cta cta-secondary">Resume</a>
                 </div>
+            </section>
+
+            <section class="links-panel">
+                <div class="links-title">Send a message</div>
+                <form id="contact-form" class="contact-form" novalidate>
+                    <div class="hp" aria-hidden="true">
+                        <label for="website_url">Leave this field empty</label>
+                        <input type="text" name="website_url" id="website_url" tabindex="-1" autocomplete="off">
+                    </div>
+                    <div class="field">
+                        <label for="cf-name">Name</label>
+                        <input type="text" id="cf-name" name="name" required autocomplete="name">
+                    </div>
+                    <div class="field">
+                        <label for="cf-email">Email</label>
+                        <input type="email" id="cf-email" name="email" required autocomplete="email">
+                    </div>
+                    <div class="field">
+                        <label for="cf-message">Message</label>
+                        <textarea id="cf-message" name="message" rows="5" required></textarea>
+                    </div>
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAACvBXrwCcvDAVKyA" data-theme="light"></div>
+                    <div class="form-actions">
+                        <button type="submit" class="cta cta-primary" id="cf-submit">Send message</button>
+                        <span id="cf-status" class="form-status" role="status" aria-live="polite"></span>
+                    </div>
+                </form>
             </section>
 
             <section class="links-panel">
@@ -259,6 +313,52 @@
 
     <script>
         document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+
+    <script>
+        (function () {
+            var form = document.getElementById('contact-form');
+            if (!form) return;
+            var status = document.getElementById('cf-status');
+            var submit = document.getElementById('cf-submit');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                status.textContent = '';
+                status.className = 'form-status';
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+
+                var original = submit.textContent;
+                submit.disabled = true;
+                submit.textContent = 'Sending…';
+
+                fetch('/contact-submit.php', {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: { 'Accept': 'application/json' }
+                })
+                    .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+                    .then(function (res) {
+                        if (res.ok && res.d && res.d.ok) {
+                            form.reset();
+                            status.textContent = res.d.message || 'Thanks! Your message has been sent.';
+                            status.classList.add('is-success');
+                        } else {
+                            status.textContent = (res.d && res.d.message) || 'Something went wrong. Please email jacob@stephens.page.';
+                            status.classList.add('is-error');
+                        }
+                    })
+                    .catch(function () {
+                        status.textContent = 'Network error. Please email jacob@stephens.page directly.';
+                        status.classList.add('is-error');
+                    })
+                    .finally(function () {
+                        submit.disabled = false;
+                        submit.textContent = original;
+                        if (window.turnstile) { try { window.turnstile.reset(); } catch (e) {} }
+                    });
+            });
+        })();
     </script>
 </body>
 </html>
