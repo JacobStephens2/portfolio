@@ -72,6 +72,13 @@
             margin-bottom: 1.5rem;
         }
 
+        .topbar-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         .back-link,
         .contact-link {
             color: var(--muted);
@@ -490,7 +497,10 @@
     <div class="container">
         <div class="topbar">
             <a href="https://stephens.page/" class="back-link">Back to home</a>
-            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+            <span class="topbar-right">
+                <a href="/jacob-stephens-portfolio.md" download="jacob-stephens-portfolio.md" class="contact-link">&#8595; Download Markdown</a>
+                <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+            </span>
         </div>
 
         <main>
