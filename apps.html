@@ -242,6 +242,23 @@
         }
         .card-dot.is-active { background: #fff; transform: scale(1.2); }
         .card-dot:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .card-caption {
+            position: absolute;
+            top: 0.6rem;
+            left: 0.6rem;
+            max-width: calc(100% - 1.2rem);
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            background: rgba(15, 12, 9, 0.6);
+            color: #fff;
+            font-size: 0.8rem;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+            z-index: 3;
+        }
 
         .lightbox {
             position: fixed;
@@ -478,44 +495,64 @@
                 : [button.dataset.image];
             const capData = button.dataset.captions;
             const captions = capData ? capData.split(',').map((s) => s.trim()) : [];
+            const hasCaptions = captions.some(Boolean);
             const cardImg = button.querySelector('img');
             let idx = 0;
 
-            if (images.length > 1) {
+            // Wrap in a frame when there's a carousel to navigate or a caption to
+            // overlay on the preview (so the current view is labelled before the
+            // lightbox is even opened).
+            if (images.length > 1 || hasCaptions) {
                 const frame = document.createElement('div');
                 frame.className = 'image-frame';
                 button.parentNode.insertBefore(frame, button);
                 frame.appendChild(button);
+
+                let captionEl = null;
+                if (hasCaptions) {
+                    captionEl = document.createElement('span');
+                    captionEl.className = 'card-caption';
+                    frame.appendChild(captionEl);
+                }
 
                 const show = (i) => {
                     idx = (i + images.length) % images.length;
                     if (cardImg) cardImg.src = images[idx];
                     frame.querySelectorAll('.card-dot').forEach((d, di) =>
                         d.classList.toggle('is-active', di === idx));
+                    if (captionEl) {
+                        const cap = captions[idx] || '';
+                        captionEl.textContent = cap;
+                        captionEl.style.display = cap ? '' : 'none';
+                    }
                 };
-                const arrow = (cls, label, glyph, step) => {
-                    const a = document.createElement('button');
-                    a.type = 'button';
-                    a.className = 'card-nav ' + cls;
-                    a.setAttribute('aria-label', label);
-                    a.innerHTML = glyph;
-                    a.addEventListener('click', (e) => { e.stopPropagation(); show(idx + step); });
-                    return a;
-                };
-                frame.appendChild(arrow('card-nav--prev', 'Previous image', '&lsaquo;', -1));
-                frame.appendChild(arrow('card-nav--next', 'Next image', '&rsaquo;', 1));
+                show(0);
 
-                const dots = document.createElement('div');
-                dots.className = 'card-dots';
-                images.forEach((_, di) => {
-                    const dot = document.createElement('button');
-                    dot.type = 'button';
-                    dot.className = 'card-dot' + (di === 0 ? ' is-active' : '');
-                    dot.setAttribute('aria-label', 'Show image ' + (di + 1));
-                    dot.addEventListener('click', (e) => { e.stopPropagation(); show(di); });
-                    dots.appendChild(dot);
-                });
-                frame.appendChild(dots);
+                if (images.length > 1) {
+                    const arrow = (cls, label, glyph, step) => {
+                        const a = document.createElement('button');
+                        a.type = 'button';
+                        a.className = 'card-nav ' + cls;
+                        a.setAttribute('aria-label', label);
+                        a.innerHTML = glyph;
+                        a.addEventListener('click', (e) => { e.stopPropagation(); show(idx + step); });
+                        return a;
+                    };
+                    frame.appendChild(arrow('card-nav--prev', 'Previous image', '&lsaquo;', -1));
+                    frame.appendChild(arrow('card-nav--next', 'Next image', '&rsaquo;', 1));
+
+                    const dots = document.createElement('div');
+                    dots.className = 'card-dots';
+                    images.forEach((_, di) => {
+                        const dot = document.createElement('button');
+                        dot.type = 'button';
+                        dot.className = 'card-dot' + (di === 0 ? ' is-active' : '');
+                        dot.setAttribute('aria-label', 'Show image ' + (di + 1));
+                        dot.addEventListener('click', (e) => { e.stopPropagation(); show(di); });
+                        dots.appendChild(dot);
+                    });
+                    frame.appendChild(dots);
+                }
             }
 
             button.addEventListener('click', () => {
