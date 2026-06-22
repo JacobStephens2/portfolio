@@ -244,36 +244,36 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; AI Infrastructure</div>
             <h1 class="title">Sandboxing AI Agents per Business Role</h1>
-            <p class="meta"><strong>June 3, 2026</strong> &middot; ~740 words &middot; Sandboxed AI assistants for non-technical managers</p>
+            <p class="meta"><strong>June 3, 2026</strong> &middot; ~670 words &middot; Sandboxed AI assistants for non-technical managers</p>
 
-            <p>Giving a non-technical manager an AI assistant that can query the real business database and even change the product is genuinely useful - and genuinely dangerous. The danger isn't the model being "evil"; it's that an autonomous agent treats every boundary you enforce by convention as a suggestion. So the boundaries can't be conventions. They have to be structural.</p>
+            <p>Giving a non-technical manager an AI assistant that can query the real business database and even change the product is genuinely useful - and genuinely dangerous. The danger isn't the model being "evil"; it's that an autonomous agent treats every boundary you enforce by convention as a suggestion. So the boundaries have to be structural.</p>
 
-            <p>Here's the design I run in production: each business manager gets their own sandboxed instance of our internal app, with its own AI assistant, and the safety properties come from the <em>shape</em> of the system rather than from asking the agent nicely.</p>
+            <p>Here's the design I run in production: each manager gets their own sandboxed instance of our internal app with its own AI assistant, and the safety properties come from the <em>shape</em> of the system rather than from asking the agent nicely.</p>
 
             <h2>One container per manager</h2>
 
-            <p>Every manager's instance is its own container behind a single reverse proxy that routes by hostname. That gives each tenant an isolated filesystem and an isolated process space for free. A manager's agent literally cannot open another manager's files, because they aren't in its container. This is the cheapest strong isolation you can buy: you're not writing access-control code, you're relying on a boundary the kernel already enforces.</p>
+            <p>Every manager's instance is its own container behind a single reverse proxy that routes by hostname, giving each tenant an isolated filesystem and process space for free. A manager's agent literally cannot open another manager's files, because they aren't in its container. This is the cheapest strong isolation you can buy: you're not writing access-control code, you're relying on a boundary the kernel already enforces.</p>
 
             <p>Each container also gets its own database user scoped to its own database, and its own CPU/memory limits, so one runaway agent can't starve its neighbors or reach another tenant's data.</p>
 
             <h2>A real database, refreshed every four hours - never the production one</h2>
 
-            <p>The assistants are only useful if the data looks real, so each sandbox is seeded from a copy of production refreshed every four hours. The important word is <em>copy</em>. The agent reads and writes a private database that is rebuilt every four hours from a production mirror via an atomic swap. Two things fall out of that:</p>
+            <p>The assistants are only useful if the data looks real, so each sandbox is seeded from a copy of production. The important word is <em>copy</em>. The agent reads and writes a private database rebuilt every four hours from a production mirror via an atomic swap. Two things fall out of that:</p>
 
             <ol>
-                <li><strong>Blast radius is one refresh cycle.</strong> Whatever an agent does to its sandbox data is gone at the next refresh. The four-hourly reset isn't just freshness - it's the backstop safety net. "What if the agent corrupts the data?" Then it's corrupted until the next refresh - at most a few hours - in one sandbox, affecting no one.</li>
-                <li><strong>Production is never in the loop.</strong> The sandboxes never point at the live database, so there is no code path where a creative agent action lands on a real reservation.</li>
+                <li><strong>Blast radius is one refresh cycle.</strong> Whatever an agent does to its sandbox data is gone at the next refresh. The four-hourly reset isn't just freshness - it's the backstop. "What if the agent corrupts the data?" Then it's corrupted for at most a few hours, in one sandbox, affecting no one.</li>
+                <li><strong>Production is never in the loop.</strong> The sandboxes never point at the live database, so no code path lets a creative agent action land on a real reservation.</li>
             </ol>
 
             <h2>Default-deny command execution</h2>
 
-            <p>The agent can run shell commands - that's most of its power - but only against an allowlist. The interesting design choice is the fallback: anything not on the list is <em>denied</em>, not <em>asked</em>. A default-ask policy sounds safer but trains everyone to click "yes"; a default-deny policy means the set of things the agent can do is finite, enumerable, and reviewable. Adding a capability is a deliberate edit to a config file, not an in-the-moment judgment call.</p>
+            <p>The agent can run shell commands - that's most of its power - but only against an allowlist. The design choice is the fallback: anything not on the list is <em>denied</em>, not <em>asked</em>. A default-ask policy sounds safer but trains everyone to click "yes"; default-deny means the set of things the agent can do is finite, enumerable, and reviewable. Adding a capability is a deliberate edit to a config file.</p>
 
             <h2>How code changes get out - and the honest part</h2>
 
-            <p>This is where I'll be precise, because it's the part people usually overclaim. Agent code changes don't flow straight to production. Each manager's work lands on its own long-lived branch, and a nightly job commits and pushes that branch automatically. Production is a separate branch that only moves when a human merges into it.</p>
+            <p>This is the part people usually overclaim, so I'll be precise. Agent code changes don't flow straight to production. Each manager's work lands on its own long-lived branch, and a nightly job commits and pushes that branch automatically. Production is a separate branch that only moves when a human merges into it.</p>
 
-            <p>So the "gate" between AI-written code and production is a <strong>human merge step</strong>, not a clever piece of enforcement tooling. I think that's the right design, and I'd rather describe it accurately than dress it up: the structural guarantees (container isolation, private four-hourly-reset databases, default-deny execution) are what make it <em>safe to let the agent work at all</em>; the human merge is what decides whether any given change is <em>good enough to ship</em>. Mixing those two up - pretending a review gate is automated when it's a convention - is how teams end up surprised.</p>
+            <p>So the "gate" between AI-written code and production is a <strong>human merge step</strong>, not a clever piece of enforcement tooling. I think that's the right design, and I'd rather describe it accurately than dress it up: the structural guarantees (container isolation, private four-hourly-reset databases, default-deny execution) are what make it <em>safe to let the agent work at all</em>; the human merge decides whether any given change is <em>good enough to ship</em>. Pretending a review gate is automated when it's a convention is how teams get surprised.</p>
 
             <h2>What generalizes</h2>
 

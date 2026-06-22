@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Prompt, Three Engines: Bevy, Unity, and Unreal with Claude Code | Jacob Stephens</title>
+    <meta name="description" content="The same brief - an Android game, no art or audio assets, everything in code - run through Bevy (Rust), Unity (C#), and Unreal Engine 5 (C++) with Claude Code on macOS. Six repos, and why the editor decides how well an AI agent can build in each.">
+    <meta property="og:title" content="One Prompt, Three Engines: Bevy, Unity, and Unreal with Claude Code">
+    <meta property="og:description" content="The same Android-game brief across three engines with an AI coding agent - and why the visual editor is the whole story.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/blog/one-prompt-three-engines/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="One Prompt, Three Engines: Bevy, Unity, and Unreal with Claude Code">
+    <meta name="twitter:description" content="The same Android-game brief across three engines with an AI coding agent - and why the visual editor is the whole story.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
+            --code-bg: #efe9df;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--brand);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        article.note {
+            padding: 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 0.9rem;
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.08;
+            letter-spacing: -0.01em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .meta strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--brand);
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.93rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.5rem 0.6rem 0.5rem 0;
+            border-bottom: 1px solid var(--rule);
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: 700;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1rem 1.1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        strong {
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--brand);
+            text-decoration: none;
+        }
+
+        a:hover,
+        a:focus-visible {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        .ai-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: var(--soft);
+            border-left: 3px solid var(--brand);
+            border-radius: 0 6px 6px 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/blog/" class="back-link">&larr; All posts</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; AI-assisted dev</div>
+            <h1 class="title">One Prompt, Three Engines: the Same Android Game in Bevy, Unity, and Unreal</h1>
+            <p class="meta"><strong>June 18, 2026</strong> &middot; ~1,050 words &middot; What an AI coding agent does with three game engines, and why the editor is the whole story</p>
+
+            <p>I gave Claude Code the same brief in three game engines and kept the results. The brief was deliberately hostile to the usual game-dev workflow: build an Android game with no art and no audio assets, everything generated in code. I ran it twice per engine - a 2D HORSE poker game and a 3D USPSA practical-shooting stage - across <strong>Bevy 0.18 (Rust)</strong>, <strong>Unity 6 (C#)</strong>, and <strong>Unreal Engine 5.7 (C++)</strong>. Six repositories, all built on macOS with Claude Code on Opus 4.8.</p>
+
+            <p>I was not trying to ship games. The question was narrower: how much does the engine choice change how well an AI coding agent does? The engines differ in language and build system, but the difference that mattered was how much of the work lives in a visual editor you click through - the one place an agent cannot follow.</p>
+
+            <h2>The constraint that decides everything: no editor</h2>
+            <p>An AI agent works in text. It writes files and runs commands. It does not drag a mesh into a scene, wire a node graph, or nudge a transform in an inspector. So "can Claude Code build in Unreal" really means "how much of Unreal can you drive without ever opening the editor." Every result below follows from that one fact.</p>
+            <p>The no-assets rule is the same idea from the other direction. Binary art and audio are the one thing an agent cannot author as text, so I banned them. Cards are drawn from primitives, stages from primitive meshes, every sound synthesized by a small Python script committed next to the game. That sounds like a handicap, but it is what makes the exercise tractable: remove the one thing the agent can't produce, and let it generate everything else as text it can read back, test, and fix.</p>
+
+            <h2>Bevy (Rust): nothing to click</h2>
+            <p>Bevy was the natural fit because there is no editor to begin with. A Bevy game is a Rust program - the entire thing is source, so nothing is out of the agent's reach. It reached a working build in the fewest commits (4 to 5) on the lightest toolchain of the three: the <code>aarch64-linux-android</code> Rust target plus <code>cargo-apk</code>, driven by a committed <code>build_apk.sh</code>. Each game is about 64 KB of Rust, and the APKs are small because a Rust binary is small.</p>
+            <p>The cost is that Bevy hands you the least for free: no scene editor, no asset pipeline, no physics you didn't write. For an agent that is closer to a feature than a bug - less engine to misuse - but the game is exactly as capable as the code, and no more. The Bevy poker skips side pots; it is the bare engine plus what was written on top.</p>
+
+            <h2>Unity (C#): headless, and the most complete</h2>
+            <p>Unity has a heavy editor, and the surprise was how much of it Claude Code routed around. It built the entire scene from C# (<code>SceneBuilder.cs</code>), ran the game logic headlessly in Unity's batchmode before any UI existed, and packaged the APK with <code>-executeMethod ... BuildAndroid</code>, never opening the editor window. It wrote the most code of the three (73 to 91 KB of C#) and took the most iterations (9 to 10 commits), and produced the most complete game logic: the Unity poker is the only one with side pots and three opponents.</p>
+            <p>The price is a real Unity install (6000.0.77f1) and IL2CPP in the loop, and the most rounds to get there. But "drive Unity entirely from C# and the command line" turned out to be a workflow an agent handles well, and the headless tests let it know it was right before anything rendered.</p>
+
+            <h2>Unreal (C++): possible, at a price</h2>
+            <p>Unreal worked, in pure C++ with a Slate UI and <em>no Blueprint</em> - the only way to keep the whole game as text in <code>Source/</code> instead of in binary editor assets the agent can't touch. The hand evaluator is dependency-free C++ you can compile and test with <code>clang++</code> outside the engine.</p>
+            <p>The price is the toolchain, and it is steep: UE 5.7 with the Android platform, NDK r27, JDK 17, an ASTC cook through <code>RunUAT BuildCookRun</code>, and <code>bPackageDataInsideApk</code> so a sideloaded build runs without an OBB file. The resulting APK is about 130 MB, against a few megabytes for Bevy. Unreal also produced the simplest game of the three - heads-up poker only - for the most ceremony.</p>
+
+            <h2>Side by side</h2>
+            <table>
+                <thead>
+                    <tr><th>Engine</th><th>Language</th><th>Build to Android</th><th>Source</th><th>Commits</th><th>Scope</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Bevy 0.18</td><td>Rust</td><td><code>cargo-apk</code>, aarch64 target</td><td>~64 KB Rust</td><td>4&ndash;5</td><td>poker (no side pots) + 3D shooter; small APK</td></tr>
+                    <tr><td>Unity 6</td><td>C# (IL2CPP)</td><td>batchmode <code>-executeMethod</code></td><td>73&ndash;91 KB C#</td><td>9&ndash;10</td><td>poker (side pots, 3 opponents) + 3D shooter</td></tr>
+                    <tr><td>Unreal 5.7</td><td>C++ (Slate, no Blueprint)</td><td><code>RunUAT BuildCookRun</code>, NDK r27 / JDK 17</td><td>38&ndash;43 KB C++ (+ Python asset gen)</td><td>6&ndash;10</td><td>poker (heads-up) + 3D shooter; ~130 MB APK</td></tr>
+                </tbody>
+            </table>
+            <p>The pattern is consistent: Bevy reached a working build with the least code and the lightest toolchain; Unity took the most code and iteration but produced the most complete logic; Unreal carried the heaviest build for the simplest game. None of the three needed its visual editor, because the agent was told to keep everything in code - and that, not the language, is what made each one possible.</p>
+
+            <h2>Then I built it for Windows</h2>
+            <p>The six builds above all target Android from a Mac. To close the loop I rebuilt the USPSA shooter twice more - native to Windows, built on Windows, once in Unity 6 and once in Unreal Engine 5 - and switching the target inverted the difficulty curve. Android-from-macOS was easy to start and fiddly to finish; Windows-on-Windows was the reverse: tougher to get going, smoother once it ran.</p>
+            <p>The bootstrap was the whole tax. The machine had Visual Studio 2022 and .NET but no <code>UnrealEditor.exe</code>, so step one was a multi-gigabyte engine install through the Epic Games Launcher before a single line could compile. Once the toolchain was in place, the native target was the nicer place to work and to play: a desktop build is a folder you double-click, and a first-person shooter wants a mouse and a real screen, not thumbs on glass.</p>
+            <p>It is also where the idea fully landed. Freed from a phone, both Windows builds run a two-stage course of fire where Stage 2 adds an armed "ranchero" who shoots back from cover - a navmesh-free enemy AI that aims, strafes, holds its range, and fires on line of sight. That is more game than the single-stage Android versions had room for.</p>
+
+            <h2>What I'd tell someone pointing an agent at a game engine</h2>
+            <p>Choose the engine with the least editor and the most truth-in-source.</p>
+            <ul>
+                <li><strong>Bevy</strong> is the cleanest fit: all code, one build script, and the agent can reach every part of it. You give up everything an engine would otherwise hand you.</li>
+                <li><strong>Unity</strong> is more capable and still very workable headlessly, if you accept that the agent writes its own scene-builder and leans on batchmode. It rewarded that with the most complete game.</li>
+                <li><strong>Unreal</strong> is genuinely possible in pure C++/Slate, but you pay in toolchain weight and a 130 MB APK, and should expect the most setup for the least game.</li>
+            </ul>
+            <p>The deeper lesson is the no-assets constraint, not the engine ranking. All six exist because I removed the one thing an agent cannot produce - binary assets - and let it generate the rest as text it could read, test, and repair. The engine choice only decides how much ceremony stands between the code and a running build - and, as the Windows rebuilds showed, the target platform decides where that ceremony lands: a light start and fiddly finish targeting Android from a Mac, a heavy bootstrap and smoother finish targeting Windows on Windows.</p>
+
+            <h2>Get the code, grab the APKs</h2>
+            <p>All six repositories are public, and each one ships a release with a sideloadable Android APK (debug-signed, arm64-v8a - turn on "install unknown apps" for your browser, download, and tap it).</p>
+            <ul>
+                <li><strong>Bevy (Rust):</strong>
+                    BevyHorsePoker
+                    (<a href="https://github.com/JacobStephens2/BevyHorsePoker" target="_blank" rel="noopener">code</a> &middot;
+                    <a href="https://github.com/JacobStephens2/BevyHorsePoker/releases/latest" target="_blank" rel="noopener">APK</a>)
+                    &middot; BevyUSPSAMatch
+                    (<a href="https://github.com/JacobStephens2/BevyUSPSAMatch" target="_blank" rel="noopener">code</a> &middot;
+                    <a href="https://github.com/JacobStephens2/BevyUSPSAMatch/releases/latest" target="_blank" rel="noopener">APK</a>)
+                </li>
+                <li><strong>Unity (C#):</strong>
+                    UnityHorsePoker
+                    (<a href="https://github.com/JacobStephens2/UnityHorsePoker" target="_blank" rel="noopener">code</a> &middot;
+                    <a href="https://github.com/JacobStephens2/UnityHorsePoker/releases/latest" target="_blank" rel="noopener">APK</a>)
+                    &middot; UnityUSPSAMatch
+                    (<a href="https://github.com/JacobStephens2/UnityUSPSAMatch" target="_blank" rel="noopener">code</a> &middot;
+                    <a href="https://github.com/JacobStephens2/UnityUSPSAMatch/releases/latest" target="_blank" rel="noopener">APK</a>)
+                </li>
+                <li><strong>Unreal Engine (C++):</strong>
+                    UnrealHorsePoker
+                    (<a href="https://github.com/JacobStephens2/UnrealHorsePoker" target="_blank" rel="noopener">code</a> &middot;
+                    <a href="https://github.com/JacobStephens2/UnrealHorsePoker/releases/latest" target="_blank" rel="noopener">APK</a>)
+                    &middot; UnrealUSPSAMatch
+                    (<a href="https://github.com/JacobStephens2/UnrealUSPSAMatch" target="_blank" rel="noopener">code</a> &middot;
+                    <a href="https://github.com/JacobStephens2/UnrealUSPSAMatch/releases/latest" target="_blank" rel="noopener">APK</a>)
+                </li>
+            </ul>
+
+            <div class="ai-note">
+                Built with Claude Code on Opus 4.8; this writeup was drafted with Claude from the six repositories and my notes. The experiment, the engines, and the conclusions are mine.
+            </div>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

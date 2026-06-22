@@ -244,28 +244,28 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; DevOps</div>
             <h1 class="title">The Boring Deploy Script</h1>
-            <p class="meta"><strong>June 3, 2026</strong> &middot; ~660 words &middot; Single-server PHP deployment</p>
+            <p class="meta"><strong>June 3, 2026</strong> &middot; ~560 words &middot; Single-server PHP deployment</p>
 
-            <p>For a single-server PHP application, I deploy with a shell script. Not a hosted CI/CD pipeline, not a container orchestrator, not a deploy platform - about 200 lines of bash that I can read in one sitting. People sometimes read that as "hasn't gotten around to setting up real CI." It's the opposite: it's a deliberate choice, and this note is really about <em>why you'd choose the boring thing on purpose.</em></p>
+            <p>For a single-server PHP application, I deploy with a shell script - about 200 lines of bash I can read in one sitting. Not a hosted CI/CD pipeline, not a container orchestrator. People sometimes read that as "hasn't gotten around to setting up real CI." It's the opposite: a deliberate choice. This note is about <em>why you'd choose the boring thing on purpose.</em></p>
 
             <h2>What the script actually does</h2>
 
             <p>The job is small and specific: get the right commit onto this one box, atomically, without two deploys colliding or a bad ref going live. So the script is mostly guardrails:</p>
 
             <ul>
-                <li><strong>Dirty-worktree rejection.</strong> If the live checkout has uncommitted local changes, refuse to deploy. You never want a deploy quietly burying a hotfix someone made on the box at 2 a.m.</li>
+                <li><strong>Dirty-worktree rejection.</strong> If the live checkout has uncommitted changes, refuse to deploy. A deploy should never quietly bury a hotfix someone made on the box at 2 a.m.</li>
                 <li><strong><code>flock</code>-based serialization.</strong> Take an exclusive lock; if another deploy holds it, fail fast instead of interleaving two deploys into a corrupt state.</li>
-                <li><strong>Ancestor-only ref enforcement.</strong> The target commit must be a fast-forward of what's deployed. You cannot accidentally ship a divergent or rewound branch. There's an explicit override flag for the rare intentional case, because a guardrail you can't bypass on purpose becomes a guardrail people route around.</li>
-                <li><strong>Post-deploy healthcheck.</strong> After moving the code, actually hit the app and confirm it serves before declaring success.</li>
-                <li><strong>Rollback pointer.</strong> Record the previous commit and expose a one-command rollback to it. Recovery is "run this," not "figure out what was deployed."</li>
-                <li><strong>A structured deploy log.</strong> Every deploy and every failure appends who, what, and when. When something's weird, the log is the first and usually last place you look.</li>
+                <li><strong>Ancestor-only ref enforcement.</strong> The target commit must be a fast-forward of what's deployed, so you can't accidentally ship a divergent or rewound branch. An explicit override flag covers the rare intentional case, because a guardrail you can't bypass on purpose is one people route around.</li>
+                <li><strong>Post-deploy healthcheck.</strong> After moving the code, hit the app and confirm it serves before declaring success.</li>
+                <li><strong>Rollback pointer.</strong> Record the previous commit and expose a one-command rollback. Recovery is "run this," not "figure out what was deployed."</li>
+                <li><strong>A structured deploy log.</strong> Every deploy and failure appends who, what, and when. When something's weird, the log is the first place you look.</li>
             </ul>
 
-            <p>Tests and static checks run separately, in hosted CI on push. Deploy and verify are deliberately split: CI answers "is this commit good?", the deploy script answers "get this good commit onto the box safely." Conflating them is how you end up unable to deploy because a runner is down.</p>
+            <p>Tests and static checks run separately, in hosted CI on push. The split is deliberate: CI answers "is this commit good?", the deploy script answers "get this good commit onto the box safely." Conflate them and you end up unable to deploy because a runner is down.</p>
 
             <h2>Why not "real" CI/CD?</h2>
 
-            <p>Because every tool you add to the release path is a thing that can fail in the release path. A hosted runner means: runner availability is now in your critical path, your deploy secrets live with a third party, and a one-server deploy now makes a network round-trip to go nowhere. For a fleet, blue/green, or a team where many people ship, those costs buy real things - parallelism, a marketplace of actions, audited multi-environment promotion. For one app on one server, they buy mostly overhead.</p>
+            <p>Because every tool you add to the release path can fail in the release path. A hosted runner puts runner availability in your critical path, your deploy secrets with a third party, and a network round-trip in front of a one-server deploy. For a fleet, blue/green, or a team where many people ship, those costs buy real things - parallelism, a marketplace of actions, audited multi-environment promotion. For one app on one server, they buy mostly overhead.</p>
 
             <p>The honest trade-off:</p>
 
@@ -276,7 +276,7 @@
 
             <h2>When I'd change my mind</h2>
 
-            <p>This is the part that makes it an engineering decision rather than a preference. I'd reach for a managed pipeline the moment any of these became true:</p>
+            <p>This is what makes it an engineering decision rather than a preference. I'd reach for a managed pipeline the moment any of these became true:</p>
 
             <ul>
                 <li>More than one server, or a need for blue/green or canary releases.</li>
@@ -284,7 +284,7 @@
                 <li>A compliance need for audited, gated promotion across environments.</li>
             </ul>
 
-            <p>None of those are true here, so the boring script wins. The point isn't that shell scripts are better than CI/CD. It's that "what does this specific system need?" beats "what does everyone use?" - and being able to say <em>when</em> you'd switch is what separates a chosen default from a cargo-culted one.</p>
+            <p>None of those are true here, so the boring script wins. The point isn't that shell scripts beat CI/CD. It's that "what does this system need?" beats "what does everyone use?" - and being able to say <em>when</em> you'd switch is what separates a chosen default from a cargo-culted one.</p>
 
             <h2>The actual lesson</h2>
 

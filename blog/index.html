@@ -113,7 +113,7 @@
             line-height: 1.05;
             letter-spacing: -0.01em;
             margin-bottom: 0.9rem;
-            max-width: 16ch;
+            max-width: none;
         }
 
         .hero-copy {
@@ -228,6 +228,20 @@
             <section class="section">
                 <ul class="notes-list">
                     <li>
+                        <a href="/blog/one-prompt-three-engines/">
+                            <div class="note-meta">June 18, 2026 &middot; AI-assisted dev</div>
+                            <div class="note-title">One Prompt, Three Engines: the Same Android Game in Bevy, Unity, and Unreal</div>
+                            <p class="note-summary">The same brief - an Android game, no art or audio assets, everything in code - run twice through Bevy (Rust), Unity (C#), and Unreal Engine 5 (C++) with Claude Code on macOS. Six repositories, and the finding that the visual editor, not the language, decides how well an AI agent can build in each: Bevy is all code and the cleanest fit, Unity routes around its editor headlessly and ships the most complete game, Unreal works in pure C++/Slate but pays in toolchain weight and a 130 MB APK.</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/blog/watching-ai-coding-agents/">
+                            <div class="note-meta">June 16, 2026 &middot; Observability</div>
+                            <div class="note-title">What It Costs to Watch Your AI Coding Agents</div>
+                            <p class="note-summary">Instrumenting a fleet of Claude Code agents with OpenTelemetry - one collector feeding the existing Prometheus and Grafana, plus a Tempo trace store - and the four places the obvious setup is quietly wrong: a cost metric that is notional under subscription billing, a dashboard that looks empty while working, a session count that is structurally uncountable, and a legacy PHP app whose mysqli queries hide from the traces.</p>
+                        </a>
+                    </li>
+                    <li>
                         <a href="/blog/measuring-real-authorship/">
                             <div class="note-meta">June 13, 2026 &middot; Measurement</div>
                             <div class="note-title">Byte Counts Lie: Measuring What I Actually Wrote</div>
@@ -257,14 +271,14 @@
                     </li>
                     <li>
                         <a href="/eta-platform.html">
-                            <div class="note-meta">Case Study &middot; Educational Travel Adventures</div>
+                            <div class="note-meta">June 14, 2026 &middot; Case Study &middot; Educational Travel Adventures</div>
                             <div class="note-title">One Engineer, a Platform of Production Systems</div>
                             <p class="note-summary">Four-plus years modernizing an inherited PHP 5 / CentOS 7 / MySQL 5 monolith into a PHP 8 / Rocky 9 / MySQL 8 platform - with Docker, a Python agent-orchestration layer, and multi-tenant AI assistants. Architecture, the legacy-to-modern arc, and engineering highlights.</p>
                         </a>
                     </li>
                     <li>
                         <a href="/chart35.html">
-                            <div class="note-meta">Case Study &middot; Chart35</div>
+                            <div class="note-meta">June 14, 2026 &middot; Case Study &middot; Chart35</div>
                             <div class="note-title">A Privacy-First Fertility Chart, Encrypted on Your Device</div>
                             <p class="note-summary">A local-first CrMS charting app with end-to-end encrypted sync where the server only ever stores ciphertext - auto-computed stamps, an offline PWA, provider sharing, and the trust boundary that keeps health data on the device.</p>
                         </a>
@@ -272,7 +286,7 @@
                     <li>
                         <a href="/blog/tracking-listening-time-six-platforms/">
                             <div class="note-meta">June 5, 2026 &middot; Distributed Systems</div>
-                            <div class="note-title">Tracking Listening Time Across Six Platforms — Without Building a Surveillance Tool</div>
+                            <div class="note-title">Tracking Listening Time Across Six Platforms - Without Building a Surveillance Tool</div>
                             <p class="note-summary">One pure Rust core driving six native shells, a G-Counter CRDT that makes concurrent devices add instead of overwrite, and a schema that structurally can't store when you listened - only how much.</p>
                         </a>
                     </li>

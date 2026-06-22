@@ -244,32 +244,32 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Measurement</div>
             <h1 class="title">Byte Counts Lie: Measuring What I Actually Wrote</h1>
-            <p class="meta"><strong>June 13, 2026</strong> &middot; ~1,000 words &middot; Git authorship measurement</p>
+            <p class="meta"><strong>June 13, 2026</strong> &middot; ~640 words &middot; Git authorship measurement</p>
 
-            <p>I built <a href="https://stephens.page/stack/" target="_blank" rel="noopener">stephens.page/stack</a> to show the distribution of languages and tools across every repository I work in. The first version summed GitHub's per-language byte counts - the Linguist data behind each repo's language bar - and PHP towered over everything. The trouble is that a large share of that PHP I never wrote. The page was measuring repository size and calling it me.</p>
+            <p>I built <a href="https://stephens.page/stack/" target="_blank" rel="noopener">stephens.page/stack</a> to show the distribution of languages and tools across every repository I work in. The first version summed GitHub's per-language byte counts and PHP towered over everything. The trouble is I never wrote a large share of that PHP. The page was measuring repository size and calling it me.</p>
 
-            <p>The offender is one repository: the reservations platform I have worked on at Educational Travel Adventures since February 2022, a codebase that has been built since the 1990s. GitHub's Linguist sees about 14.5 million bytes of PHP in it. Crediting all of that to me, next to projects I started from an empty directory, is not a small rounding error. It is a false claim on a page whose whole point is to be an honest snapshot. So the metric had to change from "how many bytes of each language sit in my repos" to "how much of each language did I actually write."</p>
+            <p>The offender is one repository: the reservations platform I have worked on at Educational Travel Adventures since February 2022, a codebase built since the 1990s. GitHub's Linguist sees about 14.5 million bytes of PHP in it. Crediting all of that to me is a false claim on a page whose whole point is to be honest. So the metric had to change from "how many bytes of each language sit in my repos" to "how much of each language did I actually write."</p>
 
             <h2>The two attempts that didn't work</h2>
 
             <p>The obvious first move is GitHub's contributor statistics API, which reports additions and deletions per author. For a repository this large it returned all-zero additions - GitHub silently declines to compute the stat past a size threshold. Dead end.</p>
 
-            <p>The second attempt was churn: <code>git log --numstat</code>, summing the lines each author added over all history. That is the standard "contribution" measure, and it was badly polluted. Single commits added two to four and a half million lines at a stroke - <code>add vendor files</code>, <code>add phpdocx</code>, <code>remove full git cache and add results</code> - none of them hand-written. Worse, the git history begins on <strong>2023-09-08</strong>, the day the project was migrated from Bitbucket into GitHub, and that migration imported roughly 28 years of inherited code across dozens of same-day commits, all under my account. Churn credited me with 56% of the PHP. Still a lie, just a smaller one.</p>
+            <p>The second attempt was churn: <code>git log --numstat</code>, summing the lines each author added over all history. That standard "contribution" measure was badly polluted. Single commits added two to four and a half million lines at a stroke, none hand-written. Worse, the history begins on <strong>2023-09-08</strong>, the day the project migrated from Bitbucket into GitHub, importing roughly 28 years of inherited code across dozens of same-day commits under my account. Churn credited me with 56% of the PHP. Still a lie, just a smaller one.</p>
 
             <h2>Blame the surviving lines, not the churn</h2>
 
-            <p>The honest unit is current-tree ownership: of the lines that exist in the codebase <em>today</em>, who wrote each one. That is what <code>git blame</code> answers, and it ignores churn that was later deleted. But two things stood in the way.</p>
+            <p>The honest unit is current-tree ownership: of the lines that exist <em>today</em>, who wrote each one. That is what <code>git blame</code> answers, and it ignores churn that was later deleted. But two things stood in the way.</p>
 
-            <p>First, because the git history starts at the 2023 migration, every inherited line blames to the import commit - me - rather than to the person who actually wrote it years earlier. The fix was to find the project's history before GitHub. It lived in three Bitbucket repositories going back to the first commit in 2014, the day the company adopted version control. I cloned that full history and, for any current line still blamed to a migration-day commit, re-attributed it using my real share of authorship in the pre-2023 Bitbucket snapshot - measured, again, by blame.</p>
+            <p>First, because the history starts at the 2023 migration, every inherited line blames to the import commit - me - rather than to whoever wrote it years earlier. The fix was the project's history before GitHub. It lived in three Bitbucket repositories going back to the first commit in 2014. For any current line still blamed to a migration-day commit, I re-attributed it by my real share of authorship in the pre-2023 Bitbucket snapshot, measured, again, by blame.</p>
 
-            <p>Second, the migration reshuffled files into new subdirectories, so matching a file across the 2023 seam by path mostly fails. Rather than chase renames, I attribute inherited lines by my per-language share of the old snapshot as a whole, which is robust to the reorganization.</p>
+            <p>Second, the migration reshuffled files into new subdirectories, so matching a file across the 2023 seam by path mostly fails. Rather than chase renames, I attribute inherited lines by my per-language share of the old snapshot as a whole, which survives the reorganization.</p>
 
             <p>A few details that mattered:</p>
 
             <ol>
                 <li><strong>Exclude the bulk dumps.</strong> Any commit adding more than 20,000 lines is an import, a vendored dependency, a committed cache, or a backup - never hand-authored. Those lines count toward the codebase total but never toward me.</li>
                 <li><strong>Exclude vendored paths.</strong> <code>vendor/</code>, <code>node_modules/</code>, bundled libraries, and minified files are not my authorship in any repo.</li>
-                <li><strong>Resolve identity carefully.</strong> My commits span several names and email addresses, and AI agents I built committed under my own email. I match my human identities and subtract the agent ones, so a bot writing under my address doesn't inflate my count.</li>
+                <li><strong>Resolve identity carefully.</strong> My commits span several names and emails, and AI agents I built committed under my own email. I match my human identities and subtract the agent ones.</li>
                 <li><strong>Bias conservative.</strong> Where the migration flattened a file's history so blame can't recover the real author, I count those lines as not mine. A portfolio number should under-claim, never over-claim.</li>
             </ol>
 
@@ -277,11 +277,9 @@
 
             <p>Measured this way, I authored about 12.9% of the inherited platform's current lines - roughly 263,000 lines that are genuinely mine - and its PHP specifically drops from the churn estimate of 56% to <strong>27%</strong>. Each repository's language bytes on the page are now scaled by the share I wrote; repositories I created count fully, and only the inherited one is discounted.</p>
 
-            <p>The honest surprise was where the weighting bit. It barely moved PHP's share of my overall volume - I have written a lot of PHP, and 263,000 lines in one platform is real. What it cut was JavaScript, from about 29% of the total to 5%. Almost all of that codebase's JavaScript was inherited or vendored, not mine, and the byte count had been quietly crediting me with it. The distortion wasn't where I expected it.</p>
+            <p>The surprise was where the weighting bit. It barely moved PHP's share of my overall volume. What it cut was JavaScript, from about 29% of the total to 5%. Almost all of that codebase's JavaScript was inherited or vendored, and the byte count had been quietly crediting me with it. The distortion wasn't where I expected.</p>
 
-            <p>The principle generalizes past one page: a byte count measures the size of a repository, not your contribution to it. The two are the same only for code you started yourself. Everywhere else, the honest measure is blame over the complete history - and the complete history may not live where the code does now.</p>
-
-            <p>This whole exercise started because I asked whether my own page was over-representing work I had inherited. It was. The fix was more involved than I expected, and the page is better for it.</p>
+            <p>The principle generalizes past one page: a byte count measures the size of a repository, not your contribution to it. The two match only for code you started yourself. Everywhere else, the honest measure is blame over the complete history - and that history may not live where the code does now.</p>
 
             <div class="ai-note">
                 Drafted from the generator and my working notes with help from Claude, which also did much of the implementation. The method, the decisions, and the judgment calls are mine; the prose is collaborative.

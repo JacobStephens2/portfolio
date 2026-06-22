@@ -234,21 +234,21 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Infrastructure</div>
             <h1 class="title">Importing Live DNS into Terraform Without Downtime</h1>
-            <p class="meta"><strong>June 9, 2026</strong> &middot; ~850 words &middot; Cloudflare DNS in Terraform</p>
+            <p class="meta"><strong>June 9, 2026</strong> &middot; ~660 words &middot; Cloudflare DNS in Terraform</p>
 
-            <p>If your DNS already serves traffic and you want it under Terraform, import the records - do not recreate them. I moved ~220 records across 9 zones onto Cloudflare and into Terraform this way, and the whole migration changed exactly nothing that resolves. The point of this post is the one decision that makes that true: adopt the live records, rather than declaring a desired state and letting Terraform converge to it.</p>
+            <p>If your DNS already serves traffic and you want it under Terraform, import the records - do not recreate them. I moved ~220 records across 9 zones onto Cloudflare and into Terraform this way, and the migration changed nothing that resolves. The one decision that makes that true: adopt the live records, rather than declaring a desired state and letting Terraform converge to it.</p>
 
             <h2>The recreate trap</h2>
 
-            <p>The obvious way to put existing infrastructure into code is to write a desired-state list - here are the records I want - and <code>terraform apply</code> it. Against records that are already live, that is the wrong default, for two reasons.</p>
+            <p>The obvious way to put existing infrastructure into code is to write a desired-state list - here are the records I want - and <code>terraform apply</code> it. Against live records, that is the wrong default, for two reasons.</p>
 
             <p>First, Terraform's create path will try to make records that already exist. Depending on the provider you get duplicate records or an API error, neither of which you want mid-migration.</p>
 
-            <p>Second, and worse: anything your hand-authored list <em>forgot</em> gets deleted as drift. DNS is exactly the place you forget things. An obscure DKIM selector a vendor set up two years ago, an <code>_acme-challenge</code> TXT, a verification record for some SaaS - none of them are in your head, all of them matter, and a desired-state apply silently removes every one you didn't transcribe. The web record you remember keeps working; the mail domain you forgot about quietly breaks. That is a bad trade for tidier source files.</p>
+            <p>Second, and worse: anything your list <em>forgot</em> gets deleted as drift. DNS is exactly the place you forget things. A DKIM selector a vendor set up two years ago, an <code>_acme-challenge</code> TXT, a verification record for some SaaS - none are in your head, all of them matter, and a desired-state apply silently removes every one you didn't transcribe. The web record you remember keeps working; the mail domain you forgot quietly breaks. A bad trade for tidier source files.</p>
 
             <h2>Import instead</h2>
 
-            <p>Importing inverts the direction. Instead of declaring what should exist and deleting the rest, you take what already exists and write configuration that matches it, changing nothing.</p>
+            <p>Importing inverts the direction. Instead of declaring what should exist and deleting the rest, you take what exists and write configuration that matches it, changing nothing.</p>
 
             <p>The mechanical recipe, with Terraform 1.5+:</p>
 
@@ -264,19 +264,19 @@
 
             <p><code>Plan: 221 to import, 0 to add, 0 to change, 0 to destroy.</code></p>
 
-            <p>That row of zeros is the acceptance test. It means the code now matches what is actually serving traffic - no record created, none deleted, none modified. From that point the baseline plan is a no-op, which is the property you actually wanted: the next time <code>plan</code> shows a change, the change is real and intended, and the diff means something. A configuration you cannot trust to be a no-op is a configuration you cannot use to review changes.</p>
+            <p>That row of zeros is the acceptance test. The code now matches what is serving traffic - no record created, deleted, or modified. The baseline plan is a no-op, which is the property you wanted: the next time <code>plan</code> shows a change, the change is real and intended, and the diff means something. A configuration you cannot trust to be a no-op is one you cannot use to review changes.</p>
 
             <h2>The gotcha: SRV records</h2>
 
-            <p>Generated config is not always valid config. For my SRV records, the generator emitted both a <code>content</code> string and a structured <code>data</code> block, and the provider rejects the two together as mutually exclusive. The fix was a deterministic post-process that strips the redundant <code>content</code> from any block that has a <code>data</code>. Worth noting the general shape: importing surfaces provider quirks at import time, all at once, instead of ambushing you on some unrelated edit six months later. I would rather meet them on day one.</p>
+            <p>Generated config is not always valid config. For my SRV records, the generator emitted both a <code>content</code> string and a structured <code>data</code> block, which the provider rejects as mutually exclusive. The fix was a deterministic post-process that strips the redundant <code>content</code> from any block that has a <code>data</code>. The general shape is worth noting: importing surfaces provider quirks at import time, all at once, instead of ambushing you on some unrelated edit six months later. I would rather meet them on day one.</p>
 
             <h2>When recreating is actually fine</h2>
 
-            <p>The import-first rule is for adopting infrastructure that is already serving traffic. For a <em>greenfield</em> zone with no live records, recreate is correct: author the desired state and let Terraform build it, no import dance. The same holds for a record set small enough to recreate inside a planned maintenance window where a brief inconsistency is acceptable. The distinction is just whether real users are resolving those names right now.</p>
+            <p>The import-first rule is for adopting infrastructure already serving traffic. For a <em>greenfield</em> zone with no live records, recreate is correct: author the desired state and let Terraform build it, no import dance. The same holds for a record set small enough to recreate inside a maintenance window where a brief inconsistency is acceptable. The distinction is just whether real users are resolving those names right now.</p>
 
             <h2>What it costs</h2>
 
-            <p>Honesty about the price: generated config is verbose and machine-named. Importing 200-some records gives you 200-some resource blocks with generated identifiers, not the hand-curated names you would write greenfield. You can rename them in state afterward, but that is separate work, and I have not yet decided it is worth doing for records I rarely touch by hand. The tidiness I gave up is real; the zero-downtime adoption I bought is worth more. Whether the rename cleanup ever earns its keep is a question I am leaving open until the verbosity actually gets in my way.</p>
+            <p>Honesty about the price: generated config is verbose and machine-named. Importing 200-some records gives you 200-some resource blocks with generated identifiers, not the hand-curated names you would write greenfield. You can rename them in state afterward, but that is separate work I have not decided is worth doing for records I rarely touch by hand. The tidiness I gave up is real; the zero-downtime adoption I bought is worth more. Whether the rename cleanup earns its keep is a question I am leaving open until the verbosity gets in my way.</p>
 
             <p>The full sanitized setup - Terraform, the import generator, the Ansible roles - is on <a href="https://github.com/JacobStephens2/terraform-cloudflare-dns">GitHub</a>, and the longer reasoning is written up as <a href="https://github.com/JacobStephens2/infrastructure-patterns/blob/main/adr/0014-import-live-dns-over-recreating-it.md">ADR 0014</a>.</p>
         </article>

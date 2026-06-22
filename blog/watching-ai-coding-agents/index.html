@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What It Costs to Watch Your AI Coding Agents | Jacob Stephens</title>
+    <meta name="description" content="Instrumenting a fleet of AI coding agents with OpenTelemetry - one collector feeding the Prometheus and Grafana stack we already ran, plus a Tempo trace store - and the four places the obvious setup is quietly wrong: a notional cost metric, a dashboard that looks empty while working, an uncountable session metric, and a legacy PHP app that hides its own queries.">
+    <meta property="og:title" content="What It Costs to Watch Your AI Coding Agents">
+    <meta property="og:description" content="One collector, the existing Prometheus/Grafana stack, a Tempo trace store - and the four places the obvious OpenTelemetry setup is quietly wrong.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/blog/watching-ai-coding-agents/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="What It Costs to Watch Your AI Coding Agents">
+    <meta name="twitter:description" content="One collector, the existing Prometheus/Grafana stack, a Tempo trace store - and the four places the obvious OpenTelemetry setup is quietly wrong.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
+            --code-bg: #efe9df;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--brand);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        article.note {
+            padding: 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 0.9rem;
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.08;
+            letter-spacing: -0.01em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .meta strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--brand);
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.93rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.5rem 0.6rem 0.5rem 0;
+            border-bottom: 1px solid var(--rule);
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: 700;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1rem 1.1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        strong {
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--brand);
+            text-decoration: none;
+        }
+
+        a:hover,
+        a:focus-visible {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        .ai-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: var(--soft);
+            border-left: 3px solid var(--brand);
+            border-radius: 0 6px 6px 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/blog/" class="back-link">&larr; All posts</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; Observability</div>
+            <h1 class="title">What It Costs to Watch Your AI Coding Agents</h1>
+            <p class="meta"><strong>June 16, 2026</strong> &middot; ~1,400 words &middot; Instrumenting a fleet of AI coding agents with OpenTelemetry</p>
+
+            <p>We run Claude Code across about fifteen Linux hosts, and until last week I had no idea how much we used it. This post is how I closed that gap with OpenTelemetry, and the three surprises along the way: the cost number is a polite fiction, the dashboard lied about being empty, and the metric I most wanted to count was uncountable by default.</p>
+
+            <p>The short version: one OpenTelemetry collector feeding the Prometheus and Grafana stack we already ran, plus a Tempo trace store for the apps. The interesting part is the places the obvious setup is quietly wrong.</p>
+
+            <h2>The setup, in one paragraph</h2>
+            <p>Claude Code emits OpenTelemetry metrics natively - set a handful of environment variables and it ships token counts, session counts, cost, and active time over OTLP. I pointed all of it at a single OpenTelemetry Collector on our monitoring host. The collector re-exposes those metrics on a localhost endpoint the existing Prometheus scrapes, so the pull-based stack just gained one scrape target. For application traces I added Grafana Tempo behind the same collector. Total new infrastructure: one collector process and one trace store.</p>
+            <p>The reason to put a collector in the middle, rather than wire each emitter straight at Prometheus, is that it is a seam. The day you add a second signal or source, it is a config change, not a re-architecture. That bet paid off within the same week, and dredged up an older question I thought I had buried.</p>
+
+            <h2>Surprise 1: the cost metric is notional</h2>
+            <p>Claude Code reports a <code>cost.usage</code> metric in US dollars, and the first instinct is to treat it as a bill. It is not. Our runs are subscription-based, not API-billed, but the metric is computed from the vendor's API list prices regardless. That number is an estimate of what the tokens <em>would</em> have cost, not money anyone is charged.</p>
+            <p>This is genuinely useful - the right unit for comparing host against host, model against model, week against week - but only if nobody mistakes it for accounting. I labelled the metric and every dashboard panel "notional." Build an alert or finance report on it without that caveat and you will eventually have a confusing conversation with someone holding the actual invoice.</p>
+
+            <h2>Surprise 2: the dashboard looked broken, and was right to</h2>
+            <p>I rolled the telemetry config out to every host, opened the dashboard, used Claude Code, and saw nothing. Zero tokens, zero sessions, "No data." The pipeline was fine. Two separate things were hiding it.</p>
+            <p>The first is how the agent reads its config: the telemetry environment is read once, at process startup. Every session already running when I deployed the settings kept running without it; new sessions exported within a minute. Worth saying out loud any time you enable telemetry on long-lived processes, because the natural conclusion - "it's broken" - is exactly wrong.</p>
+            <p>The second was mine. The collector dropped any metric series five minutes after it stopped receiving it. For a fleet used in bursts, the series evaporated between sessions and the panels read zero whenever no one was mid-session. A working pipeline that looks dead most of the day trains you to ignore it. The fix was to extend the series expiration to seven days, which also matters for the next surprise.</p>
+
+            <h2>Surprise 3: the metric I wanted to count was uncountable</h2>
+            <p>I wanted the simplest possible number: how many sessions, by host, by person. Claude Code has a <code>session.count</code> metric, so this looked free.</p>
+            <p>It was zero. Always zero, no matter how many sessions ran.</p>
+            <p>The cause was a labelling decision I had made for a good reason that turned out exactly wrong. To keep Prometheus cardinality bounded, I had disabled the per-session id label. Without it, every short-lived session process reports the value "1" onto the <em>same</em> collapsed time series. The counter never accumulates, so summing it or taking its rate gives nothing. Tokens survived only because their values differ between sessions, and Prometheus's <code>increase()</code> reconstructs the total through what it reads as counter resets. A counter that is always 1 has no resets and no increases. It is, for counting purposes, mute.</p>
+            <p>The fix was to turn the session id back on, made safe by the seven-day series expiration I had just added: it bounds the cardinality to a rolling seven-day window of sessions, which for our fleet is small. One change solved two problems, and the lesson is the uncomfortable kind: the "responsible" optimization silently broke the headline metric. Count sessions as distinct session ids, never as a counter increase.</p>
+
+            <h2>The legacy app fought back</h2>
+            <p>Metrics were the easy half. Traces were where the apps differed.</p>
+            <p>The modern services were nearly free. A FastAPI app takes one wrapper - <code>opentelemetry-instrument</code> in front of the start command - and you get request, database, and outbound HTTP spans with no code change. An LLM proxy we run had a built-in OpenTelemetry callback; one config line and its per-call spans appeared in Tempo next to the app that called it.</p>
+            <p>The legacy PHP application was the hard case. PHP needs a C extension built before any of this works, and with no background process to batch exports, each request pays the export cost at shutdown. I got it working on a staging host that mirrors production: extension built, the SDK and an OTLP exporter installed, a small fail-safe bootstrap wrapped so telemetry can never break a page. Request-level traces showed up.</p>
+            <p>Then I looked <em>inside</em> the traces, and there was almost nothing. One span: the request. The reason is a number I had to go count: the app uses the older <code>mysqli</code> database interface in 278 files and the newer PDO interface in 69. There is auto-instrumentation for PDO and none for <code>mysqli</code>. So out of the box the dominant database layer - four call sites in five - is invisible. Full visibility there would mean writing custom <code>mysqli</code> hooks or migrating the call sites, and the per-request export overhead matters far more in production than on staging. That is its own decision, and I have left it as one.</p>
+
+            <h2>What I would tell myself a week ago</h2>
+            <p>Put the collector in the middle even with one source today; the second arrives faster than you think. Treat any vendor cost metric as notional until proven otherwise. Expect long-lived processes to ignore config they were not started with. And be suspicious of your own cardinality cleverness - the label you drop to be responsible may be the one the headline number depends on.</p>
+            <p>One caveat I still cannot resolve cleanly: the cost metric is the single number an executive will want, and the one I trust least. I can caption it "notional" on a dashboard I control, but a number travels, quoted without its caption. I have no good answer for shipping a figure that is useful and wrong at once, beyond repeating the caveat until it sticks.</p>
+
+            <h2>I tried to answer this once, with Google Analytics</h2>
+            <p>Years ago I pasted the Google Analytics tag across a lot of our internal app's pages, because I wanted to know how people used the app and where the traffic went. Then I never looked. The data piled up for years behind a login I almost never opened. So when the traces started flowing last week, the honest question was "did I finally get the thing I wanted back then?"</p>
+            <p>Half of it. Tracing and product analytics overlap on exactly one thing: raw page popularity. Because the app renders on the server, the count of spans per route is a fair proxy for pageviews, and the span timing tells me which pages are slow, which Google Analytics never did at all. So Tempo hands me the "where is the traffic, and which pages drag" half of my old intent for free, a side effect of instrumenting for performance.</p>
+            <p>The half I actually said I cared about, tracing cannot give. A trace has no user, no session, no journey, no referrer. That is product analytics, a different layer, and the honest tool is something self-hosted and cookieless like Plausible or Matomo. I have not stood one up.</p>
+            <p>But the tooling was never the problem. I did not leave the Google Analytics data unread because it was the wrong tool. I left it unread because I never had a question I was going to act on. Telemetry does not fix that. A graph no one has decided to act on is the same unread data in a brighter font, and last week I built a lot of brighter fonts. The extension compiles, the spans flow, the dashboards are green. Whether any of it changes one thing I do is still up to me, and that is the one part of this stack with no package to install.</p>
+
+            <div class="ai-note">
+                Drafted from my working notes and the actual rollout with help from Claude. The decisions and the work are mine; the prose is collaborative.
+            </div>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
