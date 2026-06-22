@@ -311,9 +311,9 @@
                     <h2>The arc</h2>
                     <p>Inherited legacy, modernized in production, then extended.</p>
                 </div>
-                <p>The business runs on Tourbot - a full-lifecycle group-travel ERP that handles the sales pipeline, itinerary building, reservations, passenger logistics, payments, communications, and 70-plus reports, plus three customer- and contractor-facing portals built on the same core. When I took ownership it was a PHP&nbsp;5.6 / CentOS&nbsp;7 / MySQL&nbsp;5.7 system whose security and support runway was visibly running out, and every other part of the business depended on it staying up.</p>
-                <p>Over four years I led the modernization in production, without a freeze: an enterprise-wide migration to PHP&nbsp;8, MySQL&nbsp;8.4, and Rocky&nbsp;Linux&nbsp;9 across the codebase and server fleet, while continuing to ship features. That baseline then unblocked a second wave of work that simply was not possible on the old stack - containerized per-manager AI sandboxes, a Python agent-orchestration VM, a fleet-wide Prometheus/Grafana/Alertmanager metrics stack, and ProspectForge (a built, review-ready in-house replacement for the CivicIQ prospecting SaaS, pending management approval) - alongside the unglamorous habits that keep a single-engineer platform safe: a guarded server-side deploy pipeline, a PHPUnit/CI suite across four PHP versions, and a file-based cron registry with a drift monitor watching 100-plus scheduled jobs.</p>
-                <p>The throughline is an engineer who inherited a legacy system and systematically turned it into a platform - which is both more common and more credible than a string of greenfield builds.</p>
+                <p>The business runs on Tourbot - a full-lifecycle group-travel ERP handling the sales pipeline, itinerary building, reservations, passenger logistics, payments, communications, and 70-plus reports, plus three customer- and contractor-facing portals on the same core. When I took ownership it was a PHP&nbsp;5.6 / CentOS&nbsp;7 / MySQL&nbsp;5.7 system whose support runway was running out, and every other part of the business depended on it staying up.</p>
+                <p>Over four years I led the modernization in production, without a freeze: an enterprise-wide migration to PHP&nbsp;8, MySQL&nbsp;8.4, and Rocky&nbsp;Linux&nbsp;9 across the codebase and server fleet, while still shipping features. That baseline unblocked a second wave that wasn't possible on the old stack - containerized per-manager AI sandboxes, a Python agent-orchestration VM, a fleet-wide Prometheus/Grafana/Alertmanager metrics stack, and ProspectForge (a built, review-ready in-house replacement for the CivicIQ prospecting SaaS, pending management approval) - alongside the unglamorous habits that keep a single-engineer platform safe: a guarded server-side deploy pipeline, a PHPUnit/CI suite across four PHP versions, and a file-based cron registry with a drift monitor watching 100-plus scheduled jobs.</p>
+                <p>The throughline is an engineer who inherited a legacy system and systematically turned it into a platform - more common and more credible than a string of greenfield builds.</p>
             </section>
 
             <section class="section">
@@ -344,29 +344,29 @@
                 <div class="cs-highlight">
                     <h3>Manifest performance: 2,650 &rarr; 183 SQL statements/request</h3>
                     <span class="cs-line"><strong>Problem.</strong> The group-manifest page - printed before every trip - took 5-7s and fired ~2,650 SQL statements per render from per-row constructor fan-out.</span>
-                    <span class="cs-line"><strong>Approach.</strong> Six profile-driven rounds: batched in-request prefetch caches, one shared DB handle, and a targeted history-table column + composite index - each round verified byte-identical against the original HTML.</span>
-                    <span class="cs-line"><strong>Outcome.</strong> ~1s loads, statements per request down ~93%, validated to scale on a 244-sub-reservation outlier group.</span>
+                    <span class="cs-line"><strong>Approach.</strong> Six profile-driven rounds: batched in-request prefetch caches, one shared DB handle, and a targeted history-table column + composite index - each verified byte-identical against the original HTML.</span>
+                    <span class="cs-line"><strong>Outcome.</strong> ~1s loads, statements per request down ~93%, validated on a 244-sub-reservation outlier group.</span>
                 </div>
 
                 <div class="cs-highlight">
                     <h3>PCI-conscious payments</h3>
-                    <span class="cs-line"><strong>Problem.</strong> Aging card integrations and bank-file workflows needed modernizing while customers kept paying every day.</span>
-                    <span class="cs-line"><strong>Approach.</strong> Rebuilt the card flow across merchant processors with bank-account encryption, and modernized the ACH/NACHA bank-file pipeline over SFTP - kept rock-steady through the platform migration.</span>
+                    <span class="cs-line"><strong>Problem.</strong> Aging card integrations and bank-file workflows needed modernizing while customers kept paying daily.</span>
+                    <span class="cs-line"><strong>Approach.</strong> Rebuilt the card flow across merchant processors with bank-account encryption, and modernized the ACH/NACHA bank-file pipeline over SFTP - kept steady through the platform migration.</span>
                     <span class="cs-line"><strong>Outcome.</strong> Current PCI posture and reliable money movement, with continuity for in-flight registrations and payments.</span>
                 </div>
 
                 <div class="cs-highlight">
                     <h3>Multi-tenant AI assistants for managers</h3>
-                    <span class="cs-line"><strong>Problem.</strong> Non-technical managers wanted to query business data and prototype changes without waiting on developer time - safely.</span>
-                    <span class="cs-line"><strong>Approach.</strong> Per-manager sandboxed Tourbot instances (Docker, Traefik) with isolated databases, refreshed every few hours from a production mirror, per-container resource limits, allowlist-constrained (default-deny) agent command execution, and AI work isolated on per-role branches with a manual promotion step.</span>
+                    <span class="cs-line"><strong>Problem.</strong> Non-technical managers wanted to query business data and prototype changes safely, without waiting on developer time.</span>
+                    <span class="cs-line"><strong>Approach.</strong> Per-manager sandboxed Tourbot instances (Docker, Traefik) with isolated databases refreshed every few hours from a production mirror, per-container resource limits, allowlist-constrained (default-deny) agent command execution, and AI work isolated on per-role branches with a manual promotion step.</span>
                     <span class="cs-line"><strong>Outcome.</strong> Managers explore data and draft workflow changes through conversation; isolation and a human gate keep production safe.</span>
                 </div>
 
                 <div class="cs-highlight">
                     <h3>Observability first, then a measured 80% database win</h3>
                     <span class="cs-line"><strong>Problem.</strong> The bespoke status prober answered "is it up?" but not "why is database CPU at 65%?" - no metrics history, paging logic embedded in a dashboard, and performance work that was anecdotal rather than measured.</span>
-                    <span class="cs-line"><strong>Approach.</strong> Stood up Prometheus, Grafana, and Alertmanager on a Terraform-provisioned droplet - node, mysqld, and blackbox exporters across all 14 hosts (host metrics, replication health, uptime, TLS expiry), with the rule-to-SMS paging chain verified live before the old pager was cut over. Then used <code>performance_schema</code> to rank 27 days of production queries by total time: three full-table-scan hot queries dominated, fixed with three composite indexes applied as online DDL (INPLACE, LOCK=NONE), EXPLAIN-verified, rollback written first.</span>
-                    <span class="cs-line"><strong>Outcome.</strong> One paging pipeline, capacity questions answered from dashboards, and ~80% of measured query time (~404K of ~500K query-seconds) gone - with the remaining load correctly diagnosed as application-level N+1 volume rather than papered over with hardware.</span>
+                    <span class="cs-line"><strong>Approach.</strong> Stood up Prometheus, Grafana, and Alertmanager on a Terraform-provisioned droplet - node, mysqld, and blackbox exporters across all 14 hosts (host metrics, replication health, uptime, TLS expiry), with the rule-to-SMS paging chain verified live before cutting over the old pager. Then used <code>performance_schema</code> to rank 27 days of production queries by total time: three full-table-scan hot queries dominated, fixed with three composite indexes applied as online DDL (INPLACE, LOCK=NONE), EXPLAIN-verified, rollback written first.</span>
+                    <span class="cs-line"><strong>Outcome.</strong> One paging pipeline, capacity questions answered from dashboards, and ~80% of measured query time (~404K of ~500K query-seconds) gone - with the remaining load diagnosed as application-level N+1 volume rather than papered over with hardware.</span>
                 </div>
 
                 <div class="cs-highlight">
@@ -388,12 +388,12 @@
                     <div class="cs-row"><b>Python / Flask + a scoped system user</b> - the agent-orchestration VM runs an autonomous coding agent with least-privilege, auditable credentials it never handles directly.</div>
                     <div class="cs-row"><b>FastAPI / Next.js / PostgreSQL</b> - ProspectForge is greenfield, so it uses a typed, modern stack independent of the legacy MySQL core.</div>
                     <div class="cs-row"><b>Server-side deploy script + PHPUnit/CI</b> - for a single-server PHP app, a guarded shell pipeline (dirty-tree, flock, ancestor-only, healthcheck, one-command rollback) beats a hosted runner; CI runs the suite across PHP 8.1-8.4.</div>
-                    <div class="cs-row"><b>Prometheus / Grafana / Alertmanager</b> - capacity questions ("why is DB CPU at 65%?") need metrics history, not a ping dashboard; a dedicated Terraform-provisioned monitoring droplet keeps paging out of the app, with one alert pipeline as the single source of paging truth.</div>
+                    <div class="cs-row"><b>Prometheus / Grafana / Alertmanager</b> - capacity questions ("why is DB CPU at 65%?") need metrics history, not a ping dashboard; a dedicated Terraform-provisioned droplet keeps paging out of the app as the single source of paging truth.</div>
                     <div class="cs-row"><b>File-based cron registry + drift monitor</b> - 100-plus scheduled jobs become legible and tamper-evident instead of a black box.</div>
                 </div>
                 <p class="cs-note">Open source: I upstreamed the MySQL&nbsp;8.4 <code>caching_sha2_password</code> auth-handshake fix this stack needed into <a href="https://github.com/krowinski/php-mysql-replication/pull/148" target="_blank" rel="noopener">php-mysql-replication</a> (PR&nbsp;#148).</p>
-                    <p class="cs-note">Architecture decisions: the non-obvious trade-offs here - tenant isolation, the data tier, the deploy pipeline, agent identity - are written up as sanitized ADRs in <a href="https://github.com/JacobStephens2/infrastructure-patterns" target="_blank" rel="noopener">infrastructure-patterns</a>.</p>
-                    <p class="cs-note">Confidentiality: the repositories behind this work are private per employer agreement. Architecture is described here at a high level and omits hostnames, network addresses, credential mechanisms, and vendor specifics.</p>
+                    <p class="cs-note">Architecture decisions: the non-obvious trade-offs - tenant isolation, the data tier, the deploy pipeline, agent identity - are written up as sanitized ADRs in <a href="https://github.com/JacobStephens2/infrastructure-patterns" target="_blank" rel="noopener">infrastructure-patterns</a>.</p>
+                    <p class="cs-note">Confidentiality: the repositories are private per employer agreement. Architecture is described here at a high level and omits hostnames, network addresses, credential mechanisms, and vendor specifics.</p>
             </section>
 
             <section class="section">

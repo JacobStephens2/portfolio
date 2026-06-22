@@ -163,13 +163,13 @@
                 <div class="hero-card">
                     <div class="eyebrow">Case Study &#183; Chart35 &#183; 2026</div>
                     <h1>A privacy-first fertility chart, encrypted on your device.</h1>
-                    <p class="hero-copy">Chart35 (<a href="https://chart35.com" style="color:inherit;border-bottom:1px solid currentColor">chart35.com</a>) is a fertility-cycle charting app for the Creighton Model FertilityCare System. It is local-first, works offline, auto-computes the method's stamps and codes, and - when you choose to sync - encrypts everything on your device so the server only ever stores ciphertext.</p>
+                    <p class="hero-copy">Chart35 (<a href="https://chart35.com" style="color:inherit;border-bottom:1px solid currentColor">chart35.com</a>) is a fertility-cycle charting app for the Creighton Model FertilityCare System. It is local-first, works offline, auto-computes the method's stamps and codes, and - when you sync - encrypts everything on your device so the server only ever stores ciphertext.</p>
                 </div>
                 <aside class="hero-notes">
                     <ul>
                         <li><strong>Role</strong> Solo designer &amp; engineer</li>
                         <li><strong>Stack</strong> TypeScript, Vite, Dexie/IndexedDB, Web Crypto, Capacitor (Android)</li>
-                        <li><strong>Users</strong> Found organically through search and used by real people beyond me</li>
+                        <li><strong>Users</strong> Found organically through search; used by real people beyond me</li>
                         <li><strong>Live &amp; open</strong> <a href="https://chart35.com" target="_blank" rel="noopener">chart35.com</a> &#183; <a href="https://github.com/JacobStephens2/Chart35Client" target="_blank" rel="noopener">client source (AGPL)</a></li>
                     </ul>
                 </aside>
@@ -256,8 +256,8 @@
                     <h2>Why I built it</h2>
                     <p>Sensitive data, a precise method, and no good private option.</p>
                 </div>
-                <p>The Creighton Model is a fertility-awareness method with a strict charting system: each day's observations map onto a colored stamp and a set of codes, and the rules are exact. Tracking it on paper works but is unforgiving, and the existing apps generally require an account and a cloud round-trip to log a single day - putting some of the most sensitive health data a person has on someone else's server in plaintext.</p>
-                <p>Chart35 keeps the precision of the paper method and adds the conveniences software is good at - auto-computed stamps, instant charts, backup across devices - without that privacy cost. The data lives on your device; sync is optional; and when you do sync, the server is treated as untrusted with respect to your health data. It was found organically through search and is used by real people beyond me, which is the bar I cared about.</p>
+                <p>The Creighton Model is a fertility-awareness method with a strict charting system: each day's observations map onto a colored stamp and a set of codes, and the rules are exact. Paper works but is unforgiving, and existing apps generally require an account and a cloud round-trip to log a single day - putting some of the most sensitive health data a person has on someone else's server in plaintext.</p>
+                <p>Chart35 keeps the precision of the paper method and adds what software is good at - auto-computed stamps, instant charts, cross-device backup - without that privacy cost. The data lives on your device; sync is optional; and when you do sync, the server is untrusted with respect to your health data. It was found organically through search and is used by real people beyond me, the bar I cared about.</p>
             </section>
 
             <section class="section">
@@ -270,20 +270,20 @@
                     <h3>Faithful CrMS computation</h3>
                     <span class="cs-line"><strong>Problem.</strong> A wrong stamp is not a cosmetic bug - it is incorrect health information.</span>
                     <span class="cs-line"><strong>Approach.</strong> The clinical logic (stamps: green/red/white/yellow, peak day, post-peak count 1/2/3, Base Infertile Pattern) lives in pure, unit-tested functions separate from storage and UI, implemented to the authoritative reference, with manual overrides for cycle start, peak, and BIP.</span>
-                    <span class="cs-line"><strong>Outcome.</strong> A chart that matches the method, computed automatically but correctable by the user.</span>
+                    <span class="cs-line"><strong>Outcome.</strong> A chart that matches the method, computed automatically but user-correctable.</span>
                 </div>
 
                 <div class="cs-highlight">
                     <h3>End-to-end encrypted sync</h3>
-                    <span class="cs-line"><strong>Problem.</strong> Cross-device backup is useful, but the server must never be able to read a user's observations.</span>
-                    <span class="cs-line"><strong>Approach.</strong> A passphrase-derived key (PBKDF2) encrypts payloads with AES-256-GCM via the Web Crypto API, on the device. Only ciphertext crosses the network; the server stores encrypted blobs, layered under its own at-rest protection.</span>
+                    <span class="cs-line"><strong>Problem.</strong> Cross-device backup is useful, but the server must never read a user's observations.</span>
+                    <span class="cs-line"><strong>Approach.</strong> A passphrase-derived key (PBKDF2) encrypts payloads with AES-256-GCM via the Web Crypto API, on the device. Only ciphertext crosses the network; the server stores encrypted blobs under its own at-rest protection.</span>
                     <span class="cs-line"><strong>Outcome.</strong> Even a fully compromised server yields opaque ciphertext. In-app Delete Account wipes the server row, encrypted blobs, share tokens, and on-device cache in one transaction.</span>
                 </div>
 
                 <div class="cs-highlight">
                     <h3>Local-first, offline-always</h3>
                     <span class="cs-line"><strong>Problem.</strong> A daily tracker has to be instant and work with no connection and no account.</span>
-                    <span class="cs-line"><strong>Approach.</strong> IndexedDB (via Dexie) is the source of truth; the app is a full PWA with a service worker and is installable, with a Capacitor wrapper on Android. Accounts and sync are purely additive.</span>
+                    <span class="cs-line"><strong>Approach.</strong> IndexedDB (via Dexie) is the source of truth; the app is an installable PWA with a service worker, plus a Capacitor wrapper on Android. Accounts and sync are purely additive.</span>
                     <span class="cs-line"><strong>Outcome.</strong> Offline is the normal mode, not a degraded one; you can log an entire cycle in airplane mode.</span>
                 </div>
 
@@ -302,14 +302,14 @@
                 </div>
                 <div class="cs-stack">
                     <div class="cs-row"><b>TypeScript, no UI framework</b> - a small, auditable client; views render to the DOM directly, so there is less between a reader and the privacy-critical code.</div>
-                    <div class="cs-row"><b>Dexie / IndexedDB</b> - local-first source of truth, so the app is fully functional offline and the network is optional.</div>
+                    <div class="cs-row"><b>Dexie / IndexedDB</b> - local-first source of truth, so the app works fully offline and the network is optional.</div>
                     <div class="cs-row"><b>Web Crypto - PBKDF2 + AES-256-GCM</b> - end-to-end encryption so the server is untrusted for health data, not just "encrypted at rest."</div>
                     <div class="cs-row"><b>vite-plugin-pwa</b> - installable, offline-capable, with a service worker caching the shell.</div>
-                    <div class="cs-row"><b>Capacitor (Android)</b> - a native wrapper over chart35.com to ship to the Play Store from the same codebase.</div>
-                    <div class="cs-row"><b>AGPL-3.0</b> - anyone who redeploys a modified version as a service must publish their changes, which keeps every deployed build auditable for a privacy app.</div>
+                    <div class="cs-row"><b>Capacitor (Android)</b> - a native wrapper over chart35.com, shipping to the Play Store from the same codebase.</div>
+                    <div class="cs-row"><b>AGPL-3.0</b> - anyone redeploying a modified version as a service must publish their changes, keeping every deployed build auditable for a privacy app.</div>
                 </div>
-                <p class="cs-note">Auditability: the entire client - the encryption, the IndexedDB layer, the chart rendering, the provider-share filtering - is open at <a href="https://github.com/JacobStephens2/Chart35Client" target="_blank" rel="noopener">github.com/JacobStephens2/Chart35Client</a> (see its <a href="https://github.com/JacobStephens2/Chart35Client/blob/main/ARCHITECTURE.md" target="_blank" rel="noopener">ARCHITECTURE.md</a>). The sync server is a separate private repository; the client talks to it only over documented HTTPS endpoints.</p>
-                <p class="cs-note">The Creighton Model FertilityCare System is a trademark of FertilityCare Centers of America, used here descriptively only. Chart35 is an independent project, not affiliated with or endorsed by them.</p>
+                <p class="cs-note">Auditability: the entire client - encryption, IndexedDB layer, chart rendering, provider-share filtering - is open at <a href="https://github.com/JacobStephens2/Chart35Client" target="_blank" rel="noopener">github.com/JacobStephens2/Chart35Client</a> (see its <a href="https://github.com/JacobStephens2/Chart35Client/blob/main/ARCHITECTURE.md" target="_blank" rel="noopener">ARCHITECTURE.md</a>). The sync server is a separate private repository; the client talks to it only over documented HTTPS endpoints.</p>
+                <p class="cs-note">The Creighton Model FertilityCare System is a trademark of FertilityCare Centers of America, used descriptively. Chart35 is an independent project, not affiliated with or endorsed by them.</p>
             </section>
 
             <section class="section">

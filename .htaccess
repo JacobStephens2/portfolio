@@ -1,5 +1,9 @@
 RewriteEngine On
 
+# Case studies moved under /blog/ for consistency; 301 the old top-level URLs.
+RewriteRule ^eta-platform(\.html)?$ /blog/eta-platform/ [R=301,L]
+RewriteRule ^chart35(\.html)?$ /blog/chart35/ [R=301,L]
+
 # Serve .html files without the extension (e.g. /portfolio resolves to /portfolio.html)
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
