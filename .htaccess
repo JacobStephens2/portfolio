@@ -1,8 +1,13 @@
 RewriteEngine On
 
-# Case studies moved under /blog/ for consistency; 301 the old top-level URLs.
-RewriteRule ^eta-platform(\.html)?$ /blog/eta-platform/ [R=301,L]
+# Case studies moved under /blog/; 301 the old top-level URLs.
+RewriteRule ^eta-platform(\.html)?$ /blog/one-engineer-platform-production-systems/ [R=301,L]
 RewriteRule ^chart35(\.html)?$ /blog/chart35/ [R=301,L]
+
+# Posts renamed to their title-based slugs; 301 the old shorter slugs.
+RewriteRule ^blog/eta-platform/?$ /blog/one-engineer-platform-production-systems/ [R=301,L]
+RewriteRule ^blog/sandboxing-ai-agents/?$ /blog/sandboxing-ai-agents-per-business-role/ [R=301,L]
+RewriteRule ^blog/manifest-performance-tuning/?$ /blog/six-rounds-of-profiling-cutting-a-7-second-page-to-1-second/ [R=301,L]
 
 # Serve .html files without the extension (e.g. /portfolio resolves to /portfolio.html)
 RewriteCond %{REQUEST_FILENAME} !-d
