@@ -284,6 +284,11 @@
             <p>The bootstrap was the whole tax. The machine had Visual Studio 2022 and .NET but no <code>UnrealEditor.exe</code>, so step one was a multi-gigabyte engine install through the Epic Games Launcher before a single line could compile. Once the toolchain was in place, the native target was the nicer place to work and to play: a desktop build is a folder you double-click, and a first-person shooter wants a mouse and a real screen, not thumbs on glass.</p>
             <p>It is also where the idea fully landed. Freed from a phone, both Windows builds run a two-stage course of fire where Stage 2 adds an armed "ranchero" who shoots back from cover - a navmesh-free enemy AI that aims, strafes, holds its range, and fires on line of sight. That is more game than the single-stage Android versions had room for.</p>
 
+            <figure style="margin:1.4rem 0">
+                <img src="uspsa-shooter-unity-windows.png" alt="The Unity Windows USPSA shooter: a first-person view down a shooting bay with paper and steel targets, a pistol drawn, and a heads-up display showing time, points, targets left, health, and ammo, with a MAKE READY prompt." style="width:100%;height:auto;display:block;border:1px solid var(--rule);border-radius:6px">
+                <figcaption style="font-size:0.86rem;color:var(--muted);margin-top:0.5rem">The Unity build on Windows: Stage 1, "El Presidente Bay" - paper and steel downrange, a hit-factor HUD, waiting on the make-ready buzzer. Everything in the scene is generated from C# primitives; no art assets.</figcaption>
+            </figure>
+
             <h2>What I'd tell someone pointing an agent at a game engine</h2>
             <p>Choose the engine with the least editor and the most truth-in-source.</p>
             <ul>
@@ -293,8 +298,8 @@
             </ul>
             <p>The deeper lesson is the no-assets constraint, not the engine ranking. All six exist because I removed the one thing an agent cannot produce - binary assets - and let it generate the rest as text it could read, test, and repair. The engine choice only decides how much ceremony stands between the code and a running build - and, as the Windows rebuilds showed, the target platform decides where that ceremony lands: a light start and fiddly finish targeting Android from a Mac, a heavy bootstrap and smoother finish targeting Windows on Windows.</p>
 
-            <h2>Get the code, grab the APKs</h2>
-            <p>All six repositories are public, and each one ships a release with a sideloadable Android APK (debug-signed, arm64-v8a - turn on "install unknown apps" for your browser, download, and tap it).</p>
+            <h2>Get the code, grab the builds</h2>
+            <p>The six Android repositories are public, and each ships a release with a sideloadable APK (debug-signed, arm64-v8a - turn on "install unknown apps" for your browser, download, and tap it). The two native Windows rebuilds are public too, each with a zipped desktop build in its release.</p>
             <ul>
                 <li><strong>Bevy (Rust):</strong>
                     BevyHorsePoker
@@ -308,9 +313,9 @@
                     UnityHorsePoker
                     (<a href="https://github.com/JacobStephens2/UnityHorsePoker" target="_blank" rel="noopener">code</a> &middot;
                     <a href="https://github.com/JacobStephens2/UnityHorsePoker/releases/latest" target="_blank" rel="noopener">APK</a>)
-                    &middot; UnityUSPSAMatch
-                    (<a href="https://github.com/JacobStephens2/UnityUSPSAMatch" target="_blank" rel="noopener">code</a> &middot;
-                    <a href="https://github.com/JacobStephens2/UnityUSPSAMatch/releases/latest" target="_blank" rel="noopener">APK</a>)
+                    &middot; UnityUSPSAMatchAndroid
+                    (<a href="https://github.com/JacobStephens2/UnityUSPSAMatchAndroid" target="_blank" rel="noopener">code</a> &middot;
+                    <a href="https://github.com/JacobStephens2/UnityUSPSAMatchAndroid/releases/latest" target="_blank" rel="noopener">APK</a>)
                 </li>
                 <li><strong>Unreal Engine (C++):</strong>
                     UnrealHorsePoker
@@ -319,6 +324,14 @@
                     &middot; UnrealUSPSAMatch
                     (<a href="https://github.com/JacobStephens2/UnrealUSPSAMatch" target="_blank" rel="noopener">code</a> &middot;
                     <a href="https://github.com/JacobStephens2/UnrealUSPSAMatch/releases/latest" target="_blank" rel="noopener">APK</a>)
+                </li>
+                <li><strong>Windows builds (desktop):</strong>
+                    USPSA-Shooter-Unity-Windows
+                    (<a href="https://github.com/JacobStephens2/USPSA-Shooter-Unity-Windows" target="_blank" rel="noopener">code</a> &middot;
+                    <a href="https://github.com/JacobStephens2/USPSA-Shooter-Unity-Windows/releases/latest" target="_blank" rel="noopener">Windows build</a>)
+                    &middot; USPSA-Match-Unreal-Windows
+                    (<a href="https://github.com/JacobStephens2/USPSA-Match-Unreal-Windows" target="_blank" rel="noopener">code</a> &middot;
+                    <a href="https://github.com/JacobStephens2/USPSA-Match-Unreal-Windows/releases/latest" target="_blank" rel="noopener">Windows build</a>)
                 </li>
             </ul>
 
