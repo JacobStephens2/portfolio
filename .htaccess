@@ -1,13 +1,23 @@
 RewriteEngine On
 
-# Case studies moved under /blog/; 301 the old top-level URLs.
+# Old top-level case-study URLs -> new /blog/ slugs.
 RewriteRule ^eta-platform(\.html)?$ /blog/one-engineer-platform-production-systems/ [R=301,L]
-RewriteRule ^chart35(\.html)?$ /blog/chart35/ [R=301,L]
+RewriteRule ^chart35(\.html)?$ /blog/a-privacy-first-fertility-chart-encrypted-on-your-device/ [R=301,L]
 
-# Posts renamed to their title-based slugs; 301 the old shorter slugs.
+# Posts renamed to their title-based slugs; 301 the old slugs so shared links keep working.
 RewriteRule ^blog/eta-platform/?$ /blog/one-engineer-platform-production-systems/ [R=301,L]
 RewriteRule ^blog/sandboxing-ai-agents/?$ /blog/sandboxing-ai-agents-per-business-role/ [R=301,L]
 RewriteRule ^blog/manifest-performance-tuning/?$ /blog/six-rounds-of-profiling-cutting-a-7-second-page-to-1-second/ [R=301,L]
+RewriteRule ^blog/boring-deploy-script/?$ /blog/the-boring-deploy-script/ [R=301,L]
+RewriteRule ^blog/chart35/?$ /blog/a-privacy-first-fertility-chart-encrypted-on-your-device/ [R=301,L]
+RewriteRule ^blog/hmac-signed-webhooks/?$ /blog/hmac-signed-webhooks-one-primitive-three-dialects/ [R=301,L]
+RewriteRule ^blog/human-in-the-loop-ai-agents/?$ /blog/human-in-the-loop-ai-agents-for-legacy-business-systems/ [R=301,L]
+RewriteRule ^blog/importing-live-dns-into-terraform/?$ /blog/importing-live-dns-into-terraform-without-downtime/ [R=301,L]
+RewriteRule ^blog/letting-an-ai-agent-modernize-a-frozen-legacy-site/?$ /blog/letting-an-ai-agent-modernize-a-frozen-legacy-site-safely/ [R=301,L]
+RewriteRule ^blog/measuring-real-authorship/?$ /blog/byte-counts-lie-measuring-what-i-actually-wrote/ [R=301,L]
+RewriteRule ^blog/one-prompt-three-engines/?$ /blog/one-prompt-three-engines-the-same-android-game-in-bevy-unity-and-unreal/ [R=301,L]
+RewriteRule ^blog/tracking-listening-time-six-platforms/?$ /blog/tracking-listening-time-across-six-platforms-without-building-a-surveillance-tool/ [R=301,L]
+RewriteRule ^blog/watching-ai-coding-agents/?$ /blog/what-it-costs-to-watch-your-ai-coding-agents/ [R=301,L]
 
 # Serve .html files without the extension (e.g. /portfolio resolves to /portfolio.html)
 RewriteCond %{REQUEST_FILENAME} !-d

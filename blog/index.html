@@ -228,42 +228,42 @@
             <section class="section">
                 <ul class="notes-list">
                     <li>
-                        <a href="/blog/one-prompt-three-engines/">
+                        <a href="/blog/one-prompt-three-engines-the-same-android-game-in-bevy-unity-and-unreal/">
                             <div class="note-meta">June 18, 2026 &middot; AI-assisted dev</div>
                             <div class="note-title">One Prompt, Three Engines: the Same Android Game in Bevy, Unity, and Unreal</div>
                             <p class="note-summary">The same brief - an Android game, no art or audio assets, everything in code - run twice through Bevy (Rust), Unity (C#), and Unreal Engine 5 (C++) with Claude Code on macOS. Six repositories, and the finding that the visual editor, not the language, decides how well an AI agent can build in each: Bevy is all code and the cleanest fit, Unity routes around its editor headlessly and ships the most complete game, Unreal works in pure C++/Slate but pays in toolchain weight and a 130 MB APK.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/blog/watching-ai-coding-agents/">
+                        <a href="/blog/what-it-costs-to-watch-your-ai-coding-agents/">
                             <div class="note-meta">June 16, 2026 &middot; Observability</div>
                             <div class="note-title">What It Costs to Watch Your AI Coding Agents</div>
                             <p class="note-summary">Instrumenting a fleet of Claude Code agents with OpenTelemetry - one collector feeding the existing Prometheus and Grafana, plus a Tempo trace store - and the four places the obvious setup is quietly wrong: a cost metric that is notional under subscription billing, a dashboard that looks empty while working, a session count that is structurally uncountable, and a legacy PHP app whose mysqli queries hide from the traces.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/blog/measuring-real-authorship/">
+                        <a href="/blog/byte-counts-lie-measuring-what-i-actually-wrote/">
                             <div class="note-meta">June 13, 2026 &middot; Measurement</div>
                             <div class="note-title">Byte Counts Lie: Measuring What I Actually Wrote</div>
                             <p class="note-summary">A portfolio stats page that sums GitHub's byte counts credits you for code you inherited. Measuring real authorship in a platform built since the 1990s meant git blame over its full history - including the pre-2023 Bitbucket history from before the migration - and the surprise was which language the byte count had really been overstating.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/blog/hmac-signed-webhooks/">
+                        <a href="/blog/hmac-signed-webhooks-one-primitive-three-dialects/">
                             <div class="note-meta">June 11, 2026 &middot; Security</div>
                             <div class="note-title">HMAC-Signed Webhooks: One Primitive, Three Dialects</div>
                             <p class="note-summary">Stripe's, Twilio's, Mandrill's, and GitHub's webhook signature schemes turn out to be one primitive in three dialects. The signing bases, the five gotchas that actually bite (raw bytes, timing-safe compares, the proxy URL trap, tolerance windows, failing closed), the verifiers extracted into a zero-dependency TypeScript library - and what fact-checking my own opening line taught me.</p>
                         </a>
                     </li>
                                         <li>
-                        <a href="/blog/human-in-the-loop-ai-agents/">
+                        <a href="/blog/human-in-the-loop-ai-agents-for-legacy-business-systems/">
                             <div class="note-meta">June 10, 2026 &middot; AI Infrastructure</div>
                             <div class="note-title">Human-in-the-Loop AI Agents for Legacy Business Systems</div>
                             <p class="note-summary">The full pattern behind the manager sandboxes: six concentric boundaries - isolation, data, command surface, code promotion, audit, rollback - plus the list of things no agent is allowed to do. With the hard tradeoff named (the human gate is a bottleneck, on purpose) and a copyable checklist.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/blog/importing-live-dns-into-terraform/">
+                        <a href="/blog/importing-live-dns-into-terraform-without-downtime/">
                             <div class="note-meta">June 9, 2026 &middot; Infrastructure</div>
                             <div class="note-title">Importing Live DNS into Terraform Without Downtime</div>
                             <p class="note-summary">Why I imported ~220 live DNS records across 9 zones into Terraform instead of recreating them - the recreate path silently deletes anything your desired-state list forgot - the zero-change plan that proves it worked, and the SRV gotcha along the way.</p>
@@ -277,21 +277,21 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/blog/chart35/">
+                        <a href="/blog/a-privacy-first-fertility-chart-encrypted-on-your-device/">
                             <div class="note-meta">June 14, 2026 &middot; Case Study &middot; Chart35</div>
                             <div class="note-title">A Privacy-First Fertility Chart, Encrypted on Your Device</div>
                             <p class="note-summary">A local-first CrMS charting app with end-to-end encrypted sync where the server only ever stores ciphertext - auto-computed stamps, an offline PWA, provider sharing, and the trust boundary that keeps health data on the device.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/blog/tracking-listening-time-six-platforms/">
+                        <a href="/blog/tracking-listening-time-across-six-platforms-without-building-a-surveillance-tool/">
                             <div class="note-meta">June 5, 2026 &middot; Distributed Systems</div>
                             <div class="note-title">Tracking Listening Time Across Six Platforms - Without Building a Surveillance Tool</div>
                             <p class="note-summary">One pure Rust core driving six native shells, a G-Counter CRDT that makes concurrent devices add instead of overwrite, and a schema that structurally can't store when you listened - only how much.</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/blog/letting-an-ai-agent-modernize-a-frozen-legacy-site/">
+                        <a href="/blog/letting-an-ai-agent-modernize-a-frozen-legacy-site-safely/">
                             <div class="note-meta">June 5, 2026 &middot; Infrastructure</div>
                             <div class="note-title">Letting an AI Agent Modernize a Frozen Legacy Site, Safely</div>
                             <p class="note-summary">Six boundaries that make it safe to let an AI coding agent refactor a live, client-owned legacy site - and the one that does the real work: pixel-diff every page to AE 0 before a human is ever asked to look.</p>
@@ -305,7 +305,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/blog/boring-deploy-script/">
+                        <a href="/blog/the-boring-deploy-script/">
                             <div class="note-meta">June 3, 2026 &middot; DevOps</div>
                             <div class="note-title">The Boring Deploy Script</div>
                             <p class="note-summary">Why I deploy a single-server PHP app with about 200 lines of guardrail-heavy bash instead of a hosted CI/CD pipeline - dirty-worktree rejection, flock serialization, ancestor-only refs, a healthcheck, one-command rollback - and the exact conditions under which I'd switch.</p>
