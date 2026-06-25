@@ -136,7 +136,7 @@
         <h2>When I&#x27;d revisit</h2>
         <p>For a <strong>greenfield zone</strong> with no live records, recreate is right: author the desired state directly and let Terraform build it, no import dance. The same holds if a record set is small enough to recreate inside a planned maintenance window where a brief inconsistency is acceptable. The import-first rule is specifically for adopting infrastructure already serving traffic - most of the interesting cases, and the one where recreating quietly breaks things.</p>
             <div class="ai-note">
-                One of a set of <a href="/decisions/">architecture decision records</a>. Source markdown lives in the
+                Narrative writeup: <a href="/blog/importing-live-dns-into-terraform-without-downtime/">Importing Live DNS into Terraform Without Downtime</a>. One of a set of <a href="/decisions/">architecture decision records</a>. Source markdown lives in the
                 <a href="https://github.com/JacobStephens2/infrastructure-patterns/blob/main/adr/0014-import-live-dns-over-recreating-it.md">infrastructure-patterns</a> repo, which is the canonical copy.
             </div>
         </article>
