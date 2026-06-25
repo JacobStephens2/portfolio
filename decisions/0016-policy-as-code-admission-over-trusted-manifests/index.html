@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADR 0016 - Enforce cluster posture at admission over trusting reviewed manifests | Jacob Stephens</title>
+    <meta name="description" content="Run a policy controller so the hardened posture is rejected-if-violated at the API server instead of relying on review - the control that matters once a second actor or an agent can apply to the cluster">
+    <meta property="og:title" content="ADR 0016 - Enforce cluster posture at admission over trusting reviewed manifests">
+    <meta property="og:description" content="Run a policy controller so the hardened posture is rejected-if-violated at the API server instead of relying on review - the control that matters once a second actor or an agent can apply to the cluster">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/decisions/0016-policy-as-code-admission-over-trusted-manifests/">
+    <meta name="twitter:card" content="summary">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512; --brand: #9b4d24; --muted: #625a52;
+            --surface: #ffffff; --soft: #efe9df; --rule: #d6d1c9; --code-bg: #efe9df;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface); color: var(--ink); line-height: 1.7; min-height: 100vh;
+        }
+        .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+        .topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 1rem; margin-bottom: 1.75rem;
+        }
+        .back-link, .contact-link { color: var(--muted); text-decoration: none; font-size: 0.92rem; }
+        .back-link:hover, .back-link:focus-visible,
+        .contact-link:hover, .contact-link:focus-visible {
+            color: var(--brand); text-decoration: underline;
+            text-decoration-thickness: 1px; text-underline-offset: 0.12em;
+        }
+        article.note { padding: 0; }
+        .eyebrow {
+            display: inline-block; margin-bottom: 0.9rem; color: var(--brand);
+            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+        }
+        h1.title, .hero-card h1 {
+            font-family: 'Source Serif 4', Georgia, serif; font-weight: 700;
+            font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.08;
+            letter-spacing: -0.01em; margin-bottom: 1rem;
+        }
+        .meta {
+            color: var(--muted); font-size: 0.92rem; margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem; border-bottom: 1px solid var(--rule);
+        }
+        .meta strong { color: var(--ink); font-weight: 700; }
+        h2 {
+            font-family: 'Source Serif 4', Georgia, serif; font-size: 1.5rem; font-weight: 600;
+            letter-spacing: -0.01em; color: var(--brand); margin-top: 2rem; margin-bottom: 0.8rem;
+        }
+        p { margin-bottom: 1rem; color: var(--ink); }
+        p + p { margin-top: 0; }
+        ol, ul { margin-bottom: 1rem; padding-left: 1.4rem; }
+        ol li, ul li { margin-bottom: 0.4rem; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.93rem; }
+        th, td { text-align: left; padding: 0.5rem 0.6rem 0.5rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+        th { font-weight: 700; }
+        code {
+            background: var(--code-bg); padding: 0.1rem 0.4rem; border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.92em;
+        }
+        strong { font-weight: 700; }
+        a { color: var(--brand); text-decoration: none; }
+        a:hover, a:focus-visible {
+            text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em;
+        }
+        hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+        .appendix-intro { color: var(--muted); font-style: italic; margin-bottom: 1rem; }
+        .ai-note {
+            margin-top: 2rem; padding: 1rem 1.2rem; background: var(--soft);
+            border-left: 3px solid var(--brand); border-radius: 0 6px 6px 0;
+            color: var(--muted); font-size: 0.9rem;
+        }
+        .footer {
+            margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+            text-align: center; color: var(--muted); font-size: 0.85rem;
+        }
+        /* index */
+        .hero-card { padding-bottom: 1.75rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--rule); }
+        .hero-copy { color: var(--muted); font-size: 1.05rem; }
+        .hero-copy + .hero-copy { margin-top: 0.7rem; }
+        .hero-copy a { color: var(--brand); }
+        .notes-list { list-style: none; display: grid; gap: 0; }
+        .notes-list li { border-bottom: 1px solid var(--rule); }
+        .notes-list li:last-child { border-bottom: 0; }
+        .notes-list a { display: block; padding: 1.2rem 0; text-decoration: none; color: var(--ink); }
+        .notes-list a:hover, .notes-list a:focus-visible { text-decoration: none; }
+        .note-meta {
+            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; color: var(--brand); margin-bottom: 0.4rem;
+        }
+        .note-title {
+            font-family: 'Source Serif 4', Georgia, serif; font-size: 1.3rem;
+            font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.35rem;
+        }
+        .notes-list a:hover .note-title { color: var(--brand); }
+        .note-summary { color: var(--muted); font-size: 0.97rem; margin-bottom: 0; }
+        @media (max-width: 640px) {
+            .container { padding: 1.25rem 1rem 2.5rem; }
+            .topbar { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/decisions/" class="back-link">&larr; All decisions</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Decision Record</div>
+            <h1 class="title">Enforce cluster posture at admission over trusting reviewed manifests</h1>
+            <p class="meta"><strong>ADR 0016</strong> &middot; Accepted · in production (public artifact: <code>k3s-demo.stephens.page</code>, <code>github.com/JacobStephens2/k3s-demo</code>) &middot; ~1005 words</p>
+        <h2>Context</h2>
+        <p>The k3s-demo manifests already follow a hardened posture: containers run non-root, drop all Linux capabilities, mount a read-only root filesystem, declare CPU/memory requests and limits, carry liveness and readiness probes, and pin explicit image tags. All of it is visible in <code>k8s/deployment.yaml</code> and <code>k8s/redis.yaml</code>, and code review is supposed to keep it there.</p>
+        <p>Review is necessary but it is not a control. It depends on a human noticing, on every path into the cluster going through that human, and on nothing applying YAML out of band. None of that holds under pressure: a copied example reintroduces a root container, a hotfix drops the probe to &quot;make it deploy,&quot; a future agent with apply rights edits a limit it does not understand. The posture is an <em>intention</em> written in a file, and an intention has no teeth when a non-compliant object reaches the API server.</p>
+        <p>That matters more once automated changes enter. The whole reason to put an agent near a cluster is to let it act without a human in the path for every change - which is exactly when &quot;we review for this&quot; stops being true. The control has to live where the change lands: admission.</p>
+        <h2>Decision</h2>
+        <p>Enforce the posture as <strong>policy-as-code at admission</strong> - the API server rejects a non-compliant workload before it runs - and treat the manifests&#x27; good behavior as something to <em>verify</em>, not <em>trust</em>.</p>
+        <ul><li><strong>Primary engine: OPA/Gatekeeper (Rego).</strong> Five <code>ConstraintTemplate</code>s encode the posture: require non-root, require cpu+memory requests <em>and</em> limits, disallow <code>:latest</code>/untagged images, require the hardening triad (no-privilege-escalation, read-only root, drop <code>ALL</code> caps), require liveness + readiness probes. Constraints are scoped to the workload&#x27;s namespace (<code>match.namespaces</code>), so system namespaces are untouched; a real multi-tenant cluster would invert that to cluster-wide with system namespaces exempted.</li><li><strong>A built-in <code>ValidatingAdmissionPolicy</code> (CEL) re-expresses one rule.</strong> The no-<code>:latest</code> rule is also written as an in-tree ValidatingAdmissionPolicy, so the cluster <em>demonstrates</em> the engine tradeoff rather than asserting it. Rego is primary because the language transfers past Kubernetes - the same default-deny, reviewed-exception model gates an API or an agent&#x27;s command surface, not only a pod spec - while the in-tree CEL path fits a rule that is simple, single-resource, and not worth a controller to run.</li><li><strong>Fail-open on the webhook, deny on the rule.</strong> Gatekeeper&#x27;s validating webhook keeps its default <code>Ignore</code> failure policy, so a controller outage degrades to the prior &quot;reviewed manifests&quot; state instead of freezing all applies; the <em>rules</em> themselves deny. Cluster availability is not made hostage to the policy engine&#x27;s.</li><li><strong>The same rules are the proof.</strong> Compliant workloads report <code>TOTAL-VIOLATIONS 0</code>; a deliberately non-compliant canary is rejected with a per-rule message; a normal <code>rollout restart</code> still passes the gate zero-downtime. The denial is the test.</li></ul>
+        <h2>Consequences</h2>
+        <ul><li><strong>The posture is now a guarantee, not a convention.</strong> A regression - human or automated - is rejected at the source with a message naming the failing rule, instead of running until something notices.</li><li><strong>Two engines, one decision documented.</strong> Carrying both Gatekeeper and a VAP on this one rule is redundant by design: it makes the &quot;which admission engine, and why&quot; choice legible and reversible rather than a silent default.</li><li><strong>A controller to run and keep current.</strong> Gatekeeper is real added surface - a webhook, an audit loop, CRDs, a version to track. Accepted because the control it buys is exactly the one review cannot provide, and the fail-open webhook bounds the downside.</li><li><strong>Policy can drift from intent if left unaudited.</strong> A constraint scoped too narrowly, or an <code>enforcementAction: dryrun</code> left in place, looks like enforcement while enforcing nothing. The audit view (<code>kubectl get constraints</code>, violation counts) is the thing to watch, and silently-scoped exemptions get called out rather than left implicit.</li></ul>
+        <h2>When I&#x27;d revisit</h2>
+        <p>For a single-tenant cluster I fully control, with no automated apply path and a hard CI gate that renders and policy-checks every manifest before merge, the admission controller can be redundant with the pipeline - <code>conftest</code>/<code>gator</code> in CI catches the same violations earlier and cheaper, and a small cluster may not want a webhook in its critical path at all. The moment a second actor can apply - a teammate, a CD system, an agent - admission is where the control has to be, because it is the one place all of them share.</p>
+        <hr class="rule">
+        <h2>Seventh-boundary appendix</h2>
+        <p class="appendix-intro">Every signature-system narrative and every ADR bridging to the new toolchain (Terraform IaC, K8s/OPA-Gatekeeper, Prometheus/Grafana) carries this appendix. It asks who is affected upstream and downstream of the automation, not only how it behaves.</p>
+        <ul><li><strong>(a) Upstream provenance.</strong> The components are open-source infrastructure with public provenance: Kubernetes/k3s, OPA/Gatekeeper, and the Rego/CEL the policies are written in - no opaque model or hidden-labor dependency in this control path. Where this ADR&#x27;s <em>authoring</em> used an AI assistant, that is disclosed here; the policies are human-readable and human-reviewed, and their effect is verifiable by reading the denial messages, not by trusting a vendor.</li><li><strong>(b) Human-displacement assessment.</strong> This displaces a <em>reviewer&#x27;s vigilance task</em>, not a person&#x27;s job: it removes &quot;remember to check every manifest for root containers and missing limits,&quot; a low-value, error-prone burden. It moves toward <em>augmentation</em> - the engineer is freed from a checklist a machine enforces perfectly to reason about which policies should exist. The failure mode to guard against is the opposite of de-skilling: policy treated as an oracle no one understands. The mitigation is that each rule is a few lines of readable Rego with a plain-language glossary entry on the live page, so the team can still say <em>why</em> a thing is denied.</li><li><strong>(c) Not delegated.</strong> The policy engine may <em>reject</em>; it may never <em>grant</em>. It has no authority to approve an exception, widen its own scope, weaken a rule, deploy, or merge. Loosening a constraint, exempting a namespace, or switching a rule to <code>dryrun</code> is a human change to version-controlled policy under review - precisely the default-deny, named-human-gate model the boundary checklist requires. An agent operating against this cluster inherits the same gate: it cannot edit the policy that governs it.</li></ul>
+            <div class="ai-note">
+                One of a set of <a href="/decisions/">architecture decision records</a>. Source markdown lives in the
+                <a href="https://github.com/JacobStephens2/infrastructure-patterns/blob/main/adr/0016-policy-as-code-admission-over-trusted-manifests.md">infrastructure-patterns</a> repo, which is the canonical copy.
+            </div>
+        </article>
+        <footer class="footer">&copy; <span id="current-year"></span> Jacob Stephens</footer>
+    </div>
+    <script>document.getElementById('current-year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
