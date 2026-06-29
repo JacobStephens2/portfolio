@@ -300,7 +300,8 @@
                 shareView.hidden = false;
                 doneView.hidden = true;
                 overlay.hidden = false;
-                setTimeout(function () { document.getElementById('f-name').focus(); }, 50);
+                // Intentionally do NOT auto-focus the name field: on mobile that
+                // pops the keyboard and hides the rest of the form. Let the user tap in.
             }
             function close() { overlay.hidden = true; }
 
