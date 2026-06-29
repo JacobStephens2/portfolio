@@ -5,9 +5,9 @@
     <link rel="icon" type="image/png" href="/bee-favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jacob Stephens - digital business card</title>
-    <meta name="description" content="Jacob Stephens - platform and infrastructure engineer. Save my contact, or reach me by email, phone, LinkedIn, or GitHub.">
+    <meta name="description" content="Jacob Stephens - platform and AI infrastructure engineer. Save my contact, or reach me by email, phone, LinkedIn, or GitHub.">
     <meta property="og:title" content="Jacob Stephens">
-    <meta property="og:description" content="Platform & infrastructure engineer. Save my contact or reach me directly.">
+    <meta property="og:description" content="Platform & AI infrastructure engineer. Save my contact or reach me directly.">
     <meta property="og:type" content="profile">
     <meta property="og:url" content="https://stephens.page/connect">
     <meta property="og:image" content="https://stephens.page/connect/jacob-stephens-headshot.jpg">
@@ -31,6 +31,7 @@
             color: var(--ink);
             min-height: 100svh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 1.5rem 1rem 2.5rem;
@@ -38,7 +39,8 @@
         }
         .card {
             width: 100%;
-            max-width: 26rem;
+            max-width: min(26rem, calc(100vw - 2rem));
+            min-width: 0;
             background: var(--surface);
             border: 1px solid var(--rule);
             border-radius: 18px;
@@ -136,8 +138,8 @@
     <main class="card">
         <div class="avatar"><img src="jacob-stephens-avatar.jpg" alt="Jacob Stephens" width="96" height="96"></div>
         <h1 class="name">Jacob Stephens</h1>
-        <p class="role">Platform &amp; Infrastructure Engineer</p>
-        <p class="tagline">Safe AI automation for revenue-critical systems.</p>
+        <p class="role">Platform &amp; AI Infrastructure Engineer</p>
+        <p class="tagline">Safe automation for revenue-critical systems.</p>
 
         <div class="actions">
             <a class="btn btn-primary" href="/connect/jacob-stephens.vcf">
