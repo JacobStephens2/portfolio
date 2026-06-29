@@ -1,0 +1,14 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Stephens;Jacob;;;
+FN:Jacob Stephens
+TITLE:Platform & Infrastructure Engineer
+EMAIL;TYPE=INTERNET,PREF:jacob@stephens.page
+TEL;TYPE=CELL,VOICE:+12673205474
+URL:https://stephens.page
+URL:https://www.linkedin.com/in/jacob-c-stephens
+URL:https://github.com/JacobStephens2
+X-SOCIALPROFILE;TYPE=linkedin:https://www.linkedin.com/in/jacob-c-stephens
+X-SOCIALPROFILE;TYPE=github:https://github.com/JacobStephens2
+NOTE:Safe AI automation for revenue-critical systems.
+END:VCARD
