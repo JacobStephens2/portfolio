@@ -132,6 +132,45 @@
         }
         .footer a { color: var(--brand); text-decoration: none; }
         .footer a:hover { text-decoration: underline; }
+
+        /* Share modal */
+        .overlay {
+            position: fixed; inset: 0; z-index: 50;
+            background: rgba(24, 21, 18, 0.5);
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        .overlay[hidden] { display: none; }
+        .modal {
+            background: #fff; border-radius: 16px;
+            width: 100%; max-width: min(23rem, calc(100vw - 2rem));
+            padding: 1.5rem 1.4rem 1.4rem; text-align: left;
+            box-shadow: 0 16px 40px rgba(24, 21, 18, 0.25);
+        }
+        .modal h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em;
+        }
+        .modal .sub { color: var(--muted); font-size: 0.92rem; margin-top: 0.3rem; }
+        .field { margin-top: 0.9rem; }
+        .field label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--muted); margin-bottom: 0.3rem; }
+        .field input {
+            width: 100%; padding: 0.7rem 0.8rem; font-size: 1rem;
+            border: 1px solid var(--rule); border-radius: 10px; background: #fff; color: var(--ink);
+            font-family: inherit;
+        }
+        .field input:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
+        .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+        .modal-error { color: #b3261e; font-size: 0.88rem; margin-top: 0.7rem; min-height: 0; }
+        .modal-actions { display: flex; gap: 0.6rem; margin-top: 1.1rem; }
+        .modal-actions .btn { justify-content: center; flex: 1; }
+        .modal-actions .btn .label { flex: 0 1 auto; }
+        .modal-note { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 0.8rem; }
+        .modal-done { text-align: center; padding: 0.6rem 0 0.2rem; }
+        .modal-done .check {
+            width: 46px; height: 46px; margin: 0 auto 0.7rem; border-radius: 50%;
+            background: #1f9d55; color: #fff; display: flex; align-items: center; justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -142,7 +181,7 @@
         <p class="tagline">Safe automation for revenue-critical systems.</p>
 
         <div class="actions">
-            <a class="btn btn-primary" href="/connect/jacob-stephens.vcf">
+            <a class="btn btn-primary" id="saveBtn" href="/connect/jacob-stephens.vcf">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
                 <span class="label">Save to contacts</span>
             </a>
@@ -190,5 +229,125 @@
 
         <p class="footer">stephens.page &middot; <a href="/portfolio.html">selected work</a></p>
     </main>
+
+    <div class="overlay" id="overlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+            <div id="shareView">
+                <h2 id="shareTitle">Share your info with Jacob</h2>
+                <p class="sub">Optional - so Jacob has your details too. Or just skip and grab his card.</p>
+                <form id="shareForm" novalidate>
+                    <div class="field">
+                        <label for="f-name">Name</label>
+                        <input id="f-name" name="name" type="text" autocomplete="name" required>
+                    </div>
+                    <div class="field">
+                        <label for="f-email">Email</label>
+                        <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email">
+                    </div>
+                    <div class="field">
+                        <label for="f-phone">Phone</label>
+                        <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel">
+                    </div>
+                    <div class="hp" aria-hidden="true">
+                        <label for="f-website">Website</label>
+                        <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+                    </div>
+                    <p class="modal-error" id="shareError" role="alert"></p>
+                    <div class="modal-actions">
+                        <button type="button" class="btn" id="skipBtn">Skip</button>
+                        <button type="submit" class="btn btn-primary" id="continueBtn">
+                            <span class="label">Continue</span>
+                        </button>
+                    </div>
+                    <p class="modal-note">Add an email or phone so Jacob can reach you.</p>
+                </form>
+            </div>
+            <div id="doneView" hidden>
+                <div class="modal-done">
+                    <div class="check" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                    <h2>Thanks!</h2>
+                    <p class="sub" style="text-align:center">Your details are on their way to Jacob. His contact card is downloading now.</p>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-primary" id="closeBtn" style="flex:1;justify-content:center"><span class="label">Done</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var VCARD = '/connect/jacob-stephens.vcf';
+            var overlay = document.getElementById('overlay');
+            var shareView = document.getElementById('shareView');
+            var doneView = document.getElementById('doneView');
+            var form = document.getElementById('shareForm');
+            var errEl = document.getElementById('shareError');
+            var cont = document.getElementById('continueBtn');
+
+            function downloadVcard() {
+                var a = document.createElement('a');
+                a.href = VCARD;
+                a.setAttribute('download', 'jacob-stephens.vcf');
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            }
+            function open() {
+                errEl.textContent = '';
+                shareView.hidden = false;
+                doneView.hidden = true;
+                overlay.hidden = false;
+                setTimeout(function () { document.getElementById('f-name').focus(); }, 50);
+            }
+            function close() { overlay.hidden = true; }
+
+            document.getElementById('saveBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+                open();
+            });
+            document.getElementById('skipBtn').addEventListener('click', function () {
+                downloadVcard();
+                close();
+            });
+            document.getElementById('closeBtn').addEventListener('click', close);
+            overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !overlay.hidden) close(); });
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                errEl.textContent = '';
+                var name = form.name.value.trim();
+                var email = form.email.value.trim();
+                var phone = form.phone.value.trim();
+                if (!name) { errEl.textContent = 'Please enter your name.'; return; }
+                if (!email && !phone) { errEl.textContent = 'Add an email or phone so Jacob can reach you.'; return; }
+
+                cont.disabled = true;
+                cont.querySelector('.label').textContent = 'Sending…';
+
+                fetch('/connect/share', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, email: email, phone: phone, website: form.website.value })
+                }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+                  .then(function (res) {
+                      if (!res.ok) { throw new Error(res.j && res.j.error ? res.j.error : 'Something went wrong. Please try again.'); }
+                      shareView.hidden = true;
+                      doneView.hidden = false;
+                      downloadVcard();
+                  })
+                  .catch(function (err) {
+                      errEl.textContent = err.message || 'Network error. Please try again.';
+                  })
+                  .finally(function () {
+                      cont.disabled = false;
+                      cont.querySelector('.label').textContent = 'Continue';
+                  });
+            });
+        })();
+    </script>
 </body>
 </html>
