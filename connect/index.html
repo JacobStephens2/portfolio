@@ -256,7 +256,7 @@
                     <div class="modal-actions">
                         <button type="button" class="btn" id="skipBtn">Skip</button>
                         <button type="submit" class="btn btn-primary" id="continueBtn">
-                            <span class="label">Continue</span>
+                            <span class="label">Save</span>
                         </button>
                     </div>
                     <p class="modal-note">Add an email or phone so Jacob can reach you.</p>
@@ -326,7 +326,7 @@
                 if (!email && !phone) { errEl.textContent = 'Add an email or phone so Jacob can reach you.'; return; }
 
                 cont.disabled = true;
-                cont.querySelector('.label').textContent = 'Sending…';
+                cont.querySelector('.label').textContent = 'Saving…';
 
                 fetch('/connect/share', {
                     method: 'POST',
@@ -344,7 +344,7 @@
                   })
                   .finally(function () {
                       cont.disabled = false;
-                      cont.querySelector('.label').textContent = 'Continue';
+                      cont.querySelector('.label').textContent = 'Save';
                   });
             });
         })();
