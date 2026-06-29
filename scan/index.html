@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's connect | Jacob Stephens</title>
+    <meta name="description" content="Scan to reach Jacob Stephens - platform and infrastructure engineer. At the AI Engineer World's Fair 2026.">
+    <meta property="og:title" content="Jacob Stephens - let's connect">
+    <meta property="og:description" content="Scan the QR code to reach me. At the AI Engineer World's Fair 2026.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stephens.page/scan">
+    <meta name="twitter:card" content="summary">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --rule: #d6d1c9;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 1.1rem;
+            padding: 1.5rem;
+        }
+        .eyebrow {
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+        .name {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(1.7rem, 5vw, 2.4rem);
+            letter-spacing: -0.01em;
+            line-height: 1.05;
+        }
+        .role {
+            color: var(--muted);
+            font-size: clamp(0.98rem, 2.5vw, 1.12rem);
+            max-width: 30ch;
+        }
+        .qr {
+            display: inline-block;
+            line-height: 0;
+            border: 1px solid var(--rule);
+            border-radius: 16px;
+            padding: clamp(0.7rem, 2vw, 1.1rem);
+            background: #fff;
+            margin-top: 0.3rem;
+        }
+        .qr img {
+            display: block;
+            width: min(76vw, 52svh, 360px);
+            height: auto;
+            aspect-ratio: 1 / 1;
+            image-rendering: pixelated; /* keep QR modules crisp when scaled */
+        }
+        .prompt {
+            font-size: clamp(1rem, 2.6vw, 1.15rem);
+            font-weight: 600;
+        }
+        .fallback {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+        .fallback a {
+            color: var(--brand);
+            text-decoration: none;
+            border-bottom: 1px solid currentColor;
+        }
+        .fallback a:hover,
+        .fallback a:focus-visible { color: var(--ink); }
+    </style>
+</head>
+<body>
+    <div class="eyebrow">AI Engineer World's Fair 2026</div>
+    <h1 class="name">Jacob Stephens</h1>
+    <p class="role">Platform &amp; infrastructure engineer - safe AI automation for revenue-critical systems.</p>
+
+    <a class="qr" href="/contact" aria-label="Reach Jacob Stephens">
+        <img src="contact-qr.png" alt="QR code linking to Jacob Stephens' contact page">
+    </a>
+
+    <p class="prompt">Scan to reach me</p>
+    <p class="fallback">On this screen? <a href="/contact">Open my contact page</a></p>
+</body>
+</html>
