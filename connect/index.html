@@ -234,7 +234,7 @@
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
             <div id="shareView">
                 <h2 id="shareTitle">Share your info with Jacob</h2>
-                <p class="sub">Optional - so Jacob has your details too. Or just skip and grab his card.</p>
+                <p class="sub">Send Jacob your details too, or just save his card.</p>
                 <form id="shareForm" novalidate>
                     <div class="field">
                         <label for="f-name">Name</label>
@@ -254,9 +254,9 @@
                     </div>
                     <p class="modal-error" id="shareError" role="alert"></p>
                     <div class="modal-actions">
-                        <button type="button" class="btn" id="skipBtn">Skip</button>
+                        <button type="button" class="btn" id="skipBtn">Save</button>
                         <button type="submit" class="btn btn-primary" id="continueBtn">
-                            <span class="label">Save</span>
+                            <span class="label">Save &amp; Send</span>
                         </button>
                     </div>
                     <p class="modal-note">Add an email or phone so Jacob can reach you.</p>
@@ -326,7 +326,7 @@
                 if (!email && !phone) { errEl.textContent = 'Add an email or phone so Jacob can reach you.'; return; }
 
                 cont.disabled = true;
-                cont.querySelector('.label').textContent = 'Saving…';
+                cont.querySelector('.label').textContent = 'Sending…';
 
                 fetch('/connect/share', {
                     method: 'POST',
@@ -344,7 +344,7 @@
                   })
                   .finally(function () {
                       cont.disabled = false;
-                      cont.querySelector('.label').textContent = 'Save';
+                      cont.querySelector('.label').textContent = 'Save & Send';
                   });
             });
         })();
