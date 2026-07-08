@@ -170,6 +170,64 @@
             line-height: 1.5;
         }
 
+        figure img {
+            cursor: zoom-in;
+        }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(24, 21, 18, 0.94);
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 100vw;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 4px;
+            cursor: default;
+        }
+
+        .lightbox-close {
+            position: fixed;
+            top: 0.9rem;
+            right: 1rem;
+            width: 2.6rem;
+            height: 2.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Source Sans 3', Arial, sans-serif;
+            font-size: 1.7rem;
+            line-height: 1;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .lightbox-close:hover,
+        .lightbox-close:focus-visible {
+            background: rgba(0, 0, 0, 0.7);
+            outline: 2px solid rgba(255, 255, 255, 0.7);
+            outline-offset: 2px;
+        }
+
+        body.lightbox-open {
+            overflow: hidden;
+        }
+
         strong {
             font-weight: 700;
         }
@@ -265,7 +323,7 @@
             <p>To keep all of this legible I built and use an agent-management dashboard at Educational Travel Adventures. It shows the live tmux sessions across the orchestration and preview hosts: which agent is attached, how much memory each is holding, when it last did anything, and one-click Attach / Restart / Clear / Kill on each. It's how I tell at a glance which of a dozen sessions is actually working and which is idle.</p>
 
             <figure>
-                <img src="eta-agent-dashboard.png" alt="An agent-management dashboard listing live tmux sessions across two hosts, each row showing a Claude session name, memory use, last-activity time, and Attach / Restart / Clear / Kill controls. Hostnames, session IDs, and internal project names are redacted.">
+                <img id="dashboard-img" src="eta-agent-dashboard.png" alt="An agent-management dashboard listing live tmux sessions across two hosts, each row showing a Claude session name, memory use, last-activity time, and Attach / Restart / Clear / Kill controls. Hostnames, session IDs, and internal project names are redacted." role="button" tabindex="0" aria-label="Enlarge dashboard screenshot to full screen">
                 <figcaption>The agent-management dashboard I built at Educational Travel Adventures, showing live tmux sessions across the orchestration and preview hosts. Hostnames, session IDs, and internal project names are redacted.</figcaption>
             </figure>
 
@@ -285,8 +343,51 @@
         </footer>
     </div>
 
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Dashboard screenshot, full screen">
+        <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Close full-screen image">&times;</button>
+        <img src="eta-agent-dashboard.png" alt="Agent-management dashboard, enlarged. Hostnames, session IDs, and internal project names are redacted.">
+    </div>
+
     <script>
         document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        (function () {
+            var thumb = document.getElementById('dashboard-img');
+            var box = document.getElementById('lightbox');
+            var closeBtn = document.getElementById('lightbox-close');
+
+            function open() {
+                box.classList.add('open');
+                document.body.classList.add('lightbox-open');
+                closeBtn.focus();
+            }
+
+            function close() {
+                box.classList.remove('open');
+                document.body.classList.remove('lightbox-open');
+                thumb.focus();
+            }
+
+            thumb.addEventListener('click', open);
+            thumb.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    open();
+                }
+            });
+
+            closeBtn.addEventListener('click', close);
+            box.addEventListener('click', function (e) {
+                if (e.target === box) {
+                    close();
+                }
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && box.classList.contains('open')) {
+                    close();
+                }
+            });
+        })();
     </script>
 </body>
 </html>
