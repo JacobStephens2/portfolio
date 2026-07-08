@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The AI Agents I Run, and What I Have Them Do | Jacob Stephens</title>
+    <meta name="description" content="The full roster of AI agents I actually run day to day - persistent Sonnet agents in OpenClaw harnesses, Claude Code for planning and coding, a couple of research councils across several models, and a voice agent - the work I hand each of them, and the software-factory bet underneath it all.">
+    <meta property="og:title" content="The AI Agents I Run, and What I Have Them Do">
+    <meta property="og:description" content="The full roster of AI agents I run day to day, the work I hand each one, and the software-factory bet underneath it.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/blog/the-agents-i-run/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="The AI Agents I Run, and What I Have Them Do">
+    <meta name="twitter:description" content="The full roster of AI agents I run day to day, the work I hand each one, and the software-factory bet underneath it.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
+            --code-bg: #efe9df;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--brand);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        article.note {
+            padding: 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 0.9rem;
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.08;
+            letter-spacing: -0.01em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .meta strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--brand);
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        figure {
+            margin: 1.6rem 0;
+        }
+
+        figure img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+        }
+
+        figcaption {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        strong {
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--brand);
+            text-decoration: none;
+        }
+
+        a:hover,
+        a:focus-visible {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        .ai-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: var(--soft);
+            border-left: 3px solid var(--brand);
+            border-radius: 0 6px 6px 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/blog/" class="back-link">&larr; All posts</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; AI Infrastructure</div>
+            <h1 class="title">The AI Agents I Run, and What I Have Them Do</h1>
+            <p class="meta"><strong>July 8, 2026</strong> &middot; ~950 words &middot; The roster of agents I run, and the work I hand them</p>
+
+            <p>Someone asked me which AI agents I actually use day to day and what I have them do, and I gave a short answer that I've wanted to expand ever since. The short version is that I no longer think of myself as writing software so much as running a small set of agents that write it, and my job is deciding which agent gets which problem. What follows is the full roster, from the ones that run without me to the ones I babysit, and then the work I hand them.</p>
+
+            <h2>What runs without me?</h2>
+            <p>The most chronic agents are the persistent ones with scheduled and recurring tasks. I run these on Sonnet 4.6 inside OpenClaw harnesses. I'd rather point more powerful models at them, but a persistent agent that wakes up on a cron and burns Opus tokens every time gets expensive fast, so Sonnet 4.6 is the compromise I've settled on for anything that runs unattended.</p>
+            <p>One thing I want to fix here: these OpenClaws currently live in Docker containers, and I'd like to migrate them into microVMs instead. A container shares the host's Linux kernel, so an agent that goes wrong has a shorter path to something it shouldn't touch. A microVM gives each agent its own kernel and a real isolation boundary, which is the posture I want for anything running on its own schedule without me watching.</p>
+
+            <h2>What do I drive through Claude Code?</h2>
+            <p>My day-to-day work runs on a Claude Code Max subscription, split by job.</p>
+            <p>For <strong>planning</strong> I use Fable 5, usually at low or high effort, and occasionally at ultracode when the problem is worth the spend (that setting is expensive enough that I only reach for it deliberately). For <strong>coding</strong> I mostly run Opus 4.8 Extra, with some Sonnet 5 mixed in. I'll often run the coding sessions in tmux inside containers on cloud VMs, driving them with <code>/remote-control</code>, so a long-running or persistent-but-ephemeral session doesn't require me to keep a laptop open. The context lives on the VM; I attach and detach from wherever I am.</p>
+            <p>Separately I run a <strong>Claude Cowork desktop agent</strong> on Opus 4.8 for the work that fits a desktop rather than a terminal.</p>
+            <p>And I run everything close to hands-off: pretty much exclusively <code>claude code --permission-mode auto</code>, or <code>codex --yolo</code>.</p>
+
+            <h2>What do I use for research?</h2>
+            <p>For research I lean on two different councils depending on how private the context is.</p>
+            <p>For work grounded in my own <strong>internal context plus web research</strong>, I run a council of GPT 5.5, GLM 5.2, and Gemini 3 Pro, with Fable 5 as the synthesizer that reconciles their answers, all through Open WebUI. When I want <strong>opinionated, wide-net internet research</strong> across a hundred-plus sources and I'm willing to expose less private context, I use a Perplexity Max model council of Opus 4.8 thinking, GPT 5.5 thinking, and GLM 5.2, plus a Perplexity browser agent on Opus 4.8.</p>
+            <p>For conversational learning where I just want to talk something through out loud, I use the OpenAI voice agent in their Android app.</p>
+
+            <h2>What do I actually have them do?</h2>
+            <p>The roster above is the how; here's the what. Across all of them, the work falls into a handful of buckets:</p>
+            <ul>
+                <li><strong>Research</strong> across the internet, a codebase, a text base, and databases.</li>
+                <li><strong>Planning solutions to engineering problems</strong>, including the build-versus-buy call.</li>
+                <li><strong>Planning my own time.</strong> I used agents to plan how to spend my days at the AI Engineer World's Fair in June 2026, including how to focus and how to prepare.</li>
+                <li><strong>Writing help</strong>, fleshing out and clarifying ideas.</li>
+                <li><strong>Architectural planning and decision-making.</strong></li>
+                <li><strong>Coding.</strong> I have written almost no code by hand this year.</li>
+                <li><strong>Testing</strong>, both unit tests and browser automation, for example Playwright against a web app or driving the Xcode Simulator.</li>
+                <li><strong>PR review.</strong> I'm still the one to merge the PRs, but they help me understand and evaluate the changes.</li>
+                <li><strong>Deployment.</strong> I'm shooting to move deeper into GitOps, so I'm having agents manage DNS records, deploy virtual machines, and push to GitHub repos, and I'm putting Terraform/OpenTofu and Ansible underneath it so that a push to master is the deploy.</li>
+                <li><strong>Debugging.</strong></li>
+            </ul>
+
+            <h2>How do I keep track of it all?</h2>
+            <p>To keep all of this legible I built and use an agent-management dashboard at Educational Travel Adventures. It shows the live tmux sessions across the orchestration and preview hosts: which agent is attached, how much memory each is holding, when it last did anything, and one-click Attach / Restart / Clear / Kill on each. It's how I tell at a glance which of a dozen sessions is actually working and which is idle.</p>
+
+            <figure>
+                <img src="eta-agent-dashboard.png" alt="An agent-management dashboard listing live tmux sessions across two hosts, each row showing a Claude session name, memory use, last-activity time, and Attach / Restart / Clear / Kill controls. Hostnames, session IDs, and internal project names are redacted.">
+                <figcaption>The agent-management dashboard I built at Educational Travel Adventures, showing live tmux sessions across the orchestration and preview hosts. Hostnames, session IDs, and internal project names are redacted.</figcaption>
+            </figure>
+
+            <p>I'm also looking at OpenHands, the open-source project, as a possible foundation for the management layer rather than continuing to grow my own.</p>
+
+            <h2>Why any of this?</h2>
+            <p>The reason I organize it this way is a bet about where software is going. I think we're moving away from hand-writing software and toward engineering software factories. The analogy I keep coming back to is shirt-making: it went from artisans sewing one garment at a time to people who build and run the factory that makes the shirts. I'd rather be building the factory. And I want to do it with a product-engineering eye, which to me means starting from the human problem and aiming to solve it well, not just shipping the code.</p>
+            <p>I don't think I have the shape of that factory right yet. The microVM migration is unfinished, I'm still prompting agents rather than building loops, and the split between which model does planning versus coding keeps shifting as the models do. But the direction feels correct, and the roster above is where it stands today.</p>
+
+            <div class="ai-note">
+                Expanded from a reply I sent to that question, with help from Claude. The setup and the choices are mine; the prose is collaborative. I keep <a href="https://jacobstephens.net/blog/">jacobstephens.net/blog</a> for hand-written essays and longer-form personal writing.
+            </div>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
