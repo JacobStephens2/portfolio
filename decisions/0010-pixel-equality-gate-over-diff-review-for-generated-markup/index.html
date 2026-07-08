@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">A pixel-equality gate over diff review for changes to generated markup</h1>
-            <p class="meta"><strong>ADR 0010</strong> &middot; Accepted · in production &middot; ~428 words</p>
+            <p class="meta"><strong>ADR 0010</strong> &middot; June 5, 2026 &middot; Accepted · in production &middot; ~428 words</p>
         <h2>Context</h2>
         <p>Sometimes you have to change a frozen, machine-generated front end - a static-site-generator export whose source is long gone - that ships as hundreds of kilobytes of inlined, normalized markup per page. It&#x27;s full of sharp edges: non-breaking-space <em>entities</em> vs literal characters, en-spaces vs regular spaces, attribute casing the browser silently rewrites, indentation and whitespace that have drifted per page.</p>
         <p>The default safety mechanism for any code change is reading the diff in review. Here that gives false confidence in <em>both</em> directions: a textual change that looks alarming (entity vs character) usually renders identically, while a change that looks inert can shift layout. You can&#x27;t meaningfully <em>read</em> this markup - so you can&#x27;t certify a change by reading its diff. The problem sharpens when an automated agent is generating the edits at volume.</p>

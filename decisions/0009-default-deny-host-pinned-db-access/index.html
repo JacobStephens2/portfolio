@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Default-deny, host-pinned database access over a trusted network</h1>
-            <p class="meta"><strong>ADR 0009</strong> &middot; Accepted · in production &middot; ~274 words</p>
+            <p class="meta"><strong>ADR 0009</strong> &middot; June 3, 2026 &middot; Accepted · in production &middot; ~274 words</p>
         <h2>Context</h2>
         <p>The managed database (<a href="/decisions/0002-external-managed-db-over-containerized/">ADR 0002</a>) is reached by several clients - app containers, the coordination host, batch jobs. The convenient model is a <em>trusted internal network</em>: anything inside the perimeter may connect, and a username/password is the only gate. That makes the network boundary the entire security story, and it means a single leaked credential is usable from anywhere inside that boundary.</p>
         <h2>Decision</h2>

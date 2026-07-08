@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Embedded SQLite over a networked database for single-node tooling</h1>
-            <p class="meta"><strong>ADR 0008</strong> &middot; Accepted · in production &middot; ~253 words</p>
+            <p class="meta"><strong>ADR 0008</strong> &middot; June 25, 2026 &middot; Accepted · in production &middot; ~253 words</p>
         <h2>Context</h2>
         <p>Internal tooling on the coordination host - the health dashboard&#x27;s cache, a little operational state, a deploy log - needs to persist a small amount of data. <a href="/decisions/0002-external-managed-db-over-containerized/">ADR 0002</a> argued <em>for</em> an external managed database, but that was about the product&#x27;s durable, shared, business-critical state. This is the opposite case: small, single-node state owned by one process on one box, where reaching for a database server would add a daemon, a port, and a set of grants to manage in exchange for nothing.</p>
         <h2>Decision</h2>

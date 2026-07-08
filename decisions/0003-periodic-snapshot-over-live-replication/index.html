@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Periodic snapshot over live replication for sandboxes</h1>
-            <p class="meta"><strong>ADR 0003</strong> &middot; Accepted · in production &middot; ~254 words</p>
+            <p class="meta"><strong>ADR 0003</strong> &middot; June 3, 2026 &middot; Accepted · in production &middot; ~254 words</p>
         <h2>Context</h2>
         <p>The per-tenant sandboxes (<a href="/decisions/0001-docker-over-bare-metal-for-tenant-isolation/">ADR 0001</a>) need realistic data to be useful - managers want to ask questions against something that looks like production. Two ways to get it: attach each sandbox to a live replica of production, or periodically copy production into each sandbox&#x27;s own database.</p>
         <p>Live replication gives freshness but couples the sandboxes to production: a sandbox (and the agent inside it) is now reading the same rows the business depends on, replication lag and schema changes become shared concerns, and an accidental write path is a much scarier thing.</p>

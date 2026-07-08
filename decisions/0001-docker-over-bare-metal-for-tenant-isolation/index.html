@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Docker over bare-metal for per-tenant isolation</h1>
-            <p class="meta"><strong>ADR 0001</strong> &middot; Accepted · in production &middot; ~262 words</p>
+            <p class="meta"><strong>ADR 0001</strong> &middot; June 3, 2026 &middot; Accepted · in production &middot; ~262 words</p>
         <h2>Context</h2>
         <p>I needed to give each of several non-technical business managers their own AI-assisted instance of an internal app - each able to run an autonomous coding agent that could read a copy of production data and even edit code, without any tenant being able to see or damage another&#x27;s data, the host, or production. Running all tenants as processes on one host (bare-metal, shared filesystem, shared DB) would have meant enforcing isolation purely through application-level conventions, which is exactly the kind of boundary an autonomous agent erodes.</p>
         <h2>Decision</h2>

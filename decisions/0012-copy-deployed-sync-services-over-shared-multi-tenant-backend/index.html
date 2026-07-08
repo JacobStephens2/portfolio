@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Per-app copy-deployed sync services over a shared multi-tenant backend</h1>
-            <p class="meta"><strong>ADR 0012</strong> &middot; Accepted · in production &middot; ~577 words</p>
+            <p class="meta"><strong>ADR 0012</strong> &middot; June 25, 2026 &middot; Accepted · in production &middot; ~577 words</p>
         <h2>Context</h2>
         <p>A proven account+sync backend already existed for one app: email+password auth, opaque server-side sessions (httpOnly cookie for web, bearer token for the native WebView), email verification, password reset, rate limiting, and a per-user cloud-save store. A second app now needed the same accounts-and-sync capability.</p>
         <p>The instinct is to <em>promote</em> it into a shared multi-tenant backend: one process, one database, an <code>app_id</code> column, both apps&#x27; users behind one auth system. That looks like the &quot;platform&quot; choice and reuses the most code.</p>

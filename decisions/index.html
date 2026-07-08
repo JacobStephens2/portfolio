@@ -131,155 +131,156 @@
             <p class="hero-copy">Each is sanitized to the architecture level - no hostnames, credentials, or
             employer specifics. The source markdown lives in the
             <a href="https://github.com/JacobStephens2/infrastructure-patterns">infrastructure-patterns</a> repo.</p>
+            <p class="hero-copy">Listed newest decision first (by ADR number). Dates are when each was documented - the blog post that discusses it where one exists, otherwise the 2026-06-25 record date.</p>
         </section>
 
         <section class="section">
             <ul class="notes-list">
                     <li>
-                        <a href="/decisions/0001-docker-over-bare-metal-for-tenant-isolation/">
-                            <div class="note-meta">ADR 0001</div>
-                            <div class="note-title">Docker over bare-metal for per-tenant isolation</div>
-                            <p class="note-summary">Pay image/ops overhead to get strong filesystem + DB-user isolation cheaply</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0002-external-managed-db-over-containerized/">
-                            <div class="note-meta">ADR 0002</div>
-                            <div class="note-title">External managed DB over a containerized one</div>
-                            <p class="note-summary">Give up &quot;one compose up&quot; simplicity for durable, backup-friendly state</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0003-periodic-snapshot-over-live-replication/">
-                            <div class="note-meta">ADR 0003</div>
-                            <div class="note-title">Periodic snapshot over live replication for sandboxes</div>
-                            <p class="note-summary">Accept some staleness to gain isolation, reset-ability, and no prod write-path risk</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0004-shell-deploy-over-hosted-ci-runner/">
-                            <div class="note-meta">ADR 0004</div>
-                            <div class="note-title">A guarded shell deploy over a hosted CI runner</div>
-                            <p class="note-summary">Forgo ecosystem features for a dependency-free, auditable single-server deploy</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0005-scoped-system-user-over-service-account/">
-                            <div class="note-meta">ADR 0005</div>
-                            <div class="note-title">A scoped system user over a shared service account for an autonomous agent</div>
-                            <p class="note-summary">More host setup in exchange for clean per-action auditing and least privilege</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0006-binlog-daemons-over-database-triggers/">
-                            <div class="note-meta">ADR 0006</div>
-                            <div class="note-title">Binlog-tailing daemons over database triggers for denormalization</div>
-                            <p class="note-summary">Accept eventual consistency to keep derive-logic in versioned code, off the hot write path</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0007-pull-probes-over-push-agents/">
-                            <div class="note-meta">ADR 0007</div>
-                            <div class="note-title">Pull-based health probing over push agents for a small fleet</div>
-                            <p class="note-summary">Forgo deep metrics/history to keep the monitored fleet agent-free and the failure domain legible</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0008-embedded-sqlite-over-networked-db-for-tooling/">
-                            <div class="note-meta">ADR 0008</div>
-                            <div class="note-title">Embedded SQLite over a networked DB for single-node tooling</div>
-                            <p class="note-summary">Give up cross-host sharing for zero operational surface on state one process owns</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0009-default-deny-host-pinned-db-access/">
-                            <div class="note-meta">ADR 0009</div>
-                            <div class="note-title">Default-deny, host-pinned DB access over a trusted network</div>
-                            <p class="note-summary">Take on provisioning friction so a leaked credential isn&#x27;t portable off its host</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0010-pixel-equality-gate-over-diff-review-for-generated-markup/">
-                            <div class="note-meta">ADR 0010</div>
-                            <div class="note-title">A pixel-equality gate over diff review for changes to generated markup</div>
-                            <p class="note-summary">Pay a render/diff harness to safely change markup you can&#x27;t audit by eye - it proves visual, not semantic, equality</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0011-instrumented-metrics-stack-over-bespoke-prober/">
-                            <div class="note-meta">ADR 0011</div>
-                            <div class="note-title">A pull-based metrics stack over a bespoke prober, data plane kept private</div>
-                            <p class="note-summary">Take on a TSDB to run for real metrics/history/alerting - and bind the unauthenticated parts to loopback, exposing only one read-only pane</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0012-copy-deployed-sync-services-over-shared-multi-tenant-backend/">
-                            <div class="note-meta">ADR 0012</div>
-                            <div class="note-title">Per-app copy-deployed sync services over a shared multi-tenant backend</div>
-                            <p class="note-summary">Run N near-identical small services to gain physical blast-radius isolation and per-app sync-model freedom, at the cost of hand-applying shared-auth fixes across copies</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0013-staged-declarative-provisioning-over-imperative-bootstrap/">
-                            <div class="note-meta">ADR 0013</div>
-                            <div class="note-title">Staged declarative provisioning (Terraform + cloud-init + separate deploy) over one imperative bootstrap script</div>
-                            <p class="note-summary">Take on Terraform state and a deliberately create-only provisioning token for a single box to get a reproducible, reviewable host and a clean provision/configure/deploy seam</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0014-import-live-dns-over-recreating-it/">
-                            <div class="note-meta">ADR 0014</div>
-                            <div class="note-title">Import ~220 live DNS records into Terraform over recreating them from a desired-state list</div>
-                            <p class="note-summary">Accept verbose generated config and provider quirks to adopt traffic-serving records with zero downtime and a no-op baseline plan, instead of risking duplicate-creates and silent deletion of forgotten records</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0015-state-off-the-provider-it-provisions/">
-                            <div class="note-meta">ADR 0015</div>
-                            <div class="note-title">Keep Terraform state on a different provider than the compute it provisions</div>
-                            <p class="note-summary">Take on a second vendor + scoped IAM key so a provider-level outage can&#x27;t destroy both the infrastructure and the state needed to rebuild it</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0016-policy-as-code-admission-over-trusted-manifests/">
-                            <div class="note-meta">ADR 0016</div>
-                            <div class="note-title">Enforce cluster posture at admission (OPA/Gatekeeper + a VAP) over trusting reviewed manifests</div>
-                            <p class="note-summary">Run a policy controller so the hardened posture is rejected-if-violated at the API server instead of relying on review - the control that matters once a second actor or an agent can apply to the cluster</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0017-self-hosted-signing-instrument-over-saas/">
-                            <div class="note-meta">ADR 0017</div>
-                            <div class="note-title">Self-host the signing instrument and its audit trail over a SaaS signature service</div>
-                            <p class="note-summary">Take on one container plus its own cert and upkeep so the legally-binding document and its audit trail stay on infra you govern, with a named-human gate on every consequential action - the highest-stakes case of keeping the authoritative copy where you control it</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0018-runtime-injected-secrets-over-plaintext-config/">
-                            <div class="note-meta">ADR 0018</div>
-                            <div class="note-title">Runtime-injected secrets over plaintext config, with the store matched to the team</div>
-                            <p class="note-summary">Hold one invariant (encrypted at rest, injected into the environment at runtime) and pay for two backends - a broker where a team needs sharing/revocation/audit, SOPS + age where a solo fleet needs offline zero-vendor recovery - rather than force one tool to fit both</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/decisions/0019-reuse-passkey-session-forward-auth-over-second-auth-stack/">
-                            <div class="note-meta">ADR 0019</div>
-                            <div class="note-title">Reuse an existing passkey session to gate a second app (Caddy forward_auth) over standing up a second auth stack</div>
-                            <p class="note-summary">Gate a second internal app by delegating to one hardened passkey session via Caddy forward_auth - ~40 lines of Caddyfile, zero new auth code, every tool inheriting the gate&#x27;s future hardening - at the cost of concentrating trust in a single session</p>
+                        <a href="/decisions/0021-shared-collector-seam-over-direct-backend-wiring/">
+                            <div class="note-meta">ADR 0021 &middot; June 16, 2026</div>
+                            <div class="note-title">A shared OpenTelemetry collector seam over direct backend wiring</div>
+                            <p class="note-summary">Add one collector as the ingestion seam so new telemetry sources and backends are configuration, not new architecture - agent usage metrics only, never prompt content</p>
                         </a>
                     </li>
                     <li>
                         <a href="/decisions/0020-private-mesh-for-shells-mfa-gated-public-endpoints-for-browsers/">
-                            <div class="note-meta">ADR 0020</div>
+                            <div class="note-meta">ADR 0020 &middot; June 25, 2026</div>
                             <div class="note-title">A private mesh for operator shells, public MFA-gated endpoints for browser consoles, over one VPN for everything</div>
                             <p class="note-summary">Put SSH behind a WireGuard mesh and drop public :22, but keep browser admin consoles public behind per-audience MFA - size the boundary to who uses it, rather than hide the consoles non-technical staff reach by URL behind a VPN client they can&#x27;t maintain</p>
                         </a>
                     </li>
                     <li>
-                        <a href="/decisions/0021-shared-collector-seam-over-direct-backend-wiring/">
-                            <div class="note-meta">ADR 0021</div>
-                            <div class="note-title">A shared OpenTelemetry collector seam over direct backend wiring</div>
-                            <p class="note-summary">Add one collector as the ingestion seam so new telemetry sources and backends are configuration, not new architecture - agent usage metrics only, never prompt content</p>
+                        <a href="/decisions/0019-reuse-passkey-session-forward-auth-over-second-auth-stack/">
+                            <div class="note-meta">ADR 0019 &middot; June 25, 2026</div>
+                            <div class="note-title">Reuse an existing passkey session to gate a second app (Caddy forward_auth) over standing up a second auth stack</div>
+                            <p class="note-summary">Gate a second internal app by delegating to one hardened passkey session via Caddy forward_auth - ~40 lines of Caddyfile, zero new auth code, every tool inheriting the gate&#x27;s future hardening - at the cost of concentrating trust in a single session</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0018-runtime-injected-secrets-over-plaintext-config/">
+                            <div class="note-meta">ADR 0018 &middot; June 25, 2026</div>
+                            <div class="note-title">Runtime-injected secrets over plaintext config, with the store matched to the team</div>
+                            <p class="note-summary">Hold one invariant (encrypted at rest, injected into the environment at runtime) and pay for two backends - a broker where a team needs sharing/revocation/audit, SOPS + age where a solo fleet needs offline zero-vendor recovery - rather than force one tool to fit both</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0017-self-hosted-signing-instrument-over-saas/">
+                            <div class="note-meta">ADR 0017 &middot; June 25, 2026</div>
+                            <div class="note-title">Self-host the signing instrument and its audit trail over a SaaS signature service</div>
+                            <p class="note-summary">Take on one container plus its own cert and upkeep so the legally-binding document and its audit trail stay on infra you govern, with a named-human gate on every consequential action - the highest-stakes case of keeping the authoritative copy where you control it</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0016-policy-as-code-admission-over-trusted-manifests/">
+                            <div class="note-meta">ADR 0016 &middot; June 25, 2026</div>
+                            <div class="note-title">Enforce cluster posture at admission (OPA/Gatekeeper + a VAP) over trusting reviewed manifests</div>
+                            <p class="note-summary">Run a policy controller so the hardened posture is rejected-if-violated at the API server instead of relying on review - the control that matters once a second actor or an agent can apply to the cluster</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0015-state-off-the-provider-it-provisions/">
+                            <div class="note-meta">ADR 0015 &middot; June 9, 2026</div>
+                            <div class="note-title">Keep Terraform state on a different provider than the compute it provisions</div>
+                            <p class="note-summary">Take on a second vendor + scoped IAM key so a provider-level outage can&#x27;t destroy both the infrastructure and the state needed to rebuild it</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0014-import-live-dns-over-recreating-it/">
+                            <div class="note-meta">ADR 0014 &middot; June 9, 2026</div>
+                            <div class="note-title">Import ~220 live DNS records into Terraform over recreating them from a desired-state list</div>
+                            <p class="note-summary">Accept verbose generated config and provider quirks to adopt traffic-serving records with zero downtime and a no-op baseline plan, instead of risking duplicate-creates and silent deletion of forgotten records</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0013-staged-declarative-provisioning-over-imperative-bootstrap/">
+                            <div class="note-meta">ADR 0013 &middot; June 9, 2026</div>
+                            <div class="note-title">Staged declarative provisioning (Terraform + cloud-init + separate deploy) over one imperative bootstrap script</div>
+                            <p class="note-summary">Take on Terraform state and a deliberately create-only provisioning token for a single box to get a reproducible, reviewable host and a clean provision/configure/deploy seam</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0012-copy-deployed-sync-services-over-shared-multi-tenant-backend/">
+                            <div class="note-meta">ADR 0012 &middot; June 25, 2026</div>
+                            <div class="note-title">Per-app copy-deployed sync services over a shared multi-tenant backend</div>
+                            <p class="note-summary">Run N near-identical small services to gain physical blast-radius isolation and per-app sync-model freedom, at the cost of hand-applying shared-auth fixes across copies</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0011-instrumented-metrics-stack-over-bespoke-prober/">
+                            <div class="note-meta">ADR 0011 &middot; June 16, 2026</div>
+                            <div class="note-title">A pull-based metrics stack over a bespoke prober, data plane kept private</div>
+                            <p class="note-summary">Take on a TSDB to run for real metrics/history/alerting - and bind the unauthenticated parts to loopback, exposing only one read-only pane</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0010-pixel-equality-gate-over-diff-review-for-generated-markup/">
+                            <div class="note-meta">ADR 0010 &middot; June 5, 2026</div>
+                            <div class="note-title">A pixel-equality gate over diff review for changes to generated markup</div>
+                            <p class="note-summary">Pay a render/diff harness to safely change markup you can&#x27;t audit by eye - it proves visual, not semantic, equality</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0009-default-deny-host-pinned-db-access/">
+                            <div class="note-meta">ADR 0009 &middot; June 3, 2026</div>
+                            <div class="note-title">Default-deny, host-pinned DB access over a trusted network</div>
+                            <p class="note-summary">Take on provisioning friction so a leaked credential isn&#x27;t portable off its host</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0008-embedded-sqlite-over-networked-db-for-tooling/">
+                            <div class="note-meta">ADR 0008 &middot; June 25, 2026</div>
+                            <div class="note-title">Embedded SQLite over a networked DB for single-node tooling</div>
+                            <p class="note-summary">Give up cross-host sharing for zero operational surface on state one process owns</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0007-pull-probes-over-push-agents/">
+                            <div class="note-meta">ADR 0007 &middot; June 25, 2026</div>
+                            <div class="note-title">Pull-based health probing over push agents for a small fleet</div>
+                            <p class="note-summary">Forgo deep metrics/history to keep the monitored fleet agent-free and the failure domain legible</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0006-binlog-daemons-over-database-triggers/">
+                            <div class="note-meta">ADR 0006 &middot; June 25, 2026</div>
+                            <div class="note-title">Binlog-tailing daemons over database triggers for denormalization</div>
+                            <p class="note-summary">Accept eventual consistency to keep derive-logic in versioned code, off the hot write path</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0005-scoped-system-user-over-service-account/">
+                            <div class="note-meta">ADR 0005 &middot; June 3, 2026</div>
+                            <div class="note-title">A scoped system user over a shared service account for an autonomous agent</div>
+                            <p class="note-summary">More host setup in exchange for clean per-action auditing and least privilege</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0004-shell-deploy-over-hosted-ci-runner/">
+                            <div class="note-meta">ADR 0004 &middot; June 3, 2026</div>
+                            <div class="note-title">A guarded shell deploy over a hosted CI runner</div>
+                            <p class="note-summary">Forgo ecosystem features for a dependency-free, auditable single-server deploy</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0003-periodic-snapshot-over-live-replication/">
+                            <div class="note-meta">ADR 0003 &middot; June 3, 2026</div>
+                            <div class="note-title">Periodic snapshot over live replication for sandboxes</div>
+                            <p class="note-summary">Accept some staleness to gain isolation, reset-ability, and no prod write-path risk</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0002-external-managed-db-over-containerized/">
+                            <div class="note-meta">ADR 0002 &middot; June 25, 2026</div>
+                            <div class="note-title">External managed DB over a containerized one</div>
+                            <p class="note-summary">Give up &quot;one compose up&quot; simplicity for durable, backup-friendly state</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/decisions/0001-docker-over-bare-metal-for-tenant-isolation/">
+                            <div class="note-meta">ADR 0001 &middot; June 3, 2026</div>
+                            <div class="note-title">Docker over bare-metal for per-tenant isolation</div>
+                            <p class="note-summary">Pay image/ops overhead to get strong filesystem + DB-user isolation cheaply</p>
                         </a>
                     </li>
             </ul>

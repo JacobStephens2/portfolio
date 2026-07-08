@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Keep Terraform state off the provider it provisions</h1>
-            <p class="meta"><strong>ADR 0015</strong> &middot; Accepted · in production &middot; ~468 words</p>
+            <p class="meta"><strong>ADR 0015</strong> &middot; June 9, 2026 &middot; Accepted · in production &middot; ~468 words</p>
         <h2>Context</h2>
         <p>Terraform records what it manages in a state file that has to live somewhere durable and lockable. The compute it describes - a droplet, a block volume, the DNS in front of them - runs on one cloud provider that also sells an S3-compatible object store, so the path of least resistance is a bucket on the same account: one vendor, one set of credentials, one bill.</p>
         <p>That convenience hides a coupling. State matters most when you need to rebuild, and the most total failure is losing the provider itself: a region outage, a billing lock, a suspended account. State on that same provider means the one event takes out both the infrastructure <em>and</em> the record of how to recreate it. Same instinct as not storing the only backup on the machine being backed up: recovery state should not share a failure domain with the thing it recovers.</p>

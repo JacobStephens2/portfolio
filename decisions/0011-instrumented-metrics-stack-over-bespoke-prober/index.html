@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">A pull-based metrics stack over a bespoke prober, with the data plane kept private</h1>
-            <p class="meta"><strong>ADR 0011</strong> &middot; Accepted · in production &middot; ~537 words</p>
+            <p class="meta"><strong>ADR 0011</strong> &middot; June 16, 2026 &middot; Accepted · in production &middot; ~537 words</p>
         <h2>Context</h2>
         <p><a href="/decisions/0007-pull-probes-over-push-agents/">ADR 0007</a> chose a single bespoke service that pulls health from the fleet and renders one page, and named when that would stop being enough: <em>&quot;rich per-process metrics, high-resolution history, or real alerting SLAs tip the balance toward push-based agents and a proper time-series database.&quot;</em></p>
         <p>All three arrived at once. A new revenue-adjacent service needed per-request metrics (rate, errors, latency by route), the fleet outgrew &quot;is it up?&quot;, and &quot;find out by looking at the page&quot; needed to become &quot;get paged.&quot; The bespoke prober had reached its design limit.</p>

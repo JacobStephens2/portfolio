@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Enforce cluster posture at admission over trusting reviewed manifests</h1>
-            <p class="meta"><strong>ADR 0016</strong> &middot; Accepted · in production (public artifact: <code>k3s-demo.stephens.page</code>, <code>github.com/JacobStephens2/k3s-demo</code>) &middot; ~1005 words</p>
+            <p class="meta"><strong>ADR 0016</strong> &middot; June 25, 2026 &middot; Accepted · in production (public artifact: <code>k3s-demo.stephens.page</code>, <code>github.com/JacobStephens2/k3s-demo</code>) &middot; ~1005 words</p>
         <h2>Context</h2>
         <p>The k3s-demo manifests already follow a hardened posture: containers run non-root, drop all Linux capabilities, mount a read-only root filesystem, declare CPU/memory requests and limits, carry liveness and readiness probes, and pin explicit image tags. All of it is visible in <code>k8s/deployment.yaml</code> and <code>k8s/redis.yaml</code>, and code review is supposed to keep it there.</p>
         <p>Review is necessary but it is not a control. It depends on a human noticing, on every path into the cluster going through that human, and on nothing applying YAML out of band. None of that holds under pressure: a copied example reintroduces a root container, a hotfix drops the probe to &quot;make it deploy,&quot; a future agent with apply rights edits a limit it does not understand. The posture is an <em>intention</em> written in a file, and an intention has no teeth when a non-compliant object reaches the API server.</p>

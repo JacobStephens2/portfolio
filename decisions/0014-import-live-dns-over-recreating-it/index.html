@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Import live DNS into Terraform over recreating it from a desired-state list</h1>
-            <p class="meta"><strong>ADR 0014</strong> &middot; Accepted · in production &middot; ~586 words</p>
+            <p class="meta"><strong>ADR 0014</strong> &middot; June 9, 2026 &middot; Accepted · in production &middot; ~586 words</p>
         <h2>Context</h2>
         <p>A fleet of ~220 DNS records across 9 zones (A, CNAME, MX, TXT, SRV) had just been consolidated onto one provider and was serving live traffic - web, and the email records that matter more: MX, SPF, DKIM selectors, DMARC. The goal was to bring all of it under Terraform so every later change is a reviewable diff.</p>
         <p>Two ways to put existing infrastructure under code. <strong>Recreate:</strong> author a desired-state list and let Terraform create it, deleting whatever doesn&#x27;t match. <strong>Import:</strong> pull the records that already exist into Terraform state and write configuration that matches them, changing nothing.</p>

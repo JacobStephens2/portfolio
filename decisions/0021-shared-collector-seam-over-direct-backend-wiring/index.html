@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">A shared OpenTelemetry collector seam over direct backend wiring, metrics-only for Claude Code</h1>
-            <p class="meta"><strong>ADR 0021</strong> &middot; Accepted · in production (Phases 1-3 live across the fleet; Phase 4, PHP app tracing, prototyped on a staging host only) &middot; ~1186 words</p>
+            <p class="meta"><strong>ADR 0021</strong> &middot; June 16, 2026 &middot; Accepted · in production (Phases 1-3 live across the fleet; Phase 4, PHP app tracing, prototyped on a staging host only) &middot; ~1186 words</p>
         <h2>Context</h2>
         <p><a href="/decisions/0011-instrumented-metrics-stack-over-bespoke-prober/">ADR 0011</a> stood up the standard metrics stack (Prometheus, Alertmanager, Grafana, per-node exporters) for infrastructure health: hosts, databases, endpoints, certificates. That answers &quot;is the fleet healthy,&quot; not what the fleet actually does.</p>
         <p>The largest unmeasured activity is the AI coding agent itself. Engineers run it interactively in tmux on roughly ten hosts, and an automation host runs its own long-lived agent sessions. None of it was instrumented: no view of token consumption, session counts, model mix, or relative cost across hosts and people. The runs are subscription-based rather than API-billed, so there is no invoice to read either. Separately, the in-house apps emit no traces, so when a request is slow we infer rather than observe.</p>

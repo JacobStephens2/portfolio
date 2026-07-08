@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Staged declarative provisioning over a single imperative bootstrap script</h1>
-            <p class="meta"><strong>ADR 0013</strong> &middot; Accepted · in production &middot; ~715 words</p>
+            <p class="meta"><strong>ADR 0013</strong> &middot; June 9, 2026 &middot; Accepted · in production &middot; ~715 words</p>
         <h2>Context</h2>
         <p>A new self-hosted service - a multi-service LLM research tool, several containers behind a reverse proxy - needed a home on a single cloud VM. The path of least resistance is imperative: bring the VM up by hand, SSH in, and run a <code>setup.sh</code> that installs the container runtime, sets the firewall, writes the reverse-proxy vhost, and starts the app. It works on the first try and needs no extra tooling.</p>
         <p>It also leaves nothing behind. The box&#x27;s real definition lives only in shell history and the operator&#x27;s memory; rebuilding it is archaeology, drift is invisible, and the <em>why</em> of each choice is unrecorded. For a host meant to be a reference for provisioning properly, that is the wrong default.</p>
