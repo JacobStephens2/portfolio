@@ -5,9 +5,9 @@
  *   <script src="/blog/newsletter-widget.js" defer></script>
  *
  * It injects its own styles, renders the form inside the post's `.container`
- * (just above the footer), loads Cloudflare Turnstile, and POSTs to
- * /blog/newsletter-subscribe.php. Single source of truth so the form can change
- * in one place across every post. The blog index uses its own inline copy.
+ * (just above the footer), loads Cloudflare Turnstile, and POSTs to the Rust
+ * newsletter service at https://newsletter.stephens.page/subscribe. Single source
+ * of truth so the form can change in one place across the index and every post.
  */
 (function () {
   'use strict';
@@ -88,7 +88,7 @@
     btn.disabled = true;
     btn.textContent = 'Subscribing...';
 
-    fetch('/blog/newsletter-subscribe.php', { method: 'POST', body: new FormData(form) })
+    fetch('https://newsletter.stephens.page/subscribe', { method: 'POST', body: new URLSearchParams(new FormData(form)) })
       .then(function (r) { return r.json().catch(function () { return { ok: false, message: 'Unexpected response.' }; }); })
       .then(function (j) {
         status.textContent = j.message || (j.ok ? 'Thanks!' : 'Something went wrong.');
