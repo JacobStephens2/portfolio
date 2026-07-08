@@ -23,6 +23,7 @@
       gtag('config', 'G-W0D3PS27FK');
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         :root {
             --ink: #181512;
@@ -184,6 +185,104 @@
             line-height: 1.6;
         }
 
+        .subscribe {
+            margin-top: 2.5rem;
+            padding: 1.6rem 1.5rem;
+            border: 1px solid var(--rule);
+            border-radius: 10px;
+            background: var(--soft);
+        }
+
+        .subscribe h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.35rem;
+        }
+
+        .subscribe .sub-copy {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .subscribe form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .sub-row {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .subscribe input[type="email"] {
+            flex: 1 1 220px;
+            padding: 0.6rem 0.75rem;
+            font: inherit;
+            color: var(--ink);
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+        }
+
+        .subscribe input[type="email"]:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 1px;
+            border-color: var(--brand);
+        }
+
+        .subscribe button {
+            padding: 0.6rem 1.2rem;
+            font: inherit;
+            font-weight: 700;
+            color: #fff;
+            background: var(--brand);
+            border: 1px solid var(--brand);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .subscribe button:hover:not(:disabled) {
+            background: #843f1d;
+        }
+
+        .subscribe button:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .sub-hp {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
+        .sub-status {
+            font-size: 0.9rem;
+            min-height: 1.2em;
+            margin: 0;
+        }
+
+        .sub-status.ok {
+            color: #2f6b34;
+        }
+
+        .sub-status.err {
+            color: #a3372a;
+        }
+
+        .subscribe .fine {
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
         .footer {
             margin-top: 2rem;
             padding-top: 1.25rem;
@@ -326,6 +425,23 @@
                     </li>
                 </ul>
             </section>
+
+            <section class="subscribe" aria-labelledby="sub-heading">
+                <h2 id="sub-heading">Get new posts by email</h2>
+                <p class="sub-copy">Occasional writeups like the ones above, sent when I publish. No spam, unsubscribe anytime.</p>
+                <form id="subscribe-form" novalidate>
+                    <div class="sub-row">
+                        <input type="email" name="email" id="sub-email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address">
+                        <button type="submit" id="sub-btn">Subscribe</button>
+                    </div>
+                    <div class="sub-hp" aria-hidden="true">
+                        <label>Leave this field empty<input type="text" name="website_url" tabindex="-1" autocomplete="off"></label>
+                    </div>
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAADk4Vi9kg773i1pu" data-theme="light"></div>
+                    <p class="sub-status" id="sub-status" role="status" aria-live="polite"></p>
+                    <p class="fine">You'll get a confirmation email to opt in, and every email has a one-click unsubscribe.</p>
+                </form>
+            </section>
         </main>
 
         <footer class="footer">
@@ -335,6 +451,38 @@
 
     <script>
         document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        (function () {
+            var form = document.getElementById('subscribe-form');
+            if (!form) return;
+            var btn = document.getElementById('sub-btn');
+            var status = document.getElementById('sub-status');
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                status.className = 'sub-status';
+                status.textContent = '';
+                btn.disabled = true;
+                btn.textContent = 'Subscribing...';
+
+                fetch('/blog/newsletter-subscribe.php', { method: 'POST', body: new FormData(form) })
+                    .then(function (r) { return r.json().catch(function () { return { ok: false, message: 'Unexpected response.' }; }); })
+                    .then(function (j) {
+                        status.textContent = j.message || (j.ok ? 'Thanks!' : 'Something went wrong.');
+                        status.className = 'sub-status ' + (j.ok ? 'ok' : 'err');
+                        if (j.ok) { form.reset(); }
+                    })
+                    .catch(function () {
+                        status.textContent = 'Network error. Please try again.';
+                        status.className = 'sub-status err';
+                    })
+                    .finally(function () {
+                        btn.disabled = false;
+                        btn.textContent = 'Subscribe';
+                        if (window.turnstile) { try { window.turnstile.reset(); } catch (err) {} }
+                    });
+            });
+        })();
     </script>
 </body>
 </html>
