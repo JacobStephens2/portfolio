@@ -43,7 +43,7 @@
   section.setAttribute('aria-labelledby', 'nl-sub-heading');
   section.innerHTML =
     '<h2 id="nl-sub-heading">Get new posts by email</h2>' +
-    '<p class="sub-copy">Occasional writeups like this one, sent when I publish. No spam, unsubscribe anytime.</p>' +
+    '<p class="sub-copy">Occasional engineering writeups, sent when I publish. No spam, unsubscribe anytime.</p>' +
     '<form id="nl-subscribe-form" novalidate>' +
       '<div class="sub-row">' +
         '<input type="email" name="email" id="nl-sub-email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address">' +
