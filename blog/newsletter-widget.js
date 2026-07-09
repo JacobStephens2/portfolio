@@ -14,6 +14,14 @@
   if (document.getElementById('nl-widget-styles')) return; // idempotent
 
   var SITE_KEY = '0x4AAAAAADk4Vi9kg773i1pu';
+  // Which list this page subscribes to: <script ... data-list="personal">, or
+  // window.NEWSLETTER_LIST, defaulting to the professional blog.
+  var thisScript = document.currentScript;
+  var LIST = (thisScript && thisScript.getAttribute('data-list')) || window.NEWSLETTER_LIST || 'stephens';
+  // data-mode="link" renders a CTA to the hosted subscribe page instead of an inline
+  // Turnstile form - used on domains the Turnstile key doesn't cover (e.g. jacobstephens.net).
+  var MODE = (thisScript && thisScript.getAttribute('data-mode')) || 'form';
+  var SUBSCRIBE_URL = 'https://newsletter.stephens.page/?list=' + encodeURIComponent(LIST);
 
   // 1. Styles (fallbacks so it holds up even if a page lacks the blog vars).
   var style = document.createElement('style');
@@ -33,7 +41,9 @@
     '.subscribe .sub-status{font-size:0.9rem;min-height:1.2em;margin:0;}',
     '.subscribe .sub-status.ok{color:#2f6b34;}',
     '.subscribe .sub-status.err{color:#a3372a;}',
-    '.subscribe .fine{color:var(--muted,#625a52);font-size:0.8rem;margin:0;}'
+    '.subscribe .fine{color:var(--muted,#625a52);font-size:0.8rem;margin:0;}',
+    '.subscribe .nl-cta{display:inline-block;padding:0.6rem 1.2rem;font-weight:700;color:#fff!important;background:var(--brand,#9b4d24);border-radius:6px;text-decoration:none;}',
+    '.subscribe .nl-cta:hover{background:#843f1d;}'
   ].join('');
   document.head.appendChild(style);
 
@@ -41,19 +51,27 @@
   var section = document.createElement('section');
   section.className = 'subscribe';
   section.setAttribute('aria-labelledby', 'nl-sub-heading');
-  section.innerHTML =
-    '<h2 id="nl-sub-heading">Get new posts by email</h2>' +
-    '<p class="sub-copy">Occasional engineering writeups, sent when I publish. No spam, unsubscribe anytime.</p>' +
-    '<form id="nl-subscribe-form" novalidate>' +
-      '<div class="sub-row">' +
-        '<input type="email" name="email" id="nl-sub-email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address">' +
-        '<button type="submit" id="nl-sub-btn">Subscribe</button>' +
-      '</div>' +
-      '<div class="sub-hp" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_url" tabindex="-1" autocomplete="off"></label></div>' +
-      '<div class="cf-turnstile" data-sitekey="' + SITE_KEY + '" data-theme="light"></div>' +
-      '<p class="sub-status" id="nl-sub-status" role="status" aria-live="polite"></p>' +
-      '<p class="fine">You\'ll get a confirmation email to opt in, and every email has a one-click unsubscribe.</p>' +
-    '</form>';
+  if (MODE === 'link') {
+    section.innerHTML =
+      '<h2 id="nl-sub-heading">Get new posts by email</h2>' +
+      '<p class="sub-copy">Occasional writeups, sent when I publish. No spam, unsubscribe anytime.</p>' +
+      '<p><a class="nl-cta" href="' + SUBSCRIBE_URL + '">Subscribe &rarr;</a></p>';
+  } else {
+    section.innerHTML =
+      '<h2 id="nl-sub-heading">Get new posts by email</h2>' +
+      '<p class="sub-copy">Occasional writeups, sent when I publish. No spam, unsubscribe anytime.</p>' +
+      '<form id="nl-subscribe-form" novalidate>' +
+        '<div class="sub-row">' +
+          '<input type="email" name="email" id="nl-sub-email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address">' +
+          '<button type="submit" id="nl-sub-btn">Subscribe</button>' +
+        '</div>' +
+        '<input type="hidden" name="list" value="' + LIST + '">' +
+        '<div class="sub-hp" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_url" tabindex="-1" autocomplete="off"></label></div>' +
+        '<div class="cf-turnstile" data-sitekey="' + SITE_KEY + '" data-theme="light"></div>' +
+        '<p class="sub-status" id="nl-sub-status" role="status" aria-live="polite"></p>' +
+        '<p class="fine">You\'ll get a confirmation email to opt in, and every email has a one-click unsubscribe.</p>' +
+      '</form>';
+  }
 
   var container = document.querySelector('.container');
   var footer = container ? container.querySelector('.footer') : null;
@@ -62,8 +80,14 @@
   } else if (container) {
     container.appendChild(section);
   } else {
+    // No .container (e.g. the personal blog): constrain width and center it.
+    section.style.maxWidth = '640px';
+    section.style.margin = '2.5rem auto';
     document.body.appendChild(section);
   }
+
+  // Link mode: no Turnstile, no submit handler - the CTA links to the hosted page.
+  if (MODE === 'link') { return; }
 
   // 3. Load Turnstile (auto-renders .cf-turnstile on load), or render now if present.
   if (window.turnstile) {
