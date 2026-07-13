@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Binlog-tailing daemons over database triggers for denormalization</h1>
-            <p class="meta"><strong>ADR 0006</strong> &middot; June 25, 2026 &middot; Accepted · in production &middot; ~333 words</p>
+            <p class="meta"><strong>ADR 0006</strong> &middot; June 5, 2026 &middot; Accepted · in production &middot; ~333 words</p>
         <h2>Context</h2>
         <p>A read-heavy reservations system keeps a lot of <em>derived</em> data in sync with its source rows - rolled-up totals, denormalized copies of a value onto the rows that query it, search-friendly projections. The in-database default for keeping derived data current is a TRIGGER that fires on every write. But triggers run <em>inside</em> each writing transaction and are invisible to the application. They&#x27;re awkward to test, version, and deploy - they&#x27;re schema DDL, not code - and a slow or buggy one adds latency to (or wedges) the hot write path.</p>
         <h2>Decision</h2>

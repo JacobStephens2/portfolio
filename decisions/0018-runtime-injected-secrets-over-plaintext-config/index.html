@@ -123,7 +123,7 @@
         <article class="note">
             <div class="eyebrow">Decision Record</div>
             <h1 class="title">Runtime-injected secrets over plaintext config, with the store matched to the team</h1>
-            <p class="meta"><strong>ADR 0018</strong> &middot; June 25, 2026 &middot; Accepted · in production on two fleets &middot; ~1264 words</p>
+            <p class="meta"><strong>ADR 0018</strong> &middot; June 11, 2026 &middot; Accepted · in production on two fleets &middot; ~1264 words</p>
         <h2>Context</h2>
         <p>A credential&#x27;s default resting place is a plaintext file: a <code>.env</code> next to the app, a token in a config, a connection string in a shell script. Every copy leaks - through disk images, backups, a stray <code>cat</code>, a repo that was supposed to stay private. And the file is half the problem: a secret sitting in a process&#x27;s config for its lifetime is readable by anything that can read that process&#x27;s directory, used or not.</p>
         <p>I operate two production fleets. One is team-operated: a small business&#x27;s platform where several people and an autonomous coding agent need credentials, people join and leave, and a revoked key has to actually die. The other is solo-operated: my own server fleet, one operator, no seat budget, recovery that works offline with no vendor in the loop. One secret-management answer does not fit both - but one <em>invariant</em> does.</p>

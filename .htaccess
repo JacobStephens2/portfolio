@@ -19,6 +19,7 @@ RewriteEngine On
 RewriteRule ^card/?$ https://hihello.com/p/451555c1-09ba-4900-a216-492f18f60866 [R=302,L]
 
 # Old top-level case-study URLs -> new /blog/ slugs.
+RewriteRule ^stacks/?$ /stack [R=301,L]
 RewriteRule ^eta-platform(\.html)?$ /blog/one-engineer-platform-production-systems/ [R=301,L]
 RewriteRule ^chart35(\.html)?$ /blog/a-privacy-first-fertility-chart-encrypted-on-your-device/ [R=301,L]
 
