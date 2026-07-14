@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="/bee-favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,7 +68,7 @@
             border: 1px solid var(--rule);
             border-radius: 16px;
             padding: clamp(0.7rem, 2vw, 1.1rem);
-            background: #fff;
+            background: var(--surface);
             margin-top: 0.3rem;
         }
         .qr img {
@@ -86,6 +94,8 @@
         .fallback a:hover,
         .fallback a:focus-visible { color: var(--ink); }
     </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
 </head>
 <body>
     <div class="eyebrow">AI Engineer World's Fair 2026</div>

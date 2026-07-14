@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="/bee-favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -190,7 +198,7 @@
             overflow: hidden;
             border-radius: 8px;
             border: 1px solid var(--rule);
-            background: #fff;
+            background: var(--surface);
         }
 
         .image-button {
@@ -431,7 +439,7 @@
                 align-items: flex-start;
             }
         }
-        .cs-callout{display:flex;flex-wrap:wrap;align-items:center;gap:0.75rem;justify-content:space-between;background:#fff;border:1px solid var(--rule);border-left:3px solid var(--brand);border-radius:8px;padding:0.85rem 1.1rem;margin-bottom:1.25rem;}
+        .cs-callout{display:flex;flex-wrap:wrap;align-items:center;gap:0.75rem;justify-content:space-between;background: var(--surface);border:1px solid var(--rule);border-left:3px solid var(--brand);border-radius:8px;padding:0.85rem 1.1rem;margin-bottom:1.25rem;}
         .cs-callout span{color:var(--muted);font-size:0.95rem;}
         .image-frame { position: relative; display: block; width: 100%; }
         .image-frame > .image-button { display: block; width: 100%; }
@@ -482,9 +490,9 @@
             cursor: pointer;
             transition: background 0.2s ease, transform 0.2s ease;
         }
-        .card-dot.is-active { background: #fff; transform: scale(1.2); }
+        .card-dot.is-active { background: var(--surface); transform: scale(1.2); }
         .card-dot:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-        .seven { background: #fff; border: 1px solid var(--rule); border-left: 3px solid var(--brand); border-radius: 8px; padding: 1.1rem 1.3rem; margin-bottom: 1.25rem; }
+        .seven { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--brand); border-radius: 8px; padding: 1.1rem 1.3rem; margin-bottom: 1.25rem; }
         .seven-head strong { display: block; font-family: 'Source Serif 4', Georgia, serif; font-size: 1.2rem; font-weight: 600; color: var(--brand); letter-spacing: -0.01em; }
         .seven-head span { display: block; color: var(--muted); font-size: 0.92rem; margin: 0.15rem 0 0.9rem; }
         .seven-list { margin: 0 0 0.9rem; padding-left: 1.4rem; display: grid; gap: 0.4rem; }
@@ -492,6 +500,8 @@
         .seven-list li b { color: var(--ink); }
         @media (min-width: 720px) { .seven-list { grid-template-columns: 1fr 1fr; column-gap: 1.6rem; } }
     </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
 </head>
 <body>
     <div class="container">

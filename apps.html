@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apps | Stephens Page LLC</title>
@@ -240,7 +248,7 @@
             cursor: pointer;
             transition: background 0.2s ease, transform 0.2s ease;
         }
-        .card-dot.is-active { background: #fff; transform: scale(1.2); }
+        .card-dot.is-active { background: var(--surface); transform: scale(1.2); }
         .card-dot:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
         .card-caption {
             position: absolute;
@@ -308,7 +316,7 @@
             max-height: 78vh;
             border-radius: 16px;
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
-            background: #fff;
+            background: var(--surface);
         }
         .lightbox-caption {
             margin: 0 auto;
@@ -318,6 +326,8 @@
             text-align: center;
         }
     </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
 </head>
 <body>
     <div class="container">

@@ -4,6 +4,8 @@ Static personal website and portfolio hub for [Jacob Stephens](https://stephens.
 
 The site is built with plain HTML, CSS, and a small amount of JavaScript. It serves as a lightweight landing page for professional links, background information, and selected projects.
 
+Color theme follows the system light/dark preference by default. Visitors can override it with the header toggle; the choice is stored in `localStorage` under the key `theme`. Shared assets: `theme.css`, `theme.js`.
+
 ## Live site
 
 https://stephens.page

@@ -34,18 +34,27 @@
     '.subscribe .sub-row{display:flex;gap:0.6rem;flex-wrap:wrap;}',
     '.subscribe input[type="email"]{flex:1 1 220px;padding:0.6rem 0.75rem;font:inherit;color:var(--ink,#181512);background:var(--surface,#fff);border:1px solid var(--rule,#d6d1c9);border-radius:6px;}',
     '.subscribe input[type="email"]:focus-visible{outline:2px solid var(--brand,#9b4d24);outline-offset:1px;border-color:var(--brand,#9b4d24);}',
-    '.subscribe button{padding:0.6rem 1.2rem;font:inherit;font-weight:700;color:#fff;background:var(--brand,#9b4d24);border:1px solid var(--brand,#9b4d24);border-radius:6px;cursor:pointer;}',
-    '.subscribe button:hover:not(:disabled){background:#843f1d;}',
+    '.subscribe button{padding:0.6rem 1.2rem;font:inherit;font-weight:700;color:var(--brand-ink,#fff);background:var(--brand,#9b4d24);border:1px solid var(--brand,#9b4d24);border-radius:6px;cursor:pointer;}',
+    '.subscribe button:hover:not(:disabled){filter:brightness(0.92);}',
     '.subscribe button:disabled{opacity:0.6;cursor:default;}',
     '.subscribe .sub-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}',
     '.subscribe .sub-status{font-size:0.9rem;min-height:1.2em;margin:0;}',
     '.subscribe .sub-status.ok{color:#2f6b34;}',
     '.subscribe .sub-status.err{color:#a3372a;}',
     '.subscribe .fine{color:var(--muted,#625a52);font-size:0.8rem;margin:0;}',
-    '.subscribe .nl-cta{display:inline-block;padding:0.6rem 1.2rem;font-weight:700;color:#fff!important;background:var(--brand,#9b4d24);border-radius:6px;text-decoration:none;}',
-    '.subscribe .nl-cta:hover{background:#843f1d;}'
+    '.subscribe .nl-cta{display:inline-block;padding:0.6rem 1.2rem;font-weight:700;color:var(--brand-ink,#fff)!important;background:var(--brand,#9b4d24);border-radius:6px;text-decoration:none;}',
+    '.subscribe .nl-cta:hover{filter:brightness(0.92);}'
   ].join('');
   document.head.appendChild(style);
+
+  // Match Cloudflare Turnstile chrome to the page theme.
+  function pageIsDark() {
+    var t = document.documentElement.getAttribute('data-theme');
+    if (t === 'dark') return true;
+    if (t === 'light') return false;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  var turnstileTheme = pageIsDark() ? 'dark' : 'light';
 
   // 2. Markup.
   var section = document.createElement('section');
@@ -67,7 +76,7 @@
         '</div>' +
         '<input type="hidden" name="list" value="' + LIST + '">' +
         '<div class="sub-hp" aria-hidden="true"><label>Leave this field empty<input type="text" name="website_url" tabindex="-1" autocomplete="off"></label></div>' +
-        '<div class="cf-turnstile" data-sitekey="' + SITE_KEY + '" data-theme="light"></div>' +
+        '<div class="cf-turnstile" data-sitekey="' + SITE_KEY + '" data-theme="' + turnstileTheme + '"></div>' +
         '<p class="sub-status" id="nl-sub-status" role="status" aria-live="polite"></p>' +
         '<p class="fine">You\'ll get a confirmation email to opt in, and every email has a one-click unsubscribe.</p>' +
       '</form>';

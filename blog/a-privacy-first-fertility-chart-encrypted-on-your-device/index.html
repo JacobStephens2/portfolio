@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chart35 - Case Study | Jacob Stephens</title>
@@ -150,6 +158,8 @@
             .topbar { flex-direction: column; align-items: flex-start; }
         }
     </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -186,16 +196,16 @@
                 <div class="cs-diagram"><svg viewBox="0 0 980 470" role="img" aria-label="Chart35 architecture: device-side plaintext and encryption, server stores ciphertext only">
   <defs>
     <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L7,3 L0,6 Z" fill="#9b4d24"></path>
+      <path d="M0,0 L7,3 L0,6 Z" style="fill:var(--brand)"></path>
     </marker>
     <style>
-      .box{fill:#ffffff;stroke:#9b4d24;stroke-width:1.5;}
+      .box{fill:var(--surface);stroke:var(--brand);stroke-width:1.5;}
       .grp{fill:rgba(155,77,36,0.06);stroke:rgba(155,77,36,0.35);stroke-width:1;stroke-dasharray:4 3;}
-      .t{font-family:'Source Sans 3',Arial,sans-serif;fill:#181512;font-size:14px;}
-      .tb{font-family:'Source Sans 3',Arial,sans-serif;fill:#181512;font-size:14px;font-weight:700;}
-      .tm{font-family:'Source Sans 3',Arial,sans-serif;fill:#625a52;font-size:12px;}
-      .lbl{font-family:'Source Sans 3',Arial,sans-serif;fill:#9b4d24;font-size:12px;font-weight:700;letter-spacing:.04em;}
-      .ln{stroke:#9b4d24;stroke-width:1.6;fill:none;}
+      .t{font-family:'Source Sans 3',Arial,sans-serif;fill:var(--ink);font-size:14px;}
+      .tb{font-family:'Source Sans 3',Arial,sans-serif;fill:var(--ink);font-size:14px;font-weight:700;}
+      .tm{font-family:'Source Sans 3',Arial,sans-serif;fill:var(--muted);font-size:12px;}
+      .lbl{font-family:'Source Sans 3',Arial,sans-serif;fill:var(--brand);font-size:12px;font-weight:700;letter-spacing:.04em;}
+      .ln{stroke:var(--brand);stroke-width:1.6;fill:none;}
       .bnd{stroke:#625a52;stroke-width:1.4;stroke-dasharray:6 4;fill:none;}
     </style>
   </defs>
