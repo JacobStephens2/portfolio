@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Diagram Is Not the Model | Jacob Stephens</title>
+    <meta name="description" content="Four ideas about process diagramming for a software factory - diagram-as-code, models over diagrams, animation as state, and simulation - taught with live figures: a mergeable diff, one model with two projections, a runnable factory, and a quiz.">
+    <meta property="og:title" content="The Diagram Is Not the Model">
+    <meta property="og:description" content="Process diagramming for a software factory, taught the way I'd want to learn it: a diff you can apply, a model you can edit, a factory you can run, and a quiz at the door.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/blog/the-diagram-is-not-the-model/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="The Diagram Is Not the Model">
+    <meta name="twitter:description" content="Process diagramming for a software factory, taught with live figures: a mergeable diff, one model with two projections, a runnable factory, and a quiz.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --brand-ink: #ffffff;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
+            --code-bg: #efe9df;
+            --bar-bg: #ece6dc;
+            --diff-add-bg: #e4f2e4;
+            --diff-add-ink: #1d5c2a;
+        }
+
+        html[data-theme="dark"] {
+            --diff-add-bg: #1a2a1c;
+            --diff-add-ink: #a3d3a8;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            html:not([data-theme="light"]):not([data-theme="dark"]) {
+                --diff-add-bg: #1a2a1c;
+                --diff-add-ink: #a3d3a8;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--brand);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        article.note {
+            padding: 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 0.9rem;
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.08;
+            letter-spacing: -0.01em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .meta strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--brand);
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.93rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.5rem 0.6rem 0.5rem 0;
+            border-bottom: 1px solid var(--rule);
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: 700;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1rem 1.1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        strong {
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--brand);
+            text-decoration: none;
+        }
+
+        a:hover,
+        a:focus-visible {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        .ai-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: var(--soft);
+            border-left: 3px solid var(--brand);
+            border-radius: 0 6px 6px 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        /* ---- Interactive figures ---- */
+
+        .fig {
+            margin: 1.4rem 0 1.6rem;
+            border: 1px solid var(--rule);
+            border-radius: 8px;
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        .fig-head {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.9rem;
+            border-bottom: 1px solid var(--rule);
+            background: var(--soft);
+        }
+
+        .fig-title {
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--brand);
+        }
+
+        .fig-body {
+            padding: 0.9rem;
+        }
+
+        .fig-caption {
+            padding: 0.65rem 0.9rem 0.75rem;
+            color: var(--muted);
+            font-size: 0.88rem;
+            border-top: 1px dashed var(--rule);
+            line-height: 1.55;
+        }
+
+        .fig-scroll {
+            overflow-x: auto;
+        }
+
+        .fig svg text {
+            font-family: 'Source Sans 3', Arial, sans-serif;
+        }
+
+        .ctl-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.1rem;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .ctl-btn {
+            font: inherit;
+            font-size: 0.86rem;
+            font-weight: 600;
+            padding: 0.3rem 0.85rem;
+            border: 1px solid var(--rule);
+            background: var(--surface);
+            color: var(--ink);
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .ctl-btn:hover,
+        .ctl-btn:focus-visible {
+            border-color: var(--brand);
+        }
+
+        .ctl-btn[aria-pressed="true"] {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: var(--brand-ink);
+        }
+
+        .ctl-btn:disabled {
+            cursor: default;
+            opacity: 0.6;
+        }
+
+        .ctl-slider {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.86rem;
+            color: var(--muted);
+        }
+
+        .ctl-slider input[type="range"] {
+            accent-color: var(--brand);
+            width: 88px;
+        }
+
+        .ctl-slider output {
+            font-weight: 700;
+            color: var(--ink);
+            min-width: 2.2em;
+        }
+
+        .ctl-step {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.86rem;
+            color: var(--muted);
+        }
+
+        .ctl-step button {
+            font: inherit;
+            font-weight: 700;
+            width: 1.6rem;
+            height: 1.6rem;
+            line-height: 1;
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            background: var(--surface);
+            color: var(--ink);
+            cursor: pointer;
+        }
+
+        .ctl-step button:hover { border-color: var(--brand); }
+
+        .ctl-step output {
+            font-weight: 700;
+            color: var(--ink);
+            min-width: 1.2em;
+            text-align: center;
+        }
+
+        /* Figure 1 - diff */
+
+        .f1-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 0.9rem;
+        }
+
+        pre.diff {
+            margin-bottom: 0;
+            font-size: 0.8rem;
+        }
+
+        pre.diff .add {
+            display: block;
+            background: var(--diff-add-bg);
+            color: var(--diff-add-ink);
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        #f1svg .f1-curve {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            transition: stroke-dashoffset 0.7s ease;
+        }
+
+        #f1svg.on .f1-curve {
+            stroke-dashoffset: 0;
+        }
+
+        #f1svg .f1-late {
+            opacity: 0;
+            transition: opacity 0.3s ease 0.45s;
+        }
+
+        #f1svg.on .f1-late {
+            opacity: 1;
+        }
+
+        /* Figure 2 - projections */
+
+        .f2-panel {
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 0.7rem 0.8rem 0.6rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .f2-panel:last-child { margin-bottom: 0; }
+
+        .f2-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .f2-panel.flash {
+            animation: f2flash 0.7s ease;
+        }
+
+        @keyframes f2flash {
+            0% { border-color: var(--brand); box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 25%, transparent); }
+            100% { border-color: var(--rule); box-shadow: none; }
+        }
+
+        .pill-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.2rem 0;
+        }
+
+        .pill {
+            border: 1px solid var(--rule);
+            background: var(--soft);
+            border-radius: 8px;
+            padding: 0.25rem 0.6rem;
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .pill .p-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            display: block;
+        }
+
+        .pill .p-kind {
+            font-size: 0.68rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+            display: block;
+        }
+
+        .pill.p-gate {
+            border-color: var(--brand);
+        }
+
+        .pill-arrow {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        #f2json {
+            font-size: 0.76rem;
+            margin-bottom: 0;
+            max-height: 300px;
+            overflow: auto;
+        }
+
+        #f2table table { margin-bottom: 0.3rem; font-size: 0.88rem; }
+        #f2table td, #f2table th { padding: 0.32rem 0.5rem 0.32rem 0; }
+
+        .f2-policy {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-bottom: 0;
+        }
+
+        /* Figure 3 - simulation */
+
+        .predict {
+            border: 1px dashed var(--rule);
+            border-radius: 6px;
+            padding: 0.7rem 0.85rem;
+            margin-bottom: 0.9rem;
+            font-size: 0.92rem;
+        }
+
+        .predict p { margin-bottom: 0.5rem; }
+
+        .predict .note {
+            color: var(--muted);
+            font-size: 0.86rem;
+            margin: 0.5rem 0 0;
+        }
+
+        #f3svg .st-box { fill: var(--soft); stroke: var(--rule); }
+        #f3svg .st-name { fill: var(--ink); font-size: 12px; font-weight: 600; }
+        #f3svg .st-sub { fill: var(--muted); font-size: 10.5px; }
+        #f3svg .tok { fill: var(--brand); }
+        #f3svg .tok-rw { fill: var(--surface); stroke: var(--brand); stroke-width: 1.6; }
+        #f3svg .slot-empty { fill: none; stroke: var(--rule); stroke-width: 1.2; }
+        #f3svg .edge { stroke: var(--muted); stroke-width: 1.3; fill: none; }
+        #f3svg .edge-rw { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; fill: none; opacity: 0.75; }
+        #f3svg .m-track { fill: var(--bar-bg); }
+        #f3svg .m-fill { fill: var(--brand); }
+        #f3svg .m-text { fill: var(--muted); font-size: 10.5px; }
+        #f3svg .bneck { fill: var(--brand); font-size: 10.5px; font-weight: 700; }
+        #f3svg .arrowhead { fill: var(--muted); }
+        #f3svg .big { fill: var(--ink); font-size: 20px; font-weight: 700; }
+
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.6rem;
+            margin-top: 0.9rem;
+        }
+
+        .stat {
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 0.55rem 0.7rem;
+        }
+
+        .stat .v {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .stat .l {
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+            line-height: 1.35;
+        }
+
+        #f3status {
+            min-height: 1.3em;
+            font-size: 0.86rem;
+            color: var(--muted);
+            margin-top: 0.6rem;
+            margin-bottom: 0;
+        }
+
+        #f3clock {
+            font-size: 0.82rem;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Figure 4 - quiz */
+
+        .qz {
+            padding: 0.9rem 0 0.7rem;
+            border-bottom: 1px dashed var(--rule);
+        }
+
+        .qz:first-child { padding-top: 0.2rem; }
+        .qz:last-of-type { border-bottom: 0; }
+
+        .qz .q {
+            font-weight: 700;
+            margin-bottom: 0.55rem;
+        }
+
+        .qz .opts {
+            display: grid;
+            gap: 0.4rem;
+        }
+
+        .qz button.opt {
+            font: inherit;
+            font-size: 0.92rem;
+            text-align: left;
+            padding: 0.45rem 0.7rem;
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            background: var(--surface);
+            color: var(--ink);
+            cursor: pointer;
+            line-height: 1.45;
+        }
+
+        .qz button.opt:hover:not(:disabled),
+        .qz button.opt:focus-visible {
+            border-color: var(--brand);
+        }
+
+        .qz button.opt:disabled { cursor: default; }
+
+        .qz button.opt.correct {
+            border-color: var(--brand);
+            background: var(--soft);
+            font-weight: 600;
+        }
+
+        .qz button.opt.wrong {
+            opacity: 0.75;
+        }
+
+        .qz .expl {
+            display: none;
+            margin: 0.55rem 0 0.2rem;
+            font-size: 0.88rem;
+            color: var(--muted);
+        }
+
+        .qz.answered .expl { display: block; }
+
+        #qzTally {
+            margin-top: 0.8rem;
+            margin-bottom: 0;
+            font-weight: 600;
+            font-size: 0.92rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stat-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #f1svg .f1-curve { transition: none; }
+            #f1svg .f1-late { transition: none; }
+            .f2-panel.flash { animation: none; }
+        }
+    </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <a href="/blog/" class="back-link">&larr; All posts</a>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; Software Factory</div>
+            <h1 class="title">The Diagram Is Not the Model</h1>
+            <p class="meta"><strong>July 15, 2026</strong> &middot; ~1,900 words &middot; 3 live figures and a quiz</p>
+
+            <p>The most useful thing I learned researching diagramming tools for the software factory is a rule: <strong>the diagram is never the source of truth.</strong> It is a projection of a model that lives somewhere else - a YAML file, a state machine, an event log - and almost every good tooling decision falls out of that rule.</p>
+
+            <p>I put one question to a Perplexity model council - GPT-5.6 Sol, Claude Opus 4.8, and Grok 4.5 Low: what should AI agents use to illustrate, and eventually animate, the processes of a software factory? The three answers converged on four ideas. Agents should write diagrams as text. The text should be generated from a canonical model. Animation should encode state, not decorate. And the questions I actually care about - where does work pile up? - need simulation, not drawing.</p>
+
+            <p>A four-bullet summary is exactly the kind of thing I would read once, agree with, and forget. Geoffrey Litt's talk "Understanding: the New Bottleneck" is about that failure mode: as agents write more of the code, the scarce resource stops being production and becomes human understanding - which you need both to verify the work and to participate in improving it. Margaret Storey calls the gap <em>cognitive debt</em>. Andy Matuschak's essay "Why Books Don't Work" names the mechanism: reading produces the feeling of understanding without the retention. Litt's prescription is to steal from education - intuition before detail, interactive figures, micro-worlds, quizzes.</p>
+
+            <p>So this post is the experiment. Each of the four ideas is taught by the technique that fits it: a diff you can apply, a model you can edit, a factory you can run, and a quiz at the door.</p>
+
+            <h2>The agent writes text; the browser draws it</h2>
+
+            <p>All three models gave the same first answer: diagram-as-code. LLMs are far better at emitting structured text than at dragging shapes or generating pixel-accurate images, and text is what Git, PRs, and CI already know how to handle. Mermaid is the consensus default - it renders natively on GitHub and in any browser - with D2 as the upgrade when Mermaid's layout gets cramped, and Graphviz DOT for heavily branching trees.</p>
+
+            <p>The argument is easiest to feel as a code review. Below is a five-station release process and a proposal: work that fails CI should loop back to the coding agent instead of dying. Render the change.</p>
+
+            <div class="fig" id="fig1">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 1 &middot; A process change as a diff</span>
+                    <span class="ctl-row" style="margin:0">
+                        <button type="button" class="ctl-btn" id="f1before" aria-pressed="true">Rendered: before</button>
+                        <button type="button" class="ctl-btn" id="f1after" aria-pressed="false">after</button>
+                    </span>
+                </div>
+                <div class="fig-body">
+                    <div class="f1-grid">
+                        <pre class="diff" aria-label="Mermaid source diff"><code> flowchart LR
+   Plan --&gt; Code
+   Code --&gt; Test
+   Test --&gt; Review
+<span class="add">+  Test -- fail --&gt; Code</span>   Review --&gt; Deploy</code></pre>
+                        <div class="fig-scroll">
+                            <svg id="f1svg" viewBox="0 0 620 168" width="620" style="min-width:540px; max-width:100%; height:auto; display:block;" role="img" aria-label="Flowchart of Plan, Code, Test, Review, Deploy. Toggling to after adds a fail edge from Test back to Code.">
+                                <defs>
+                                    <marker id="f1a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                                        <path d="M0,0 L8,4 L0,8 z" style="fill: var(--muted);"/>
+                                    </marker>
+                                    <marker id="f1b" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                                        <path d="M0,0 L8,4 L0,8 z" style="fill: var(--brand);"/>
+                                    </marker>
+                                </defs>
+                                <g>
+                                    <rect x="14" y="44" width="82" height="36" rx="8" style="fill:var(--soft); stroke:var(--rule);"/>
+                                    <text x="55" y="67" text-anchor="middle" style="fill:var(--ink); font-size:13px; font-weight:600;">Plan</text>
+                                    <rect x="138" y="44" width="82" height="36" rx="8" style="fill:var(--soft); stroke:var(--rule);"/>
+                                    <text x="179" y="67" text-anchor="middle" style="fill:var(--ink); font-size:13px; font-weight:600;">Code</text>
+                                    <rect x="262" y="44" width="82" height="36" rx="8" style="fill:var(--soft); stroke:var(--rule);"/>
+                                    <text x="303" y="67" text-anchor="middle" style="fill:var(--ink); font-size:13px; font-weight:600;">Test</text>
+                                    <rect x="386" y="44" width="90" height="36" rx="8" style="fill:var(--soft); stroke:var(--rule);"/>
+                                    <text x="431" y="67" text-anchor="middle" style="fill:var(--ink); font-size:13px; font-weight:600;">Review</text>
+                                    <rect x="518" y="44" width="88" height="36" rx="8" style="fill:var(--soft); stroke:var(--rule);"/>
+                                    <text x="562" y="67" text-anchor="middle" style="fill:var(--ink); font-size:13px; font-weight:600;">Deploy</text>
+                                    <line x1="96" y1="62" x2="134" y2="62" style="stroke:var(--muted); stroke-width:1.4;" marker-end="url(#f1a)"/>
+                                    <line x1="220" y1="62" x2="258" y2="62" style="stroke:var(--muted); stroke-width:1.4;" marker-end="url(#f1a)"/>
+                                    <line x1="344" y1="62" x2="382" y2="62" style="stroke:var(--muted); stroke-width:1.4;" marker-end="url(#f1a)"/>
+                                    <line x1="476" y1="62" x2="514" y2="62" style="stroke:var(--muted); stroke-width:1.4;" marker-end="url(#f1a)"/>
+                                    <path class="f1-curve" pathLength="100" d="M 303 84 C 303 140, 179 140, 179 88" style="stroke:var(--brand); stroke-width:2; fill:none;"/>
+                                    <path class="f1-late" d="M 179 96 L 175 88 L 184 89 z" style="fill:var(--brand);"/>
+                                    <text class="f1-late" x="241" y="148" text-anchor="middle" style="fill:var(--brand); font-size:12px; font-weight:600;">fail</text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="fig-caption">The entire review artifact for this process change is the one highlighted line. The picture regenerates; nobody redraws anything, and nobody reviews pixels.</div>
+            </div>
+
+            <p>Litt's list of explanation techniques includes the literate diff - explanation and artifact as one thing. A Mermaid block in a PR body is the cheapest possible version of that, and agents can emit it today.</p>
+
+            <h2>The diagram is a projection, and projections can't drift</h2>
+
+            <p>The strongest single idea came from GPT-5.6 Sol: make the canonical process definition a versioned data structure - JSON, YAML, TypeScript objects - and generate everything else from it. Mermaid for the docs. React Flow for the interactive view. XState machines for executable lifecycles. Simulation inputs for capacity planning. Diagrams become projections of the model, the way a database view is a projection of tables.</p>
+
+            <p>The payoff: projections cannot drift. A hand-maintained diagram is a second copy of the truth, and second copies rot - my own architecture diagrams run reliably one refactor behind the system they describe. Below, one JSON model drives two renderers that know nothing about each other: a flowchart and a station table. Toggle the security gate, or change review capacity, and watch all three panels move together.</p>
+
+            <div class="fig" id="fig2">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 2 &middot; One model, two projections</span>
+                </div>
+                <div class="fig-body">
+                    <div class="ctl-row">
+                        <button type="button" class="ctl-btn" id="f2gate" aria-pressed="false">Security gate before deploy: off</button>
+                        <span class="ctl-step">Review capacity
+                            <button type="button" id="f2dec" aria-label="Decrease review capacity">&minus;</button>
+                            <output id="f2cap">1</output>
+                            <button type="button" id="f2inc" aria-label="Increase review capacity">+</button>
+                        </span>
+                    </div>
+                    <div class="f2-panel" id="f2p-json">
+                        <div class="f2-label">The model (canonical - this is what an agent edits)</div>
+                        <pre id="f2json"></pre>
+                    </div>
+                    <div class="f2-panel" id="f2p-flow">
+                        <div class="f2-label">Projection 1 - flowchart</div>
+                        <div class="pill-flow" id="f2flow"></div>
+                    </div>
+                    <div class="f2-panel" id="f2p-table">
+                        <div class="f2-label">Projection 2 - station table</div>
+                        <div id="f2table"></div>
+                        <p class="f2-policy" id="f2policy"></p>
+                    </div>
+                </div>
+                <div class="fig-caption">Two independent render functions over one JSON object. Neither picture can disagree with the model, because neither picture stores anything. This is GPT-5.6 Sol's layered architecture in miniature: canonical model at the bottom, generated views above it.</div>
+            </div>
+
+            <h2>Animation is state, not decoration</h2>
+
+            <p>On animation the three models split by target - Claude Opus 4.8 suggested D3 with GSAP for interactive views and Manim for rendered explainer video, the other two favored React Flow's animated edges driven by live events - but they agreed on the principle: animation should encode state or time, never garnish. Pulse an edge when an artifact moves. Color a node by running, blocked, failed. Replay yesterday's incident by scrubbing the event log. GPT-5.6 Sol framed it as three modes of one viewer: <em>design</em> (edit the intended process), <em>live</em> (watch current runs), <em>replay</em> (scrub history).</p>
+
+            <p>The animation worth building first is the token simulation: every work item is a dot, dots queue at stations, and capacity limits how many move at once. Which brings us to the last idea, because a token simulation is not really a diagram at all.</p>
+
+            <h2>You can't see a bottleneck in a flowchart</h2>
+
+            <p>Real factories are not planned with flowcharts. They are planned with discrete-event simulation - Siemens Plant Simulation, FlexSim, AnyLogic - because the questions that matter are ones a drawing cannot answer. Where will work accumulate? Which station is the constraint? Does adding capacity here change throughput at all? All three council models pointed at this discipline as the real home of "factory planning," and the shared advice was to borrow its concepts - queues, capacity, failure, rework - rather than buy the industrial suites.</p>
+
+            <p>This is also where the education thread is bluntest. Seymour Papert's <em>Mindstorms</em> argues you learn math by living in "Mathland"; Litt's version is the micro-world: don't read about the system, inhabit a small one. Alan Kay's 1972 paper "A Personal Computer for Children of All Ages" is the same claim about computers in general - the point of the machine is to level its user up.</p>
+
+            <p>So here is a micro-world: a small software factory. Requests arrive about every 25 minutes. Coding agents average 45 minutes per attempt. CI takes 10 minutes and fails at an adjustable rate; failures loop back as rework (hollow dots). A human reviewer averages 30 minutes per approval. Before you run it, commit to a prediction - White and Gunstone's predict-observe-explain, the oldest move in physics teaching.</p>
+
+            <div class="fig" id="fig3">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 3 &middot; Run the factory</span>
+                    <span id="f3clock">day 0, 00:00</span>
+                </div>
+                <div class="fig-body">
+                    <div class="predict">
+                        <p><strong>Predict first.</strong> The review queue is growing. To raise deploys per day, would you double the coding agents from 3 to 6, or add a second reviewer?</p>
+                        <span class="ctl-row" style="margin:0">
+                            <button type="button" class="ctl-btn" id="pAgents" aria-pressed="false">Double the agents</button>
+                            <button type="button" class="ctl-btn" id="pReviewers" aria-pressed="false">Add a reviewer</button>
+                        </span>
+                        <p class="note" id="pNote">Lock in a prediction, then test it with the sliders below.</p>
+                    </div>
+                    <div class="ctl-row">
+                        <button type="button" class="ctl-btn" id="f3run" aria-pressed="false">&#9654; Run</button>
+                        <button type="button" class="ctl-btn" id="f3reset">Reset</button>
+                        <span class="ctl-step">Speed
+                            <button type="button" class="ctl-btn" id="f3s1" aria-pressed="true" style="padding:0.15rem 0.6rem">1&times;</button>
+                            <button type="button" class="ctl-btn" id="f3s8" aria-pressed="false" style="padding:0.15rem 0.6rem">8&times;</button>
+                        </span>
+                    </div>
+                    <div class="ctl-row">
+                        <label class="ctl-slider">Agents
+                            <input type="range" id="f3agents" min="1" max="6" value="3" step="1">
+                            <output id="f3agentsV">3</output>
+                        </label>
+                        <label class="ctl-slider">Reviewers
+                            <input type="range" id="f3rev" min="1" max="3" value="1" step="1">
+                            <output id="f3revV">1</output>
+                        </label>
+                        <label class="ctl-slider">CI failure
+                            <input type="range" id="f3fail" min="0" max="60" value="25" step="5">
+                            <output id="f3failV">25%</output>
+                        </label>
+                    </div>
+                    <div class="fig-scroll">
+                        <svg id="f3svg" viewBox="0 0 680 250" width="680" style="min-width:600px; max-width:100%; height:auto; display:block;" role="img" aria-label="Token simulation of a software factory: backlog queue, coding agents, CI, review queue, reviewer, deployed count. Live utilization meters under agents and review.">
+                            <defs>
+                                <marker id="f3a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                                    <path class="arrowhead" d="M0,0 L8,4 L0,8 z"/>
+                                </marker>
+                            </defs>
+                            <text x="48" y="40" text-anchor="middle" class="st-sub">backlog</text>
+                            <text x="396" y="40" text-anchor="middle" class="st-sub">awaiting review</text>
+                            <rect x="100" y="52" width="110" height="84" rx="8" class="st-box"/>
+                            <text x="155" y="70" text-anchor="middle" class="st-name">Coding agents</text>
+                            <rect x="250" y="52" width="90" height="84" rx="8" class="st-box"/>
+                            <text x="295" y="70" text-anchor="middle" class="st-name">CI</text>
+                            <text x="295" y="128" text-anchor="middle" class="st-sub" id="f3cisub">10 min &middot; fails 25%</text>
+                            <rect x="440" y="52" width="104" height="84" rx="8" class="st-box"/>
+                            <text x="492" y="70" text-anchor="middle" class="st-name">Review</text>
+                            <rect x="576" y="52" width="92" height="84" rx="8" class="st-box"/>
+                            <text x="622" y="70" text-anchor="middle" class="st-name">Deployed</text>
+                            <text x="622" y="105" text-anchor="middle" class="big" id="f3done">0</text>
+                            <text x="622" y="124" text-anchor="middle" class="st-sub">total</text>
+                            <line x1="82" y1="94" x2="96" y2="94" class="edge" marker-end="url(#f3a)"/>
+                            <line x1="210" y1="94" x2="246" y2="94" class="edge" marker-end="url(#f3a)"/>
+                            <line x1="340" y1="94" x2="366" y2="94" class="edge" marker-end="url(#f3a)"/>
+                            <line x1="424" y1="94" x2="436" y2="94" class="edge" marker-end="url(#f3a)"/>
+                            <line x1="544" y1="94" x2="572" y2="94" class="edge" marker-end="url(#f3a)"/>
+                            <path class="edge-rw" d="M 295 140 C 295 216, 70 216, 50 160"/>
+                            <text x="180" y="228" text-anchor="middle" class="st-sub">fail &rarr; rework</text>
+                            <g id="f3devSlots"></g>
+                            <g id="f3revSlots"></g>
+                            <g id="f3qdev"></g>
+                            <g id="f3qrev"></g>
+                            <text id="f3ciCount" x="295" y="103" text-anchor="middle" class="big"></text>
+                            <rect x="100" y="150" width="110" height="7" rx="3.5" class="m-track"/>
+                            <rect x="100" y="150" width="0" height="7" rx="3.5" class="m-fill" id="f3mdev"/>
+                            <text x="100" y="172" class="m-text" id="f3mdevT">busy 0%</text>
+                            <text x="100" y="188" class="bneck" id="f3bdev" style="display:none">&#9650; bottleneck</text>
+                            <rect x="440" y="150" width="104" height="7" rx="3.5" class="m-track"/>
+                            <rect x="440" y="150" width="0" height="7" rx="3.5" class="m-fill" id="f3mrev"/>
+                            <text x="440" y="172" class="m-text" id="f3mrevT">busy 0%</text>
+                            <text x="440" y="188" class="bneck" id="f3brev" style="display:none">&#9650; bottleneck</text>
+                            <g id="f3flights"></g>
+                        </svg>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat"><div class="v" id="stThru">&ndash;</div><div class="l">deploys / day<br>(trailing 24 h)</div></div>
+                        <div class="stat"><div class="v" id="stCycle">&ndash;</div><div class="l">median cycle time<br>(request &rarr; deploy)</div></div>
+                        <div class="stat"><div class="v" id="stQ">0</div><div class="l">waiting for review<br>right now</div></div>
+                    </div>
+                    <p id="f3status" aria-live="polite"></p>
+                </div>
+                <div class="fig-caption">A discrete-event simulation, the concept behind Siemens Plant Simulation and FlexSim, at toy scale. Dots are work items; hollow dots are rework. Exponential service times, Poisson arrivals. The meters show trailing utilization - watch which one pins at 100%.</div>
+            </div>
+
+            <p>The arithmetic behind what the sliders show: at a 25% failure rate each shipped item costs 1/(1&nbsp;&minus;&nbsp;0.25) = 1.33 coding passes, about 60 agent-minutes, so 3 agents can push roughly 72 items a day - comfortably above the ~58 arriving. One reviewer at 30 minutes each caps the whole system at 48 a day. Review is the constraint. Doubling the agents moves nothing except where the pile sits; a second reviewer nearly doubles throughput. That is Goldratt's theory of constraints, and the sim lets you feel it in about thirty seconds - the reviewer's meter pins at 100% while the agents idle. Then push CI failure to 50% and watch the constraint migrate: each item now costs two coding passes, and the agents' meter is the one that saturates.</p>
+
+            <h2>What I'll build</h2>
+
+            <p>The council's synthesized recommendation, in build order:</p>
+
+            <ol>
+                <li><strong>Mermaid in ADRs and PR bodies, written by agents, starting now.</strong> It renders on GitHub with no build step, and the review artifact is a text diff (Fig. 1).</li>
+                <li><strong>A canonical YAML process model with a JSON Schema</strong> in the factory repo. CI validates it and regenerates the Mermaid and SVG exports - the Fig. 2 discipline, enforced by a pipeline instead of willpower.</li>
+                <li><strong>React Flow (or Svelte Flow) over an SSE event stream</strong> when the factory needs a live floor view - design, live, and replay modes over the same graph.</li>
+                <li><strong>A grown-up Fig. 3, fed by the same YAML,</strong> when capacity questions get real: how many agents, how many reviewers, what a model-provider outage does to cycle time.</li>
+                <li><strong>No Siemens license.</strong> The concepts transfer; the tooling doesn't.</li>
+            </ol>
+
+            <h2>The quiz at the door</h2>
+
+            <p>The sharpest line in my notes from Litt's talk is a rule he gives his own agents: don't send a PR unless I can pass a quiz on it - understanding as the regulator on speed. Matuschak's point applies squarely to this post: if you scrolled and nodded, you retained roughly nothing. Five questions.</p>
+
+            <div class="fig" id="fig4">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 4 &middot; Pass the quiz before you merge</span>
+                </div>
+                <div class="fig-body">
+                    <div class="qz">
+                        <p class="q">1. An agent proposes a change to your release process, and teammates will review it in a PR. What should the agent produce?</p>
+                        <div class="opts">
+                            <button type="button" class="opt">A PNG exported from a drawing tool</button>
+                            <button type="button" class="opt" data-correct>A one-line edit to a Mermaid file in the repo</button>
+                            <button type="button" class="opt">A prompt-generated illustration of the pipeline</button>
+                        </div>
+                        <p class="expl">Text diffs. GitHub renders Mermaid natively, so the PR shows the one-line change and the regenerated picture. An image can only be re-exported and eyeballed - and a generative model won't even draw the same boxes twice.</p>
+                    </div>
+                    <div class="qz">
+                        <p class="q">2. Six months in, the architecture diagram no longer matches production. Which fix kills the whole class of problem?</p>
+                        <div class="opts">
+                            <button type="button" class="opt">A quarterly diagram-review meeting</button>
+                            <button type="button" class="opt">Assign each diagram an owner</button>
+                            <button type="button" class="opt" data-correct>Generate the diagram from the canonical model in CI</button>
+                        </div>
+                        <p class="expl">Owners and reviews slow the rot; they don't stop it. A projection regenerated in CI cannot drift, because there is nothing to hand-edit.</p>
+                    </div>
+                    <div class="qz">
+                        <p class="q">3. In Fig. 3, review is saturated at one reviewer. You double the coding agents from 3 to 6. Deploys per day go&hellip;</p>
+                        <div class="opts">
+                            <button type="button" class="opt">Up roughly 2&times;</button>
+                            <button type="button" class="opt">Up maybe 50%</button>
+                            <button type="button" class="opt" data-correct>Nowhere - the pile just moves to sit in front of review</button>
+                        </div>
+                        <p class="expl">Goldratt: throughput is set by the constraint and nothing else. Review caps the system near 48 a day regardless of how fast work arrives at its queue.</p>
+                    </div>
+                    <div class="qz">
+                        <p class="q">4. Which of these questions needs the simulation - the flowchart cannot answer it?</p>
+                        <div class="opts">
+                            <button type="button" class="opt">What stations exist, and in what order?</button>
+                            <button type="button" class="opt">Who has to approve a deploy?</button>
+                            <button type="button" class="opt" data-correct>What is the 95th-percentile time from request to deploy?</button>
+                        </div>
+                        <p class="expl">Structure and policy live in the drawing. Percentile latency emerges from variability, capacity, and rework interacting over time - you get it by running the process, in production or in simulation.</p>
+                    </div>
+                    <div class="qz">
+                        <p class="q">5. Raising CI failure from 0% to 50% multiplies the coding work per shipped item by&hellip;</p>
+                        <div class="opts">
+                            <button type="button" class="opt">1.5&times;</button>
+                            <button type="button" class="opt" data-correct>2&times;</button>
+                            <button type="button" class="opt">Nothing - the same item just waits longer</button>
+                        </div>
+                        <p class="expl">Expected attempts per shipped item is 1/(1&nbsp;&minus;&nbsp;p): at p = 0.5, two full coding passes each. Rework is a multiplier on whatever station sits upstream of the failing check.</p>
+                    </div>
+                    <p id="qzTally">0 of 5 answered.</p>
+                </div>
+            </div>
+
+            <h2>What's still open</h2>
+
+            <p>Litt flags his own caveat: interactive figures can be a crutch. Did you learn queueing behavior just now, or did you move sliders? The quiz is a partial check, and my honest answer for myself is "partly" - I trust the 1/(1&nbsp;&minus;&nbsp;p) arithmetic because I derived it, and I trust the bottleneck intuition more because I watched the meter pin. The other open question is whether hand-building these figures in vanilla SVG and JavaScript contradicts the post's own advice. I don't think it does - each figure is a small model with render functions over it, which is the thesis in miniature - but the real test is whether the factory's diagrams still match the factory six months from now, and that one only time can grade.</p>
+
+            <div class="ai-note">
+                Drafted from my Perplexity model-council notes on process diagramming (GPT-5.6 Sol, Claude Opus 4.8, Grok 4.5 Low; 2026-07-14) and my notes on Geoffrey Litt's talk "Understanding: the New Bottleneck," with help from Claude. The figures are hand-built inline SVG and vanilla JavaScript - no diagram library. The decisions and the factory are mine; the prose is collaborative.
+            </div>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+    <script>
+    (function () {
+        'use strict';
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var SVGNS = 'http://www.w3.org/2000/svg';
+
+        /* ---------- Fig. 1: diff toggle ---------- */
+        var f1svg = document.getElementById('f1svg');
+        var f1before = document.getElementById('f1before');
+        var f1after = document.getElementById('f1after');
+        function setF1(after) {
+            f1svg.classList.toggle('on', after);
+            f1before.setAttribute('aria-pressed', String(!after));
+            f1after.setAttribute('aria-pressed', String(after));
+        }
+        f1before.addEventListener('click', function () { setF1(false); });
+        f1after.addEventListener('click', function () { setF1(true); });
+
+        /* ---------- Fig. 2: one model, two projections ---------- */
+        var f2 = { gate: false, reviewCap: 1 };
+        var f2gate = document.getElementById('f2gate');
+        var f2cap = document.getElementById('f2cap');
+
+        function f2model() {
+            var stations = [
+                { station: 'Plan', kind: 'agent', capacity: 1 },
+                { station: 'Code', kind: 'agent', capacity: 3 },
+                { station: 'Test', kind: 'ci', capacity: 'unbounded' }
+            ];
+            if (f2.gate) stations.push({ station: 'Security gate', kind: 'human', capacity: 1 });
+            stations.push({ station: 'Review', kind: 'human', capacity: f2.reviewCap });
+            stations.push({ station: 'Deploy', kind: 'gate', capacity: 1 });
+            return {
+                stations: stations,
+                policy: { onTestFail: 'back to Code', maxRetries: 3, deployNeedsHumanApproval: true }
+            };
+        }
+
+        function renderF2() {
+            var m = f2model();
+            document.getElementById('f2json').textContent = JSON.stringify(m, null, 2);
+
+            var flow = document.getElementById('f2flow');
+            flow.innerHTML = '';
+            m.stations.forEach(function (s, i) {
+                if (i > 0) {
+                    var arrow = document.createElement('span');
+                    arrow.className = 'pill-arrow';
+                    arrow.textContent = '→';
+                    flow.appendChild(arrow);
+                }
+                var pill = document.createElement('span');
+                pill.className = 'pill' + (s.station === 'Security gate' ? ' p-gate' : '');
+                var name = document.createElement('span');
+                name.className = 'p-name';
+                name.textContent = s.station;
+                var kind = document.createElement('span');
+                kind.className = 'p-kind';
+                kind.textContent = s.kind + (typeof s.capacity === 'number' ? ' ×' + s.capacity : '');
+                pill.appendChild(name);
+                pill.appendChild(kind);
+                flow.appendChild(pill);
+            });
+
+            var rows = m.stations.map(function (s) {
+                return '<tr><td>' + s.station + '</td><td>' + s.kind + '</td><td>' + s.capacity + '</td></tr>';
+            }).join('');
+            document.getElementById('f2table').innerHTML =
+                '<table><thead><tr><th>Station</th><th>Kind</th><th>Capacity</th></tr></thead><tbody>' + rows + '</tbody></table>';
+            document.getElementById('f2policy').textContent =
+                'Policy: on test failure, ' + m.policy.onTestFail + ' (max ' + m.policy.maxRetries +
+                ' retries); deploys ' + (m.policy.deployNeedsHumanApproval ? 'require' : 'do not require') + ' human approval.';
+
+            ['f2p-json', 'f2p-flow', 'f2p-table'].forEach(function (id) {
+                var el = document.getElementById(id);
+                el.classList.remove('flash');
+                void el.offsetWidth;
+                el.classList.add('flash');
+            });
+        }
+
+        f2gate.addEventListener('click', function () {
+            f2.gate = !f2.gate;
+            f2gate.setAttribute('aria-pressed', String(f2.gate));
+            f2gate.textContent = 'Security gate before deploy: ' + (f2.gate ? 'on' : 'off');
+            renderF2();
+        });
+        document.getElementById('f2dec').addEventListener('click', function () {
+            if (f2.reviewCap > 1) { f2.reviewCap--; f2cap.textContent = f2.reviewCap; renderF2(); }
+        });
+        document.getElementById('f2inc').addEventListener('click', function () {
+            if (f2.reviewCap < 3) { f2.reviewCap++; f2cap.textContent = f2.reviewCap; renderF2(); }
+        });
+        renderF2();
+        ['f2p-json', 'f2p-flow', 'f2p-table'].forEach(function (id) {
+            document.getElementById(id).classList.remove('flash');
+        });
+
+        /* ---------- Fig. 3: token simulation ---------- */
+        var DT = 2;                    // sim minutes per tick
+        var TICK_MS = 50;              // real ms per tick at 1x
+        var ARRIVAL_MEAN = 25, DEV_MEAN = 45, CI_TIME = 10, REV_MEAN = 30;
+
+        var P = {
+            devq: { x: 48, y: 100 }, dev: { x: 155, y: 96 }, ci: { x: 295, y: 96 },
+            revq: { x: 396, y: 100 }, rev: { x: 492, y: 96 }, done: { x: 622, y: 96 }
+        };
+        var REWORK_BEZIER = [{ x: 295, y: 140 }, { x: 295, y: 216 }, { x: 70, y: 216 }, { x: 50, y: 160 }];
+
+        var S;
+        function expo(mean) { return -mean * Math.log(1 - Math.random()); }
+        function initSim() {
+            S = {
+                running: false, speed: 1, t: 0,
+                agents: parseInt(document.getElementById('f3agents').value, 10),
+                reviewers: parseInt(document.getElementById('f3rev').value, 10),
+                failPct: parseInt(document.getElementById('f3fail').value, 10),
+                qDev: [], qRev: [], devBusy: [], revBusy: [], ciBusy: [],
+                deployedTimes: [], cycleTimes: [], deployedTotal: 0,
+                utilDev: 0, utilRev: 0,
+                nextArrival: expo(ARRIVAL_MEAN), nextId: 1,
+                autoPaused: false, dirty: true
+            };
+        }
+        initSim();
+
+        var flights = [];
+        var flightLayer = document.getElementById('f3flights');
+        function fly(from, to, rework) {
+            if (reduceMotion || flights.length > 24 || document.hidden) return;
+            var f = {
+                from: from, to: to, rework: !!rework,
+                start: performance.now(), dur: 380,
+                el: document.createElementNS(SVGNS, 'circle')
+            };
+            f.el.setAttribute('r', '4.5');
+            f.el.setAttribute('class', rework ? 'tok-rw' : 'tok');
+            flightLayer.appendChild(f.el);
+            flights.push(f);
+        }
+        function bez(p, t) {
+            var u = 1 - t;
+            return {
+                x: u*u*u*p[0].x + 3*u*u*t*p[1].x + 3*u*t*t*p[2].x + t*t*t*p[3].x,
+                y: u*u*u*p[0].y + 3*u*u*t*p[1].y + 3*u*t*t*p[2].y + t*t*t*p[3].y
+            };
+        }
+        function updateFlights(now) {
+            for (var i = flights.length - 1; i >= 0; i--) {
+                var f = flights[i];
+                var t = (now - f.start) / f.dur;
+                if (t >= 1) {
+                    flightLayer.removeChild(f.el);
+                    flights.splice(i, 1);
+                    continue;
+                }
+                var pos;
+                if (f.from === 'ci' && f.to === 'devq') {
+                    pos = bez(REWORK_BEZIER, t);
+                } else {
+                    var a = P[f.from], b = P[f.to];
+                    pos = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+                }
+                f.el.setAttribute('cx', pos.x.toFixed(1));
+                f.el.setAttribute('cy', pos.y.toFixed(1));
+            }
+        }
+
+        function tick() {
+            S.t += DT;
+            while (S.nextArrival <= S.t) {
+                S.qDev.push({ id: S.nextId++, arrived: S.nextArrival, rework: false });
+                S.nextArrival += expo(ARRIVAL_MEAN);
+            }
+            var i, j;
+            for (i = S.devBusy.length - 1; i >= 0; i--) {
+                j = S.devBusy[i];
+                if (j.until <= S.t) {
+                    S.devBusy.splice(i, 1);
+                    S.ciBusy.push({ item: j.item, until: S.t + CI_TIME });
+                    fly('dev', 'ci', j.item.rework);
+                }
+            }
+            for (i = S.ciBusy.length - 1; i >= 0; i--) {
+                j = S.ciBusy[i];
+                if (j.until <= S.t) {
+                    S.ciBusy.splice(i, 1);
+                    if (Math.random() * 100 < S.failPct) {
+                        j.item.rework = true;
+                        S.qDev.push(j.item);
+                        fly('ci', 'devq', true);
+                    } else {
+                        S.qRev.push(j.item);
+                        fly('ci', 'revq', j.item.rework);
+                    }
+                }
+            }
+            for (i = S.revBusy.length - 1; i >= 0; i--) {
+                j = S.revBusy[i];
+                if (j.until <= S.t) {
+                    S.revBusy.splice(i, 1);
+                    S.deployedTotal++;
+                    S.deployedTimes.push(S.t);
+                    S.cycleTimes.push(S.t - j.item.arrived);
+                    if (S.cycleTimes.length > 40) S.cycleTimes.shift();
+                    fly('rev', 'done', false);
+                }
+            }
+            while (S.devBusy.length < S.agents && S.qDev.length) {
+                S.devBusy.push({ item: S.qDev.shift(), until: S.t + expo(DEV_MEAN) });
+            }
+            while (S.revBusy.length < S.reviewers && S.qRev.length) {
+                S.revBusy.push({ item: S.qRev.shift(), until: S.t + expo(REV_MEAN) });
+            }
+            var a = DT / (DT + 360);
+            S.utilDev += a * ((S.devBusy.length / S.agents) - S.utilDev);
+            S.utilRev += a * ((S.revBusy.length / S.reviewers) - S.utilRev);
+            while (S.deployedTimes.length && S.deployedTimes[0] < S.t - 1440) S.deployedTimes.shift();
+            if (S.t >= 14 * 1440 && !S.autoPaused) {
+                S.autoPaused = true;
+                setRunning(false);
+                setStatus('Auto-paused after 14 simulated days. Review queue: ' + S.qRev.length + ' items.');
+            }
+            S.dirty = true;
+        }
+
+        function dotGrid(layer, count, originX, originY, isQueue, items) {
+            layer.innerHTML = '';
+            var shown = Math.min(count, 18);
+            for (var k = 0; k < shown; k++) {
+                var c = document.createElementNS(SVGNS, 'circle');
+                var col = k % 3, row = Math.floor(k / 3);
+                c.setAttribute('cx', originX + col * 14);
+                c.setAttribute('cy', originY + row * 13);
+                c.setAttribute('r', '4.5');
+                var rework = isQueue && items[k] && items[k].rework;
+                c.setAttribute('class', rework ? 'tok-rw' : 'tok');
+                layer.appendChild(c);
+            }
+            if (count > 18) {
+                var t = document.createElementNS(SVGNS, 'text');
+                t.setAttribute('x', originX + 14);
+                t.setAttribute('y', originY + 6 * 13 + 12);
+                t.setAttribute('text-anchor', 'middle');
+                t.setAttribute('class', 'st-sub');
+                t.textContent = '+' + (count - 18);
+                layer.appendChild(t);
+            }
+        }
+
+        function slotRow(layer, cap, busy, originX, originY, perRow) {
+            layer.innerHTML = '';
+            for (var k = 0; k < cap; k++) {
+                var c = document.createElementNS(SVGNS, 'circle');
+                var col = k % perRow, row = Math.floor(k / perRow);
+                c.setAttribute('cx', originX + col * 24);
+                c.setAttribute('cy', originY + row * 22);
+                c.setAttribute('r', '5.5');
+                c.setAttribute('class', k < busy ? 'tok' : 'slot-empty');
+                layer.appendChild(c);
+            }
+        }
+
+        function median(arr) {
+            if (!arr.length) return null;
+            var s = arr.slice().sort(function (x, y) { return x - y; });
+            var mid = Math.floor(s.length / 2);
+            return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+        }
+
+        function setStatus(msg) {
+            document.getElementById('f3status').textContent = msg;
+        }
+
+        function renderSim() {
+            if (!S.dirty) return;
+            S.dirty = false;
+            dotGrid(document.getElementById('f3qdev'), S.qDev.length, 34, 58, true, S.qDev);
+            dotGrid(document.getElementById('f3qrev'), S.qRev.length, 382, 58, true, S.qRev);
+            var devOx = 155 - (Math.min(S.agents, 3) - 1) * 12;
+            slotRow(document.getElementById('f3devSlots'), S.agents, S.devBusy.length, devOx, S.agents > 3 ? 90 : 100, 3);
+            var revOx = 492 - (Math.min(S.reviewers, 3) - 1) * 12;
+            slotRow(document.getElementById('f3revSlots'), S.reviewers, S.revBusy.length, revOx, 100, 3);
+            document.getElementById('f3ciCount').textContent = S.ciBusy.length || '';
+            document.getElementById('f3done').textContent = S.deployedTotal;
+
+            var ud = Math.round(S.utilDev * 100), ur = Math.round(S.utilRev * 100);
+            document.getElementById('f3mdev').setAttribute('width', (S.utilDev * 110).toFixed(1));
+            document.getElementById('f3mdevT').textContent = 'busy ' + ud + '%';
+            document.getElementById('f3mrev').setAttribute('width', (S.utilRev * 104).toFixed(1));
+            document.getElementById('f3mrevT').textContent = 'busy ' + ur + '%';
+            var devBn = S.utilDev >= 0.97 && S.utilDev >= S.utilRev;
+            var revBn = S.utilRev >= 0.97 && S.utilRev > S.utilDev;
+            document.getElementById('f3bdev').style.display = devBn ? '' : 'none';
+            document.getElementById('f3brev').style.display = revBn ? '' : 'none';
+
+            var thru = document.getElementById('stThru');
+            if (S.t < 240) {
+                thru.textContent = '–';
+            } else {
+                thru.textContent = Math.round(S.deployedTimes.length / Math.min(S.t, 1440) * 1440);
+            }
+            var med = median(S.cycleTimes);
+            document.getElementById('stCycle').textContent =
+                med === null ? '–' : (med / 60).toFixed(1) + ' h';
+            document.getElementById('stQ').textContent = S.qRev.length;
+
+            var day = Math.floor(S.t / 1440), mins = Math.floor(S.t % 1440);
+            var hh = String(Math.floor(mins / 60)).padStart(2, '0');
+            var mm = String(mins % 60).padStart(2, '0');
+            document.getElementById('f3clock').textContent = 'day ' + day + ', ' + hh + ':' + mm;
+        }
+
+        var runBtn = document.getElementById('f3run');
+        function setRunning(on) {
+            S.running = on;
+            runBtn.setAttribute('aria-pressed', String(on));
+            runBtn.innerHTML = on ? '&#10073;&#10073; Pause' : '&#9654; Run';
+        }
+        runBtn.addEventListener('click', function () {
+            setRunning(!S.running);
+            if (S.running) setStatus('');
+        });
+        document.getElementById('f3reset').addEventListener('click', function () {
+            initSim();
+            flights.forEach(function (f) { flightLayer.removeChild(f.el); });
+            flights.length = 0;
+            setRunning(false);
+            setStatus('Reset.');
+            S.dirty = true;
+        });
+        document.getElementById('f3s1').addEventListener('click', function () {
+            S.speed = 1;
+            this.setAttribute('aria-pressed', 'true');
+            document.getElementById('f3s8').setAttribute('aria-pressed', 'false');
+        });
+        document.getElementById('f3s8').addEventListener('click', function () {
+            S.speed = 8;
+            this.setAttribute('aria-pressed', 'true');
+            document.getElementById('f3s1').setAttribute('aria-pressed', 'false');
+        });
+        document.getElementById('f3agents').addEventListener('input', function () {
+            S.agents = parseInt(this.value, 10);
+            document.getElementById('f3agentsV').textContent = this.value;
+            S.dirty = true;
+        });
+        document.getElementById('f3rev').addEventListener('input', function () {
+            S.reviewers = parseInt(this.value, 10);
+            document.getElementById('f3revV').textContent = this.value;
+            S.dirty = true;
+        });
+        document.getElementById('f3fail').addEventListener('input', function () {
+            S.failPct = parseInt(this.value, 10);
+            document.getElementById('f3failV').textContent = this.value + '%';
+            document.getElementById('f3cisub').textContent = '10 min · fails ' + this.value + '%';
+            S.dirty = true;
+        });
+
+        var pNote = document.getElementById('pNote');
+        function lockPrediction(which, btn, other) {
+            btn.setAttribute('aria-pressed', 'true');
+            btn.disabled = true;
+            other.disabled = true;
+            pNote.textContent = 'Prediction locked: ' + which + '. Run the sim, try it, then try the other one. The meters will referee.';
+        }
+        var pA = document.getElementById('pAgents'), pR = document.getElementById('pReviewers');
+        pA.addEventListener('click', function () { lockPrediction('double the agents', pA, pR); });
+        pR.addEventListener('click', function () { lockPrediction('add a reviewer', pR, pA); });
+
+        var last = performance.now(), acc = 0;
+        function frame(now) {
+            var elapsed = Math.min(200, now - last);
+            last = now;
+            if (S.running) {
+                acc += elapsed * S.speed;
+                var guard = 0;
+                while (acc >= TICK_MS && guard < 64) { acc -= TICK_MS; tick(); guard++; }
+                if (guard === 64) acc = 0;
+            }
+            updateFlights(now);
+            renderSim();
+            requestAnimationFrame(frame);
+        }
+        renderSim();
+        requestAnimationFrame(frame);
+
+        /* ---------- Fig. 4: quiz ---------- */
+        var answered = 0, correctCount = 0;
+        var blocks = Array.prototype.slice.call(document.querySelectorAll('.qz'));
+        var total = blocks.length;
+        var tally = document.getElementById('qzTally');
+        blocks.forEach(function (block) {
+            var opts = Array.prototype.slice.call(block.querySelectorAll('button.opt'));
+            opts.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (block.classList.contains('answered')) return;
+                    block.classList.add('answered');
+                    var right = btn.hasAttribute('data-correct');
+                    answered++;
+                    if (right) correctCount++;
+                    opts.forEach(function (b) {
+                        b.disabled = true;
+                        if (b.hasAttribute('data-correct')) {
+                            b.classList.add('correct');
+                            b.textContent = '✓ ' + b.textContent;
+                        } else if (b === btn) {
+                            b.classList.add('wrong');
+                            b.textContent = '✗ ' + b.textContent;
+                        }
+                    });
+                    if (answered < total) {
+                        tally.textContent = answered + ' of ' + total + ' answered · ' + correctCount + ' correct.';
+                    } else {
+                        var verdict;
+                        if (correctCount === 5) verdict = 'Merge approved.';
+                        else if (correctCount === 4) verdict = 'Merge approved, with a comment.';
+                        else if (correctCount === 3) verdict = 'Request changes: re-run Fig. 3 first.';
+                        else verdict = 'Blocked: per Litt’s rule, no merge until the quiz passes. Scroll back up.';
+                        tally.textContent = 'Score: ' + correctCount + ' of ' + total + '. ' + verdict;
+                    }
+                });
+            });
+        });
+    })();
+    </script>
+    <script src="/blog/newsletter-widget.js" defer></script>
+</body>
+</html>
