@@ -223,6 +223,37 @@
             text-underline-offset: 0.12em;
         }
 
+        .sources {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .sources h3 {
+            font-family: 'Source Sans 3', Arial, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 1rem 0 0.5rem;
+        }
+
+        .sources ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .sources li {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid var(--rule);
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .sources li:last-child { border-bottom: 0; }
+        .sources .cite-title { color: var(--ink); font-weight: 600; }
+
         .ai-note {
             margin-top: 2rem;
             padding: 1rem 1.2rem;
@@ -465,6 +496,65 @@
         #f2flow.as-svg {
             display: block;
         }
+
+        /* Fig. 2 - D2 + Graphviz dialects */
+
+        .dialect { margin-bottom: 1.1rem; }
+        .dialect:last-child { margin-bottom: 0; }
+
+        .dialect-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 0.7rem;
+            align-items: start;
+        }
+
+        @media (min-width: 620px) {
+            .dialect-grid { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
+        }
+
+        .dialect-grid pre.diff { margin-bottom: 0; height: 100%; }
+
+        #gvsrc {
+            width: 100%;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.78rem;
+            line-height: 1.5;
+            background: var(--code-bg);
+            color: var(--ink);
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 0.8rem 0.9rem;
+            resize: vertical;
+        }
+
+        #gvsrc:focus-visible { outline: none; border-color: var(--brand); }
+
+        .dialect-out {
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 0.6rem;
+            background: var(--surface);
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dialect-out svg { max-width: 100%; height: auto; }
+        .dialect-out img { max-width: 100%; height: auto; display: block; }
+
+        .dialect-hint { color: var(--muted); font-size: 0.85rem; margin: 0; }
+
+        /* Theme the in-browser Graphviz output via the site palette. */
+        #gvout .node polygon,
+        #gvout .node ellipse,
+        #gvout .node path { stroke: var(--brand); fill: var(--soft); }
+        #gvout .node text { fill: var(--ink); }
+        #gvout .edge path { stroke: var(--muted); fill: none; }
+        #gvout .edge polygon { fill: var(--muted); stroke: var(--muted); }
+        #gvout .edge text { fill: var(--muted); }
+        #gvout svg > polygon { fill: transparent; stroke: none; }
 
         /* Fig. 3 - React Flow */
 
@@ -885,7 +975,7 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Software Factory</div>
             <h1 class="title">The Diagram Is Not the Model</h1>
-            <p class="meta"><strong>July 15, 2026</strong> &middot; ~2,600 words &middot; 5 live figures and a quiz</p>
+            <p class="meta"><strong>July 15, 2026</strong> &middot; ~3,000 words &middot; 6 live figures and a quiz</p>
 
             <p>The most useful thing I learned researching diagramming tools for the software factory is a rule: <strong>the diagram is never the source of truth.</strong> It is a projection of a model that lives somewhere else - a YAML file, a state machine, an event log - and almost every good tooling decision falls out of that rule.</p>
 
@@ -967,17 +1057,64 @@
 
             <p>Litt's list of explanation techniques includes the literate diff - explanation and artifact as one thing. A Mermaid block in a PR body is the cheapest possible version of that, and agents can emit it today.</p>
 
+            <p>Mermaid is the default, not the ceiling. When its layout gets cramped the council reached for D2, and for heavily branching trees for Graphviz DOT - both text DSLs an agent writes as readily as Mermaid. Here are the same kind of process, in each, actually rendered. They also mark a real boundary: Mermaid and Graphviz have small renderers that run in the browser, so the panels below and in Figs. 1 and 3 draw live on this page; D2's renderer is a heavier Go/WebAssembly binary, so - exactly as the council advised for D2 - its panel is rendered by a service (Kroki), the browser equivalent of the D2 CLI you'd run in CI.</p>
+
+            <div class="fig" id="figdialects">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 2 &middot; The same idea in two more dialects</span>
+                </div>
+                <div class="fig-body">
+                    <div class="dialect">
+                        <div class="panel-label">Graphviz DOT - a decision tree, rendered live in your browser by viz-js (edit it)</div>
+                        <div class="dialect-grid">
+                            <textarea id="gvsrc" rows="11" spellcheck="false" aria-label="Editable Graphviz DOT source">digraph {
+  rankdir=LR;
+  node [shape=box];
+  change [label="Change"];
+  pay [label="Touches\npayments?"];
+  schema [label="Schema\nchange?"];
+  change -> pay;
+  pay -> "Security + owner" [label="yes"];
+  pay -> schema [label="no"];
+  schema -> "Human approval" [label="yes"];
+  schema -> "Auto-merge" [label="no"];
+}</textarea>
+                            <div class="dialect-out fig-scroll" id="gvout">
+                                <p class="dialect-hint" id="gvhint">Rendering with viz-js (WASM)&hellip;</p>
+                            </div>
+                        </div>
+                        <p class="mm-err" id="gverr"></p>
+                    </div>
+                    <div class="dialect">
+                        <div class="panel-label">D2 - the same release pipeline, rendered by the Kroki service</div>
+                        <div class="dialect-grid">
+                            <pre class="diff" aria-label="D2 source"><code>direction: right
+Plan -&gt; Code -&gt; Test -&gt; Review -&gt; Deploy
+Test -&gt; Code: fail {
+  style.stroke-dash: 3
+}</code></pre>
+                            <div class="dialect-out fig-scroll">
+                                <img id="d2img" alt="D2 rendering of the release pipeline: Plan, Code, Test, Review, Deploy with a dashed fail edge from Test back to Code"
+                                     data-light="https://kroki.io/d2/svg/eNo1ijEOwjAMAHe_wh9IhWDL0AUegBAfiGq3sQgxSqxWVZW_QwamO-luDaV6POjsJs2zLD-3yG92Qh5PrQFJ4clEs8ciSzS4p5DRjXhV4s4nV-t88Cq8dbvxJ-kO_9BHj3OQhAcgVtsTD9WKvthRqNHjBdoXDkAsMg=="
+                                     data-dark="https://kroki.io/d2/svg/eNo1ijEOwjAMAHe_wh8IqsrmgQUegBAfiBq3sQgxSqxWVZW_QwamO-lu9aUSHmF0k-ZZlp9b5Dc7CYTjMLQGQQpPJpoJiyzR4J58RnfBqwbufHK1zgevwlu3G3-S7vAPfSScvSQ8ALHanvhUreiLXfA1Ep6hfQFL2CyU">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fig-caption">Same process, three dialects across Figs. 1-2, all text an agent writes and version-controls. The Graphviz tree is the actual <code>dot</code> engine compiled to WebAssembly (viz-js), themed with this site's CSS variables and re-rendering as you type. The D2 diagram is real D2 output from <a href="https://kroki.io" rel="noopener">Kroki</a> - swapped between D2's light and dark themes to follow the page. That split is the honest state of the tooling: reach for Graphviz or Mermaid when you want a browser to draw it, D2 when you'll render in CI or a service and want its nicer defaults.</div>
+            </div>
+
             <h2>The diagram is a projection, and projections can't drift</h2>
 
             <p>The strongest single idea came from GPT-5.6 Sol: make the canonical process definition a versioned data structure - JSON, YAML, TypeScript objects - and generate everything else from it. Mermaid for the docs. React Flow for the interactive view. XState machines for executable lifecycles. Simulation inputs for capacity planning. Diagrams become projections of the model, the way a database view is a projection of tables.</p>
 
-            <p>The fair objection: Mermaid is already text under version control, so why not make the <code>.mmd</code> file itself the canonical model? Because diffability was never the differentiator - expressiveness and consumers are. A process model has to carry facts no diagram syntax has a slot for: capacities, retry limits, timeouts, risk classes, who may approve what, the service-time distributions a simulator needs. GPT-5.6 Sol's exact warning was that "you will eventually want metadata Mermaid cannot comfortably express" - try anyway and those facts end up smuggled into node labels, legible to humans and dead to programs. The second half of the answer is consumer count: a Mermaid file has one consumer, the renderer, while the model below already feeds two independent renderers, and the same object could feed a Fig. 4-style state machine or the Fig. 5 simulator without changing shape. The asymmetry runs one way. Serializing the model to Mermaid took a 15-line generator - its output is the "Generated Mermaid source" you can expand under Fig. 2's flowchart. Recovering the model from that Mermaid means parsing a drawing language and guessing what "(agent &times;3)" in a label was supposed to mean. Cheap in one direction, lossy in the other - that asymmetry is what makes a representation canonical.</p>
+            <p>The fair objection: Mermaid is already text under version control, so why not make the <code>.mmd</code> file itself the canonical model? Because diffability was never the differentiator - expressiveness and consumers are. A process model has to carry facts no diagram syntax has a slot for: capacities, retry limits, timeouts, risk classes, who may approve what, the service-time distributions a simulator needs. GPT-5.6 Sol's exact warning was that "you will eventually want metadata Mermaid cannot comfortably express" - try anyway and those facts end up smuggled into node labels, legible to humans and dead to programs. The second half of the answer is consumer count: a Mermaid file has one consumer, the renderer, while the model below already feeds two independent renderers, and the same object could feed a Fig. 5-style state machine or the Fig. 6 simulator without changing shape. The asymmetry runs one way. Serializing the model to Mermaid took a 15-line generator - its output is the "Generated Mermaid source" you can expand under Fig. 3's flowchart. Recovering the model from that Mermaid means parsing a drawing language and guessing what "(agent &times;3)" in a label was supposed to mean. Cheap in one direction, lossy in the other - that asymmetry is what makes a representation canonical.</p>
 
             <p>The payoff: projections cannot drift. A hand-maintained diagram is a second copy of the truth, and second copies rot - my own architecture diagrams run reliably one refactor behind the system they describe. Below, one JSON model drives two renderers that know nothing about each other: a flowchart and a station table. Toggle the security gate, or change review capacity, and watch all three panels move together.</p>
 
             <div class="fig" id="fig2">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 2 &middot; One model, two projections</span>
+                    <span class="fig-title">Fig. 3 &middot; One model, two projections</span>
                 </div>
                 <div class="fig-body">
                     <div class="ctl-row">
@@ -1014,7 +1151,7 @@
 
             <div class="fig" id="figrf">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 3 &middot; The live floor view (real React Flow)</span>
+                    <span class="fig-title">Fig. 4 &middot; The live floor view (real React Flow)</span>
                 </div>
                 <div class="fig-body">
                     <div class="rf-mount" id="rfmount">
@@ -1037,7 +1174,7 @@
 
             <div class="fig" id="figxs">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 4 &middot; An executable lifecycle (real XState)</span>
+                    <span class="fig-title">Fig. 5 &middot; An executable lifecycle (real XState)</span>
                     <button type="button" class="ctl-btn" id="xsreset">Reset</button>
                 </div>
                 <div class="fig-body">
@@ -1046,10 +1183,10 @@
                     <div class="xs-viz" id="xsviz"></div>
                     <pre class="xs-log" id="xslog" aria-live="polite">Transition log:</pre>
                 </div>
-                <div class="fig-caption">One transition list is the single source of truth: it builds the executable <a href="https://stately.ai/docs/xstate" rel="noopener">XState</a> machine <em>and</em> the state diagram above (rendered by mermaid.js, active state highlighted). Change the list in one place and both regenerate - the Fig. 2 projection principle, applied to behavior instead of structure. This is a hand-run version of what <a href="https://stately.ai/viz" rel="noopener">stately.ai/viz</a> does with any machine.</div>
+                <div class="fig-caption">One transition list is the single source of truth: it builds the executable <a href="https://stately.ai/docs/xstate" rel="noopener">XState</a> machine <em>and</em> the state diagram above (rendered by mermaid.js, active state highlighted). Change the list in one place and both regenerate - the Fig. 3 projection principle, applied to behavior instead of structure. This is a hand-run version of what <a href="https://stately.ai/viz" rel="noopener">stately.ai/viz</a> does with any machine.</div>
             </div>
 
-            <p>Those are toy versions of the deeper tools. <a href="https://reactflow.dev/examples" rel="noopener">reactflow.dev/examples</a> shows subflows, minimaps, and elk.js auto-layout; <a href="https://stately.ai/viz" rel="noopener">stately.ai/viz</a> simulates any statechart you paste; <a href="https://mermaid.live" rel="noopener">mermaid.live</a> is the full editor for the renderer Figs. 1 and 2 call on this page.</p>
+            <p>Those are toy versions of the deeper tools. <a href="https://reactflow.dev/examples" rel="noopener">reactflow.dev/examples</a> shows subflows, minimaps, and elk.js auto-layout; <a href="https://stately.ai/viz" rel="noopener">stately.ai/viz</a> simulates any statechart you paste; <a href="https://mermaid.live" rel="noopener">mermaid.live</a> is the full editor for the renderer Figs. 1 and 3 call on this page.</p>
 
             <p>The animation worth building first, though, is the token simulation: every work item is a dot, dots queue at stations, and capacity limits how many move at once. Which brings us to the last idea, because a token simulation is not really a diagram at all.</p>
 
@@ -1063,7 +1200,7 @@
 
             <div class="fig" id="fig3">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 5 &middot; Run the factory</span>
+                    <span class="fig-title">Fig. 6 &middot; Run the factory</span>
                     <span id="f3clock">day 0, 00:00</span>
                 </div>
                 <div class="fig-body">
@@ -1150,7 +1287,9 @@
                 <div class="fig-caption">A discrete-event simulation, the concept behind Siemens Plant Simulation and FlexSim, at toy scale. Dots are work items; hollow dots are rework. Exponential service times, Poisson arrivals. The meters show trailing utilization - watch which one pins at 100%.</div>
             </div>
 
-            <p>The arithmetic behind what the sliders show: at a 25% failure rate each shipped item costs 1/(1&nbsp;&minus;&nbsp;0.25) = 1.33 coding passes, about 60 agent-minutes, so 3 agents can push roughly 72 items a day - comfortably above the ~58 arriving. One reviewer at 30 minutes each caps the whole system at 48 a day. Review is the constraint. Doubling the agents moves nothing except where the pile sits; a second reviewer nearly doubles throughput. That is Goldratt's theory of constraints, and the sim lets you feel it in about thirty seconds - the reviewer's meter pins at 100% while the agents idle. Then push CI failure to 50% and watch the constraint migrate: each item now costs two coding passes, and the agents' meter is the one that saturates.</p>
+            <p>The arithmetic behind what the sliders show, with units spelled out. Let <em>p</em> be the CI failure probability - a unitless fraction between 0 and 1, here 0.25. Because a failed run loops straight back to the coding agent and tries again, the number of coding attempts a single shipped item needs is a geometric random variable ("keep retrying until one passes"), whose mean is 1/(1&nbsp;&minus;&nbsp;<em>p</em>). At <em>p</em>&nbsp;=&nbsp;0.25 that is 1/0.75&nbsp;&asymp;&nbsp;<strong>1.33 coding attempts per shipped item</strong> (a count, not a time). Each attempt averages 45 <strong>agent-minutes</strong>, so one shipped item burns 1.33&nbsp;&times;&nbsp;45&nbsp;&asymp;&nbsp;<strong>60 agent-minutes</strong> of coding.</p>
+
+            <p>Now convert to a daily rate. One agent has 1,440 minutes/day, so it clears 1,440&nbsp;&divide;&nbsp;60&nbsp;=&nbsp;<strong>24 items/day</strong>; three agents give <strong>~72 items/day</strong>. Work arrives every 25 minutes on average, or 1,440&nbsp;&divide;&nbsp;25&nbsp;&asymp;&nbsp;<strong>58 items/day</strong>, so the coding station keeps up with room to spare. One reviewer at 30 minutes each handles only 1,440&nbsp;&divide;&nbsp;30&nbsp;=&nbsp;<strong>48 items/day</strong> - below the 58 arriving. Review is the constraint. Doubling the agents moves nothing except where the pile sits; a second reviewer (to 96/day) nearly doubles real throughput. That is Goldratt's theory of constraints, and the sim lets you feel it in about thirty seconds - the reviewer's meter pins at 100% while the agents idle. Then push CI failure to <em>p</em>&nbsp;=&nbsp;0.5 and watch the constraint migrate: 1/(1&nbsp;&minus;&nbsp;0.5)&nbsp;=&nbsp;2 coding attempts per item doubles the coding load to ~90 agent-minutes/item, three agents now supply only ~48/day, and the agents' meter is the one that saturates.</p>
 
             <h2>What I'll build</h2>
 
@@ -1158,9 +1297,9 @@
 
             <ol>
                 <li><strong>Mermaid in ADRs and PR bodies, written by agents, starting now.</strong> It renders on GitHub with no build step, and the review artifact is a text diff (Fig. 1).</li>
-                <li><strong>A canonical YAML process model with a JSON Schema</strong> in the factory repo. CI validates it and regenerates the Mermaid and SVG exports - the Fig. 2 discipline, enforced by a pipeline instead of willpower.</li>
-                <li><strong>React Flow (or Svelte Flow) over an SSE event stream</strong> when the factory needs a live floor view - design, live, and replay modes over the same graph. Fig. 3 is the first taste; Fig. 4's XState machines supply the executable lifecycles behind the nodes.</li>
-                <li><strong>A grown-up Fig. 5, fed by the same YAML,</strong> when capacity questions get real: how many agents, how many reviewers, what a model-provider outage does to cycle time.</li>
+                <li><strong>A canonical YAML process model with a JSON Schema</strong> in the factory repo. CI validates it and regenerates the Mermaid and SVG exports - the Fig. 3 discipline, enforced by a pipeline instead of willpower.</li>
+                <li><strong>React Flow (or Svelte Flow) over an SSE event stream</strong> when the factory needs a live floor view - design, live, and replay modes over the same graph. Fig. 4 is the first taste; Fig. 5's XState machines supply the executable lifecycles behind the nodes.</li>
+                <li><strong>A grown-up Fig. 6, fed by the same YAML,</strong> when capacity questions get real: how many agents, how many reviewers, what a model-provider outage does to cycle time.</li>
                 <li><strong>No Siemens license.</strong> The concepts transfer; the tooling doesn't.</li>
             </ol>
 
@@ -1170,7 +1309,7 @@
 
             <div class="fig" id="fig4">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 6 &middot; Pass the quiz before you merge</span>
+                    <span class="fig-title">Fig. 7 &middot; Pass the quiz before you merge</span>
                 </div>
                 <div class="fig-body">
                     <div class="qz">
@@ -1192,7 +1331,7 @@
                         <p class="expl">Owners and reviews slow the rot; they don't stop it. A projection regenerated in CI cannot drift, because there is nothing to hand-edit.</p>
                     </div>
                     <div class="qz">
-                        <p class="q">3. In Fig. 5, review is saturated at one reviewer. You double the coding agents from 3 to 6. Deploys per day go&hellip;</p>
+                        <p class="q">3. In Fig. 6, review is saturated at one reviewer. You double the coding agents from 3 to 6. Deploys per day go&hellip;</p>
                         <div class="opts">
                             <button type="button" class="opt">Up roughly 2&times;</button>
                             <button type="button" class="opt">Up maybe 50%</button>
@@ -1216,7 +1355,7 @@
                             <button type="button" class="opt" data-correct>2&times;</button>
                             <button type="button" class="opt">Nothing - the same item just waits longer</button>
                         </div>
-                        <p class="expl">Expected attempts per shipped item is 1/(1&nbsp;&minus;&nbsp;p): at p = 0.5, two full coding passes each. Rework is a multiplier on whatever station sits upstream of the failing check.</p>
+                        <p class="expl">The expected number of coding attempts per shipped item is 1/(1&nbsp;&minus;&nbsp;<em>p</em>), where <em>p</em> is the CI failure probability (a unitless fraction). It is the mean of a geometric distribution - retry until one passes. At <em>p</em>&nbsp;=&nbsp;0.5 that is 1/0.5&nbsp;=&nbsp;2 attempts per item, so the coding agents do twice the work per item that actually ships. Rework is a multiplier on the load at whatever station sits upstream of the failing check - here, coding.</p>
                     </div>
                     <p id="qzTally">0 of 5 answered.</p>
                 </div>
@@ -1224,10 +1363,36 @@
 
             <h2>What's still open</h2>
 
-            <p>Litt flags his own caveat: interactive figures can be a crutch. Did you learn queueing behavior just now, or did you move sliders? The quiz is a partial check, and my honest answer for myself is "partly" - I trust the 1/(1&nbsp;&minus;&nbsp;p) arithmetic because I derived it, and I trust the bottleneck intuition more because I watched the meter pin. The figures practice what they preach to different degrees: Figs. 1 through 4 run real libraries over real generated source - mermaid.js draws the diagrams, React Flow the live floor view, XState the executable lifecycle - while the factory simulation (Fig. 5) is hand-built vanilla SVG, since discrete-event simulation is the one piece of the stack with no drop-in browser library. The real test is whether the factory's diagrams still match the factory six months from now, and that one only time can grade.</p>
+            <p>Litt flags his own caveat: interactive figures can be a crutch. Did you learn queueing behavior just now, or did you move sliders? The quiz is a partial check, and my honest answer for myself is "partly" - I trust the 1/(1&nbsp;&minus;&nbsp;p) arithmetic because I derived it, and I trust the bottleneck intuition more because I watched the meter pin. The figures practice what they preach to different degrees: Figs. 1 through 5 run real tools over real generated source - mermaid.js and Graphviz-via-viz-js draw diagrams in the browser, Kroki renders the D2, React Flow is the live floor view, XState the executable lifecycle - while the factory simulation (Fig. 6) is hand-built vanilla SVG, since discrete-event simulation is the one piece of the stack with no drop-in browser library. The real test is whether the factory's diagrams still match the factory six months from now, and that one only time can grade.</p>
+
+            <h2>Sources</h2>
+
+            <div class="sources">
+                <h3>Ideas and authorities</h3>
+                <ul>
+                    <li>Perplexity model council on process diagramming - <span class="cite-title">GPT-5.6 Sol, Claude Opus 4.8, Grok 4.5 Low</span> (my own prompt and notes, 2026-07-14). The "layered model &rarr; projections" architecture, the Mermaid/D2/Graphviz/React&nbsp;Flow/XState/DES recommendations, and the "borrow DES concepts, not the suites" advice are theirs.</li>
+                    <li>Geoffrey Litt, <span class="cite-title">"Understanding: the New Bottleneck"</span> (talk; my notes) - understanding as the scarce resource, the quiz-before-merge rule, interactive figures as both tool and crutch. <a href="https://www.geoffreylitt.com/" rel="noopener">geoffreylitt.com</a></li>
+                    <li>Margaret-Anne Storey - <span class="cite-title">cognitive debt</span>, the human-understanding deficit that accrues when AI writes the code.</li>
+                    <li>Andy Matuschak, <span class="cite-title">"Why Books Don't Work"</span> (2019) - reading produces the feeling of understanding without the retention. <a href="https://andymatuschak.org/books/" rel="noopener">andymatuschak.org/books</a></li>
+                    <li>Seymour Papert, <span class="cite-title">Mindstorms: Children, Computers, and Powerful Ideas</span> (1980) - "Mathland," the micro-world you learn by inhabiting.</li>
+                    <li>Alan Kay, <span class="cite-title">"A Personal Computer for Children of All Ages"</span> (1972) - the computer as a tool that levels its user up.</li>
+                    <li>Richard White &amp; Richard Gunstone, <span class="cite-title">Probing Understanding</span> (1992) - the predict-observe-explain teaching move used before Fig. 6.</li>
+                    <li>Eliyahu M. Goldratt, <span class="cite-title">The Goal</span> (1984) - the theory of constraints Fig. 6 lets you feel: throughput is set by the bottleneck alone.</li>
+                </ul>
+                <h3>Tools demonstrated or referenced</h3>
+                <ul>
+                    <li><span class="cite-title">Mermaid</span> (Figs. 1, 3, and the Fig. 5 diagram) - <a href="https://mermaid.js.org/" rel="noopener">mermaid.js.org</a>, editor at <a href="https://mermaid.live" rel="noopener">mermaid.live</a></li>
+                    <li><span class="cite-title">D2</span> by Terrastruct (Fig. 2, rendered via Kroki) - <a href="https://d2lang.com/" rel="noopener">d2lang.com</a></li>
+                    <li><span class="cite-title">Graphviz / DOT</span> via viz-js WASM (Fig. 2) - <a href="https://graphviz.org/" rel="noopener">graphviz.org</a>, <a href="https://viz-js.com/" rel="noopener">viz-js.com</a></li>
+                    <li><span class="cite-title">Kroki</span> diagram-rendering service (Fig. 2's D2) - <a href="https://kroki.io/" rel="noopener">kroki.io</a></li>
+                    <li><span class="cite-title">React Flow</span> / @xyflow/react (Fig. 4) - <a href="https://reactflow.dev/" rel="noopener">reactflow.dev</a></li>
+                    <li><span class="cite-title">XState</span> / Stately (Fig. 5) - <a href="https://stately.ai/docs/xstate" rel="noopener">stately.ai/docs/xstate</a>, visualizer at <a href="https://stately.ai/viz" rel="noopener">stately.ai/viz</a></li>
+                    <li>Discrete-event simulation, the discipline behind Fig. 6 - <span class="cite-title">Siemens Plant Simulation, FlexSim, AnyLogic</span>.</li>
+                </ul>
+            </div>
 
             <div class="ai-note">
-                Drafted from my Perplexity model-council notes on process diagramming (GPT-5.6 Sol, Claude Opus 4.8, Grok 4.5 Low; 2026-07-14) and my notes on Geoffrey Litt's talk "Understanding: the New Bottleneck," with help from Claude. The live figures run real libraries in your browser: mermaid.js v11 (Figs. 1, 2, and the Fig. 4 diagram, from jsdelivr), React Flow v12 and XState v5 (Figs. 3 and 4, from esm.sh), each themed with the site's CSS variables and each with a hand-built fallback if its CDN is unreachable. The factory simulation and quiz are hand-built inline SVG and vanilla JavaScript. The decisions and the factory are mine; the prose is collaborative.
+                Drafted from my Perplexity model-council notes on process diagramming (GPT-5.6 Sol, Claude Opus 4.8, Grok 4.5 Low; 2026-07-14) and my notes on Geoffrey Litt's talk "Understanding: the New Bottleneck," with help from Claude. The live figures run real tools: mermaid.js v11 (Figs. 1, 3, and the Fig. 5 diagram, from jsdelivr), Graphviz via viz-js and D2 via the Kroki service (Fig. 2), and React Flow v12 and XState v5 (Figs. 4 and 5, from esm.sh), each themed with the site's CSS variables and each with a hand-built or noted fallback if its CDN is unreachable. The factory simulation and quiz are hand-built inline SVG and vanilla JavaScript. The decisions and the factory are mine; the prose is collaborative.
             </div>
         </article>
 
@@ -1318,7 +1483,64 @@
             f1deb = setTimeout(applyF1, 350);
         });
 
-        /* ---------- Fig. 2: one model, two projections ---------- */
+        /* ---------- Fig. 2: D2 (Kroki) + Graphviz DOT (viz-js, in-browser) ---------- */
+        function effectiveTheme() {
+            var d = document.documentElement.getAttribute('data-theme');
+            if (d === 'dark' || d === 'light') return d;
+            return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        }
+        var d2img = document.getElementById('d2img');
+        function setD2Theme() {
+            d2img.src = d2img.getAttribute(effectiveTheme() === 'dark' ? 'data-dark' : 'data-light');
+        }
+        setD2Theme();
+
+        var vizInstance = null, gvLoaded = false, gvDeb;
+        var gvsrc = document.getElementById('gvsrc');
+        var gvout = document.getElementById('gvout');
+        var gverr = document.getElementById('gverr');
+        function renderGV() {
+            if (!vizInstance) return;
+            try {
+                var svg = vizInstance.renderSVGElement(gvsrc.value);
+                gvout.innerHTML = '';
+                gvout.appendChild(svg);
+                gverr.textContent = '';
+            } catch (e) {
+                gverr.textContent = 'Graphviz: ' + String((e && e.message) || e).split('\n')[0];
+            }
+        }
+        function loadGraphviz() {
+            if (gvLoaded) return;
+            gvLoaded = true;
+            import('https://esm.sh/@viz-js/viz@3.11.0').then(function (mod) {
+                return mod.instance();
+            }).then(function (viz) {
+                vizInstance = viz;
+                renderGV();
+            }).catch(function (err) {
+                gvLoaded = false;
+                var hint = document.getElementById('gvhint');
+                if (hint) hint.textContent = 'Could not load viz-js from esm.sh. The Graphviz source above still renders anywhere dot runs.';
+            });
+        }
+        gvsrc.addEventListener('input', function () {
+            clearTimeout(gvDeb);
+            gvDeb = setTimeout(renderGV, 350);
+        });
+        if ('IntersectionObserver' in window) {
+            var gvObs = new IntersectionObserver(function (entries) {
+                if (entries.some(function (e) { return e.isIntersecting; })) {
+                    gvObs.disconnect();
+                    loadGraphviz();
+                }
+            }, { rootMargin: '200px' });
+            gvObs.observe(document.getElementById('figdialects'));
+        } else {
+            loadGraphviz();
+        }
+
+        /* ---------- Fig. 3: one model, two projections ---------- */
         var f2 = { gate: false, reviewCap: 1 };
         var f2gate = document.getElementById('f2gate');
         var f2cap = document.getElementById('f2cap');
@@ -1418,6 +1640,7 @@
             var onThemeChange = function () {
                 if (MM) { applyF1(); renderF2({ quiet: true }); if (window.__xsReady) window.__xsRenderViz(); }
                 if (window.__rfRetheme) window.__rfRetheme();
+                setD2Theme();
             };
             new MutationObserver(onThemeChange).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
             if (window.matchMedia) {
@@ -1993,7 +2216,7 @@
                         var verdict;
                         if (correctCount === 5) verdict = 'Merge approved.';
                         else if (correctCount === 4) verdict = 'Merge approved, with a comment.';
-                        else if (correctCount === 3) verdict = 'Request changes: re-run Fig. 3 first.';
+                        else if (correctCount === 3) verdict = 'Request changes: re-run Fig. 6 first.';
                         else verdict = 'Blocked: per Litt’s rule, no merge until the quiz passes. Scroll back up.';
                         tally.textContent = 'Score: ' + correctCount + ' of ' + total + '. ' + verdict;
                     }
