@@ -466,6 +466,165 @@
             display: block;
         }
 
+        /* Fig. 3 - React Flow */
+
+        .rf-mount {
+            position: relative;
+            height: 380px;
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            overflow: hidden;
+            background: var(--soft);
+        }
+
+        .rf-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            text-align: center;
+            padding: 1.2rem;
+        }
+
+        .rf-placeholder p {
+            max-width: 30rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .rf-load {
+            font: inherit;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.45rem 1.1rem;
+            border: 1px solid var(--brand);
+            background: var(--brand);
+            color: var(--brand-ink);
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .rf-load:hover,
+        .rf-load:focus-visible { opacity: 0.9; }
+
+        .rf-err { color: var(--brand); font-size: 0.84rem; min-height: 1em; margin: 0; }
+
+        /* React Flow theming into the site palette */
+        .rf-mount .react-flow__attribution { display: none; }
+        .rf-mount .react-flow__node-default,
+        .rf-mount .react-flow__node {
+            font-family: 'Source Sans 3', Arial, sans-serif;
+            font-size: 11.5px;
+            font-weight: 600;
+            border-radius: 8px;
+            width: 96px;
+            padding: 7px 4px;
+            box-shadow: none;
+            text-align: center;
+        }
+        .rf-mount .react-flow__controls-button {
+            background: var(--surface);
+            border-bottom: 1px solid var(--rule);
+            color: var(--ink);
+            fill: var(--ink);
+        }
+        .rf-mount .react-flow__controls { box-shadow: 0 1px 6px rgba(0,0,0,0.15); }
+        .rf-mount .react-flow__panel.rf-toolbar {
+            display: flex;
+            gap: 0.4rem;
+            margin: 8px;
+        }
+        .rf-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 0.9rem;
+            margin-top: 0.7rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+        .rf-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+        .rf-swatch { width: 0.8rem; height: 0.8rem; border-radius: 3px; border: 1px solid var(--rule); }
+        .rf-sw-idle { background: var(--soft); }
+        .rf-sw-run { background: var(--brand); }
+        .rf-sw-done { background: var(--diff-add-bg); border-color: var(--diff-add-ink); }
+
+        /* Fig. 4 - XState */
+
+        .xs-state {
+            font-size: 0.9rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .xs-state strong {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 1.05rem;
+            color: var(--brand);
+        }
+
+        .xs-events {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.8rem;
+            min-height: 1.9rem;
+        }
+
+        .xs-ev {
+            font: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            padding: 0.3rem 0.7rem;
+            border: 1px solid var(--brand);
+            background: var(--surface);
+            color: var(--brand);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .xs-ev:hover,
+        .xs-ev:focus-visible { background: var(--brand); color: var(--brand-ink); }
+
+        .xs-final {
+            font-size: 0.86rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .xs-viz { margin-bottom: 0.8rem; overflow-x: auto; }
+
+        .xs-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .xs-chip {
+            font-size: 0.8rem;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            padding: 0.25rem 0.6rem;
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            color: var(--muted);
+            background: var(--soft);
+        }
+        .xs-chip.on {
+            border-color: var(--brand);
+            background: var(--brand);
+            color: var(--brand-ink);
+        }
+
+        .xs-log {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.78rem;
+            color: var(--muted);
+            max-height: 6.5rem;
+            overflow-y: auto;
+            border-top: 1px dashed var(--rule);
+            padding-top: 0.55rem;
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
         /* Figure 2 - projections */
 
         .f2-panel {
@@ -726,7 +885,7 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Software Factory</div>
             <h1 class="title">The Diagram Is Not the Model</h1>
-            <p class="meta"><strong>July 15, 2026</strong> &middot; ~2,000 words &middot; 3 live figures and a quiz</p>
+            <p class="meta"><strong>July 15, 2026</strong> &middot; ~2,400 words &middot; 5 live figures and a quiz</p>
 
             <p>The most useful thing I learned researching diagramming tools for the software factory is a rule: <strong>the diagram is never the source of truth.</strong> It is a projection of a model that lives somewhere else - a YAML file, a state machine, an event log - and almost every good tooling decision falls out of that rule.</p>
 
@@ -849,9 +1008,48 @@
 
             <p>On animation the three models split by target - Claude Opus 4.8 suggested D3 with GSAP for interactive views and Manim for rendered explainer video, the other two favored React Flow's animated edges driven by live events - but they agreed on the principle: animation should encode state or time, never garnish. Pulse an edge when an artifact moves. Color a node by running, blocked, failed. Replay yesterday's incident by scrubbing the event log. GPT-5.6 Sol framed it as three modes of one viewer: <em>design</em> (edit the intended process), <em>live</em> (watch current runs), <em>replay</em> (scrub history).</p>
 
-            <p>The tools themselves have live demonstrations worth ten paragraphs: <a href="https://reactflow.dev/examples" rel="noopener">reactflow.dev/examples</a> runs draggable node graphs with animated edges in the browser, <a href="https://stately.ai/viz" rel="noopener">stately.ai/viz</a> executes XState statecharts as you click through their transitions, and <a href="https://mermaid.live" rel="noopener">mermaid.live</a> is the full editor for the same renderer Figs. 1 and 2 call on this page.</p>
+            <p>That live operational view is what React Flow is for, so here is a real one. The graph below is the actual React Flow library running in your browser: drag the nodes, pan and zoom, and step a work item through the pipeline. The node with the artifact turns brand-colored (running), finished stations go green (done), and only the edge the work is crossing animates. That is the whole discipline - the color and the motion carry state, nothing decorates.</p>
 
-            <p>The animation worth building first is the token simulation: every work item is a dot, dots queue at stations, and capacity limits how many move at once. Which brings us to the last idea, because a token simulation is not really a diagram at all.</p>
+            <div class="fig" id="figrf">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 3 &middot; The live floor view (real React Flow)</span>
+                </div>
+                <div class="fig-body">
+                    <div class="rf-mount" id="rfmount">
+                        <div class="rf-placeholder" id="rfplaceholder">
+                            <p>A real <a href="https://reactflow.dev" rel="noopener">React Flow</a> graph - draggable nodes, animated edges, nodes colored by run state. It loads React and React Flow on demand (about 400&nbsp;KB from esm.sh), so it is behind a button rather than on every page view.</p>
+                            <button type="button" class="rf-load" id="rfload">&#9654; Load the live React Flow demo</button>
+                            <p class="rf-err" id="rferr"></p>
+                        </div>
+                    </div>
+                    <div class="rf-legend" aria-hidden="true">
+                        <span><span class="rf-swatch rf-sw-idle"></span> queued</span>
+                        <span><span class="rf-swatch rf-sw-run"></span> running</span>
+                        <span><span class="rf-swatch rf-sw-done"></span> done</span>
+                    </div>
+                </div>
+                <div class="fig-caption">The genuine <code>@xyflow/react</code> package (v12), the same node-graph library the council recommended for the interactive floor view, loaded from esm.sh and themed with this site's CSS variables. "Advance a work item" walks a token through the stations; drag any node to reposition it. This is the design/live view - a runtime SSE event stream would drive the same colors and edge pulses in production.</div>
+            </div>
+
+            <p>A workflow graph answers "what stations exist"; it does not answer "what states may one work item legally be in, and which transitions are allowed?" That is a state machine, and the council's advice was to make it executable so the picture can't drift from the rules. Below is a real XState v5 machine running in your browser - the request lifecycle from GPT-5.6 Sol's list. The buttons are not decoration: they are exactly the transitions the machine says are legal from the current state, computed live with <code>snapshot.can(...)</code>. Try to skip review, or deploy from <code>implementing</code> - you can't, because the machine forbids it.</p>
+
+            <div class="fig" id="figxs">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 4 &middot; An executable lifecycle (real XState)</span>
+                    <button type="button" class="ctl-btn" id="xsreset">Reset</button>
+                </div>
+                <div class="fig-body">
+                    <p class="xs-state">Current state: <strong id="xscurrent">loading&hellip;</strong></p>
+                    <div class="xs-events" id="xsevents" aria-label="Legal next transitions"></div>
+                    <div class="xs-viz" id="xsviz"></div>
+                    <pre class="xs-log" id="xslog" aria-live="polite">Transition log:</pre>
+                </div>
+                <div class="fig-caption">One transition list is the single source of truth: it builds the executable <a href="https://stately.ai/docs/xstate" rel="noopener">XState</a> machine <em>and</em> the state diagram above (rendered by mermaid.js, active state highlighted). Change the list in one place and both regenerate - the Fig. 2 projection principle, applied to behavior instead of structure. This is a hand-run version of what <a href="https://stately.ai/viz" rel="noopener">stately.ai/viz</a> does with any machine.</div>
+            </div>
+
+            <p>Those are toy versions of the deeper tools. <a href="https://reactflow.dev/examples" rel="noopener">reactflow.dev/examples</a> shows subflows, minimaps, and elk.js auto-layout; <a href="https://stately.ai/viz" rel="noopener">stately.ai/viz</a> simulates any statechart you paste; <a href="https://mermaid.live" rel="noopener">mermaid.live</a> is the full editor for the renderer Figs. 1 and 2 call on this page.</p>
+
+            <p>The animation worth building first, though, is the token simulation: every work item is a dot, dots queue at stations, and capacity limits how many move at once. Which brings us to the last idea, because a token simulation is not really a diagram at all.</p>
 
             <h2>You can't see a bottleneck in a flowchart</h2>
 
@@ -863,7 +1061,7 @@
 
             <div class="fig" id="fig3">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 3 &middot; Run the factory</span>
+                    <span class="fig-title">Fig. 5 &middot; Run the factory</span>
                     <span id="f3clock">day 0, 00:00</span>
                 </div>
                 <div class="fig-body">
@@ -959,8 +1157,8 @@
             <ol>
                 <li><strong>Mermaid in ADRs and PR bodies, written by agents, starting now.</strong> It renders on GitHub with no build step, and the review artifact is a text diff (Fig. 1).</li>
                 <li><strong>A canonical YAML process model with a JSON Schema</strong> in the factory repo. CI validates it and regenerates the Mermaid and SVG exports - the Fig. 2 discipline, enforced by a pipeline instead of willpower.</li>
-                <li><strong>React Flow (or Svelte Flow) over an SSE event stream</strong> when the factory needs a live floor view - design, live, and replay modes over the same graph.</li>
-                <li><strong>A grown-up Fig. 3, fed by the same YAML,</strong> when capacity questions get real: how many agents, how many reviewers, what a model-provider outage does to cycle time.</li>
+                <li><strong>React Flow (or Svelte Flow) over an SSE event stream</strong> when the factory needs a live floor view - design, live, and replay modes over the same graph. Fig. 3 is the first taste; Fig. 4's XState machines supply the executable lifecycles behind the nodes.</li>
+                <li><strong>A grown-up Fig. 5, fed by the same YAML,</strong> when capacity questions get real: how many agents, how many reviewers, what a model-provider outage does to cycle time.</li>
                 <li><strong>No Siemens license.</strong> The concepts transfer; the tooling doesn't.</li>
             </ol>
 
@@ -970,7 +1168,7 @@
 
             <div class="fig" id="fig4">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 4 &middot; Pass the quiz before you merge</span>
+                    <span class="fig-title">Fig. 6 &middot; Pass the quiz before you merge</span>
                 </div>
                 <div class="fig-body">
                     <div class="qz">
@@ -992,7 +1190,7 @@
                         <p class="expl">Owners and reviews slow the rot; they don't stop it. A projection regenerated in CI cannot drift, because there is nothing to hand-edit.</p>
                     </div>
                     <div class="qz">
-                        <p class="q">3. In Fig. 3, review is saturated at one reviewer. You double the coding agents from 3 to 6. Deploys per day go&hellip;</p>
+                        <p class="q">3. In Fig. 5, review is saturated at one reviewer. You double the coding agents from 3 to 6. Deploys per day go&hellip;</p>
                         <div class="opts">
                             <button type="button" class="opt">Up roughly 2&times;</button>
                             <button type="button" class="opt">Up maybe 50%</button>
@@ -1024,10 +1222,10 @@
 
             <h2>What's still open</h2>
 
-            <p>Litt flags his own caveat: interactive figures can be a crutch. Did you learn queueing behavior just now, or did you move sliders? The quiz is a partial check, and my honest answer for myself is "partly" - I trust the 1/(1&nbsp;&minus;&nbsp;p) arithmetic because I derived it, and I trust the bottleneck intuition more because I watched the meter pin. The figures practice what they preach to different degrees: Figs. 1 and 2 run the real mermaid.js renderer over real generated source, while the factory simulation is hand-built vanilla SVG - a stand-in for the React Flow view I haven't built yet. The real test is whether the factory's diagrams still match the factory six months from now, and that one only time can grade.</p>
+            <p>Litt flags his own caveat: interactive figures can be a crutch. Did you learn queueing behavior just now, or did you move sliders? The quiz is a partial check, and my honest answer for myself is "partly" - I trust the 1/(1&nbsp;&minus;&nbsp;p) arithmetic because I derived it, and I trust the bottleneck intuition more because I watched the meter pin. The figures practice what they preach to different degrees: Figs. 1 through 4 run real libraries over real generated source - mermaid.js draws the diagrams, React Flow the live floor view, XState the executable lifecycle - while the factory simulation (Fig. 5) is hand-built vanilla SVG, since discrete-event simulation is the one piece of the stack with no drop-in browser library. The real test is whether the factory's diagrams still match the factory six months from now, and that one only time can grade.</p>
 
             <div class="ai-note">
-                Drafted from my Perplexity model-council notes on process diagramming (GPT-5.6 Sol, Claude Opus 4.8, Grok 4.5 Low; 2026-07-14) and my notes on Geoffrey Litt's talk "Understanding: the New Bottleneck," with help from Claude. Figs. 1 and 2 render through the real mermaid.js (v11, from jsdelivr) in your browser, with a hand-drawn SVG fallback if the CDN is unreachable; the factory simulation and quiz are hand-built inline SVG and vanilla JavaScript. The decisions and the factory are mine; the prose is collaborative.
+                Drafted from my Perplexity model-council notes on process diagramming (GPT-5.6 Sol, Claude Opus 4.8, Grok 4.5 Low; 2026-07-14) and my notes on Geoffrey Litt's talk "Understanding: the New Bottleneck," with help from Claude. The live figures run real libraries in your browser: mermaid.js v11 (Figs. 1, 2, and the Fig. 4 diagram, from jsdelivr), React Flow v12 and XState v5 (Figs. 3 and 4, from esm.sh), each themed with the site's CSS variables and each with a hand-built fallback if its CDN is unreachable. The factory simulation and quiz are hand-built inline SVG and vanilla JavaScript. The decisions and the factory are mine; the prose is collaborative.
             </div>
         </article>
 
@@ -1210,16 +1408,253 @@
             f1editbtn.style.display = '';
             applyF1();
             renderF2({ quiet: true });
-            var rerender = function () {
-                if (!MM) return;
-                applyF1();
-                renderF2({ quiet: true });
+            if (window.__xsReady) window.__xsRenderViz();
+        };
+
+        /* One theme observer refreshes every library-rendered figure. */
+        (function installThemeObserver() {
+            var onThemeChange = function () {
+                if (MM) { applyF1(); renderF2({ quiet: true }); if (window.__xsReady) window.__xsRenderViz(); }
+                if (window.__rfRetheme) window.__rfRetheme();
             };
-            new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+            new MutationObserver(onThemeChange).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
             if (window.matchMedia) {
-                try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender); } catch (e) {}
+                try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', onThemeChange); } catch (e) {}
+            }
+        })();
+
+        /* ---------- Fig. 3: real React Flow (loaded on demand) ---------- */
+        var rfLoaded = false, rfState = { stage: -1 }, rfApi = null, rfThemeTick = 0;
+        var RF_STAGES = ['Plan', 'Code', 'Test', 'Review', 'Deploy'];
+        function rfColors() {
+            return {
+                idle: { background: cssVar('--soft'), color: cssVar('--ink'), border: '1px solid ' + cssVar('--rule') },
+                run: { background: cssVar('--brand'), color: cssVar('--brand-ink'), border: '1px solid ' + cssVar('--brand') },
+                done: { background: cssVar('--diff-add-bg'), color: cssVar('--diff-add-ink'), border: '1px solid ' + cssVar('--diff-add-ink') }
+            };
+        }
+        function loadRFStyles() {
+            return new Promise(function (resolve, reject) {
+                if (document.getElementById('rf-style')) { resolve(); return; }
+                var link = document.createElement('link');
+                link.id = 'rf-style';
+                link.rel = 'stylesheet';
+                link.href = 'https://esm.sh/@xyflow/react@12.3.5/dist/style.css';
+                link.onload = function () { resolve(); };
+                link.onerror = function () { reject(new Error('stylesheet')); };
+                document.head.appendChild(link);
+            });
+        }
+        document.getElementById('rfload').addEventListener('click', function () {
+            var btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Loading React + React Flow…';
+            Promise.all([
+                import('https://esm.sh/react@18.3.1'),
+                import('https://esm.sh/react-dom@18.3.1/client'),
+                import('https://esm.sh/@xyflow/react@12.3.5?deps=react@18.3.1,react-dom@18.3.1'),
+                loadRFStyles()
+            ]).then(function (mods) {
+                mountReactFlow(mods[0], mods[1], mods[2]);
+            }).catch(function (err) {
+                btn.disabled = false;
+                btn.textContent = '▶ Load the live React Flow demo';
+                document.getElementById('rferr').textContent =
+                    'Could not load React Flow from esm.sh (' + (err && err.message ? err.message.split('\n')[0] : 'network') +
+                    '). The library lives at reactflow.dev/examples.';
+            });
+        });
+        function mountReactFlow(ReactNS, clientNS, RF) {
+            var React = ReactNS.default;
+            var useState = ReactNS.useState, useCallback = ReactNS.useCallback, useEffect = ReactNS.useEffect;
+            var h = React.createElement;
+            var useNodesState = RF.useNodesState, useEdgesState = RF.useEdgesState;
+            var baseNodes = RF_STAGES.map(function (name, i) {
+                return { id: name, position: { x: i * 116, y: 40 }, data: { label: name }, sourcePosition: 'right', targetPosition: 'left' };
+            });
+            var baseEdges = [];
+            for (var i = 1; i < RF_STAGES.length; i++) {
+                baseEdges.push({ id: 'e' + i, source: RF_STAGES[i - 1], target: RF_STAGES[i] });
+            }
+            baseEdges.push({ id: 'efail', source: 'Test', target: 'Code', label: 'fail', style: { strokeDasharray: '5 5' } });
+
+            function styleFor(stage) {
+                var c = rfColors();
+                return function (idx) {
+                    if (stage < 0) return c.idle;
+                    if (idx < stage) return c.done;
+                    if (idx === stage) return c.run;
+                    return c.idle;
+                };
+            }
+            function Flow() {
+                var ns = useNodesState(baseNodes.map(function (n, i) { return Object.assign({}, n, { style: styleFor(-1)(i) }); }));
+                var es = useEdgesState(baseEdges.slice());
+                var nodes = ns[0], setNodes = ns[1], onNodesChange = ns[2];
+                var edges = es[0], setEdges = es[1], onEdgesChange = es[2];
+                var stageState = useState(-1);
+                var stage = stageState[0], setStage = stageState[1];
+                var themeState = useState(0);
+                var setThemeTick = themeState[1];
+
+                var paint = useCallback(function (st) {
+                    var sf = styleFor(st);
+                    setNodes(function (nd) { return nd.map(function (n) { return Object.assign({}, n, { style: sf(RF_STAGES.indexOf(n.id)) }); }); });
+                    setEdges(function (ed) { return ed.map(function (e) {
+                        var active = e.id === 'e' + st;
+                        return Object.assign({}, e, { animated: active, style: Object.assign({}, e.style, { stroke: active ? cssVar('--brand') : cssVar('--muted') }) });
+                    }); });
+                }, [setNodes, setEdges]);
+
+                // Repaint whenever the stage or theme changes - never reads a stale stage.
+                useEffect(function () { paint(stage); }, [stage, themeState[0], paint]);
+
+                rfApi = {
+                    advance: function () { setStage(function (s) { return Math.min(s + 1, RF_STAGES.length - 1); }); },
+                    reset: function () { setStage(-1); },
+                    retheme: function () { setThemeTick(function (t) { return t + 1; }); }
+                };
+
+                return h('div', { style: { width: '100%', height: '100%' } },
+                    h(RF.ReactFlow, {
+                        nodes: nodes, edges: edges, onNodesChange: onNodesChange, onEdgesChange: onEdgesChange,
+                        fitView: true, fitViewOptions: { padding: 0.15 }, minZoom: 0.2, proOptions: { hideAttribution: true },
+                        nodesConnectable: false, edgesFocusable: false,
+                        onInit: function (inst) {
+                            var fit = function () { inst.fitView({ padding: 0.15 }); };
+                            requestAnimationFrame(function () { requestAnimationFrame(fit); });
+                            setTimeout(fit, 120);
+                        }
+                    },
+                        h(RF.Background, { gap: 16, color: cssVar('--rule') }),
+                        h(RF.Controls, { showInteractive: false }),
+                        h(RF.Panel, { position: 'top-left', className: 'rf-toolbar' },
+                            h('button', { type: 'button', className: 'ctl-btn', onClick: function () { rfApi.advance(); } }, 'Advance a work item'),
+                            h('button', { type: 'button', className: 'ctl-btn', onClick: function () { rfApi.reset(); } }, 'Reset')
+                        )
+                    )
+                );
+            }
+
+            var mount = document.getElementById('rfmount');
+            mount.innerHTML = '';
+            var host = document.createElement('div');
+            host.style.width = '100%';
+            host.style.height = '100%';
+            mount.appendChild(host);
+            var root = clientNS.createRoot(host);
+            root.render(h(Flow));
+            rfLoaded = true;
+            window.__rfRetheme = function () { if (rfApi) rfApi.retheme(); };
+        }
+
+        /* ---------- Fig. 4: real XState (executable lifecycle) ---------- */
+        // One transition list is the single source of truth for machine AND diagram.
+        var LIFECYCLE = [
+            ['requested', 'CLARIFY', 'clarifying'],
+            ['requested', 'PLAN', 'planned'],
+            ['clarifying', 'PLAN', 'planned'],
+            ['clarifying', 'CANCEL', 'closed'],
+            ['planned', 'APPROVE_PLAN', 'implementing'],
+            ['planned', 'CANCEL', 'closed'],
+            ['implementing', 'SUBMIT', 'testing'],
+            ['implementing', 'CANCEL', 'closed'],
+            ['testing', 'PASS', 'awaiting_review'],
+            ['testing', 'FAIL', 'repairing'],
+            ['repairing', 'RESUBMIT', 'testing'],
+            ['repairing', 'GIVE_UP', 'closed'],
+            ['awaiting_review', 'APPROVE', 'deployed'],
+            ['awaiting_review', 'REJECT', 'implementing'],
+            ['deployed', 'OBSERVE', 'closed']
+        ];
+        var xsMod = null, xsActor = null, xsActive = null;
+        function xsStates() {
+            var seen = [];
+            LIFECYCLE.forEach(function (t) { [t[0], t[2]].forEach(function (s) { if (seen.indexOf(s) < 0) seen.push(s); }); });
+            return seen;
+        }
+        function xsEventNames() {
+            var seen = [];
+            LIFECYCLE.forEach(function (t) { if (seen.indexOf(t[1]) < 0) seen.push(t[1]); });
+            return seen;
+        }
+        function xsBuildMachine() {
+            var states = {};
+            xsStates().forEach(function (s) { states[s] = { on: {} }; });
+            LIFECYCLE.forEach(function (t) { states[t[0]].on[t[1]] = t[2]; });
+            states.closed.type = 'final';
+            return xsMod.createMachine({ id: 'request', initial: 'requested', states: states });
+        }
+        function xsDiagramSrc(active) {
+            var lines = ['stateDiagram-v2', '  [*] --> requested'];
+            LIFECYCLE.forEach(function (t) { lines.push('  ' + t[0] + ' --> ' + t[2] + ': ' + t[1]); });
+            lines.push('  closed --> [*]');
+            lines.push('  classDef active fill:' + cssVar('--brand') + ',color:' + cssVar('--brand-ink') + ',stroke:' + cssVar('--brand') + ',stroke-width:2px;');
+            if (active && active !== 'closed') lines.push('  class ' + active + ' active');
+            return lines.join('\n');
+        }
+        window.__xsRenderViz = function () {
+            var viz = document.getElementById('xsviz');
+            if (MM) {
+                mmRender(viz, xsDiagramSrc(xsActive), null);
+            } else {
+                var html = '<div class="xs-chips">' + xsStates().map(function (s) {
+                    return '<span class="xs-chip' + (s === xsActive ? ' on' : '') + '">' + s + '</span>';
+                }).join('') + '</div>';
+                viz.innerHTML = html;
             }
         };
+        function xsRenderControls(snap) {
+            xsActive = typeof snap.value === 'string' ? snap.value : String(snap.value);
+            document.getElementById('xscurrent').textContent = xsActive;
+            var box = document.getElementById('xsevents');
+            box.innerHTML = '';
+            if (snap.status === 'done') {
+                var span = document.createElement('span');
+                span.className = 'xs-final';
+                span.textContent = 'Final state - the work item is closed. Reset to start another.';
+                box.appendChild(span);
+            } else {
+                xsEventNames().forEach(function (ev) {
+                    if (!snap.can({ type: ev })) return;
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'xs-ev';
+                    b.textContent = ev;
+                    b.addEventListener('click', function () {
+                        var from = xsActive;
+                        xsActor.send({ type: ev });
+                        var to = xsActor.getSnapshot().value;
+                        xsLog(from + '  --' + ev + '-->  ' + to);
+                    });
+                    box.appendChild(b);
+                });
+            }
+            window.__xsRenderViz();
+        }
+        function xsLog(line) {
+            var log = document.getElementById('xslog');
+            log.textContent += '\n' + line;
+            log.scrollTop = log.scrollHeight;
+        }
+        function xsStart() {
+            if (xsActor) xsActor.stop();
+            document.getElementById('xslog').textContent = 'Transition log:';
+            xsActor = xsMod.createActor(xsBuildMachine());
+            xsActor.subscribe(function (snap) { xsRenderControls(snap); });
+            xsActor.start();
+        }
+        window.__onXState = function (mod) {
+            xsMod = mod;
+            window.__xsReady = true;
+            xsStart();
+        };
+        window.__xsFailed = function () {
+            document.getElementById('xscurrent').textContent = 'unavailable';
+            document.getElementById('xsevents').innerHTML =
+                '<span class="xs-final">Could not load XState from esm.sh. The library and its visualizer live at stately.ai/viz.</span>';
+        };
+        document.getElementById('xsreset').addEventListener('click', function () { if (xsMod) xsStart(); });
 
         f2gate.addEventListener('click', function () {
             f2.gate = !f2.gate;
@@ -1569,6 +2004,9 @@
         import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')
             .then(function (mod) { window.__onMermaid(mod.default); })
             .catch(function () { /* CDN unreachable: the hand-built fallbacks stay */ });
+        import('https://esm.sh/xstate@5.18.2')
+            .then(function (mod) { window.__onXState(mod); })
+            .catch(function () { if (window.__xsFailed) window.__xsFailed(); });
     </script>
     <script src="/blog/newsletter-widget.js" defer></script>
 </body>
