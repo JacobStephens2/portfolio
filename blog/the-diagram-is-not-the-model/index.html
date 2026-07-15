@@ -416,6 +416,56 @@
             opacity: 1;
         }
 
+        #f1ta {
+            width: 100%;
+            min-height: 176px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            background: var(--code-bg);
+            color: var(--ink);
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 0.8rem 0.9rem;
+            resize: vertical;
+        }
+
+        #f1ta:focus-visible {
+            outline: none;
+            border-color: var(--brand);
+        }
+
+        .mm-err {
+            color: var(--brand);
+            font-size: 0.82rem;
+            margin: 0.4rem 0 0;
+            min-height: 1.2em;
+        }
+
+        #f1renderwrap svg,
+        #f2flow svg {
+            max-width: 100%;
+        }
+
+        .mmd-src {
+            margin-top: 0.6rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .mmd-src summary {
+            cursor: pointer;
+        }
+
+        .mmd-src pre {
+            margin: 0.5rem 0 0;
+            font-size: 0.76rem;
+        }
+
+        #f2flow.as-svg {
+            display: block;
+        }
+
         /* Figure 2 - projections */
 
         .f2-panel {
@@ -427,7 +477,7 @@
 
         .f2-panel:last-child { margin-bottom: 0; }
 
-        .f2-label {
+        .panel-label {
             font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 0.07em;
@@ -676,7 +726,7 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Software Factory</div>
             <h1 class="title">The Diagram Is Not the Model</h1>
-            <p class="meta"><strong>July 15, 2026</strong> &middot; ~1,900 words &middot; 3 live figures and a quiz</p>
+            <p class="meta"><strong>July 15, 2026</strong> &middot; ~2,000 words &middot; 3 live figures and a quiz</p>
 
             <p>The most useful thing I learned researching diagramming tools for the software factory is a rule: <strong>the diagram is never the source of truth.</strong> It is a projection of a model that lives somewhere else - a YAML file, a state machine, an event log - and almost every good tooling decision falls out of that rule.</p>
 
@@ -690,7 +740,7 @@
 
             <p>All three models gave the same first answer: diagram-as-code. LLMs are far better at emitting structured text than at dragging shapes or generating pixel-accurate images, and text is what Git, PRs, and CI already know how to handle. Mermaid is the consensus default - it renders natively on GitHub and in any browser - with D2 as the upgrade when Mermaid's layout gets cramped, and Graphviz DOT for heavily branching trees.</p>
 
-            <p>The argument is easiest to feel as a code review. Below is a five-station release process and a proposal: work that fails CI should loop back to the coding agent instead of dying. Render the change.</p>
+            <p>The argument is easiest to feel as a code review. Below is a five-station release process written in Mermaid's flowchart syntax, and a proposal: work that fails CI should loop back to the coding agent instead of dying. The text is the artifact; the picture is whatever a Mermaid renderer draws from it. Render the change.</p>
 
             <div class="fig" id="fig1">
                 <div class="fig-head">
@@ -698,16 +748,28 @@
                     <span class="ctl-row" style="margin:0">
                         <button type="button" class="ctl-btn" id="f1before" aria-pressed="true">Rendered: before</button>
                         <button type="button" class="ctl-btn" id="f1after" aria-pressed="false">after</button>
+                        <button type="button" class="ctl-btn" id="f1editbtn" aria-pressed="false" style="display:none">edit it yourself</button>
                     </span>
                 </div>
                 <div class="fig-body">
                     <div class="f1-grid">
-                        <pre class="diff" aria-label="Mermaid source diff"><code> flowchart LR
+                        <div id="f1srcpanel">
+                            <div class="panel-label">The artifact under review - Mermaid source, as a diff</div>
+                            <pre class="diff" aria-label="Mermaid source diff"><code> flowchart LR
    Plan --&gt; Code
    Code --&gt; Test
    Test --&gt; Review
-<span class="add">+  Test -- fail --&gt; Code</span>   Review --&gt; Deploy</code></pre>
-                        <div class="fig-scroll">
+<span class="add">+  Test -- fail --&gt; Code
+</span>   Review --&gt; Deploy</code></pre>
+                        </div>
+                        <div id="f1editwrap" style="display:none">
+                            <div class="panel-label">Your source - edits render live</div>
+                            <textarea id="f1ta" rows="8" spellcheck="false" aria-label="Editable Mermaid source"></textarea>
+                            <p class="mm-err" id="f1err" aria-live="polite"></p>
+                        </div>
+                        <div>
+                            <div class="panel-label">What a Mermaid renderer draws from that text</div>
+                            <div class="fig-scroll" id="f1renderwrap">
                             <svg id="f1svg" viewBox="0 0 620 168" width="620" style="min-width:540px; max-width:100%; height:auto; display:block;" role="img" aria-label="Flowchart of Plan, Code, Test, Review, Deploy. Toggling to after adds a fail edge from Test back to Code.">
                                 <defs>
                                     <marker id="f1a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -737,10 +799,11 @@
                                     <text class="f1-late" x="241" y="148" text-anchor="middle" style="fill:var(--brand); font-size:12px; font-weight:600;">fail</text>
                                 </g>
                             </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="fig-caption">The entire review artifact for this process change is the one highlighted line. The picture regenerates; nobody redraws anything, and nobody reviews pixels.</div>
+                <div class="fig-caption">This is the real thing: the bottom panel is drawn in your browser by mermaid.js (v11, loaded from jsdelivr) from exactly the text above, the same renderer GitHub runs on a <code>```mermaid</code> block. Hit "edit it yourself" and change a label, add a station, or break the syntax and watch the parse error. If the CDN is unreachable, a hand-drawn copy of the same output stands in and the toggle still works. Either way, the entire review artifact is the one highlighted line - nobody reviews pixels.</div>
             </div>
 
             <p>Litt's list of explanation techniques includes the literate diff - explanation and artifact as one thing. A Mermaid block in a PR body is the cheapest possible version of that, and agents can emit it today.</p>
@@ -765,25 +828,28 @@
                         </span>
                     </div>
                     <div class="f2-panel" id="f2p-json">
-                        <div class="f2-label">The model (canonical - this is what an agent edits)</div>
+                        <div class="panel-label">The model (canonical - this is what an agent edits)</div>
                         <pre id="f2json"></pre>
                     </div>
                     <div class="f2-panel" id="f2p-flow">
-                        <div class="f2-label">Projection 1 - flowchart</div>
+                        <div class="panel-label">Projection 1 - flowchart, generated from the model</div>
                         <div class="pill-flow" id="f2flow"></div>
+                        <details class="mmd-src"><summary>Generated Mermaid source</summary><pre id="f2mmdsrc"></pre></details>
                     </div>
                     <div class="f2-panel" id="f2p-table">
-                        <div class="f2-label">Projection 2 - station table</div>
+                        <div class="panel-label">Projection 2 - station table</div>
                         <div id="f2table"></div>
                         <p class="f2-policy" id="f2policy"></p>
                     </div>
                 </div>
-                <div class="fig-caption">Two independent render functions over one JSON object. Neither picture can disagree with the model, because neither picture stores anything. This is GPT-5.6 Sol's layered architecture in miniature: canonical model at the bottom, generated views above it.</div>
+                <div class="fig-caption">Two independent projections of one JSON object. Projection 1 is the full pipeline the post recommends, running live: the model is serialized to Mermaid source (expand it above) and that text is rendered by mermaid.js in your browser. Neither picture can disagree with the model, because neither picture stores anything. This is GPT-5.6 Sol's layered architecture in miniature: canonical model at the bottom, generated views above it.</div>
             </div>
 
             <h2>Animation is state, not decoration</h2>
 
             <p>On animation the three models split by target - Claude Opus 4.8 suggested D3 with GSAP for interactive views and Manim for rendered explainer video, the other two favored React Flow's animated edges driven by live events - but they agreed on the principle: animation should encode state or time, never garnish. Pulse an edge when an artifact moves. Color a node by running, blocked, failed. Replay yesterday's incident by scrubbing the event log. GPT-5.6 Sol framed it as three modes of one viewer: <em>design</em> (edit the intended process), <em>live</em> (watch current runs), <em>replay</em> (scrub history).</p>
+
+            <p>The tools themselves have live demonstrations worth ten paragraphs: <a href="https://reactflow.dev/examples" rel="noopener">reactflow.dev/examples</a> runs draggable node graphs with animated edges in the browser, <a href="https://stately.ai/viz" rel="noopener">stately.ai/viz</a> executes XState statecharts as you click through their transitions, and <a href="https://mermaid.live" rel="noopener">mermaid.live</a> is the full editor for the same renderer Figs. 1 and 2 call on this page.</p>
 
             <p>The animation worth building first is the token simulation: every work item is a dot, dots queue at stations, and capacity limits how many move at once. Which brings us to the last idea, because a token simulation is not really a diagram at all.</p>
 
@@ -958,10 +1024,10 @@
 
             <h2>What's still open</h2>
 
-            <p>Litt flags his own caveat: interactive figures can be a crutch. Did you learn queueing behavior just now, or did you move sliders? The quiz is a partial check, and my honest answer for myself is "partly" - I trust the 1/(1&nbsp;&minus;&nbsp;p) arithmetic because I derived it, and I trust the bottleneck intuition more because I watched the meter pin. The other open question is whether hand-building these figures in vanilla SVG and JavaScript contradicts the post's own advice. I don't think it does - each figure is a small model with render functions over it, which is the thesis in miniature - but the real test is whether the factory's diagrams still match the factory six months from now, and that one only time can grade.</p>
+            <p>Litt flags his own caveat: interactive figures can be a crutch. Did you learn queueing behavior just now, or did you move sliders? The quiz is a partial check, and my honest answer for myself is "partly" - I trust the 1/(1&nbsp;&minus;&nbsp;p) arithmetic because I derived it, and I trust the bottleneck intuition more because I watched the meter pin. The figures practice what they preach to different degrees: Figs. 1 and 2 run the real mermaid.js renderer over real generated source, while the factory simulation is hand-built vanilla SVG - a stand-in for the React Flow view I haven't built yet. The real test is whether the factory's diagrams still match the factory six months from now, and that one only time can grade.</p>
 
             <div class="ai-note">
-                Drafted from my Perplexity model-council notes on process diagramming (GPT-5.6 Sol, Claude Opus 4.8, Grok 4.5 Low; 2026-07-14) and my notes on Geoffrey Litt's talk "Understanding: the New Bottleneck," with help from Claude. The figures are hand-built inline SVG and vanilla JavaScript - no diagram library. The decisions and the factory are mine; the prose is collaborative.
+                Drafted from my Perplexity model-council notes on process diagramming (GPT-5.6 Sol, Claude Opus 4.8, Grok 4.5 Low; 2026-07-14) and my notes on Geoffrey Litt's talk "Understanding: the New Bottleneck," with help from Claude. Figs. 1 and 2 render through the real mermaid.js (v11, from jsdelivr) in your browser, with a hand-drawn SVG fallback if the CDN is unreachable; the factory simulation and quiz are hand-built inline SVG and vanilla JavaScript. The decisions and the factory are mine; the prose is collaborative.
             </div>
         </article>
 
@@ -979,17 +1045,78 @@
         var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         var SVGNS = 'http://www.w3.org/2000/svg';
 
-        /* ---------- Fig. 1: diff toggle ---------- */
+        /* ---------- Real Mermaid (loaded from jsdelivr; hand-built SVG is the fallback) ---------- */
+        var MM = null, mmSeq = 0;
+        function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+        function mmRender(container, src, onErr) {
+            MM.initialize({
+                startOnLoad: false,
+                securityLevel: 'strict',
+                theme: 'base',
+                fontFamily: "'Source Sans 3', Arial, sans-serif",
+                themeVariables: {
+                    primaryColor: cssVar('--soft'),
+                    primaryTextColor: cssVar('--ink'),
+                    primaryBorderColor: cssVar('--rule'),
+                    lineColor: cssVar('--muted'),
+                    textColor: cssVar('--ink'),
+                    edgeLabelBackground: cssVar('--surface'),
+                    fontSize: '14px'
+                },
+                flowchart: { useMaxWidth: true }
+            });
+            var id = 'mm' + (++mmSeq);
+            MM.render(id, src).then(function (out) {
+                container.innerHTML = out.svg;
+                if (onErr) onErr('');
+            }).catch(function (err) {
+                var stray = document.getElementById('d' + id);
+                if (stray) stray.remove();
+                stray = document.getElementById(id);
+                if (stray && !container.contains(stray)) stray.remove();
+                if (onErr) onErr(String((err && err.message) || err).split('\n')[0]);
+            });
+        }
+
+        /* ---------- Fig. 1: diff toggle + live edit ---------- */
+        var F1_BEFORE = 'flowchart LR\n  Plan --> Code\n  Code --> Test\n  Test --> Review\n  Review --> Deploy\n';
+        var F1_AFTER = 'flowchart LR\n  Plan --> Code\n  Code --> Test\n  Test --> Review\n  Test -- fail --> Code\n  Review --> Deploy\n';
+        var f1mode = 'before';
         var f1svg = document.getElementById('f1svg');
         var f1before = document.getElementById('f1before');
         var f1after = document.getElementById('f1after');
-        function setF1(after) {
-            f1svg.classList.toggle('on', after);
-            f1before.setAttribute('aria-pressed', String(!after));
-            f1after.setAttribute('aria-pressed', String(after));
+        var f1editbtn = document.getElementById('f1editbtn');
+        var f1ta = document.getElementById('f1ta');
+        var f1err = document.getElementById('f1err');
+        function applyF1() {
+            f1before.setAttribute('aria-pressed', String(f1mode === 'before'));
+            f1after.setAttribute('aria-pressed', String(f1mode === 'after'));
+            f1editbtn.setAttribute('aria-pressed', String(f1mode === 'edit'));
+            document.getElementById('f1srcpanel').style.display = f1mode === 'edit' ? 'none' : '';
+            document.getElementById('f1editwrap').style.display = f1mode === 'edit' ? '' : 'none';
+            if (MM) {
+                var src = f1mode === 'before' ? F1_BEFORE : (f1mode === 'after' ? F1_AFTER : f1ta.value);
+                mmRender(document.getElementById('f1renderwrap'), src, function (msg) {
+                    f1err.textContent = msg ? 'Mermaid: ' + msg : '';
+                });
+            } else {
+                f1svg.classList.toggle('on', f1mode !== 'before');
+            }
         }
-        f1before.addEventListener('click', function () { setF1(false); });
-        f1after.addEventListener('click', function () { setF1(true); });
+        f1before.addEventListener('click', function () { f1mode = 'before'; applyF1(); });
+        f1after.addEventListener('click', function () { f1mode = 'after'; applyF1(); });
+        f1editbtn.addEventListener('click', function () {
+            if (!f1ta.value) f1ta.value = F1_AFTER;
+            f1mode = 'edit';
+            applyF1();
+            f1ta.focus();
+        });
+        var f1deb;
+        f1ta.addEventListener('input', function () {
+            if (f1mode !== 'edit') return;
+            clearTimeout(f1deb);
+            f1deb = setTimeout(applyF1, 350);
+        });
 
         /* ---------- Fig. 2: one model, two projections ---------- */
         var f2 = { gate: false, reviewCap: 1 };
@@ -1011,11 +1138,32 @@
             };
         }
 
-        function renderF2() {
+        function f2mermaid(m) {
+            var lines = ['flowchart LR'];
+            var idOf = {};
+            m.stations.forEach(function (s, i) {
+                idOf[s.station] = 'n' + i;
+                var cap = (typeof s.capacity === 'number') ? ' ×' + s.capacity : '';
+                lines.push('  n' + i + '["' + s.station + ' (' + s.kind + cap + ')"]');
+            });
+            m.stations.forEach(function (s, i) {
+                if (i > 0) lines.push('  ' + idOf[m.stations[i - 1].station] + ' --> ' + idOf[s.station]);
+            });
+            lines.push('  ' + idOf.Test + ' -- fail --> ' + idOf.Code);
+            return lines.join('\n');
+        }
+
+        function renderF2(opts) {
             var m = f2model();
             document.getElementById('f2json').textContent = JSON.stringify(m, null, 2);
+            document.getElementById('f2mmdsrc').textContent = f2mermaid(m);
 
             var flow = document.getElementById('f2flow');
+            if (MM) {
+                flow.classList.add('as-svg');
+                flow.classList.remove('pill-flow');
+                mmRender(flow, f2mermaid(m));
+            } else {
             flow.innerHTML = '';
             m.stations.forEach(function (s, i) {
                 if (i > 0) {
@@ -1036,6 +1184,7 @@
                 pill.appendChild(kind);
                 flow.appendChild(pill);
             });
+            }
 
             var rows = m.stations.map(function (s) {
                 return '<tr><td>' + s.station + '</td><td>' + s.kind + '</td><td>' + s.capacity + '</td></tr>';
@@ -1046,13 +1195,31 @@
                 'Policy: on test failure, ' + m.policy.onTestFail + ' (max ' + m.policy.maxRetries +
                 ' retries); deploys ' + (m.policy.deployNeedsHumanApproval ? 'require' : 'do not require') + ' human approval.';
 
-            ['f2p-json', 'f2p-flow', 'f2p-table'].forEach(function (id) {
-                var el = document.getElementById(id);
-                el.classList.remove('flash');
-                void el.offsetWidth;
-                el.classList.add('flash');
-            });
+            if (!(opts && opts.quiet)) {
+                ['f2p-json', 'f2p-flow', 'f2p-table'].forEach(function (id) {
+                    var el = document.getElementById(id);
+                    el.classList.remove('flash');
+                    void el.offsetWidth;
+                    el.classList.add('flash');
+                });
+            }
         }
+
+        window.__onMermaid = function (mermaid) {
+            MM = mermaid;
+            f1editbtn.style.display = '';
+            applyF1();
+            renderF2({ quiet: true });
+            var rerender = function () {
+                if (!MM) return;
+                applyF1();
+                renderF2({ quiet: true });
+            };
+            new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+            if (window.matchMedia) {
+                try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender); } catch (e) {}
+            }
+        };
 
         f2gate.addEventListener('click', function () {
             f2.gate = !f2.gate;
@@ -1397,6 +1564,11 @@
             });
         });
     })();
+    </script>
+    <script type="module">
+        import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')
+            .then(function (mod) { window.__onMermaid(mod.default); })
+            .catch(function () { /* CDN unreachable: the hand-built fallbacks stay */ });
     </script>
     <script src="/blog/newsletter-widget.js" defer></script>
 </body>
