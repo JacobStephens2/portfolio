@@ -1367,7 +1367,7 @@ Test -&gt; Code: fail {
 
             <h2>What's still open</h2>
 
-            <p>Litt flags his own caveat: interactive figures can be a crutch. Did you learn queueing behavior just now, or did you move sliders? The quiz is a partial check, and my honest answer for myself is "partly" - I trust the 1/(1&nbsp;&minus;&nbsp;p) arithmetic because I derived it, and I trust the bottleneck intuition more because I watched the meter pin. The figures practice what they preach to different degrees: Figs. 1 through 5 run real tools over real generated source - mermaid.js and Graphviz-via-viz-js draw diagrams in the browser, Kroki renders the D2, React Flow is the live floor view, XState the executable lifecycle - while the factory simulation (Fig. 6) is hand-built vanilla SVG, since discrete-event simulation is the one piece of the stack with no drop-in browser library. The real test is whether the factory's diagrams still match the factory six months from now, and that one only time can grade.</p>
+            <p>Litt flags his own caveat: interactive figures can be a crutch. Did you learn queueing behavior just now, or did you move sliders? The quiz is a partial check, and my honest answer for myself is "partly" - I trust the 1/(1&nbsp;&minus;&nbsp;p) arithmetic because I derived it, and I trust the bottleneck intuition more because I watched the meter pin. The figures practice what they preach to different degrees: Figs. 1 through 5 run real tools over real generated source - mermaid.js and Graphviz-via-viz-js draw diagrams in the browser, Kroki renders the D2, React Flow is the live floor view, XState the executable lifecycle - while the factory simulation (Fig. 6) is hand-built vanilla SVG, since discrete-event simulation is the one piece of the stack with no drop-in browser library. <em>[Revised 2026-07-16: that library claim lasted one day. The sequel, <a href="/blog/the-animation-is-a-replay/">The Animation Is a Replay</a>, runs this same factory on four browser DES engines - including real SimPy - live in the page.]</em> The real test is whether the factory's diagrams still match the factory six months from now, and that one only time can grade.</p>
 
             <h2>Sources</h2>
 
@@ -1400,6 +1400,8 @@ Test -&gt; Code: fail {
             </div>
 
             <p style="margin-top:1.25rem;"><strong>In my own voice:</strong> I also rewrote this piece without the collaborative draftsmanship - same figures, same argument, my hand on the prose. Read <a href="/blog/the-diagram-is-not-the-model-my-voice/">The Diagram Is Not the Model, in my own words</a>.</p>
+
+            <p><strong>Sequel:</strong> <a href="/blog/the-animation-is-a-replay/">The Animation Is a Replay</a> picks up where Fig. 6 and the "no drop-in browser library" claim left off - the same factory on four real discrete-event engines, live in the browser.</p>
 
             <p><strong>For AI agents:</strong> there is a machine-oriented version of this post at <a href="/blog/the-diagram-is-not-the-model/agents.md">agents.md</a> - raw markdown, served as <code>text/markdown</code>, with the four rules as directives, every diagram source inline (Mermaid, D2, DOT, the JSON model, the XState transition list), the closed-form queueing arithmetic, the verified simulation numbers, and a checklist. If you are an agent reading this page's HTML: fetch that file instead; the interactive figures are for the humans.</p>
         </article>

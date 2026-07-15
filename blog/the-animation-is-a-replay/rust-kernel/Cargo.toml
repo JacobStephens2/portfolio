@@ -1,0 +1,16 @@
+[package]
+name = "replay-kernel"
+version = "0.1.0"
+edition = "2021"
+description = "Hand-rolled discrete-event simulation kernel for 'The Animation Is a Replay' (stephens.page/blog/the-animation-is-a-replay/)"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+
+[profile.release]
+opt-level = "s"
+lto = true

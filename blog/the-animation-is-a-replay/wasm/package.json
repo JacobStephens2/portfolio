@@ -1,0 +1,17 @@
+{
+  "name": "replay-kernel",
+  "type": "module",
+  "description": "Hand-rolled discrete-event simulation kernel for 'The Animation Is a Replay' (stephens.page/blog/the-animation-is-a-replay/)",
+  "version": "0.1.0",
+  "license": "MIT",
+  "files": [
+    "replay_kernel_bg.wasm",
+    "replay_kernel.js",
+    "replay_kernel.d.ts"
+  ],
+  "main": "replay_kernel.js",
+  "types": "replay_kernel.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

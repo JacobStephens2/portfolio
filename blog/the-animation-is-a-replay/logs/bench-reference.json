@@ -1,0 +1,73 @@
+{
+ "closedForm": {
+  "arrivalsPerDay": 57.6,
+  "codeMinPerItem": 60,
+  "codeCapacityPerDay": 72,
+  "reviewCapacityPerDay": 48,
+  "predictedDeploysPerDay": 48,
+  "constraint": "review"
+ },
+ "simpyBand": {
+  "n": 20,
+  "mean": 47.946,
+  "sd": 1.838,
+  "band3sd": [
+   42.43,
+   53.46
+  ]
+ },
+ "rows": [
+  {
+   "engine": "ts-kernel",
+   "seed": 42,
+   "deploysPerDay": 46.79,
+   "agentUtil": 0.822,
+   "reviewUtil": 0.982,
+   "reviewQueueEnd": 158,
+   "medianCycleH": 45.4,
+   "events": 5385,
+   "wallMsBuild": 13.5,
+   "hash": "dab40e837b3e70644b21e60366e727c15c0e3ee2d39e7e023e78dcbf4094fa64",
+   "inBand": true
+  },
+  {
+   "engine": "rust-wasm-0.1.0",
+   "seed": 42,
+   "deploysPerDay": 44.79,
+   "agentUtil": 0.736,
+   "reviewUtil": 0.957,
+   "reviewQueueEnd": 139,
+   "medianCycleH": 12.5,
+   "events": 5014,
+   "wallMsBuild": 11.8,
+   "hash": "406362c50383be0ca6099c2d9dd26c2b03633f44a0c127396411228fc4b131a0",
+   "inBand": true
+  },
+  {
+   "engine": "simscript-1.0.37",
+   "seed": 42,
+   "deploysPerDay": 46.57,
+   "agentUtil": 0.811,
+   "reviewUtil": 0.994,
+   "reviewQueueEnd": 156,
+   "medianCycleH": 26.9,
+   "events": 5388,
+   "wallMsBuild": 186.2,
+   "hash": "7af97569a11bae402b7e59c1930b8058cb741096cee36d1614b99f98c3604e6f",
+   "inBand": true
+  },
+  {
+   "engine": "simpy-4.1.2",
+   "seed": 42,
+   "deploysPerDay": 46.21,
+   "agentUtil": 0.79,
+   "reviewUtil": 0.987,
+   "reviewQueueEnd": 153,
+   "medianCycleH": 21.1,
+   "events": 5276,
+   "wallMsBuild": 28.7,
+   "hash": "3dab9d604a3b4e76009d985097d380cb9e944ec2cc71b01931b515be6e6859f3",
+   "inBand": true
+  }
+ ]
+}
