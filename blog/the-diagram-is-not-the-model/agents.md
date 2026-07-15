@@ -5,7 +5,7 @@ canonical_human_version: https://stephens.page/blog/the-diagram-is-not-the-model
 own_voice_version: https://stephens.page/blog/the-diagram-is-not-the-model-my-voice/
 author: Jacob Stephens, with Claude
 date: 2026-07-15
-license: content CC BY 4.0; code snippets MIT
+license: MIT (per the site repository's LICENSE)
 ---
 
 # The Diagram Is Not the Model (for agents)
