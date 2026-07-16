@@ -42,16 +42,16 @@ salabim and Pillow in the browser to generate a genuine animation.
 
 | Path | Purpose |
 |---|---|
-| [`index.html`](index.html) | [Main professional landing page](https://stephens.page/) |
-| [`about.html`](about.html) | [Background, experience, and technical profile](https://stephens.page/about) |
-| [`portfolio.html`](portfolio.html) | [Selected projects and case studies](https://stephens.page/portfolio) |
-| [`apps.html`](apps.html) | [Software and application index](https://stephens.page/apps) |
-| [`blog/`](blog/) | [Canonical human posts and their agent-oriented companions](https://stephens.page/blog/) |
-| [`decisions/`](decisions/) | [Public decision records](https://stephens.page/decisions/) |
-| [`screenshots/`](screenshots/) | Portfolio and project imagery |
-| [`theme.css`](theme.css), [`theme.js`](theme.js) | Shared light/dark theme and persistent theme control |
-| [`contact.html`](contact.html), [`contact-submit.php`](contact-submit.php) | [Contact page](https://stephens.page/contact) and server-side form handler |
-| [`.htaccess`](.htaccess) | Apache routing, redirects, and content-type configuration |
+| [`index.html`](https://stephens.page/) | Main professional landing page |
+| [`about.html`](https://stephens.page/about) | Background, experience, and technical profile |
+| [`portfolio.html`](https://stephens.page/portfolio) | Selected projects and case studies |
+| [`apps.html`](https://stephens.page/apps) | Software and application index |
+| [`blog/`](https://stephens.page/blog/) | Canonical human posts and their agent-oriented companions |
+| [`decisions/`](https://stephens.page/decisions/) | Public decision records |
+| `screenshots/` | Portfolio and project imagery |
+| [`theme.css`](https://stephens.page/theme.css), [`theme.js`](https://stephens.page/theme.js) | Shared light/dark theme and persistent theme control |
+| [`contact.html`](https://stephens.page/contact), `contact-submit.php` | Contact page and server-side form handler |
+| `.htaccess` | Apache routing, redirects, and content-type configuration |
 
 ## Architecture
 
