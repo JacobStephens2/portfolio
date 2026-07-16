@@ -1,40 +1,98 @@
 # stephens.page
 
-Static personal website and portfolio hub for [Jacob Stephens](https://stephens.page).
+Source for [stephens.page](https://stephens.page), my professional website,
+portfolio, decision record, and interactive technical blog.
 
-The site is built with plain HTML, CSS, and a small amount of JavaScript. It serves as a lightweight landing page for professional links, background information, and selected projects.
+The site is static-first: most pages are hand-authored HTML, CSS, and JavaScript
+served directly by Apache. Individual articles can bring the real tools needed
+to prove their argument - including Mermaid, Graphviz, React Flow, XState,
+Pyodide, Rust/WebAssembly, native Python and Rust services, and generated
+simulation artifacts. The main site stays small; the technical posts are allowed
+to be executable.
 
-Color theme follows the system light/dark preference by default. Visitors can override it with the header toggle; the choice is stored in `localStorage` under the key `theme`. Shared assets: `theme.css`, `theme.js`.
+## What lives here
 
-## Live site
+- **Professional profile** - background, experience, technical focus, and ways
+  to connect.
+- **Portfolio and applications** - selected software, experiments, screenshots,
+  and project writeups.
+- **Technical blog** - teaching-first engineering posts with live figures,
+  runnable models, visualizations, sources, and quizzes.
+- **Decision records** - public explanations of technical and product choices.
+- **Agent-oriented artifacts** - canonical blog posts include an `agents.md`
+  companion with operational rules, schemas, verified numbers, checklists, and
+  self-tests that do not require a browser.
 
-https://stephens.page
+## Selected interactive posts
 
-## Pages
+### [The Diagram Is Not the Model](https://stephens.page/blog/the-diagram-is-not-the-model/)
 
-- `index.html` - main landing page with external links
-- `about.html` - background, experience, and technical profile
-- `portfolio.html` - selected projects with screenshots and outbound links
+One canonical process model projected through real Mermaid, D2, Graphviz,
+React Flow, and XState renderers, followed by a discrete-event simulation and a
+quiz.
 
-## Project structure
+### [The Animation Is a Replay](https://stephens.page/blog/the-animation-is-a-replay/)
 
-- `screenshots/` - portfolio preview images
-- `private/` - internal notes, specs, and support scripts
+One software-factory model executed through TypeScript, Rust in WebAssembly and
+native x86-64, SimScript, and SimPy on native CPython and Pyodide. Every engine
+emits one event-log schema; one renderer replays them all. The post also runs
+salabim and Pillow in the browser to generate a genuine animation.
+
+## Repository map
+
+| Path | Purpose |
+|---|---|
+| `index.html` | Main professional landing page |
+| `about.html` | Background, experience, and technical profile |
+| `portfolio.html` | Selected projects and case studies |
+| `apps.html` | Software and application index |
+| `blog/` | Canonical human posts and their agent-oriented companions |
+| `decisions/` | Public decision records |
+| `screenshots/` | Portfolio and project imagery |
+| `theme.css`, `theme.js` | Shared light/dark theme and persistent theme control |
+| `contact.html`, `contact-submit.php` | Contact page and server-side form handler |
+| `.htaccess` | Apache routing, redirects, and content-type configuration |
+
+## Architecture
+
+- Apache serves the static site and extensionless routes.
+- The shared theme follows the system preference until a visitor explicitly
+  chooses light or dark; the choice is stored under `localStorage.theme`.
+- Heavy browser runtimes are loaded only after a reader opts in.
+- Interactive figures keep a useful fallback when a CDN or rendering service is
+  unavailable.
+- A small number of post-specific APIs run behind Apache reverse proxies. Their
+  source and deployment files live beside the post they support.
+- The deployed document tree is intentionally close to the repository tree:
+  inspect the page source and you are looking at the implementation.
 
 ## Local preview
 
-From the repository root:
+For the static pages:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000`.
+Then open [http://localhost:8000](http://localhost:8000).
 
-## Editing
+This preview does not reproduce Apache rewrites, PHP form handling, or
+post-specific native API services. Service setup instructions live with the
+relevant post, for example
+[`blog/the-animation-is-a-replay/server/`](blog/the-animation-is-a-replay/server/).
 
-This project is intentionally simple. Most updates can be made by editing the HTML files directly:
+## Content conventions
 
-- update layout and content in `index.html`, `about.html`, and `portfolio.html`
-- add or replace portfolio images in `screenshots/`
-- keep analytics configuration aligned with `private/specification.md`
+- A human blog post lives at `blog/<slug>/index.html`.
+- Its required agent-oriented version lives at `blog/<slug>/agents.md` and is
+  served as `text/markdown`.
+- Figures run the genuine renderer or library whenever practical and state
+  their execution path in the caption.
+- Published posts include sources, provenance, graceful fallbacks, and
+  headless-browser verification.
+- Shared behavior belongs in the root theme files; article-specific behavior
+  stays with the article.
+
+## License
+
+[MIT](LICENSE)
