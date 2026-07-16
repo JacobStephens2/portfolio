@@ -258,6 +258,13 @@ relocates to sit in front of review, and cycle time gets worse because items now
 wait in a longer review queue. If asked "should we add more coding agents," check
 which station is the constraint first.
 
+The human post's Fig. 6 uses a hand-built SVG simulator by implementation
+choice, not because browsers lack DES libraries. Browser-capable options include
+SimScript, discrete-sim, OESjs, SIM.JS, and SimPy through Pyodide. The sequel
+demonstrates the same factory across four engines and six browser/server
+execution paths, then lets salabim render its own run:
+https://stephens.page/blog/the-animation-is-a-replay/.
+
 ## Checklist - when asked to produce or change a process diagram
 
 1. Ask (or detect) whether a canonical model exists. If yes, edit it, regenerate,
@@ -303,6 +310,7 @@ from which both the XState machine and the stateDiagram are generated.
 - Andy Matuschak, "Why Books Don't Work" (2019) - https://andymatuschak.org/books/
 - Seymour Papert, *Mindstorms* (1980); Alan Kay, "A Personal Computer for Children of All Ages" (1972); White & Gunstone, *Probing Understanding* (1992); Eliyahu Goldratt, *The Goal* (1984).
 - Tools: https://mermaid.js.org · https://d2lang.com · https://graphviz.org · https://kroki.io · https://reactflow.dev · https://stately.ai/docs/xstate
+- Browser DES: https://github.com/Bernardo-Castilho/SimScript · https://www.discrete-sim.dev/ · https://sim4edu.com/oesjs/ · https://pyodide.org/
 
 Canonical human version with the live figures:
 https://stephens.page/blog/the-diagram-is-not-the-model/.
