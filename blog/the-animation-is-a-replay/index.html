@@ -16,15 +16,16 @@
     <link rel="icon" type="image/png" href="/bee-favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Animation Is a Replay | Jacob Stephens</title>
+    <link rel="canonical" href="https://stephens.page/blog/the-animation-is-a-replay/">
     <link rel="alternate" type="text/markdown" href="/blog/the-animation-is-a-replay/agents.md" title="Agent-oriented version (markdown)">
-    <meta name="description" content="One model, four discrete-event simulation engines - a hand-rolled TypeScript kernel, Rust compiled to WebAssembly, SimScript, and real SimPy via Pyodide - all running the same software factory in your browser, all replayed from one event-log schema.">
+    <meta name="description" content="One model, four discrete-event simulation engines, and six execution paths - including Rust and SimPy on both browser and server runtimes - all replayed from one event-log schema.">
     <meta property="og:title" content="The Animation Is a Replay">
-    <meta property="og:description" content="Simulate at full speed, record an event log, and treat every animation as a replay - proven by swapping four simulation engines behind one log schema, live on this page.">
+    <meta property="og:description" content="Simulate at full speed, record an event log, and treat every animation as a replay - proven by four engines across six browser and server execution paths behind one log schema.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://stephens.page/blog/the-animation-is-a-replay/">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="The Animation Is a Replay">
-    <meta name="twitter:description" content="One model, four simulation engines, one event-log schema - live in your browser.">
+    <meta name="twitter:description" content="One model, four simulation engines, six browser-and-server execution paths, one event-log schema.">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
     <script>
@@ -48,11 +49,35 @@
             --bar-bg: #ece6dc;
             --ok-bg: #e4f2e4;
             --ok-ink: #1d5c2a;
+            --syntax-keyword: #9b4d24;
+            --syntax-type: #315f9b;
+            --syntax-function: #0b6b61;
+            --syntax-literal: #7a3e9d;
+            --syntax-string: #1d6b3a;
+            --syntax-comment: #625a52;
         }
 
-        html[data-theme="dark"] { --ok-bg: #1a2a1c; --ok-ink: #a3d3a8; }
+        html[data-theme="dark"] {
+            --ok-bg: #1a2a1c;
+            --ok-ink: #a3d3a8;
+            --syntax-keyword: #e6a270;
+            --syntax-type: #8fb9ff;
+            --syntax-function: #72d1c2;
+            --syntax-literal: #d5a0f0;
+            --syntax-string: #9fd7a5;
+            --syntax-comment: #a89f94;
+        }
         @media (prefers-color-scheme: dark) {
-            html:not([data-theme="light"]):not([data-theme="dark"]) { --ok-bg: #1a2a1c; --ok-ink: #a3d3a8; }
+            html:not([data-theme="light"]):not([data-theme="dark"]) {
+                --ok-bg: #1a2a1c;
+                --ok-ink: #a3d3a8;
+                --syntax-keyword: #e6a270;
+                --syntax-type: #8fb9ff;
+                --syntax-function: #72d1c2;
+                --syntax-literal: #d5a0f0;
+                --syntax-string: #9fd7a5;
+                --syntax-comment: #a89f94;
+            }
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -182,6 +207,7 @@
         .src-chip { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
         .src-ref { color: var(--muted); }
         .src-live { color: var(--ok-ink); background: var(--ok-bg); padding: 0.05rem 0.4rem; border-radius: 4px; }
+        .src-server { color: var(--ok-ink); background: var(--ok-bg); padding: 0.05rem 0.4rem; border-radius: 4px; }
         .row-btn { font: inherit; font-size: 0.78rem; font-weight: 600; padding: 0.18rem 0.6rem; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); border-radius: 999px; cursor: pointer; }
         .row-btn:hover:not(:disabled), .row-btn:focus-visible { border-color: var(--brand); }
         .row-btn:disabled { cursor: default; opacity: 0.55; }
@@ -208,11 +234,34 @@
         .stat { border: 1px solid var(--rule); border-radius: 6px; padding: 0.55rem 0.7rem; }
         .stat .v { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.35rem; font-weight: 700; line-height: 1.2; }
         .stat .l { font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); line-height: 1.35; }
+        .salabim-demo { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px dashed var(--rule); }
+        .salabim-demo-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem 1rem; }
+        .salabim-demo-title { font-family: 'Source Serif 4', Georgia, serif; font-weight: 700; }
+        .salabim-stage { width: min(100%, 640px); aspect-ratio: 16 / 9; margin: 0.8rem auto 0; overflow: hidden; border: 1px solid var(--rule); border-radius: 6px; background: var(--soft); }
+        .salabim-stage img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .salabim-stage img[hidden] { display: none; }
+        .salabim-placeholder { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 0.8rem; padding: 1rem; color: var(--muted); text-align: center; }
+        .salabim-placeholder[hidden] { display: none; }
+        .salabim-placeholder strong { color: var(--ink); font-family: 'Source Serif 4', Georgia, serif; font-size: 1.05rem; }
+        .salabim-pipeline { display: grid; width: min(100%, 540px); grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.35rem; }
+        .salabim-pipeline span { display: grid; min-height: 3.2rem; place-items: center; padding: 0.35rem; border: 1px solid var(--rule); border-radius: 5px; background: var(--surface); color: var(--ink); font-size: 0.72rem; line-height: 1.2; }
+        .salabim-status { min-height: 1.3em; margin: 0.55rem 0 0; color: var(--muted); font-size: 0.82rem; text-align: center; }
 
         /* ---- Fig 5: kernels ---- */
         .kernel-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
         @media (min-width: 640px) { .kernel-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
         .kernel-grid pre { margin-bottom: 0.5rem; font-size: 0.72rem; max-height: 420px; overflow: auto; }
+        #fig5 code.hljs { display: block; background: transparent; }
+        #fig5 .hljs-comment, #fig5 .hljs-quote { color: var(--syntax-comment); font-style: italic; }
+        #fig5 .hljs-keyword, #fig5 .hljs-selector-tag { color: var(--syntax-keyword); font-weight: 600; }
+        #fig5 .hljs-type, #fig5 .hljs-built_in,
+        #fig5 .hljs-title.class_ { color: var(--syntax-type); font-weight: 600; }
+        #fig5 .hljs-title.function_ { color: var(--syntax-function); font-weight: 600; }
+        #fig5 .hljs-literal, #fig5 .hljs-number, #fig5 .hljs-symbol,
+        #fig5 .hljs-bullet, #fig5 .hljs-meta { color: var(--syntax-literal); }
+        #fig5 .hljs-string { color: var(--syntax-string); }
+        #fig5 .hljs-variable, #fig5 .hljs-params, #fig5 .hljs-property,
+        #fig5 .hljs-attr { color: var(--ink); }
         .toy-out { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.78rem; color: var(--muted); white-space: pre-wrap; min-height: 1.2em; }
 
         /* ---- Fig 6: decision tree ---- */
@@ -275,13 +324,13 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Software Factory</div>
             <h1 class="title">The Animation Is a Replay</h1>
-            <p class="meta"><strong>July 16, 2026</strong> &middot; ~2,700 words &middot; 6 figures and a quiz &middot; reading this as an AI agent? <a href="/blog/the-animation-is-a-replay/agents.md">agents.md</a> is for you</p>
+            <p class="meta"><strong>July 16, 2026</strong> &middot; ~3,000 words &middot; 6 figures and a quiz &middot; reading this as an AI agent? <a href="/blog/the-animation-is-a-replay/agents.md">agents.md</a> is for you</p>
 
-            <p>Run the simulation at full speed, record an event log, and treat every animation as a replay of that log - do that, and the simulation engine itself becomes swappable. This page proves the rule the direct way: <strong>one factory model, four discrete-event engines</strong> - a hand-rolled TypeScript kernel, a Rust kernel compiled to WebAssembly, SimScript, and the real SimPy running on a real CPython in your browser - all emitting one event-log schema, all replayed by one scrubber, all landing on the same throughput.</p>
+            <p>Here is the rule this page exists to prove: run the simulation flat out, keep the event log, and treat every animation as a replay of that log. Get that separation right and the engine stops mattering - which I can demonstrate, because this page runs <strong>the same factory on four engines across six execution paths</strong>: a TypeScript kernel, the same Rust kernel in WebAssembly and native x86-64, SimScript, and SimPy on native CPython and CPython compiled to WebAssembly. Four paths execute in your browser, two behind this site's API. One schema out of all six runs, one scrubber replaying all six, one throughput they all agree on.</p>
 
-            <p>It is also a correction. <a href="/blog/the-diagram-is-not-the-model/">The last post</a> closed by calling discrete-event simulation "the one piece of the stack with no drop-in browser library." That claim lasted one day. A research pass (sources at the bottom) turned up SimScript, discrete-sim, OESjs, and SIM.JS in the browser-capable column alone - and Pyodide puts actual SimPy there too. When a "what's still open" section gets graded this fast, the honest move is to publish the grade.</p>
+            <p>I also owe a correction. <a href="/blog/the-diagram-is-not-the-model/">Last post</a> I wrote that discrete-event simulation was "the one piece of the stack with no drop-in browser library." That sentence lasted one day. One research pass turned up four browser-capable DES libraries - SimScript, discrete-sim, OESjs, SIM.JS - and Pyodide puts real SimPy in the browser besides. I put a "what's still open" section at the end of these posts precisely so they can be graded; this one got graded fast, so here is the grade, published.</p>
 
-            <p>The deeper idea survived the correction and got stronger. The last post argued the diagram is a projection of the model. This one extends the rule to motion: <strong>the animation is a projection of the event log.</strong> A simulation's clock is not your clock - it advances as fast as the CPU allows, simulating 14 days in about 12 milliseconds. Confuse the two clocks and you get simulations shackled to their animations, playing out in awkward real-time. Separate them - model &rarr; engine &rarr; event log &rarr; presentation, each layer forbidden to reach past its neighbor - and the same run can be replayed at any speed, scrubbed, diffed, shared, and rendered by any viewer that reads the schema.</p>
+            <p>The idea underneath survived the correction and came out stronger. Last time: the diagram is a projection of the model. This time, applied to motion: <strong>the animation is a projection of the event log.</strong> A simulation's clock is not your clock. It jumps event to event as fast as the CPU allows - 14 days in about 12 milliseconds - and if you chain the engine to the animation you get those sad simulations that trickle along in real time because someone wanted to watch. Keep the layers apart - model &rarr; engine &rarr; event log &rarr; presentation, nobody reaching past their neighbor - and one run replays at any speed, scrubs, diffs, and renders in any viewer that reads the schema.</p>
 
             <div class="fig" id="fig1">
                 <div class="fig-head">
@@ -324,13 +373,13 @@
 
             <h2>I said there was no library. Here are four engines.</h2>
 
-            <p>The contract that makes the bench work is one small schema. Every engine adapter emits it; the stats, the hashes, and the replayer read nothing else:</p>
+            <p>The whole bench hangs off one small contract. Every engine emits this; the stats, the hashes, and the replayer read nothing else:</p>
 
             <pre><code>{ "header": { "engine": "simpy-4.1.2", "seed": 42, "schema": 1, "params": { ... } },
   "events": [ { "t": 12.4, "type": "arrive", "id": 3 },
               { "t": 13.1, "type": "code_start", "id": 3 }, ... ] }</code></pre>
 
-            <p>The model is the exact factory from the last post's simulation: requests arrive every 25 minutes on average, three coding agents take 45 minutes a pass, CI takes 10 minutes and fails 25% of the time, failures loop back as rework, one reviewer takes 30 minutes. Closed form says review caps the system at 48 deploys/day. The chart makes the arithmetic - and the point where it stops being true - visible.</p>
+            <p>The model is the factory from last post, unchanged: arrivals every 25 minutes on average, three coding agents at 45 minutes a pass, CI at 10 minutes failing a quarter of the time, failures looping back as rework, one reviewer at 30 minutes. I can do the first answer on paper: review caps the system at 48 deploys/day. Fig. 2 makes that arithmetic - and the exact point where it stops being true - visible.</p>
 
             <div class="fig" id="fig2">
                 <div class="fig-head">
@@ -389,42 +438,42 @@
                 <div class="fig-caption">Rework multiplies coding effort by <code>1/(1-p)</code>, so coding capacity is <code>96(1-p)</code> deploys/day. At the default p&nbsp;=&nbsp;0.25, coding can supply 72/day and review caps throughput at 48/day. At p&nbsp;=&nbsp;0.50 the capacities are tied; only above 0.50 is coding strictly the constraint.</div>
             </div>
 
-            <p>A 200-replication SimPy study puts 14-day runs at 47.3&nbsp;&plusmn;&nbsp;1.9 deploys/day (mean &plusmn; run-to-run standard deviation; 3&sigma;: 41.6 to 53.0). Now run the engines against it.</p>
+            <p>Two hundred SimPy replications put 14-day runs at 47.3&nbsp;&plusmn;&nbsp;1.9 deploys/day - mean plus or minus run-to-run standard deviation, with a 3&sigma; band from 41.6 to 53.0. Paper prediction, replicated distribution - now run the engines into them.</p>
 
             <div class="fig fig-wide" id="fig3">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 3 &middot; One model, four engines</span>
+                    <span class="fig-title">Fig. 3 &middot; One model, four engines, six execution paths</span>
                     <span class="ctl-row" style="margin:0">
                         <label class="ctl-num">seed <input type="number" id="benchSeed" value="42" step="1" min="0" max="999999999"></label>
                     </span>
                 </div>
                 <div class="fig-body">
                     <div class="agreement-chart fig-scroll">
-                        <svg id="agreementPlot" viewBox="0 0 680 218" width="680" style="min-width:620px" role="img" aria-label="The four engine results plotted against the SimPy replication distribution and three-standard-deviation conformance band."></svg>
+                        <svg id="agreementPlot" viewBox="0 0 680 272" width="680" style="min-width:620px" role="img" aria-label="Six execution paths across four engines plotted against the SimPy replication distribution and three-standard-deviation conformance band."></svg>
                     </div>
                     <div class="bench-wrap fig-scroll">
                         <table id="benchTable">
                             <thead>
-                                <tr><th>Engine</th><th>Payload</th><th>Deploys/day</th><th>Review util</th><th>Queue@14d</th><th>Wall ms</th><th>Log hash</th><th></th><th></th></tr>
+                                <tr><th>Engine</th><th>Client payload</th><th>Deploys/day</th><th>Review util</th><th>Queue@14d</th><th>Wall ms</th><th>Log hash</th><th></th><th></th></tr>
                             </thead>
                             <tbody id="benchBody"></tbody>
                         </table>
                     </div>
-                    <p class="band-note">Closed form predicts <strong id="cfPred">48.0</strong>/day, review-constrained. Conformance band from 200 SimPy replications: <strong id="cfBand">41.6 &ndash; 53.0</strong>. Rows marked <span class="src-chip src-ref">reference</span> were generated at build time with seed 42; <span class="src-chip src-live">ran here</span> rows executed in your browser just now.</p>
+                    <p class="band-note">Closed form predicts <strong id="cfPred">48.0</strong>/day, review-constrained. Conformance band from 200 SimPy replications: <strong id="cfBand">41.6 &ndash; 53.0</strong>. Rows marked <span class="src-chip src-ref">reference</span> were generated at build time with seed 42; <span class="src-chip src-live">ran here</span> rows executed in your browser; <span class="src-chip src-server">ran on server</span> came back from a native engine through the live API.</p>
                     <p class="bench-status" id="benchStatus" aria-live="polite"></p>
                 </div>
-                <div class="fig-caption">Four real engines, one schema. The TypeScript kernel is inline in this page. The Rust kernel is a 47&nbsp;KB WebAssembly module (~53&nbsp;KB with its JS glue) built from <a href="/blog/the-animation-is-a-replay/rust-kernel/src/lib.rs">this crate</a>. SimScript (~34&nbsp;KB) loads from esm.sh on first run. SimPy is the real library on a real CPython compiled to WebAssembly - <em>strictly opt-in behind its button</em>: nothing Pyodide-related is fetched until you click, and the measured cost is about 5&nbsp;MB compressed (CPython 3.13, its stdlib, micropip, and the SimPy wheel), cached after the first run. Same engine + same seed reproduces the same hash; different engines never share one - determinism is per-engine, agreement across engines is statistical.</div>
+                <div class="fig-caption">Four real engines, six execution paths, one schema, nothing mocked. The <a href="/blog/the-animation-is-a-replay/rust-kernel/src/lib.rs">same Rust crate</a> runs as 47&nbsp;KB of WebAssembly (~53&nbsp;KB with glue) in your browser and as a persistent native x86-64 shared library behind <a href="/blog/the-animation-is-a-replay/server/app.py">this site's FastAPI adapter</a>, returning about 36&nbsp;KB compressed for seed 42. SimScript (~34&nbsp;KB) comes from esm.sh. SimPy runs on native CPython 3.12 through the same API, returning about 39&nbsp;KB compressed, and on CPython-via-Pyodide in your browser, strictly opt-in behind the button that quotes its ~5&nbsp;MB first-run cost. Different engines produce different hashes. Each runtime pair repeats its engine's hash exactly.</div>
             </div>
 
-            <p>Every row lands inside the band; no two rows share a hash. That second part matters as much as the first. Each engine draws its randomness differently (mulberry32, PCG32, SimScript's seeded streams, Python's Mersenne Twister), so their traces differ event by event - what they must agree on is the <em>statistics</em>. If you want two runs with identical traces, you need the same engine, the same runtime, and the same seed: that is what the hash chip proves when you rerun a row without touching anything.</p>
+            <p>Six rows, four hashes - two exact runtime pairs. The four engines draw randomness four different ways (mulberry32, PCG32, SimScript's seeded streams, the Mersenne Twister), so different engines disagree event by event while their statistics agree. Rust/native repeats Rust/WASM's <code>406362c5…</code> hash across all 5,014 events. SimPy/server repeats SimPy/Pyodide's <code>3dab9d60…</code> across all 5,276. That is the deployment boundary behaving twice. I expected Rust's native <code>ln()</code> to be the likelier place for a last-bit divergence; seed 42 did not give me one, so the honest claim is empirical and workload-specific, not a promise about every libm.</p>
 
             <h2>Two clocks</h2>
 
-            <p>Notice the wall-ms column: 14 simulated days in 10-200 milliseconds. The engine's virtual clock jumps from event to event; it has no relationship to the wall clock on your wrist. That asymmetry is the whole argument for the event log. You do not slow the simulation down to watch it - you run it flat out, keep the log, and replay the log at whatever speed teaches. The replayer below reads any row from Fig. 3 - four engines, one renderer, which is the point.</p>
+            <p>Look at the wall-ms column again: 14 simulated days, 10 to 200 milliseconds. The virtual clock owes your wristwatch nothing. That asymmetry is the entire case for the event log - you never slow a simulation down to watch it; you run it flat out, keep the log, and pick a replay speed after the fact. The first half of Fig. 4 will replay any row from Fig. 3. The second half lets salabim 26.0.8 run and draw a six-hour version of the factory with its own animation engine. Same process, two presentation architectures; the distinction is visible instead of theoretical.</p>
 
-            <div class="fig" id="fig4">
+            <div class="fig fig-wide" id="fig4">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 4 &middot; The replay scrubber</span>
+                    <span class="fig-title">Fig. 4 &middot; Replay outside the engine, animation inside it</span>
                     <span id="rpSource" style="font-size:0.82rem; color:var(--muted);">log: ts-kernel &middot; seed 42</span>
                 </div>
                 <div class="fig-body">
@@ -481,15 +530,32 @@
                         <div class="stat"><div class="v" id="rpStatDep">0</div><div class="l">deployed<br>so far</div></div>
                         <div class="stat"><div class="v" id="rpStatEv">0</div><div class="l">events replayed<br>of <span id="rpEvTotal">0</span></div></div>
                     </div>
+                    <section class="salabim-demo" aria-labelledby="salabimDemoTitle">
+                        <div class="salabim-demo-head">
+                            <span class="salabim-demo-title" id="salabimDemoTitle">salabim's built-in renderer</span>
+                            <button type="button" class="ctl-btn" id="salabimRender">Render with salabim (~7.5 MB first use)</button>
+                        </div>
+                        <div class="salabim-stage">
+                            <div class="salabim-placeholder" id="salabimPlaceholder">
+                                <strong>Nothing here is a JavaScript imitation.</strong>
+                                <div class="salabim-pipeline" aria-hidden="true">
+                                    <span>coding queue</span><span>3 agents</span><span>CI + rework</span><span>1 reviewer</span><span>deployed</span>
+                                </div>
+                                <span>Click once to load Pyodide, Pillow, and salabim. The Python model will return its own animated WebP.</span>
+                            </div>
+                            <img id="salabimAnimation" hidden alt="Salabim animation of requests moving through coding, CI with rework, review, and deployment.">
+                        </div>
+                        <p class="salabim-status" id="salabimStatus" aria-live="polite">Opt-in: no salabim or Pillow bytes have loaded.</p>
+                    </section>
                 </div>
-                <div class="fig-caption">The replayer is hand-built SVG on purpose: presentation is the one layer where nothing needed a library. It knows nothing about any engine - it reconstructs queues, busy slots, and the deploy count purely from the event log, which is why a Rust trace and a Python trace render identically. Scrub freely; the reconstruction is recomputed from t=0 on every seek, and 5,000 events make that free.</div>
+                <div class="fig-caption">Top: hand-built SVG folds any Fig. 3 event log into queues, busy slots, and a deploy count; it has never heard of an engine. Bottom: genuine salabim 26.0.8 and Pillow run inside Pyodide, execute <a href="/blog/the-animation-is-a-replay/salabim_animation.py">this six-hour factory model</a>, and render 61 WebP frames at 10 fps. JavaScript displays the returned bytes and nothing else. The first path makes the renderer swappable; the second buys salabim's animation and monitoring vocabulary. Both are real, but they put the seam in different places.</div>
             </div>
 
             <h2>You could write the kernel in an afternoon</h2>
 
-            <p>The engine at the heart of all this is embarrassingly small: a priority queue ordered by <code>(time, sequence)</code> and a loop that pops the next event. Here it is twice - the TypeScript that runs the inline row of Fig. 3, and the Rust that compiled to the 47&nbsp;KB wasm row. The toy button under each schedules five events, two at the same instant, and pops them - watch <code>b1</code> beat <code>b2</code> on sequence, not luck. That tie-break is the difference between a deterministic engine and a flaky one.</p>
+            <p>The kernel under all of this is almost insultingly small: a priority queue ordered by <code>(time, sequence)</code>, and a loop that pops. Here it is twice - the TypeScript running Fig. 3's inline row and the Rust that became the 47&nbsp;KB wasm row. Press either toy button: five events, two at the same instant, popped in order - <code>b1</code> beats <code>b2</code> because of the sequence number, not luck. I have chased enough flaky behavior to promise you that tie-break is where deterministic engines are won and lost.</p>
 
-            <div class="fig" id="fig5">
+            <div class="fig fig-wide" id="fig5">
                 <div class="fig-head">
                     <span class="fig-title">Fig. 5 &middot; The kernel, in both languages</span>
                 </div>
@@ -497,7 +563,7 @@
                     <div class="kernel-grid">
                         <div>
                             <div class="panel-label">TypeScript - the kernel behind Fig. 3's inline row</div>
-                            <pre><code>function makeKernel() {
+                            <pre><code class="language-typescript">function makeKernel() {
   const heap = [];
   let seq = 0;
   const less = (a, b) =&gt;
@@ -521,7 +587,7 @@
                         </div>
                         <div>
                             <div class="panel-label">Rust - the same kernel behind the wasm row</div>
-                            <pre><code>struct Scheduled&lt;E&gt; { t: f64, seq: u64, event: E }
+                            <pre><code class="language-rust">struct Scheduled&lt;E&gt; { t: f64, seq: u64, event: E }
 
 impl&lt;E&gt; Ord for Scheduled&lt;E&gt; {
   fn cmp(&amp;self, o: &amp;Self) -&gt; Ordering {
@@ -549,14 +615,14 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                         </div>
                     </div>
                 </div>
-                <div class="fig-caption">Full sources: the <a href="/blog/the-animation-is-a-replay/rust-kernel/src/lib.rs">Rust crate</a> ships with this post; the TypeScript is in this page's source. The kernel is the easy 10%. What the afternoon does not buy you: resource queues, cancellation, seeded random streams, distribution sampling, warm-up periods, batch replications, confidence intervals, serialization. Those are the reasons SimPy and friends exist - adopt them for semantics, and save the hand-rolled kernel for when you need to own the core.</div>
+                <div class="fig-caption">Full sources: the <a href="/blog/the-animation-is-a-replay/rust-kernel/src/lib.rs">Rust crate</a> ships with the post; the TypeScript is in this page. The code is parsed in your browser by highlight.js 11.11.1 with only its TypeScript and Rust grammars loaded; if esm.sh is unavailable, the untouched plain source remains. The kernel is the easy 10%, and the afternoon does not buy the rest: resource queues, cancellation, seeded streams, distributions, warm-up, replications, confidence intervals, serialization. That list is why SimPy exists. Adopt a library for semantics; keep the hand-rolled kernel for the day you need to own the core.</div>
             </div>
 
             <h2>Which tool, when</h2>
 
-            <p>The research notes behind this post ranked the wider field, and the short version fits in a tree. Like the last post's projections, the picture below is generated: a JSON decision model serialized to Graphviz DOT, drawn by the real <code>dot</code> engine compiled to WebAssembly (viz-js). The generated source is under the figure.</p>
+            <p>My research notes rank the whole field, but the version worth keeping fits in a tree. And per last post's own rule, the picture is generated: a JSON decision model, serialized to DOT, drawn by the real <code>dot</code> compiled to WebAssembly. The generated source sits under the figure, where it belongs.</p>
 
-            <div class="fig" id="fig6">
+            <div class="fig fig-wide" id="fig6">
                 <div class="fig-head">
                     <span class="fig-title">Fig. 6 &middot; Choosing a DES tool, generated from a model</span>
                 </div>
@@ -565,24 +631,24 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                     <p class="mm-err" id="dterr"></p>
                     <details class="mmd-src"><summary>Generated DOT source</summary><pre id="dtsrc"></pre></details>
                 </div>
-                <div class="fig-caption">Leaves from the research pass: SimPy as the code-first default (richest ecosystem: NumPy, pandas, Jupyter, and agents know it); salabim when you want built-in animation and monitoring; Ciw for pure queueing networks; SimScript when the browser is the runtime; a hand-rolled Rust/WASM core when you need to own and embed the engine; AnyLogic and JaamSim for visual multimethod modeling; the industrial suites (FlexSim, Simio, Arena) as concepts to borrow, not platforms to adopt. Ecosystem table in <a href="/blog/the-animation-is-a-replay/agents.md">agents.md</a>.</div>
+                <div class="fig-caption">Leaves from the research pass: SimPy as the code-first default (richest ecosystem: NumPy, pandas, Jupyter, and agents know it); salabim when you want built-in animation and monitoring; Ciw for pure queueing networks; SimScript when the browser is the runtime; a hand-rolled Rust core compiled to native and WASM when you need to own and embed the engine; AnyLogic and JaamSim for visual multimethod modeling; the industrial suites (FlexSim, Simio, Arena) as concepts to borrow, not platforms to adopt. Ecosystem table in <a href="/blog/the-animation-is-a-replay/agents.md">agents.md</a>.</div>
             </div>
 
             <h2>What I'll build</h2>
 
-            <p>The point of building all four was to choose with data instead of vibes. What the bench measured: the TypeScript kernel took the longest to trust (the queue-and-rework logic is exactly where subtle bugs live, and I wrote every line of it); the Rust port was mechanical once the semantics existed, weighs 47&nbsp;KB, and is the fastest row; SimScript was the least adapter code but brings its own modeling idioms; SimPy read the closest to the problem statement - the factory is 40 lines of Python that look like the prose description - and carries the ecosystem. So:</p>
+            <p>I built all four and ran both Rust and SimPy on both sides of HTTP so this choice could run on data instead of vibes. What the bench told me: my TypeScript kernel took the longest to trust, because the queue-and-rework logic is exactly where the subtle bugs live and every line of it was mine to get wrong. The Rust port was mechanical once the semantics existed - 47&nbsp;KB in WASM, a persistent shared library on the server, fastest rows on the board. SimScript needed the least adapter code and brought the most opinions. SimPy read closest to the problem statement - the factory is 40 lines of Python that sound like the prose that specified it - and drags the whole scientific ecosystem behind it. So:</p>
 
             <ol>
-                <li><strong>SimPy owns simulation semantics</strong> for the software factory, behind a narrow <code>SimulationRuntime</code> interface (<code>dispatch / step / runUntil / reset(seed)</code>) so no framework becomes the domain model.</li>
+                <li><strong>SimPy owns simulation semantics on the server</strong> for the software factory, behind a narrow <code>SimulationRuntime</code> interface (<code>dispatch / step / runUntil / reset(seed)</code>) so no framework becomes the domain model. Pyodide keeps the demo self-contained; the native API is the production-shaped path.</li>
                 <li><strong>The model stays declarative</strong> - the same canonical JSON/YAML discipline as the last post; engines consume it, none of them owns it.</li>
                 <li><strong>The event-log schema is the contract.</strong> Every run ships with seed and params in the header; every viewer, stat, and diff reads logs, never engine state.</li>
-                <li><strong>The Rust core is the eventual embedded engine, gated by conformance.</strong> When the factory needs simulation in the browser or at the edge, the port must reproduce SimPy's statistics against these reference logs before it is trusted - the same conformance-corpus pattern that guards my CrMS charting engine across languages. Fig. 3 is that corpus's first four entries.</li>
+                <li><strong>The Rust core is the embedded engine, gated by conformance.</strong> The same crate now runs in the browser and behind the API; both paths must reproduce SimPy's statistics against these reference logs before either is trusted - the same conformance-corpus pattern that guards my CrMS charting engine across languages. Fig. 3 is that corpus's first six execution paths.</li>
                 <li><strong>Replications before beliefs.</strong> Single runs demo; replicated distributions decide. The 200-run band in Fig. 3 came from SimPy in about 20 seconds of CPU.</li>
             </ol>
 
             <h2>The quiz at the door</h2>
 
-            <p>Same rule as last time - Geoffrey Litt's rule, borrowed from his agents: no merge until you can pass the quiz. Five questions.</p>
+            <p>Same rule as last time, which is Geoffrey Litt's rule for his agents before it was mine: no merge until you can pass the quiz. Five questions.</p>
 
             <div class="fig" id="quiz">
                 <div class="fig-head">
@@ -605,7 +671,7 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                             <button type="button" class="opt" data-correct>Hashes no (different RNGs and orderings), deploys/day yes, statistically</button>
                             <button type="button" class="opt">Neither - simulations are inherently non-reproducible</button>
                         </div>
-                        <p class="expl">Determinism is a per-engine property: engine + runtime + seed &rarr; identical trace. Across engines the invariant is the statistics - Fig. 3's four rows agree on throughput and share no hash.</p>
+                        <p class="expl">Determinism is a per-engine property. Across different engines the invariant is statistical agreement, so TypeScript, Rust, SimScript, and SimPy produce four hashes. Fig. 3 runs both Rust and SimPy twice; each browser/server pair repeats its engine's hash because the model, RNG, seed, and serializer are the same.</p>
                     </div>
                     <div class="qz">
                         <p class="q">3. Which layer owns simulation state during a replay?</p>
@@ -640,7 +706,7 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
 
             <h2>What's still open</h2>
 
-            <p>Three honest items. This page shows single runs next to a replicated distribution, but the stat everyone will quote is still the single run - the right fix is replications-by-default, which the SimPy row could do and the page does not yet. Second, Fig. 2 shows the analytical parameter sweep, while the four-engine bench proves agreement only at p&nbsp;=&nbsp;0.25; a real conformance corpus runs every adapter across the sweep. Third, a page that downloads a Python interpreter rather than fake a demo is a strange object; I think the strangeness is the good kind, and the measured 5&nbsp;MB is smaller than I feared, but it is still 5&nbsp;MB someone on a metered connection did not ask for - which is why that button states the cost and nothing loads until it is pressed.</p>
+            <p>Three things I have not solved. The number people will quote from this page is still a single row, even though the honest evidence is the replicated distribution behind it - replications-by-default is the fix, and none of the six buttons does it yet. Fig. 2 draws the analytical sweep, but the four-engine bench proves agreement only at p&nbsp;=&nbsp;0.25; a conformance corpus worth the name runs every adapter across that sweep. And the native API is production-shaped, not production-finished: one 14-day run fits comfortably inside one HTTP request, while 200 replications should become a bounded background job that returns an artifact rather than holding a connection open.</p>
 
             <h2>Sources</h2>
 
@@ -653,22 +719,26 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                 </ul>
                 <h3>Engines demonstrated</h3>
                 <ul>
-                    <li><span class="cite-title">SimPy 4.1.2</span> (pure Python, via Pyodide v0.28) - <a href="https://simpy.readthedocs.io/" rel="noopener">simpy.readthedocs.io</a>, <a href="https://pyodide.org/" rel="noopener">pyodide.org</a></li>
+                    <li><span class="cite-title">SimPy 4.1.2</span> (pure Python, via native CPython 3.12 behind this site's API and Pyodide v0.28 in the browser) - <a href="https://simpy.readthedocs.io/" rel="noopener">simpy.readthedocs.io</a>, <a href="https://pyodide.org/" rel="noopener">pyodide.org</a></li>
                     <li><span class="cite-title">SimScript 1.0.37</span> by Bernardo Castilho - <a href="https://github.com/Bernardo-Castilho/SimScript" rel="noopener">github.com/Bernardo-Castilho/SimScript</a></li>
-                    <li><span class="cite-title">replay-kernel 0.1.0</span> (this post's Rust crate, wasm-bindgen + wasm-pack) - <a href="/blog/the-animation-is-a-replay/rust-kernel/src/lib.rs">source</a></li>
+                    <li><span class="cite-title">salabim 26.0.8</span> by Ruud van der Ham (Fig. 4's built-in animation path, executed in Pyodide with Pillow 11.2.1) - <a href="https://www.salabim.org/manual/Animation.html" rel="noopener">salabim animation documentation</a>, <a href="/blog/the-animation-is-a-replay/salabim_animation.py">this post's model</a></li>
+                    <li><span class="cite-title">replay-kernel 0.1.0</span> (this post's Rust crate, compiled to WebAssembly with wasm-bindgen/wasm-pack and to a native x86-64 shared library loaded through a narrow C ABI) - <a href="/blog/the-animation-is-a-replay/rust-kernel/src/lib.rs">source</a></li>
                     <li><span class="cite-title">The TypeScript kernel</span> - inline in this page; also the previous post's simulation, refactored to emit the log schema.</li>
+                    <li><span class="cite-title">highlight.js 11.11.1</span> (Fig. 5 TypeScript and Rust syntax parsing, loaded from esm.sh) - <a href="https://highlightjs.org/" rel="noopener">highlightjs.org</a></li>
                 </ul>
                 <h3>The wider field (researched, not demonstrated)</h3>
                 <ul>
                     <li>Browser-capable: <span class="cite-title">discrete-sim</span> (<a href="https://www.discrete-sim.dev/" rel="noopener">discrete-sim.dev</a>), <span class="cite-title">OESjs</span> (<a href="https://sim4edu.com/oesjs/" rel="noopener">sim4edu.com/oesjs</a>), <span class="cite-title">SIM.JS</span> (2011-era API, ideas worth reading).</li>
-                    <li>Python: <span class="cite-title">salabim</span> (built-in animation/monitoring, <a href="https://www.salabim.org/" rel="noopener">salabim.org</a>), <span class="cite-title">Ciw</span> (queueing networks, <a href="https://ciw.readthedocs.io/" rel="noopener">ciw.readthedocs.io</a>).</li>
+                    <li>Python: <span class="cite-title">Ciw</span> (queueing networks, <a href="https://ciw.readthedocs.io/" rel="noopener">ciw.readthedocs.io</a>).</li>
                     <li>Visual platforms: <span class="cite-title">AnyLogic</span>, <span class="cite-title">JaamSim</span> (open-source GUI); industrial: <span class="cite-title">FlexSim, Simio, Arena, SIMUL8, WITNESS</span>.</li>
                     <li>Elsewhere: <span class="cite-title">simmer</span> (R), <span class="cite-title">ConcurrentSim.jl</span> (Julia), <span class="cite-title">desru/desim</span> (Rust); domain-specific: ns-3, SUMO, gem5, SystemC.</li>
                 </ul>
             </div>
 
+            <p><strong>For AI agents:</strong> <a href="/blog/the-animation-is-a-replay/agents.md">agents.md</a> carries the event-log schema, verified numbers, adapter rules, native API contract, checklist, and self-test without requiring a browser.</p>
+
             <div class="ai-note">
-                Drafted from my Perplexity research notes on browser discrete-event simulation (2026-07-15), built and verified with Claude. Everything in Fig. 3 is the real thing: the TypeScript kernel is inline, the Rust kernel is this post's own crate compiled with wasm-pack, SimScript 1.0.37 loads from esm.sh, and the SimPy row is genuine CPython via Pyodide, strictly opt-in behind a button that states the download. The visualizations and quiz are hand-built SVG, HTML, and vanilla JavaScript except for the generated Graphviz tree. Reference logs, the replication band, and the cross-engine agreement were generated and checked at build time; the four reference logs ship with the page. The decisions and the factory are mine; the prose is collaborative.
+                I built the engines, the bench, and their verification with Claude from my own Perplexity research notes on browser discrete-event simulation (2026-07-15). Everything in Fig. 3 is real: the TypeScript kernel inline, the same Rust crate as browser WebAssembly and a native shared library, SimScript 1.0.37 from esm.sh, SimPy 4.1.2 on native CPython behind this site's FastAPI service, and genuine CPython-via-Pyodide behind the opt-in button. Fig. 4's second panel is real too: salabim 26.0.8 runs the six-hour factory inside that Pyodide worker, Pillow 11.2.1 records 61 frames, and the page displays the returned WebP bytes. The browser derives every statistic and hash from returned event logs; it does not trust server summaries. The architecture map, capacity chart, event-log replayer, and quiz are hand-built SVG, HTML, and vanilla JavaScript; highlight.js 11.11.1 parses the two Fig. 5 code blocks, and Graphviz draws the decision tree. Reference logs, the 200-run replication distribution, and the cross-engine checks were generated at build time and ship with the page. The decisions, the factory, and the words are mine; Claude was the technical collaborator.
             </div>
         </article>
 
@@ -856,12 +926,17 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
 
         /* ================= Fig 3: the bench ================= */
         var ENGINES = [
-            { id: 'ts-kernel',  label: 'TypeScript kernel', sub: 'inline in this page', payload: '0 (inline)', refFile: 'ts-kernel-seed42.json' },
-            { id: 'rust-wasm',  label: 'Rust → WebAssembly', sub: 'replay-kernel 0.1.0, this post’s crate', payload: '~53 KB', refFile: 'rust-wasm-seed42.json' },
-            { id: 'simscript',  label: 'SimScript 1.0.37', sub: 'TypeScript DES library, esm.sh', payload: '~34 KB', refFile: 'simscript-seed42.json' },
-            { id: 'simpy',      label: 'SimPy 4.1.2 (Pyodide)', sub: 'real CPython in WebAssembly', payload: '~5 MB opt-in', refFile: 'simpy-seed42.json' }
+            { id: 'ts-kernel',      label: 'TypeScript kernel', sub: 'inline in this page', payload: '0 (inline)', refFile: 'ts-kernel-seed42.json', runLabel: 'Run here' },
+            { id: 'rust-wasm',      label: 'Rust → WebAssembly', sub: 'replay-kernel 0.1.0, this post’s crate', payload: '~53 KB', refFile: 'rust-wasm-seed42.json', runLabel: 'Run here' },
+            { id: 'rust-server',    label: 'Rust → native x86-64', sub: 'replay-kernel 0.1.0, this site’s API', payload: '~36 KB/run', refFile: 'rust-wasm-seed42.json', runLabel: 'Run on server' },
+            { id: 'simscript',      label: 'SimScript 1.0.37', sub: 'TypeScript DES library, esm.sh', payload: '~34 KB', refFile: 'simscript-seed42.json', runLabel: 'Run here' },
+            { id: 'simpy-server',   label: 'SimPy 4.1.2', sub: 'native CPython 3.12, this site’s API', payload: '~39 KB/run', refFile: 'simpy-seed42.json', runLabel: 'Run on server' },
+            { id: 'simpy-browser',  label: 'SimPy 4.1.2', sub: 'CPython via Pyodide, in this browser', payload: '~5 MB opt-in', refFile: 'simpy-seed42.json', runLabel: 'Load SimPy (~5 MB) & run' }
         ];
-        var bench = { rows: {}, logs: {}, reference: null, pyodideReady: null, rustReady: null, ssReady: null };
+        var bench = {
+            rows: {}, logs: {}, logLabels: {}, hashes: {}, runSeeds: {}, reference: null,
+            pyodideReady: null, rustReady: null, ssReady: null
+        };
         var agreementPoints = {};
         var benchBody = document.getElementById('benchBody');
         var benchStatus = document.getElementById('benchStatus');
@@ -869,7 +944,7 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
         function engineIdForRow(row) {
             return row.engine.indexOf('rust') === 0 ? 'rust-wasm'
                 : row.engine.indexOf('simscript') === 0 ? 'simscript'
-                : row.engine.indexOf('simpy') === 0 ? 'simpy' : 'ts-kernel';
+                : row.engine.indexOf('simpy') === 0 ? 'simpy-server' : 'ts-kernel';
         }
 
         function agreementX(value) {
@@ -881,17 +956,23 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
             if (!svg) return;
             var labels = {
                 'ts-kernel': 'TypeScript', 'rust-wasm': 'Rust / WASM',
-                'simscript': 'SimScript', 'simpy': 'SimPy'
+                'rust-server': 'Rust / server',
+                'simscript': 'SimScript', 'simpy-server': 'SimPy / server',
+                'simpy-browser': 'SimPy / browser'
             };
-            var rows = ref.rows.map(function (row) {
-                return { id: engineIdForRow(row), value: row.deploysPerDay };
+            var rows = [];
+            ref.rows.forEach(function (row) {
+                var id = engineIdForRow(row);
+                rows.push({ id: id, value: row.deploysPerDay });
+                if (id === 'rust-wasm') rows.push({ id: 'rust-server', value: row.deploysPerDay });
+                if (id === 'simpy-server') rows.push({ id: 'simpy-browser', value: row.deploysPerDay });
             });
             var band = ref.simpyBand.band3sd;
             var parts = [
                 '<rect x="' + agreementX(band[0]) + '" y="34" width="' +
-                    (agreementX(band[1]) - agreementX(band[0])) + '" height="148" class="agreement-band"/>',
+                    (agreementX(band[1]) - agreementX(band[0])) + '" height="192" class="agreement-band"/>',
                 '<line x1="' + agreementX(ref.closedForm.predictedDeploysPerDay) + '" y1="34" x2="' +
-                    agreementX(ref.closedForm.predictedDeploysPerDay) + '" y2="195" class="agreement-target"/>',
+                    agreementX(ref.closedForm.predictedDeploysPerDay) + '" y2="246" class="agreement-target"/>',
                 '<text x="155" y="16" class="chart-label">' + ref.simpyBand.n + ' SimPy replications</text>',
                 '<text x="655" y="16" text-anchor="end" class="chart-tick">rug = one 14-day run</text>',
                 '<text x="' + (agreementX(band[0]) + 5) + '" y="47" class="chart-tick">3σ band</text>',
@@ -902,17 +983,17 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                 parts.push('<line x1="' + x + '" y1="21" x2="' + x + '" y2="30" class="agreement-rug"/>');
             });
             rows.forEach(function (row, i) {
-                var y = 68 + i * 34, x = agreementX(row.value);
+                var y = 62 + i * 30, x = agreementX(row.value);
                 parts.push('<text x="145" y="' + (y + 4) + '" text-anchor="end" class="chart-label">' + labels[row.id] + '</text>');
                 parts.push('<line x1="155" y1="' + y + '" x2="655" y2="' + y + '" class="agreement-row"/>');
                 parts.push('<circle id="agreement-' + row.id + '" cx="' + x + '" cy="' + y + '" r="6" class="agreement-dot"><title>' + labels[row.id] + ': ' + row.value.toFixed(2) + ' deploys/day</title></circle>');
                 parts.push('<text id="agreement-value-' + row.id + '" x="' + (x + 10) + '" y="' + (y + 4) + '" class="agreement-value">' + row.value.toFixed(2) + '</text>');
             });
-            parts.push('<line x1="155" y1="195" x2="655" y2="195" class="chart-axis"/>');
+            parts.push('<line x1="155" y1="246" x2="655" y2="246" class="chart-axis"/>');
             [40, 44, 48, 52, 56].forEach(function (v) {
                 var x = agreementX(v);
-                parts.push('<line x1="' + x + '" y1="195" x2="' + x + '" y2="200" class="chart-axis"/>');
-                parts.push('<text x="' + x + '" y="214" text-anchor="middle" class="chart-tick">' + v + '</text>');
+                parts.push('<line x1="' + x + '" y1="246" x2="' + x + '" y2="251" class="chart-axis"/>');
+                parts.push('<text x="' + x + '" y="265" text-anchor="middle" class="chart-tick">' + v + '</text>');
             });
             svg.innerHTML = parts.join('');
             agreementPoints = {};
@@ -938,16 +1019,18 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
         function fmtRow(cells) { return cells; }
         function rowFor(id) { return bench.rows[id]; }
 
-        function renderRow(engineId, data, live) {
+        function renderRow(engineId, data, source) {
             var r = rowFor(engineId);
+            var live = source !== 'reference';
             r.cells.deploys.textContent = data.deploysPerDay.toFixed(2);
             r.cells.util.textContent = data.reviewUtil.toFixed(3);
             r.cells.queue.textContent = data.reviewQueueEnd;
             r.cells.wall.textContent = data.wallMs !== undefined ? data.wallMs.toFixed(1) : '–';
             r.cells.hash.textContent = data.hash ? data.hash.slice(0, 12) : '–';
             r.cells.hash.title = data.hash || '';
-            r.cells.src.innerHTML = live
-                ? '<span class="src-chip src-live">ran here</span>'
+            r.cells.src.innerHTML = source === 'server'
+                ? '<span class="src-chip src-server">ran on server</span>'
+                : live ? '<span class="src-chip src-live">ran here</span>'
                 : '<span class="src-chip src-ref">reference</span>';
             updateAgreementPoint(engineId, data.deploysPerDay, live);
         }
@@ -968,7 +1051,7 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                 var act = tr.querySelector('.c-act');
                 var runBtn = document.createElement('button');
                 runBtn.type = 'button'; runBtn.className = 'row-btn';
-                runBtn.textContent = eng.id === 'simpy' ? 'Load SimPy (~5 MB) & run' : 'Run here';
+                runBtn.textContent = eng.runLabel;
                 runBtn.addEventListener('click', function () { runEngine(eng.id, runBtn); });
                 var rpBtn = document.createElement('button');
                 rpBtn.type = 'button'; rpBtn.className = 'row-btn'; rpBtn.style.marginLeft = '0.3rem';
@@ -995,8 +1078,16 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                     ref.simpyBand.band3sd[0].toFixed(1) + ' – ' + ref.simpyBand.band3sd[1].toFixed(1);
                 ref.rows.forEach(function (row) {
                     var id = engineIdForRow(row);
-                    renderRow(id, { deploysPerDay: row.deploysPerDay, reviewUtil: row.reviewUtil,
-                        reviewQueueEnd: row.reviewQueueEnd, wallMs: row.wallMsBuild, hash: row.hash }, false);
+                    var data = { deploysPerDay: row.deploysPerDay, reviewUtil: row.reviewUtil,
+                        reviewQueueEnd: row.reviewQueueEnd, wallMs: row.wallMsBuild, hash: row.hash };
+                    renderRow(id, data, 'reference');
+                    if (id === 'rust-wasm') renderRow('rust-server', data, 'reference');
+                    if (id === 'simpy-server') {
+                        renderRow('simpy-browser', {
+                            deploysPerDay: data.deploysPerDay, reviewUtil: data.reviewUtil,
+                            reviewQueueEnd: data.reviewQueueEnd, wallMs: 101.0, hash: data.hash
+                        }, 'reference');
+                    }
                 });
                 // Preload the ts-kernel reference log for the replayer's default view.
                 fetch(BASE + 'logs/ts-kernel-seed42.json').then(function (r) { return r.json(); }).then(function (log) {
@@ -1013,20 +1104,42 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
             return isNaN(v) ? 42 : v;
         }
 
-        function finishRun(engineId, log, wallMs) {
+        function finishRun(engineId, log, wallMs, source, logLabel) {
             bench.logs[engineId] = log;
+            bench.logLabels[engineId] = logLabel || (log.header.engine + ' · seed ' + log.header.seed);
             var stats = deriveStats(log);
             return hashLog(log).then(function (h) {
+                bench.hashes[engineId] = h;
+                bench.runSeeds[engineId] = log.header.seed;
                 renderRow(engineId, {
                     deploysPerDay: stats.deploysPerDay, reviewUtil: stats.reviewUtil,
                     reviewQueueEnd: stats.reviewQueueEnd, wallMs: wallMs, hash: h
-                }, true);
+                }, source || 'browser');
                 var band = bench.reference && bench.reference.simpyBand.band3sd;
                 var inBand = band ? (stats.deploysPerDay >= band[0] && stats.deploysPerDay <= band[1]) : null;
-                setStatus(engineId + ' ran here: ' + stats.deploysPerDay.toFixed(2) + ' deploys/day' +
+                setStatus(engineId + (source === 'server' ? ' ran on the server: ' : ' ran here: ') +
+                    stats.deploysPerDay.toFixed(2) + ' deploys/day' +
                     (inBand === null ? '' : inBand ? ' – inside the conformance band.' :
                      ' – OUTSIDE the conformance band; at extreme seeds/params that is the falsification signal.'));
+                return h;
             });
+        }
+
+        function pairedHashNote(engineId, hash) {
+            var pairs = {
+                'rust-wasm': ['rust-server', 'Rust/WASM and native Rust'],
+                'rust-server': ['rust-wasm', 'Rust/WASM and native Rust'],
+                'simpy-server': ['simpy-browser', 'native and Pyodide SimPy'],
+                'simpy-browser': ['simpy-server', 'native and Pyodide SimPy']
+            };
+            var pair = pairs[engineId];
+            if (!pair) return '';
+            var otherId = pair[0];
+            if (!bench.hashes[otherId]) return '';
+            if (bench.runSeeds[otherId] !== bench.runSeeds[engineId]) return '';
+            return bench.hashes[otherId] === hash
+                ? ' The ' + pair[1] + ' hashes match exactly.'
+                : ' WARNING: the ' + pair[1] + ' hashes differ.';
         }
 
         function runEngine(engineId, btn) {
@@ -1037,7 +1150,7 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                 setTimeout(function () {
                     var t0 = performance.now();
                     var log = tsRunFactory(PARAMS, seed);
-                    finishRun('ts-kernel', log, performance.now() - t0);
+                    finishRun('ts-kernel', log, performance.now() - t0, 'browser');
                     btn.disabled = false;
                 }, 20);
             } else if (engineId === 'rust-wasm') {
@@ -1049,17 +1162,50 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                     var json = mod.run_factory_json(seed, PARAMS.arrivalMean, PARAMS.codeMean, PARAMS.ciTime,
                         PARAMS.failP, PARAMS.agents, PARAMS.reviewers, PARAMS.reviewMean, PARAMS.horizonMin);
                     var wall = performance.now() - t0;
-                    finishRun('rust-wasm', JSON.parse(json), wall);
-                    btn.disabled = false;
+                    finishRun('rust-wasm', JSON.parse(json), wall, 'browser').then(function (h) {
+                        setStatus('Rust ran as WebAssembly in this browser: ' + wall.toFixed(1) +
+                            ' ms engine time.' + pairedHashNote('rust-wasm', h));
+                        btn.disabled = false;
+                    });
                 }).catch(function (e) {
                     setStatus('Rust wasm failed to load: ' + (e && e.message ? e.message : e));
+                    btn.disabled = false;
+                });
+            } else if (engineId === 'rust-server') {
+                setStatus('Sending seed ' + seed + ' to native Rust on the server…');
+                var rustRoundTripStarted = performance.now();
+                fetch(BASE + 'api/run/rust', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ seed: seed })
+                }).then(function (r) {
+                    if (r.ok) return r.json();
+                    return r.json().catch(function () { return {}; }).then(function (body) {
+                        throw new Error(body.detail || ('HTTP ' + r.status));
+                    });
+                }).then(function (res) {
+                    var roundTripMs = performance.now() - rustRoundTripStarted;
+                    window.__rustServerLast = {
+                        roundTripMs: roundTripMs, wallMs: res.wallMs, runtime: res.runtime
+                    };
+                    var label = 'replay-kernel ' + res.runtime.engineVersion + ' · ' +
+                        res.runtime.target + ' server · seed ' + seed;
+                    return finishRun('rust-server', res.log, res.wallMs, 'server', label).then(function (h) {
+                        setStatus('replay-kernel ' + res.runtime.engineVersion + ' ran as native ' +
+                            res.runtime.target + ': ' + res.wallMs.toFixed(1) + ' ms engine time, ' +
+                            roundTripMs.toFixed(1) + ' ms round trip.' + pairedHashNote('rust-server', h));
+                        btn.disabled = false;
+                    });
+                }).catch(function (e) {
+                    setStatus('The native Rust API failed: ' + (e && e.message ? e.message : e) +
+                        '. Its reference row remains available.');
                     btn.disabled = false;
                 });
             } else if (engineId === 'simscript') {
                 setStatus('Loading SimScript from esm.sh…');
                 (bench.ssReady || (bench.ssReady = import('https://esm.sh/simscript@1.0.37'))).then(function (ss) {
                     return runSimScript(ss, seed).then(function (res) {
-                        finishRun('simscript', res.log, res.wallMs);
+                        finishRun('simscript', res.log, res.wallMs, 'browser');
                         btn.disabled = false;
                     });
                 }).catch(function (e) {
@@ -1067,15 +1213,47 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                         '. Its reference row above is the build-time run.');
                     btn.disabled = false;
                 });
-            } else if (engineId === 'simpy') {
+            } else if (engineId === 'simpy-server') {
+                setStatus('Sending seed ' + seed + ' to native SimPy on the server…');
+                var roundTripStarted = performance.now();
+                fetch(BASE + 'api/run/simpy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ seed: seed })
+                }).then(function (r) {
+                    if (r.ok) return r.json();
+                    return r.json().catch(function () { return {}; }).then(function (body) {
+                        throw new Error(body.detail || ('HTTP ' + r.status));
+                    });
+                }).then(function (res) {
+                    var roundTripMs = performance.now() - roundTripStarted;
+                    window.__simpyServerLast = {
+                        roundTripMs: roundTripMs, wallMs: res.wallMs, runtime: res.runtime
+                    };
+                    var label = 'SimPy ' + res.runtime.engineVersion + ' · CPython ' +
+                        res.runtime.pythonVersion + ' server · seed ' + seed;
+                    return finishRun('simpy-server', res.log, res.wallMs, 'server', label).then(function (h) {
+                        setStatus('SimPy ' + res.runtime.engineVersion + ' ran on native CPython ' +
+                            res.runtime.pythonVersion + ': ' + res.wallMs.toFixed(1) + ' ms engine time, ' +
+                            roundTripMs.toFixed(1) + ' ms round trip.' + pairedHashNote('simpy-server', h));
+                        btn.disabled = false;
+                    });
+                }).catch(function (e) {
+                    setStatus('The native SimPy API failed: ' + (e && e.message ? e.message : e) +
+                        '. Its reference row remains available.');
+                    btn.disabled = false;
+                });
+            } else if (engineId === 'simpy-browser') {
                 setStatus('Starting Pyodide (this is the big opt-in download)…');
                 ensurePyodideWorker().then(function () {
                     return pyodideRun(seed);
                 }).then(function (res) {
                     window.__pyLast = { downloadedMB: res.downloadedMB, pyVersion: res.pyVersion };
-                    return finishRun('simpy', res.log, res.wallMs).then(function () {
+                    return finishRun('simpy-browser', res.log, res.wallMs, 'browser',
+                        'SimPy 4.1.2 · CPython ' + res.pyVersion + ' in browser · seed ' + seed).then(function (h) {
                         setStatus('SimPy ran on CPython ' + res.pyVersion + ' in your browser, inside a Web Worker. ' +
-                            (res.downloadedMB ? 'Pyodide downloaded ' + res.downloadedMB + ' MB (cached for next time).' : ''));
+                            (res.downloadedMB ? 'Pyodide downloaded ' + res.downloadedMB + ' MB (cached for next time).' : '') +
+                            pairedHashNote('simpy-browser', h));
                         btn.textContent = 'Run again';
                         btn.disabled = false;
                     });
@@ -1164,20 +1342,39 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
         var pyWorker = null, pyMsgId = 0, pyPending = {};
         function ensurePyodideWorker() {
             if (bench.pyodideReady) return bench.pyodideReady;
-            bench.pyodideReady = fetch(BASE + 'simpy_factory.py').then(function (r) { return r.text(); })
-                .then(function (pySource) {
+            bench.pyodideReady = Promise.all([
+                fetch(BASE + 'simpy_factory.py').then(function (r) { return r.text(); }),
+                fetch(BASE + 'salabim_animation.py').then(function (r) { return r.text(); })
+            ]).then(function (sources) {
                     var workerSrc = [
                         "importScripts('https://cdn.jsdelivr.net/pyodide/v0.28.0/full/pyodide.js');",
-                        "let pyodide = null, downloadedMB = 0;",
-                        "async function boot(pySource) {",
+                        "let pyodide = null, micropip = null, salabimSource = '', salabimReady = false, downloadedMB = 0;",
+                        "async function boot(sources) {",
+                        "  salabimSource = sources.salabim;",
                         "  pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.28.0/full/' });",
                         "  await pyodide.loadPackage('micropip');",
-                        "  const micropip = pyodide.pyimport('micropip');",
+                        "  micropip = pyodide.pyimport('micropip');",
                         "  await micropip.install('simpy==4.1.2');",
-                        "  pyodide.runPython(pySource);",
+                        "  pyodide.runPython(sources.simpy);",
                         "  try { downloadedMB = Math.round(performance.getEntriesByType('resource')",
                         "    .reduce((s, e) => s + (e.transferSize || 0), 0) / 1048576 * 10) / 10; } catch (e) {}",
                         "  return { pyVersion: pyodide.runPython('import sys; sys.version.split()[0]') };",
+                        "}",
+                        "async function renderSalabim(arg) {",
+                        "  if (!salabimReady) {",
+                        "    await pyodide.loadPackage('pillow');",
+                        "    await micropip.install('salabim==26.0.8');",
+                        "    pyodide.runPython(salabimSource);",
+                        "    salabimReady = true;",
+                        "  }",
+                        "  const renderStarted = performance.now();",
+                        "  const call = 'render_salabim(' + arg.seed + ', ' + JSON.stringify(arg.theme) + ')';",
+                        "  const meta = JSON.parse(pyodide.runPython(call));",
+                        "  const bytes = pyodide.FS.readFile(meta.path);",
+                        "  const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);",
+                        "  return { buffer, meta, renderMs: performance.now() - renderStarted,",
+                        "    pyVersion: pyodide.runPython('import sys; sys.version.split()[0]'),",
+                        "    pillowVersion: pyodide.runPython('import PIL; PIL.__version__') };",
                         "}",
                         "self.onmessage = async (m) => {",
                         "  const { id, cmd, arg } = m.data;",
@@ -1187,6 +1384,10 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                         "      const t0 = performance.now();",
                         "      const json = pyodide.runPython(`canonical(run(PARAMS, ${arg}))`);",
                         "      self.postMessage({ id, ok: true, result: { json, wallMs: performance.now() - t0, downloadedMB } });",
+                        "    }",
+                        "    else if (cmd === 'salabim') {",
+                        "      const r = await renderSalabim(arg);",
+                        "      self.postMessage({ id, ok: true, result: r }, [r.buffer]);",
                         "    }",
                         "  } catch (e) { self.postMessage({ id, ok: false, error: String(e && e.message || e) }); }",
                         "};"
@@ -1208,8 +1409,9 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                             delete pyPending[k2];
                         });
                         bench.pyodideReady = null;
+                        pyWorker = null;
                     };
-                    return pyCall('boot', pySource);
+                    return pyCall('boot', { simpy: sources[0], salabim: sources[1] });
                 });
             return bench.pyodideReady;
         }
@@ -1228,6 +1430,83 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                 });
             });
         }
+
+        var salabimBlobUrl = null;
+        var salabimRenderKey = null;
+        window.__salabimAnimation = { status: 'idle' };
+        function activeTheme() {
+            var explicit = document.documentElement.getAttribute('data-theme');
+            if (explicit === 'light' || explicit === 'dark') return explicit;
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark' : 'light';
+        }
+        document.getElementById('salabimRender').addEventListener('click', function () {
+            var button = this;
+            var image = document.getElementById('salabimAnimation');
+            var placeholder = document.getElementById('salabimPlaceholder');
+            var status = document.getElementById('salabimStatus');
+            var seed = Math.max(0, Math.min(999999999,
+                parseInt(document.getElementById('benchSeed').value, 10) || 0));
+            var theme = activeTheme();
+            var key = seed + ':' + theme;
+            var started = performance.now();
+
+            if (salabimBlobUrl && salabimRenderKey === key) {
+                image.hidden = true;
+                image.removeAttribute('src');
+                requestAnimationFrame(function () {
+                    image.src = salabimBlobUrl;
+                    image.hidden = false;
+                });
+                status.textContent = 'Replaying the cached salabim render for seed ' + seed + '.';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Loading CPython + salabim…';
+            status.textContent = 'Booting Pyodide, then salabim 26.0.8 and Pillow. The page stays responsive because this runs in a worker.';
+            window.__salabimAnimation = { status: 'loading', seed: seed, theme: theme };
+
+            ensurePyodideWorker().then(function () {
+                button.textContent = 'Rendering 61 frames…';
+                status.textContent = 'salabim is advancing six simulated hours and drawing 61 frames at 10 fps.';
+                return pyCall('salabim', { seed: seed, theme: theme });
+            }).then(function (result) {
+                if (salabimBlobUrl) URL.revokeObjectURL(salabimBlobUrl);
+                salabimBlobUrl = URL.createObjectURL(new Blob([result.buffer], { type: 'image/webp' }));
+                salabimRenderKey = key;
+                image.src = salabimBlobUrl;
+                image.hidden = false;
+                placeholder.hidden = true;
+                button.textContent = 'Replay salabim animation';
+                var mb = (result.meta.bytes / 1048576).toFixed(2);
+                status.textContent = 'Rendered locally: salabim ' + result.meta.engineVersion +
+                    ' on CPython ' + result.pyVersion + ' with Pillow ' + result.pillowVersion +
+                    ', seed ' + result.meta.seed + ', ' + result.meta.frames + ' frames, ' +
+                    mb + ' MB WebP, ' + ((performance.now() - started) / 1000).toFixed(1) + ' s total.';
+                document.getElementById('fig4').dataset.salabim = 'rendered';
+                window.__salabimAnimation = {
+                    status: 'rendered',
+                    meta: result.meta,
+                    pyVersion: result.pyVersion,
+                    pillowVersion: result.pillowVersion,
+                    renderMs: result.renderMs,
+                    totalMs: performance.now() - started,
+                    blobBytes: result.buffer.byteLength
+                };
+            }).catch(function (error) {
+                button.textContent = 'Retry salabim render';
+                status.textContent = 'salabim could not load; the event-log replay above still works. ' +
+                    (error && error.message ? error.message : error);
+                document.getElementById('fig4').dataset.salabim = 'failed';
+                window.__salabimAnimation = {
+                    status: 'failed',
+                    error: error && error.message ? error.message : String(error)
+                };
+            }).finally(function () {
+                button.disabled = false;
+            });
+        });
 
         /* ================= Fig 4: the replayer ================= */
         var rp = { log: null, states: null, t: 0, playing: false, speed: 1440, wallStart: null, wallAccum: 0 };
@@ -1323,11 +1602,12 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
         }
         function loadReplay(engineId) {
             var log = bench.logs[engineId];
-            if (log) { initReplay(log, log.header.engine + ' · seed ' + log.header.seed); return; }
+            if (log) { initReplay(log, bench.logLabels[engineId] || (log.header.engine + ' · seed ' + log.header.seed)); return; }
             var eng = ENGINES.filter(function (e) { return e.id === engineId; })[0];
             fetch(BASE + 'logs/' + eng.refFile).then(function (r) { return r.json(); }).then(function (l) {
                 bench.logs[engineId] = l;
-                initReplay(l, l.header.engine + ' · seed ' + l.header.seed + ' (reference)');
+                bench.logLabels[engineId] = eng.label + ' · ' + eng.sub + ' · seed ' + l.header.seed + ' (reference)';
+                initReplay(l, bench.logLabels[engineId]);
             });
         }
 
@@ -1397,6 +1677,47 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
             });
         });
 
+        var kernelHighlightStarted = false;
+        function loadKernelHighlighting() {
+            if (kernelHighlightStarted) return;
+            kernelHighlightStarted = true;
+            Promise.all([
+                import('https://esm.sh/highlight.js@11.11.1/lib/core'),
+                import('https://esm.sh/highlight.js@11.11.1/lib/languages/typescript'),
+                import('https://esm.sh/highlight.js@11.11.1/lib/languages/rust')
+            ]).then(function (mods) {
+                var hljs = mods[0].default;
+                hljs.registerLanguage('typescript', mods[1].default);
+                hljs.registerLanguage('rust', mods[2].default);
+                hljs.configure({ ignoreUnescapedHTML: true });
+                var blocks = Array.prototype.slice.call(document.querySelectorAll(
+                    '#fig5 code.language-typescript, #fig5 code.language-rust'
+                ));
+                blocks.forEach(function (block) { hljs.highlightElement(block); });
+                document.getElementById('fig5').dataset.syntax = 'highlighted';
+                window.__kernelHighlight = {
+                    fallback: false,
+                    version: hljs.versionString,
+                    blocks: blocks.length,
+                    languages: blocks.map(function (block) { return block.result && block.result.language; })
+                };
+            }).catch(function () {
+                document.getElementById('fig5').dataset.syntax = 'plain';
+                window.__kernelHighlight = { fallback: true, blocks: 0, languages: [] };
+            });
+        }
+        if ('IntersectionObserver' in window) {
+            var kernelHighlightObserver = new IntersectionObserver(function (entries) {
+                if (entries.some(function (entry) { return entry.isIntersecting; })) {
+                    kernelHighlightObserver.disconnect();
+                    loadKernelHighlighting();
+                }
+            }, { rootMargin: '300px' });
+            kernelHighlightObserver.observe(document.getElementById('fig5'));
+        } else {
+            loadKernelHighlighting();
+        }
+
         /* ================= Fig 6: decision tree ================= */
         var DECISION = {
             q: 'Where must the simulation run?',
@@ -1404,7 +1725,7 @@ impl&lt;E&gt; Kernel&lt;E&gt; {
                 { label: 'in the browser', node: {
                     q: 'Own the core, or adopt?',
                     edges: [
-                        { label: 'own + embed', leaf: 'Hand-rolled kernel → Rust/WASM\n(this post’s crate)' },
+                        { label: 'own + embed', leaf: 'Hand-rolled Rust core\n(native + WASM, this post’s crate)' },
                         { label: 'adopt', leaf: 'SimScript (TS-native)\nor SimPy via Pyodide (opt-in weight)' }
                     ] } },
                 { label: 'server / notebook', node: {

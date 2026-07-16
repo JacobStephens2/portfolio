@@ -37,6 +37,8 @@ RewriteRule ^blog/measuring-real-authorship/?$ /blog/byte-counts-lie-measuring-w
 RewriteRule ^blog/one-prompt-three-engines/?$ /blog/one-prompt-three-engines-the-same-android-game-in-bevy-unity-and-unreal/ [R=301,L]
 RewriteRule ^blog/tracking-listening-time-six-platforms/?$ /blog/tracking-listening-time-across-six-platforms-without-building-a-surveillance-tool/ [R=301,L]
 RewriteRule ^blog/watching-ai-coding-agents/?$ /blog/what-it-costs-to-watch-your-ai-coding-agents/ [R=301,L]
+RewriteRule ^blog/the-diagram-is-not-the-model-my-voice(?:/index\.html)?/?$ /blog/the-diagram-is-not-the-model/ [R=301,L]
+RewriteRule ^blog/the-animation-is-a-replay-my-voice(?:/index\.html)?/?$ /blog/the-animation-is-a-replay/ [R=301,L]
 
 # Serve .html files without the extension (e.g. /portfolio resolves to /portfolio.html)
 RewriteCond %{REQUEST_FILENAME} !-d

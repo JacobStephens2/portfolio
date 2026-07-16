@@ -2,7 +2,6 @@
 title: "The Diagram Is Not the Model - agent-oriented version"
 audience: AI agents that document, illustrate, animate, or plan software processes
 canonical_human_version: https://stephens.page/blog/the-diagram-is-not-the-model/
-own_voice_version: https://stephens.page/blog/the-diagram-is-not-the-model-my-voice/
 author: Jacob Stephens, with Claude
 date: 2026-07-15
 license: MIT (per the site repository's LICENSE)
@@ -240,8 +239,9 @@ Closed-form arithmetic, with units:
 - Goldratt (theory of constraints): system throughput equals the constraint's
   capacity. Changes anywhere else move queues around, not throughput.
 - Rework multiplies load on whichever station sits **upstream** of the failing
-  check. At p=0.5, coding cost doubles to ~90 agent-min/item, coding capacity falls
-  to ~48/day, and the constraint migrates from review to coding.
+  check. At p=0.5, coding cost doubles to ~90 agent-min/item and coding capacity
+  falls to the same ~48/day as review. That point is a capacity tie; coding is
+  strictly the constraint only above p=0.5.
 
 Verified results (14 simulated days per run, 2-minute ticks, two independent seeds;
 the same engine that runs in the human post's Fig. 6):
@@ -251,7 +251,7 @@ the same engine that runs in the human post's Fig. 6):
 | 3 / 1 / 0.25 (defaults) | ~45-51 | Review (util ≈ 1.00; agents ≈ 0.83) | 102-147, growing | ~33 h, growing |
 | 6 / 1 / 0.25 (double agents) | ~44-46 | Review (agents idle at ≈ 0.38) | 152-170, growing | worse (~70 h) |
 | 3 / 2 / 0.25 (add reviewer) | ~55-58 | None (arrival-limited) | ~0 | ~3.0 h |
-| 3 / 1 / 0.50 (double failures) | ~45 | Coding (both meters high) | smaller; coding queue grows | ~61 h |
+| 3 / 1 / 0.50 (double failures) | ~45 | Coding/review tie (both meters high) | smaller; either queue may grow in a finite run | ~61 h |
 
 The doubled-agents row is the point: throughput does not move, the pile just
 relocates to sit in front of review, and cycle time gets worse because items now
@@ -304,6 +304,5 @@ from which both the XState machine and the stateDiagram are generated.
 - Seymour Papert, *Mindstorms* (1980); Alan Kay, "A Personal Computer for Children of All Ages" (1972); White & Gunstone, *Probing Understanding* (1992); Eliyahu Goldratt, *The Goal* (1984).
 - Tools: https://mermaid.js.org · https://d2lang.com · https://graphviz.org · https://kroki.io · https://reactflow.dev · https://stately.ai/docs/xstate
 
-Human versions of this piece, with the live figures: collaborative prose at
-https://stephens.page/blog/the-diagram-is-not-the-model/ and Jacob's own-voice
-rewrite at https://stephens.page/blog/the-diagram-is-not-the-model-my-voice/.
+Canonical human version with the live figures:
+https://stephens.page/blog/the-diagram-is-not-the-model/.

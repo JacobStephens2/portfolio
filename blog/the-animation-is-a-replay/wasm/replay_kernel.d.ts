@@ -7,7 +7,7 @@
 export function run_factory_json(seed: number, arrival_mean: number, code_mean: number, ci_time: number, fail_p: number, agents: number, reviewers: number, review_mean: number, horizon_min: number): string;
 
 /**
- * Fig. 3 toy: five scheduled events, two at the same instant, popped in
+ * Fig. 5 toy: five scheduled events, two at the same instant, popped in
  * (time, sequence) order - the ordering rule made visible.
  */
 export function run_toy(): string;

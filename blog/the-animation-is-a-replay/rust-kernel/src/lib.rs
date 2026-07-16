@@ -1,10 +1,15 @@
-//! A hand-rolled DES kernel and the factory model, compiled to WebAssembly.
+//! A hand-rolled DES kernel and the factory model, compiled to WebAssembly and
+//! a native shared library.
 //! No simulation dependencies: the kernel is a BinaryHeap keyed on
 //! (time, sequence) and a seeded PCG32. The point of this crate is the post's
 //! Fig. 5 claim: the kernel is an afternoon; the ecosystem is the hard part.
 
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
+#[cfg(not(target_arch = "wasm32"))]
+use std::ffi::CString;
+#[cfg(not(target_arch = "wasm32"))]
+use std::os::raw::c_char;
 use wasm_bindgen::prelude::*;
 
 // ---- The kernel (shown in the post, Fig. 5) ----
@@ -224,6 +229,47 @@ pub fn run_factory_json(
     run_factory(&p, seed as u64)
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+fn benchmark_params() -> Params {
+    Params {
+        arrival_mean: 25.0,
+        code_mean: 45.0,
+        ci_time: 10.0,
+        fail_p: 0.25,
+        agents: 3,
+        reviewers: 1,
+        review_mean: 30.0,
+        horizon_min: 20_160.0,
+    }
+}
+
+/// Native-server entry point. The HTTP adapter owns validation and transport;
+/// this ABI owns only the same deterministic factory run used by WebAssembly.
+#[cfg(not(target_arch = "wasm32"))]
+#[no_mangle]
+pub extern "C" fn run_factory_json_native(seed: u32) -> *mut c_char {
+    let p = benchmark_params();
+    match CString::new(run_factory(&p, seed as u64)) {
+        Ok(json) => json.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+/// Release a string returned by `run_factory_json_native`.
+///
+/// # Safety
+/// `ptr` must be null or a pointer returned by `run_factory_json_native` that
+/// has not already been freed.
+#[cfg(not(target_arch = "wasm32"))]
+#[no_mangle]
+pub unsafe extern "C" fn replay_kernel_string_free(ptr: *mut c_char) {
+    if !ptr.is_null() {
+        unsafe {
+            drop(CString::from_raw(ptr));
+        }
+    }
+}
+
 /// Fig. 5 toy: five scheduled events, two at the same instant, popped in
 /// (time, sequence) order - the ordering rule made visible.
 #[wasm_bindgen]
@@ -239,4 +285,27 @@ pub fn run_toy() -> String {
         out.push(format!("{{\"t\":{:.1},\"event\":\"{}\"}}", t, e));
     }
     format!("[{}]", out.join(","))
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tests {
+    use super::*;
+    use std::ffi::CStr;
+
+    #[test]
+    fn native_ffi_matches_the_rust_entrypoint() {
+        let expected = run_factory(&benchmark_params(), 42);
+        let pointer = run_factory_json_native(42);
+        assert!(!pointer.is_null());
+        let actual = unsafe {
+            CStr::from_ptr(pointer)
+                .to_str()
+                .expect("Rust runner returned UTF-8")
+                .to_owned()
+        };
+        unsafe {
+            replay_kernel_string_free(pointer);
+        }
+        assert_eq!(actual, expected);
+    }
 }

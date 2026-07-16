@@ -1,0 +1,24 @@
+[Unit]
+Description=Native runners for The Animation Is a Replay
+After=network.target
+
+[Service]
+Type=simple
+User=jacob
+Group=jacob
+WorkingDirectory=/var/www/stephens.page/blog/the-animation-is-a-replay/server
+ExecStart=/home/jacob/venvs/animation-replay-bench/bin/uvicorn app:app --host 127.0.0.1 --port 3520 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=REPLAY_RUST_LIBRARY=/usr/local/lib/animation-replay/libreplay_kernel.so
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target

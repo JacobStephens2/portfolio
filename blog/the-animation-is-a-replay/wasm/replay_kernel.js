@@ -27,7 +27,7 @@ export function run_factory_json(seed, arrival_mean, code_mean, ci_time, fail_p,
 }
 
 /**
- * Fig. 3 toy: five scheduled events, two at the same instant, popped in
+ * Fig. 5 toy: five scheduled events, two at the same instant, popped in
  * (time, sequence) order - the ordering rule made visible.
  * @returns {string}
  */
