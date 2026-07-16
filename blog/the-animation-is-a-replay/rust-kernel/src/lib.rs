@@ -1,13 +1,13 @@
 //! A hand-rolled DES kernel and the factory model, compiled to WebAssembly.
 //! No simulation dependencies: the kernel is a BinaryHeap keyed on
 //! (time, sequence) and a seeded PCG32. The point of this crate is the post's
-//! Fig. 3 claim: the kernel is an afternoon; the ecosystem is the hard part.
+//! Fig. 5 claim: the kernel is an afternoon; the ecosystem is the hard part.
 
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use wasm_bindgen::prelude::*;
 
-// ---- The kernel (shown in the post, Fig. 3) ----
+// ---- The kernel (shown in the post, Fig. 5) ----
 
 struct Scheduled<E> {
     t: f64,
@@ -158,7 +158,7 @@ pub fn run_factory(p: &Params, seed: u64) -> String {
     k.schedule(first, Ev::Arrival);
 
     while let Some((t, ev)) = k.next() {
-        if t > p.horizon_min {
+        if t >= p.horizon_min {
             break;
         }
         match ev {
@@ -224,7 +224,7 @@ pub fn run_factory_json(
     run_factory(&p, seed as u64)
 }
 
-/// Fig. 3 toy: five scheduled events, two at the same instant, popped in
+/// Fig. 5 toy: five scheduled events, two at the same instant, popped in
 /// (time, sequence) order - the ordering rule made visible.
 #[wasm_bindgen]
 pub fn run_toy() -> String {

@@ -58,7 +58,8 @@ Directives:
 
 Poisson arrivals mean 25 min; 3 coding agents, exponential 45 min/attempt;
 CI fixed 10 min, fails with p = 0.25; failures re-queue for coding (rework);
-1 reviewer, exponential 30 min; horizon 14 days (20,160 min).
+1 reviewer, exponential 30 min; half-open horizon [0, 14 days), or [0, 20,160
+min). Events at or beyond the cutoff do not belong in the log.
 
 Closed form: coding cost/item = 45/(1-p) = 60 agent-min → coding capacity
 72/day; review capacity 1440/30 = 48/day < 57.6/day arrivals → **review is the
@@ -66,14 +67,14 @@ constraint; predicted throughput 48/day**.
 
 ## Verified results (build-time, 2026-07-16, this droplet + headless Chrome)
 
-Conformance band from 20 SimPy replications (seeds 1000-1019):
-**mean 47.95, sd 1.84, 3σ band [42.43, 53.46]** deploys/day.
+Conformance band from 200 SimPy replications (seeds 1000-1199):
+**mean 47.27, sd 1.89, 3σ band [41.59, 52.95]** deploys/day.
 
 | Engine | Runtime | Deploys/day (seed 42) | Review util | Wall ms (14 sim-days) | Payload | In band |
 |---|---|---|---|---|---|---|
-| ts-kernel (hand-rolled) | Node 22 and Chrome | 46.79 | 0.982 | 13.5 | 0 (inline) | yes |
-| rust-wasm 0.1.0 (hand-rolled, PCG32) | wasm in Node and Chrome | 44.79 | 0.957 | 11.8 | ~53 KB | yes |
-| simscript 1.0.37 | Node and Chrome | 46.57 | 0.994 | 186.2 | ~34 KB | yes |
+| ts-kernel (hand-rolled) | Node 22 and Chrome | 46.79 | 0.984 | 13.5 | 0 (inline) | yes |
+| rust-wasm 0.1.0 (hand-rolled, PCG32) | wasm in Node and Chrome | 44.79 | 0.960 | 11.8 | ~53 KB | yes |
+| simscript 1.0.37 | Node and Chrome | 46.50 | 0.994 | 186.2 | ~34 KB | yes |
 | simpy 4.1.2 | CPython 3.13 native AND Pyodide in Chrome | 46.21 | 0.987 | 28.7 native / ~101 in Pyodide | ~5.2 MB compressed, opt-in | yes |
 
 Cross-runtime determinism results (same seed 42):
@@ -81,12 +82,13 @@ Cross-runtime determinism results (same seed 42):
 - rust-wasm: Node-wasm hash == Chrome-wasm hash (`406362c5…`). Reference logs are
   generated FROM the wasm build, not the native build, because native libm may
   differ in the last ulp; wasm float semantics are identical everywhere.
-- simscript: Node hash == Chrome hash (`7af97569…`).
+- simscript: Node hash == Chrome hash (`35ce159e…`).
 - simpy: CPython-native (glibc) hash == Pyodide (emscripten) hash (`3dab9d60…`) -
   bit-identical across libms for this workload. Do not assume this generalizes;
   verify per workload.
-- No two engines share a hash. All four sit inside the band. At p = 0.5 the
-  constraint migrates to coding (verified: agents pin ≈ 0.98-0.99 utilization).
+- No two engines share a hash. All four sit inside the band. At p = 0.5 coding
+  and review capacities are both 48/day; coding is strictly the constraint only
+  above 0.5 (the browser chart makes the crossover explicit).
 
 ## Engine adapters (reference implementations)
 
@@ -122,6 +124,12 @@ serialization - is the reason to adopt a library for semantics.
   `SimulationState.Finished` - `start()` resolving does not mean finished.
 - Seed its `RandomVar`s explicitly (constructor seed argument); distinct streams
   per purpose (interarrival, service, fail-draw) keep adapters comparable.
+- `EntityGenerator` halves the first sampled interarrival when `startTime` is
+  omitted. Sample the first interval yourself and pass it as `startTime` to
+  match the full exponential first arrival used by the other adapters.
+- `timeEnd` is checked after the next future-event entry executes, so SimScript
+  may overshoot. Filter the emitted log to `e.t < horizonMin`; stats consumers
+  should enforce the same cutoff defensively.
 
 **Pyodide/SimPy in a page** (strictly opt-in; measured 5.2 MB compressed:
 CPython 3.13 + stdlib + micropip + simpy wheel; ~101 ms per 14-day run after boot):
@@ -181,7 +189,7 @@ loaded (engine + seed + reference-vs-live).
 1. Your renderer needs the current queue depth. Where does it get it?
 2. Same seed, two engines, different hashes - bug or expected?
 3. An engine lands at 40.1 deploys/day at the default parameters. What does that
-   mean, given the band [42.43, 53.46]?
+   mean, given the band [41.59, 52.95]?
 4. Why generate the Rust reference log from the wasm build instead of native?
 5. What two properties make a replay shareable and diffable?
 
