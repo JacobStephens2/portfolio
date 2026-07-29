@@ -245,14 +245,14 @@
 
             <h2>What the launcher actually does</h2>
             <p>One command, <code>vaulted-agent claude</code>, which becomes a dedicated service account, resolves a manifest of <code>op://</code> references into its own environment, drops the vault token, and <code>exec</code>s the agent. A second file per harness says what each agent may reach:</p>
-            <pre><code># /etc/vaulted-agent/harnesses.d/codex.conf
+            <pre><code># harnesses.d/codex.conf
 backend  = onepassword
 manifest = limited.env.tpl
 command  = codex -s danger-full-access -a on-request</code></pre>
             <p>The manifest is the interesting part. It names environment variables and the vault references that fill them, so it holds no secrets and a diff of it tells you exactly which credentials an agent gained or lost. Claude gets 134 references; Codex gets a subset with no production database write access. That is the thesis of the whole thing: <strong>treat the agent as the unit of authorization.</strong> An agent holding a shell is not a normal program. It improvises, it acts on text handed to it by other systems, and I do not extend identical trust to every vendor’s.</p>
 
             <h2>The claim I had to walk back first</h2>
-            <p>Before any of the bugs, I had to fix the sentence I wanted to write. “No secrets on disk” is false. One credential stays on disk: the 1Password service-account token, at <code>/etc/vaulted-agent/op.env</code>, mode <code>0640 root:agent</code>. Everything else is derived from it at launch.</p>
+            <p>Before any of the bugs, I had to fix the sentence I wanted to write. “No secrets on disk” is false. One credential stays on disk: the 1Password service-account token in a mode-<code>0640</code> <code>op.env</code> that the service account can read. Everything else is derived from it at launch.</p>
             <p>What that buys is one credential on disk instead of thirty, central revocation, and a written answer to “which agent could reach what.” Those are worth having. But a repo about credential handling that opens with an overclaim has spent its credibility on line one, and the audience I want is exactly the audience that checks.</p>
 
             <h2>Bug 1: <code>&lt;&lt;&lt;</code> writes your secrets to /tmp</h2>

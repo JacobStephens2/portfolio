@@ -529,7 +529,7 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
             <code>VAULTED_AGENT_VERSION=v0.1.0</code>. Pass installer flags after
             <code>bash -s --</code> (for example <code>--user agent</code>).
         </p>
-        <p>One credential stays on disk (1Password example; other backends in the README):</p>
+        <p>One credential stays on disk (1Password example; other backends in the README). Put the service-account token in <code>op.env</code> (mode <code>0640</code>, readable by the service account), then activate a harness from the examples the installer left:</p>
         <span class="install-label">Configure token</span>
         <div class="install-block" data-copy-block>
             <button type="button" class="copy-btn" data-copy-target="cmd-token" aria-label="Copy vault token setup commands" title="Copy">
@@ -541,12 +541,12 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                     <path d="M20 6 9 17l-5-5"></path>
                 </svg>
             </button>
-            <pre id="cmd-token"><code>printf 'OP_SERVICE_ACCOUNT_TOKEN=ops_...\n' | sudo tee /etc/vaulted-agent/op.env >/dev/null
-sudo chown root:"$USER" /etc/vaulted-agent/op.env
-sudo chmod 0640 /etc/vaulted-agent/op.env
+            <pre id="cmd-token"><code># write into op.env (0640 root:service-account), path printed by install.sh
+printf 'OP_SERVICE_ACCOUNT_TOKEN=ops_...\n' | sudo tee op.env >/dev/null
+sudo chmod 0640 op.env
 
-sudo cp /etc/vaulted-agent/harnesses.d/claude.conf.example \
-        /etc/vaulted-agent/harnesses.d/claude.conf</code></pre>
+# copy a harness example into place (drop the .example suffix)
+sudo cp harnesses.d/claude.conf.example harnesses.d/claude.conf</code></pre>
         </div>
 
         <h2>Try without installing</h2>
