@@ -14,14 +14,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#9b4d24">
     <title>vaulted-agent | stephens.page</title>
-    <meta name="description" content="Launch Claude Code, Codex, or Grok with vault-resolved secrets in-process. va run for any command, doctor, secrets helpers, prompt auth. v0.3.0.">
+    <meta name="description" content="Launch Claude Code, Codex, or Grok with vault-resolved secrets in-process. va run for any command, doctor, secrets helpers, prompt auth. v0.4.0.">
     <meta property="og:title" content="vaulted-agent - secrets for AI agents, not a pile of .env files">
     <meta property="og:description" content="One launcher, per-agent manifests, Bitwarden/1Password/pass. Optional prompt auth so the vault token need not live on disk. va run, doctor, secrets.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://stephens.page/vaulted-agent">
     <meta property="og:site_name" content="Jacob Stephens">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="vaulted-agent v0.3.0">
+    <meta name="twitter:title" content="vaulted-agent v0.4.0">
     <meta name="twitter:description" content="Vault-resolved secrets for AI coding agents - install with one curl, or clone from GitHub.">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
     <script>
@@ -105,7 +105,8 @@
         .lede {
             color: var(--muted);
             font-size: 1rem;
-            max-width: 58ch;
+            max-width: none;
+            width: 100%;
             margin: 0 0 0.85rem;
         }
 
@@ -561,7 +562,7 @@
         </div>
 
         <span class="eyebrow">Open source · secrets for agents · macOS · Linux</span>
-        <h1>vaulted-agent <span class="version-pill">v0.3.0</span></h1>
+        <h1>vaulted-agent <span class="version-pill">v0.4.0</span></h1>
         <p class="lede">
             Launch Claude Code, Codex, Grok, or Kimi Code with vault-resolved
             secrets in the process - not in a pile of <code>.env</code> files. One vault,
@@ -583,11 +584,11 @@
         <h2 id="install" class="install-heading">Install</h2>
         <p class="install-intro">
             <strong>macOS and Linux.</strong> One-liner bootstraps a tagged GitHub release
-            (default pin <code>v0.3.0</code>, not floating <code>main</code>). Installs
+            (default pin <code>v0.4.0</code>, not floating <code>main</code>). Installs
             <code>vaulted-agent</code> + <code>va</code>, detects
             claude / codex / grok / kimi on PATH with <code>workdir = caller</code>, and
             can prompt for a vault backend plus auth mode. Override pin:
-            <code>VAULTED_AGENT_VERSION=v0.3.0</code> (or <code>latest</code>).
+            <code>VAULTED_AGENT_VERSION=v0.4.0</code> (or <code>latest</code>).
         </p>
 
         <div class="install-primary">
@@ -622,7 +623,7 @@
                         <path d="M20 6 9 17l-5-5"></path>
                     </svg>
                 </button>
-                <pre id="cmd-github"><code>git clone --branch v0.3.0 --depth 1 \
+                <pre id="cmd-github"><code>git clone --branch v0.4.0 --depth 1 \
   https://github.com/JacobStephens2/vaulted-agent-launcher
 cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
             </div>
@@ -865,7 +866,7 @@ vaulted-agent claude</code></pre>
                 <pre id="cmd-ops"><code>va setup                 # backend / token; Bitwarden can build a refs file
 va auth-mode             # file (token on disk) vs prompt (paste each launch)
 va doctor                # harnesses, CLIs, manifest syntax (no secret values)
-va version               # e.g. vaulted-agent 0.3.0
+va version               # e.g. vaulted-agent 0.4.0
 va claude -p             # force token prompt this launch only</code></pre>
             </div>
         </div>
@@ -1010,7 +1011,7 @@ va setup                     # interactive backend help
             </div>
             <div class="card good">
                 <h3>va version</h3>
-                <p>Prints <code>vaulted-agent 0.3.0</code>. The remote installer pins the same series so README and one-liner stay aligned.</p>
+                <p>Prints <code>vaulted-agent 0.4.0</code>. The remote installer pins the same series so README and one-liner stay aligned.</p>
             </div>
         </div>
         <div class="install-block" data-copy-block>
@@ -1099,7 +1100,7 @@ va secrets validate openai.env.refs bitwarden</code></pre>
             Prefer not to pipe to bash? Download
             <a href="/vaulted-agent/install.sh">install.sh</a>, read it, then
             <code>bash install.sh</code>. Pin with
-            <code>VAULTED_AGENT_VERSION=v0.3.0</code>. Useful flags after
+            <code>VAULTED_AGENT_VERSION=v0.4.0</code>. Useful flags after
             <code>bash -s --</code>:
             <code>--backend bitwarden --auth-mode prompt</code>,
             <code>--no-va</code>, <code>--no-auto-harness</code>,
@@ -1141,7 +1142,7 @@ va kimi resume abc123</code></pre>
                 </svg>
                 Full docs on GitHub
             </a>
-            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.3.0">v0.3.0 release notes</a>
+            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.4.0">v0.4.0 release notes</a>
             <a class="cta cta-secondary" href="/gpt-image">gpt-image example</a>
         </div>
 
@@ -1154,7 +1155,7 @@ va kimi resume abc123</code></pre>
                     </svg>
                     JacobStephens2/vaulted-agent-launcher
                 </a>
-                · MIT · v0.3.0 · <a href="/">stephens.page</a>
+                · MIT · v0.4.0 · <a href="/">stephens.page</a>
             </p>
             <p>&copy; <span id="current-year"></span> Stephens Page LLC</p>
         </footer>
