@@ -791,16 +791,17 @@ va kimi --continue
 # or without editing a harness:
 va run -m openai.env.refs --backend bitwarden -p -- env | sort
 
-# later: added more secrets in Bitwarden SM?
-va refresh openai.env.refs          # rebuild refs (values still fetched live)
-va refresh openai.env.refs --all</code></pre>
+# later: added more secrets in Bitwarden SM? (same refs writer as setup)
+va refresh openai.env.refs              # merge: keep existing, append new
+va refresh openai.env.refs --all        # append every not-yet-mapped secret
+va refresh openai.env.refs --replace --all  # rewrite file from scratch</code></pre>
         </div>
         <p class="note">
             <strong>Value vs list.</strong> Rotating a secret’s value in Secrets
             Manager needs no command - the next launch fetches it live. Adding a
-            <em>new</em> secret you want in a harness means updating the refs file:
-            <code>va refresh</code> (or hand-edit
-            <code>OPENAI_API_KEY=name:…</code> lines).
+            <em>new</em> secret uses the same refs-file process as setup, via
+            <code>va refresh</code> (default: merge into the existing file).
+            Hand-edit <code>OPENAI_API_KEY=name:…</code> lines if you prefer.
         </p>
 
         <div class="cta-row hero-cta">
