@@ -67,7 +67,7 @@
         .container {
             max-width: 720px;
             margin: 0 auto;
-            padding: 1.5rem 1.1rem 3.5rem;
+            padding: 1rem 1.1rem 3.5rem;
         }
 
         .topbar {
@@ -75,7 +75,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1.75rem;
+            margin-bottom: 1rem;
         }
 
         .back-link {
@@ -85,7 +85,7 @@
 
         .eyebrow {
             display: block;
-            margin-bottom: 0.45rem;
+            margin-bottom: 0.3rem;
             color: var(--brand);
             font-size: 0.75rem;
             font-weight: 700;
@@ -96,24 +96,24 @@
         h1 {
             font-family: 'Source Serif 4', Georgia, serif;
             font-weight: 700;
-            font-size: clamp(2rem, 5vw, 2.55rem);
+            font-size: clamp(1.75rem, 4.5vw, 2.2rem);
             line-height: 1.08;
             letter-spacing: -0.015em;
-            margin: 0 0 0.7rem;
+            margin: 0 0 0.45rem;
         }
 
         .lede {
             color: var(--muted);
-            font-size: 1.08rem;
+            font-size: 1rem;
             max-width: 58ch;
-            margin: 0 0 1.75rem;
+            margin: 0 0 0.85rem;
         }
 
         .chips {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.45rem;
-            margin: 0 0 2rem;
+            gap: 0.4rem;
+            margin: 0 0 1rem;
         }
 
         .chip {
@@ -134,6 +134,17 @@
             font-weight: 700;
             margin: 2.1rem 0 0.7rem;
             letter-spacing: -0.01em;
+        }
+
+        h2.install-heading {
+            margin: 0.35rem 0 0.35rem;
+            font-size: 1.15rem;
+        }
+
+        .install-intro {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin: 0 0 0.55rem;
         }
 
         h3 {
@@ -200,34 +211,47 @@
         /* Code blocks with Claude-docs-style copy icon on the right */
         .install-label {
             display: block;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 700;
             letter-spacing: 0.03em;
             text-transform: uppercase;
             color: var(--muted);
-            margin: 1rem 0 0.45rem;
+            margin: 0.65rem 0 0.3rem;
         }
 
         .install-block {
             position: relative;
             border: 1px solid var(--rule);
             border-radius: 10px;
-            margin: 0 0 1.15rem;
+            margin: 0 0 0.55rem;
             background: var(--code-bg);
             overflow: hidden;
         }
 
         .install-block pre {
             margin: 0;
-            padding: 0.95rem 3rem 0.95rem 1.05rem;
+            padding: 0.75rem 2.75rem 0.75rem 0.9rem;
             overflow-x: auto;
             font-family: 'Source Code Pro', ui-monospace, Menlo, Consolas, monospace;
-            font-size: 0.84rem;
-            line-height: 1.5;
+            font-size: 0.82rem;
+            line-height: 1.45;
             background: transparent;
             color: var(--ink);
             white-space: pre-wrap;
             word-break: break-word;
+        }
+
+        /* Keep the two primary install commands compact and above the fold */
+        .install-primary {
+            margin: 0 0 0.75rem;
+        }
+
+        .install-primary .install-block {
+            margin-bottom: 0.45rem;
+        }
+
+        .cta-row.hero-cta {
+            margin: 0.65rem 0 0;
         }
 
         .install-block code {
@@ -296,7 +320,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.65rem;
-            margin: 1.5rem 0 0.5rem;
+            margin: 1.25rem 0 0.5rem;
         }
 
         .cta {
@@ -384,31 +408,58 @@
         <h1>vaulted-agent</h1>
         <p class="lede">
             Give an AI coding agent real credentials without leaving them on disk.
-            One small launcher resolves secrets from a vault into the agent’s
-            process at start, runs it as a service account, and gives each harness
-            only the secrets you named for it.
+            Vault-resolved secrets at launch for Claude Code, Codex, and Grok.
         </p>
 
-        <div class="chips">
-            <span class="chip">Claude Code</span>
-            <span class="chip">Codex</span>
-            <span class="chip">Grok</span>
-            <span class="chip">1Password · Bitwarden · pass</span>
-            <span class="chip">bash · sudo</span>
+        <h2 id="install" class="install-heading">Install</h2>
+        <p class="install-intro">
+            Copy one and go. One-liner bootstraps a tagged GitHub release (not floating <code>main</code>).
+        </p>
+
+        <div class="install-primary">
+            <span class="install-label">One-liner</span>
+            <div class="install-block" data-copy-block>
+                <button type="button" class="copy-btn" data-copy-target="cmd-oneliner" aria-label="Copy one-liner install command" title="Copy">
+                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 6 9 17l-5-5"></path>
+                    </svg>
+                </button>
+                <pre id="cmd-oneliner"><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
+            </div>
+
+            <span class="install-label">From GitHub</span>
+            <div class="install-block" data-copy-block>
+                <button type="button" class="copy-btn" data-copy-target="cmd-github" aria-label="Copy GitHub install commands" title="Copy">
+                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 6 9 17l-5-5"></path>
+                    </svg>
+                </button>
+                <pre id="cmd-github"><code>git clone --branch v0.1.0 --depth 1 \
+  https://github.com/JacobStephens2/vaulted-agent-launcher
+cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
+            </div>
         </div>
 
-        <div class="cta-row">
-            <a class="cta cta-primary" href="#install">Install</a>
+        <div class="cta-row hero-cta">
             <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher">
                 <svg class="gh-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
                 </svg>
                 GitHub
             </a>
-            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.1.0">v0.1.0 release</a>
+            <a class="cta cta-secondary" href="#what-it-does">How it works</a>
+            <a class="cta cta-secondary" href="/vaulted-agent/install.sh">Raw install.sh</a>
         </div>
 
-        <h2>What it does</h2>
+        <h2 id="what-it-does">What it does</h2>
         <p>
             You type <code>vaulted-agent claude</code> (or codex, or grok). The launcher
             becomes the agent account, scrubs the environment, injects only the
@@ -425,6 +476,14 @@
       ├─ unset vault token             agent must not inherit the master key
       └─ exec claude …
              └─ secrets live here, until the process exits</pre>
+
+        <div class="chips">
+            <span class="chip">Claude Code</span>
+            <span class="chip">Codex</span>
+            <span class="chip">Grok</span>
+            <span class="chip">1Password · Bitwarden · pass</span>
+            <span class="chip">bash · sudo</span>
+        </div>
 
         <div class="grid-2">
             <div class="card good">
@@ -447,52 +506,14 @@
             </div>
         </div>
 
-        <h2 id="install">Install</h2>
-        <p>
-            Two supported paths. The one-liner only bootstraps from this host;
-            the payload is always a <strong>tagged GitHub release</strong>, not floating
-            <code>main</code>. Neither path writes your vault token for you.
-        </p>
-
-        <span class="install-label">One-liner</span>
-        <div class="install-block" data-copy-block>
-            <button type="button" class="copy-btn" data-copy-target="cmd-oneliner" aria-label="Copy one-liner install command" title="Copy">
-                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5"></path>
-                </svg>
-            </button>
-            <pre id="cmd-oneliner"><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
-        </div>
-
-        <span class="install-label">From GitHub (inspectable)</span>
-        <div class="install-block" data-copy-block>
-            <button type="button" class="copy-btn" data-copy-target="cmd-github" aria-label="Copy GitHub install commands" title="Copy">
-                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5"></path>
-                </svg>
-            </button>
-            <pre id="cmd-github"><code>git clone --branch v0.1.0 --depth 1 \
-  https://github.com/JacobStephens2/vaulted-agent-launcher
-cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
-        </div>
-
-        <p class="note">
+        <h2>After install</h2>
+        <p class="note" style="margin-top:0">
             Prefer not to pipe to bash? Download
             <a href="/vaulted-agent/install.sh">install.sh</a>, read it, then
             <code>bash install.sh</code>. Pin with
             <code>VAULTED_AGENT_VERSION=v0.1.0</code>. Pass installer flags after
             <code>bash -s --</code> (for example <code>--user agent</code>).
         </p>
-
-        <h3>After install — vault token</h3>
         <p>One credential stays on disk (1Password example; other backends in the README):</p>
         <span class="install-label">Configure token</span>
         <div class="install-block" data-copy-block>
@@ -537,7 +558,7 @@ cd vaulted-agent-launcher && ./demo/try-it.sh</code></pre>
                 </svg>
                 Full docs on GitHub
             </a>
-            <a class="cta cta-secondary" href="/vaulted-agent/install.sh">Raw install.sh</a>
+            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.1.0">v0.1.0 release</a>
         </div>
 
         <footer>
