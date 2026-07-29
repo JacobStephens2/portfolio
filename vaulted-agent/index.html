@@ -15,14 +15,14 @@
     <meta name="theme-color" content="#9b4d24">
     <title>vaulted-agent | stephens.page</title>
     <meta name="description" content="Give an AI coding agent real credentials without leaving them on disk. One launcher, vault-resolved secrets in-process, Claude Code / Codex / Grok.">
-    <meta property="og:title" content="vaulted-agent — secrets for AI coding agents, not on disk">
+    <meta property="og:title" content="vaulted-agent - secrets for AI coding agents, not on disk">
     <meta property="og:description" content="Launch Claude Code, Codex, or Grok with vault-resolved secrets in the process environment. One credential on disk; manifests for blast radius.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://stephens.page/vaulted-agent">
     <meta property="og:site_name" content="Jacob Stephens">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="vaulted-agent">
-    <meta name="twitter:description" content="Vault-resolved secrets for AI coding agents — install with one curl, or clone from GitHub.">
+    <meta name="twitter:description" content="Vault-resolved secrets for AI coding agents - install with one curl, or clone from GitHub.">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -407,13 +407,17 @@
         <span class="eyebrow">Open source · secrets for agents</span>
         <h1>vaulted-agent</h1>
         <p class="lede">
-            Give an AI coding agent real credentials without leaving them on disk.
-            Vault-resolved secrets at launch for Claude Code, Codex, and Grok.
+            Launch Claude Code, Codex, and Grok from one vault. Secrets resolve into
+            each agent’s process at start - not into a pile of <code>.env</code> files.
+            The thesis: <strong>treat the agent as the unit of authorization.</strong>
+            One credential stays on disk; manifests control blast radius.
         </p>
 
         <h2 id="install" class="install-heading">Install</h2>
         <p class="install-intro">
             Copy one and go. One-liner bootstraps a tagged GitHub release (not floating <code>main</code>).
+            Writing this pattern down found five production bugs - the writeup is
+            <a href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">on the blog</a>.
         </p>
 
         <div class="install-primary">
@@ -455,16 +459,20 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                 </svg>
                 GitHub
             </a>
+            <a class="cta cta-secondary" href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">The writeup</a>
             <a class="cta cta-secondary" href="#what-it-does">How it works</a>
             <a class="cta cta-secondary" href="/vaulted-agent/install.sh">Raw install.sh</a>
         </div>
 
         <h2 id="what-it-does">What it does</h2>
         <p>
-            You type <code>vaulted-agent claude</code> (or codex, or grok). The launcher
-            becomes the agent account, scrubs the environment, injects only the
-            secrets in that harness’s manifest, drops the vault token, and
-            <code>exec</code>s the agent. Secrets live in that process until it exits.
+            One command, <code>vaulted-agent claude</code>, becomes a dedicated service
+            account, resolves a manifest of vault references into the process
+            environment, drops the vault token, and <code>exec</code>s the agent.
+            A second file per harness says what each agent may reach - Claude can
+            get a wide manifest; Codex a narrower one without production DB write
+            access. Diff the manifest and you have a written answer to “which agent
+            could reach what.” Secrets live in that process until it exits.
         </p>
         <pre class="flow" aria-label="Launch flow">you $ vaulted-agent claude
       │
@@ -490,21 +498,28 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                 <h3>What you get</h3>
                 <ul>
                     <li>One vault token on disk instead of a fleet of <code>.env</code> files</li>
-                    <li>Central rotation — change the vault, every future launch picks it up</li>
+                    <li>Central rotation - change the vault, every future launch picks it up</li>
                     <li>Diffable manifests: which agent can reach what</li>
                     <li>Nothing secret on the command line (<code>ps</code> stays clean)</li>
+                    <li>A demo that prints the real environment, not a success banner</li>
                 </ul>
             </div>
             <div class="card warn">
                 <h3>Honest limits</h3>
                 <ul>
-                    <li>Not “zero secrets on disk” — one service-account token remains</li>
+                    <li>Not “zero secrets on disk” - one service-account token remains</li>
                     <li>The agent can read its own environment (and so can anything as that user)</li>
-                    <li>Manifests control blast radius, not full containment</li>
+                    <li>Manifests are blast-radius control, not containment - the agent can still open the token file</li>
                     <li>Root on the host can still read everything</li>
                 </ul>
             </div>
         </div>
+        <p style="color:var(--muted);font-size:0.95rem;margin:0.5rem 0 0">
+            Publishing forced five bug fixes (here-strings spilling to <code>/tmp</code>,
+            the vault token riding along, missing environment scrub, exported bash
+            functions, broken per-path sudoers). Full walkthrough:
+            <a href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">One Vault, Three Agents</a>.
+        </p>
 
         <h2>After install</h2>
         <p class="note" style="margin-top:0">

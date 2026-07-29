@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Vault, Three Agents: Writing the Pattern Down Found Five Bugs In It | Jacob Stephens</title>
+    <meta name="description" content="I launch Claude Code, Codex, and Grok from one 1Password vault. Generalizing three shell wrappers into a public launcher found five bugs - including handing every agent the credential that unlocks the whole vault.">
+    <meta property="og:title" content="One Vault, Three Agents: Writing the Pattern Down Found Five Bugs In It">
+    <meta property="og:description" content="Publishing a vaulted agent launcher found five production bugs - one of which handed every session the vault master token.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="One Vault, Three Agents: Writing the Pattern Down Found Five Bugs In It">
+    <meta name="twitter:description" content="Publishing a vaulted agent launcher found five production bugs - one of which handed every session the vault master token.">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
+            --code-bg: #efe9df;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .back-link,
+        .contact-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+        }
+
+        .back-link:hover,
+        .back-link:focus-visible,
+        .contact-link:hover,
+        .contact-link:focus-visible {
+            color: var(--brand);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        article.note {
+            padding: 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 0.9rem;
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1.title {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.08;
+            letter-spacing: -0.01em;
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .meta strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--brand);
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        p + p {
+            margin-top: 0;
+        }
+
+        ol, ul {
+            margin-bottom: 1rem;
+            padding-left: 1.4rem;
+        }
+
+        ol li, ul li {
+            margin-bottom: 0.4rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.92em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1rem 1.1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        strong {
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--brand);
+            text-decoration: none;
+        }
+
+        a:hover,
+        a:focus-visible {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        .ai-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: var(--soft);
+            border-left: 3px solid var(--brand);
+            border-radius: 0 6px 6px 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.25rem 1rem 2.5rem;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <span style="display:flex;flex-wrap:wrap;gap:1.1rem">
+                <a href="/blog/" class="back-link">&larr; All posts</a>
+                <a href="https://github.com/JacobStephens2/portfolio/tree/main/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/" class="back-link" rel="noopener">Source on GitHub</a>
+            </span>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; AI Infrastructure &middot; Security</div>
+            <h1 class="title">One Vault, Three Agents: Writing the Pattern Down Found Five Bugs In It</h1>
+            <p class="meta"><strong>July 29, 2026</strong> &middot; ~1,400 words &middot; Publishing <a href="/vaulted-agent/">vaulted-agent</a></p>
+
+            <p>I launch Claude Code, Codex, and Grok from one 1Password vault, with the secrets resolved into each agent’s process environment at the moment it starts and never written to disk. I had been doing this with three near-identical shell wrappers. When I sat down to generalize them into a public repo, the act of writing the pattern down found five bugs in it - one of which had been handing every agent session the credential that unlocks the entire vault.</p>
+
+            <p>The repo is at <a href="https://github.com/JacobStephens2/vaulted-agent-launcher">https://github.com/JacobStephens2/vaulted-agent-launcher</a>, with a short product page and install commands at <a href="/vaulted-agent/">https://stephens.page/vaulted-agent</a>. This post is about what publishing it taught me, not about how to use it.</p>
+
+            <h2>What the launcher actually does</h2>
+            <p>One command, <code>vaulted-agent claude</code>, which becomes a dedicated service account, resolves a manifest of <code>op://</code> references into its own environment, drops the vault token, and <code>exec</code>s the agent. A second file per harness says what each agent may reach:</p>
+            <pre><code># /etc/vaulted-agent/harnesses.d/codex.conf
+backend  = onepassword
+manifest = limited.env.tpl
+command  = codex -s danger-full-access -a on-request</code></pre>
+            <p>The manifest is the interesting part. It names environment variables and the vault references that fill them, so it holds no secrets and a diff of it tells you exactly which credentials an agent gained or lost. Claude gets 134 references; Codex gets a subset with no production database write access. That is the thesis of the whole thing: <strong>treat the agent as the unit of authorization.</strong> An agent holding a shell is not a normal program. It improvises, it acts on text handed to it by other systems, and I do not extend identical trust to every vendor’s.</p>
+
+            <h2>The claim I had to walk back first</h2>
+            <p>Before any of the bugs, I had to fix the sentence I wanted to write. “No secrets on disk” is false. One credential stays on disk: the 1Password service-account token, at <code>/etc/vaulted-agent/op.env</code>, mode <code>0640 root:agent</code>. Everything else is derived from it at launch.</p>
+            <p>What that buys is one credential on disk instead of thirty, central revocation, and a written answer to “which agent could reach what.” Those are worth having. But a repo about credential handling that opens with an overclaim has spent its credibility on line one, and the audience I want is exactly the audience that checks.</p>
+
+            <h2>Bug 1: <code>&lt;&lt;&lt;</code> writes your secrets to /tmp</h2>
+            <p>The obvious way to walk the resolved output is a here-string:</p>
+            <pre><code>injected=$(op inject -i "$manifest")
+while IFS= read -r line; do export "$line"; done &lt;&lt;&lt; "$injected"   # do not</code></pre>
+            <p>Bash serves a here-string from a pipe only while it fits in the pipe buffer, and spills to a temporary file above it. On Linux that threshold is 64 KiB, and the pipe optimization only arrived in bash 5.1 - earlier versions write the file unconditionally. You can watch it happen:</p>
+            <pre><code>$ bash -c 'readlink /proc/self/fd/0' &lt;&lt;&lt; "small"
+pipe:[112050729]
+$ big=$(head -c 100000 /dev/zero | tr '\0' a)
+$ bash -c 'readlink /proc/self/fd/0' &lt;&lt;&lt; "$big"
+/tmp/sh-thd.PJd9QD (deleted)</code></pre>
+            <p>So the code is correct until the manifest grows, and then it silently writes every resolved secret to disk. My live manifest measured 13 KB across 134 keys. That is 52 KB of headroom, which means “never touches disk” was a property of my current vault size rather than of my code. The fix is to walk the string with parameter expansion, which never leaves memory.</p>
+
+            <h2>Bug 2: the vault token rides along</h2>
+            <p><code>set -a; . op.env; set +a</code> exports <code>OP_SERVICE_ACCOUNT_TOKEN</code>, and <code>exec claude</code> inherits it. I checked my own running session and there it was. Every agent I had launched was holding the credential that unlocks the whole vault, not just the 134 keys I had listed for it.</p>
+            <p>One <code>unset</code> before the handoff closes it. Without that line, per-harness manifests are decorative: any harness could simply read the rest itself.</p>
+
+            <h2>Bug 3: injection only adds, and I never subtracted</h2>
+            <p>A narrow manifest constrains nothing if the process inherits a wide environment. <code>sudo</code> resets the environment on the cross-user hop, which makes this look handled. But the launcher also runs with no sudo hop at all: from cron as the service account, from a service-account shell, and above all when <strong>one agent shells out to another</strong>, which is the entire point of running several.</p>
+            <p>I found this by giving a harness a manifest naming exactly one variable, running it, and watching my real GitHub token print in the output. The fix is to scrub to an allowlist before injecting, so the agent receives its manifest and nothing else.</p>
+
+            <h2>Bug 4: exported functions are not variables</h2>
+            <p>This is the one I want to keep. I wrote a demo that stands up a throwaway config and prints what each agent actually received, so a reader can verify the claims instead of trusting them. The first time I ran it, the table looked like this:</p>
+            <pre><code>                    claude   grok
+   APP_DB_HOST      yes      yes
+   GH_TOKEN         yes       -
+   BASH_FUNC_which%%   yes   yes
+   BASH_FUNC_module%%  yes   yes
+   BASH_FUNC_scl%%     yes   yes</code></pre>
+            <p>My scrub iterated <code>compgen -e</code>, which lists exported <em>variables</em>. Bash carries exported <em>functions</em> in the environment as <code>BASH_FUNC_name%%=() { ... }</code> and rebuilds them in the child, so the loop never saw them, and <code>unset NAME</code> would not have removed them regardless. The correct spelling is a second pass over <code>declare -Fx</code> with <code>unset -f</code>.</p>
+            <p>On my machine those were harmless leftovers from <code>/etc/profile.d</code>. The mechanism is not harmless: a caller can export a function named <code>git</code>, <code>curl</code>, or <code>ssh</code>, and the agent calls that instead of the binary it meant to run.</p>
+            <p>The demo I wrote to prove the launcher worked is what proved it didn’t. That is the argument for shipping a demo that prints reality rather than asserting success, and I would not have found this one by reading the code.</p>
+
+            <h2>Bug 5: <code>readlink -f</code> breaks per-path sudoers</h2>
+            <p>The launcher can be invoked through per-harness symlinks - <code>claude-conductor</code>, <code>codex-conductor</code> - so that a sudoers file can grant one path per harness with no argument matching. When it re-execs itself under <code>sudo</code>, the reflex is to resolve <code>$0</code> to the real script. Do that, and every invocation re-execs as <code>/usr/local/bin/vaulted-agent</code>, matching none of the per-path rules and quietly requiring the caller to be entitled to the launcher itself. It has to re-exec through the path that was <em>invoked</em>.</p>
+
+            <h2>What it still does not do</h2>
+            <p>The launcher runs as the service account, reads the backend credential as that account, and <code>exec</code>s the agent as that same account. So the agent can open that credential file itself and query the vault directly, whatever its manifest says.</p>
+            <p>Dropping the token before <code>exec</code> prevents inheritance, which rules out accidents and any tool that reads <code>OP_SERVICE_ACCOUNT_TOKEN</code> on sight. It is not a wall against an agent that goes looking. Manifests are blast-radius control, not containment, and I had to rewrite that section of the README once I noticed.</p>
+            <p>Making them containment needs privilege separation: run the resolver as root, read a <code>0600 root:root</code> token, then <code>setpriv --reuid=agent --init-groups</code> and exec, so the agent never had permission to read the credential in the first place. <code>setpriv</code> preserves the environment across the drop, which is what makes it work. I have not built it yet. The cost is that the launcher briefly runs as root, so a bug in it is worth more - which is the usual privilege-separation trade, and an argument for keeping the launcher small enough to read in one sitting.</p>
+
+            <h2>The part I keep thinking about</h2>
+            <p>Every one of these bugs had been running in production. None of them was found by using the tool, because using it works fine - the agents launch, the secrets arrive, nothing errors. They were found by having to explain the tool to strangers who would not extend me the benefit of the doubt, and by writing a demo that had to print the actual environment rather than a reassuring message.</p>
+            <p>I do not have a tidy conclusion about how much of my other infrastructure would survive the same treatment. I suspect not all of it.</p>
+
+            <div class="ai-note">
+                Written from the production launcher, the five bugs found while publishing it, and working notes. The decisions and the work are mine; the prose is collaborative.
+            </div>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+    <script src="/blog/newsletter-widget.js" defer></script>
+</body>
+</html>
