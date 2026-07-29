@@ -588,8 +588,14 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
             if (window.turnstile && widgetId !== null) window.turnstile.reset(widgetId);
             return;
           }
-          log('Wrote trial.png', 'ok');
-          log(data.message || 'ok', 'ok');
+          if (data.cost_line) {
+            log('Wrote trial.png · ' + data.cost_line, 'ok');
+          } else if (data.cost_usd != null) {
+            log('Wrote trial.png · ~$' + Number(data.cost_usd).toFixed(4) + ' est.', 'ok');
+          } else {
+            log('Wrote trial.png', 'ok');
+          }
+          if (data.message) log(data.message, 'ok');
           if (data.image_b64 && imageEl && resultEl) {
             imageEl.src = 'data:image/png;base64,' + data.image_b64;
             resultEl.classList.add('is-visible');

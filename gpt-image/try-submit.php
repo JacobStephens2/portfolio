@@ -162,6 +162,75 @@ function openai_generate(string $apiKey, string $prompt): array {
     return [$status, $body, $err];
 }
 
+/**
+ * Estimate USD cost from Images API usage tokens.
+ * Rates: OpenAI standard-tier gpt-image-2 per 1M tokens (text in $5, image in $8, image out $30).
+ * The API does not return a dollar amount; this matches the gpt-image CLI.
+ */
+function estimate_cost_from_usage(?array $usage): array {
+    $empty = [
+        'cost_usd' => null,
+        'input_tokens' => 0,
+        'output_tokens' => 0,
+        'text_input' => 0,
+        'image_input' => 0,
+        'image_output' => 0,
+        'text_output' => 0,
+        'cost_line' => '',
+    ];
+    if (!is_array($usage)) {
+        return $empty;
+    }
+    $input = (int) ($usage['input_tokens'] ?? 0);
+    $output = (int) ($usage['output_tokens'] ?? 0);
+    $inDet = $usage['input_tokens_details'] ?? [];
+    $outDet = $usage['output_tokens_details'] ?? [];
+    $textIn = (int) ($inDet['text_tokens'] ?? $input);
+    $imgIn = (int) ($inDet['image_tokens'] ?? 0);
+    $imgOut = (int) ($outDet['image_tokens'] ?? $output);
+    $textOut = (int) ($outDet['text_tokens'] ?? 0);
+
+    // gpt-image-2 standard rates per 1M tokens
+    $cost = (
+        $textIn * 5.0
+        + $imgIn * 8.0
+        + $imgOut * 30.0
+        + $textOut * 0.0
+    ) / 1_000_000.0;
+
+    $parts = [sprintf('~$%.4f est.', $cost)];
+    if ($input || $output) {
+        $parts[] = "tokens in={$input} out={$output}";
+        $detail = [];
+        if ($textIn) {
+            $detail[] = "text_in={$textIn}";
+        }
+        if ($imgIn) {
+            $detail[] = "img_in={$imgIn}";
+        }
+        if ($imgOut) {
+            $detail[] = "img_out={$imgOut}";
+        }
+        if ($textOut) {
+            $detail[] = "text_out={$textOut}";
+        }
+        if ($detail) {
+            $parts[] = '(' . implode(', ', $detail) . ')';
+        }
+    }
+
+    return [
+        'cost_usd' => $cost,
+        'input_tokens' => $input,
+        'output_tokens' => $output,
+        'text_input' => $textIn,
+        'image_input' => $imgIn,
+        'image_output' => $imgOut,
+        'text_output' => $textOut,
+        'cost_line' => implode(' · ', $parts),
+    ];
+}
+
 // --- Entry -------------------------------------------------------------------
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
@@ -262,7 +331,9 @@ if ($apiKey === '') {
 
 [$oStatus, $oBody, $oErr] = openai_generate($apiKey, $prompt);
 $latencyMs = (int) round((microtime(true) - $started) * 1000);
+$latencySec = max(1, (int) round($latencyMs / 1000));
 $b64 = $oBody['data'][0]['b64_json'] ?? null;
+$cost = estimate_cost_from_usage(is_array($oBody['usage'] ?? null) ? $oBody['usage'] : null);
 
 if ($oStatus < 200 || $oStatus >= 300 || !is_string($b64) || $b64 === '') {
     $apiMsg = $oBody['error']['message'] ?? $oErr ?: 'unknown';
@@ -274,6 +345,9 @@ if ($oStatus < 200 || $oStatus >= 300 || !is_string($b64) || $b64 === '') {
         'latency_ms' => $latencyMs,
         'subscribed' => true,
         'already_subscribed' => $already,
+        'cost_usd' => $cost['cost_usd'],
+        'input_tokens' => $cost['input_tokens'],
+        'output_tokens' => $cost['output_tokens'],
     ]);
     respond(false, 'Image generation failed. Your newsletter signup was recorded - please try a different prompt later.', [], 502);
 }
@@ -286,15 +360,34 @@ log_trial($baseEvent + [
     'model' => 'gpt-image-2',
     'quality' => 'medium',
     'size' => '1024x1024',
+    'cost_usd' => $cost['cost_usd'],
+    'input_tokens' => $cost['input_tokens'],
+    'output_tokens' => $cost['output_tokens'],
+    'text_input' => $cost['text_input'],
+    'image_output' => $cost['image_output'],
 ]);
 
 $subNote = $already
     ? "You're already on the list - thanks for reading."
     : "You're on Jacob Stephens' blog newsletter (unsubscribe anytime from any email).";
 
-respond(true, "Wrote trial.png · {$subNote}", [
+$costLine = $cost['cost_line'] !== ''
+    ? $cost['cost_line'] . " · {$latencySec}s"
+    : "{$latencySec}s";
+
+respond(true, "Wrote trial.png · {$costLine} · {$subNote}", [
     'image_b64' => $b64,
     'already_subscribed' => $already,
     'latency_ms' => $latencyMs,
     'output' => 'trial.png',
+    'cost_usd' => $cost['cost_usd'],
+    'cost_line' => $costLine,
+    'input_tokens' => $cost['input_tokens'],
+    'output_tokens' => $cost['output_tokens'],
+    'usage' => [
+        'text_input' => $cost['text_input'],
+        'image_input' => $cost['image_input'],
+        'image_output' => $cost['image_output'],
+        'text_output' => $cost['text_output'],
+    ],
 ]);
