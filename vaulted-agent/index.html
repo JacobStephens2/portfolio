@@ -422,13 +422,16 @@
             each agent’s process at start - not into a pile of <code>.env</code> files.
             The thesis: <strong>treat the agent as the unit of authorization.</strong>
             One credential stays on disk; manifests control blast radius.
+            After install, day-to-day is short: <code>va claude</code> (alias of
+            <code>vaulted-agent</code>).
         </p>
 
         <h2 id="install" class="install-heading">Install</h2>
         <p class="install-intro">
             <strong>macOS and Linux</strong> (including stock macOS <code>/bin/bash</code> 3.2).
             Copy one and go. One-liner bootstraps a tagged GitHub release (not floating <code>main</code>).
-            Not for Windows natively - use WSL or a Linux/macOS host.
+            Installs both <code>vaulted-agent</code> and the short alias <code>va</code>
+            (skip with <code>--no-va</code>). Not for Windows natively - use WSL or a Linux/macOS host.
             Writing this pattern down found five production bugs - the writeup is
             <a href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">on the blog</a>.
         </p>
@@ -465,9 +468,29 @@
                         <path d="M20 6 9 17l-5-5"></path>
                     </svg>
                 </button>
-                <pre id="cmd-github"><code>git clone --branch v0.1.2 --depth 1 \
+                <pre id="cmd-github"><code>git clone --branch v0.1.3 --depth 1 \
   https://github.com/JacobStephens2/vaulted-agent-launcher
 cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
+            </div>
+
+            <span class="install-label">
+                After install
+                <span class="install-platforms">same binary</span>
+            </span>
+            <div class="install-block" data-copy-block>
+                <button type="button" class="copy-btn" data-copy-target="cmd-va" aria-label="Copy va usage examples" title="Copy">
+                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 6 9 17l-5-5"></path>
+                    </svg>
+                </button>
+                <pre id="cmd-va"><code>vaulted-agent claude
+va claude                 # short alias (default)
+va pick
+sudo va uninstall</code></pre>
             </div>
 
             <span class="install-label">
@@ -485,6 +508,7 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                     </svg>
                 </button>
                 <pre id="cmd-uninstall"><code>sudo vaulted-agent uninstall
+# or:  sudo va uninstall
 # also remove config:  sudo vaulted-agent uninstall --purge</code></pre>
             </div>
         </div>
@@ -563,8 +587,9 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
             Prefer not to pipe to bash? Download
             <a href="/vaulted-agent/install.sh">install.sh</a>, read it, then
             <code>bash install.sh</code>. Pin with
-            <code>VAULTED_AGENT_VERSION=v0.1.2</code>. Pass installer flags after
-            <code>bash -s --</code> (for example <code>--user agent</code>).
+            <code>VAULTED_AGENT_VERSION=v0.1.3</code>. Pass installer flags after
+            <code>bash -s --</code> (for example <code>--user agent</code> or
+            <code>--no-va</code> to skip the short alias).
         </p>
         <p>One credential stays on disk (1Password example; other backends in the README). Put the service-account token in <code>op.env</code> (mode <code>0640</code>, readable by the service account), then activate a harness from the examples the installer left:</p>
         <span class="install-label">Configure token</span>
@@ -610,7 +635,7 @@ cd vaulted-agent-launcher && ./demo/try-it.sh</code></pre>
                 </svg>
                 Full docs on GitHub
             </a>
-            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.1.2">v0.1.2 release</a>
+            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.1.3">v0.1.3 release</a>
         </div>
 
         <footer>
