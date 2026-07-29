@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>vaulted-agent — install</title>
+    <meta name="description" content="Install vaulted-agent: launch AI coding agents with vault-resolved secrets in-process.">
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.55;
+            color: var(--ink, #181512);
+            background: var(--surface, #fff);
+        }
+        main {
+            max-width: 40rem;
+            margin: 0 auto;
+            padding: 2.5rem 1.25rem 4rem;
+        }
+        h1 { font-size: 1.75rem; line-height: 1.2; margin: 0 0 0.5rem; }
+        .lede { color: var(--muted, #625a52); margin: 0 0 1.75rem; }
+        h2 { font-size: 1.05rem; margin: 1.75rem 0 0.6rem; }
+        pre, code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.88rem;
+        }
+        pre {
+            background: var(--code-bg, #efe9df);
+            border: 1px solid var(--rule, #d6d1c9);
+            border-radius: 0.5rem;
+            padding: 0.9rem 1rem;
+            overflow-x: auto;
+            margin: 0.5rem 0 1rem;
+        }
+        a { color: var(--brand, #9b4d24); }
+        ul { padding-left: 1.2rem; color: var(--muted, #625a52); }
+        .note {
+            border-left: 3px solid var(--brand, #9b4d24);
+            padding: 0.35rem 0 0.35rem 0.9rem;
+            margin: 1.25rem 0;
+            color: var(--muted, #625a52);
+        }
+        footer { margin-top: 2.5rem; font-size: 0.9rem; color: var(--muted, #625a52); }
+    </style>
+</head>
+<body>
+<main>
+    <h1>vaulted-agent</h1>
+    <p class="lede">
+        Launch AI coding agents with vault-resolved secrets in-process —
+        one service-account token on disk, everything else only in the agent process.
+    </p>
+
+    <h2>Install (one-liner)</h2>
+    <pre><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
+    <p class="note">
+        This host only serves the bootstrap. The installer downloads a
+        <strong>tagged GitHub release</strong> and runs the real
+        <code>install.sh</code> from that tarball. It does not write your vault token.
+    </p>
+
+    <h2>Install from GitHub</h2>
+    <pre><code>git clone --branch v0.1.0 --depth 1 \
+  https://github.com/JacobStephens2/vaulted-agent-launcher
+cd vaulted-agent-launcher &amp;&amp; sudo ./install.sh</code></pre>
+
+    <h2>Useful variants</h2>
+    <ul>
+        <li>Pin a version: <code>VAULTED_AGENT_VERSION=v0.1.0 curl -fsSL … | bash</code></li>
+        <li>Inspect first: download <a href="/vaulted-agent/install.sh"><code>install.sh</code></a>, read it, then <code>bash install.sh</code></li>
+        <li>Pass flags: <code>curl -fsSL … | bash -s -- --user agent</code></li>
+        <li>Try without installing: clone the repo and run <code>./demo/try-it.sh</code></li>
+    </ul>
+
+    <footer>
+        Source and docs:
+        <a href="https://github.com/JacobStephens2/vaulted-agent-launcher">github.com/JacobStephens2/vaulted-agent-launcher</a>
+        · <a href="/">stephens.page</a>
+    </footer>
+</main>
+</body>
+</html>
