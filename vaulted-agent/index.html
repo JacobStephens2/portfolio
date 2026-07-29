@@ -789,8 +789,19 @@ va claude
 va grok -p
 va kimi --continue
 # or without editing a harness:
-va run -m openai.env.refs --backend bitwarden -p -- env | sort</code></pre>
+va run -m openai.env.refs --backend bitwarden -p -- env | sort
+
+# later: added more secrets in Bitwarden SM?
+va refresh openai.env.refs          # rebuild refs (values still fetched live)
+va refresh openai.env.refs --all</code></pre>
         </div>
+        <p class="note">
+            <strong>Value vs list.</strong> Rotating a secret’s value in Secrets
+            Manager needs no command - the next launch fetches it live. Adding a
+            <em>new</em> secret you want in a harness means updating the refs file:
+            <code>va refresh</code> (or hand-edit
+            <code>OPENAI_API_KEY=name:…</code> lines).
+        </p>
 
         <div class="cta-row hero-cta">
             <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher">
