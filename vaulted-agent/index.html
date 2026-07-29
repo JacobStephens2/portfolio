@@ -415,25 +415,67 @@
             <a class="back-link" href="/">← stephens.page</a>
         </div>
 
-        <span class="eyebrow">Open source · secrets for agents</span>
+        <span class="eyebrow">Open source · secrets for agents · macOS · Linux</span>
         <h1>vaulted-agent</h1>
         <p class="lede">
-            Launch Claude Code, Codex, and Grok from one vault. Secrets resolve into
-            each agent’s process at start - not into a pile of <code>.env</code> files.
-            The thesis: <strong>treat the agent as the unit of authorization.</strong>
-            One credential stays on disk; manifests control blast radius.
-            After install, day-to-day is short: <code>va claude</code> (alias of
-            <code>vaulted-agent</code>).
+            Launch Claude Code, Codex, or Grok with vault-resolved secrets in the
+            process - not in a pile of <code>.env</code> files. One vault, one launcher,
+            different blast radius per agent.
         </p>
+
+        <h2 id="usage" class="install-heading">Usage</h2>
+        <p class="install-intro">
+            Name the harness as the first argument. That is the everyday interface -
+            the same commands used in day-to-day work after a harness is configured.
+        </p>
+
+        <div class="install-primary">
+            <span class="install-label">
+                Launch an agent
+                <span class="install-platforms">everyday</span>
+            </span>
+            <div class="install-block" data-copy-block>
+                <button type="button" class="copy-btn" data-copy-target="cmd-usage" aria-label="Copy usage commands" title="Copy">
+                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 6 9 17l-5-5"></path>
+                    </svg>
+                </button>
+                <pre id="cmd-usage"><code>vaulted-agent claude
+vaulted-agent codex
+vaulted-agent grok
+vaulted-agent pick</code></pre>
+            </div>
+
+            <span class="install-label">
+                Short alias
+                <span class="install-platforms">same binary</span>
+            </span>
+            <div class="install-block" data-copy-block>
+                <button type="button" class="copy-btn" data-copy-target="cmd-va" aria-label="Copy va usage commands" title="Copy">
+                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 6 9 17l-5-5"></path>
+                    </svg>
+                </button>
+                <pre id="cmd-va"><code>va claude
+va codex
+va grok
+va pick</code></pre>
+            </div>
+        </div>
 
         <h2 id="install" class="install-heading">Install</h2>
         <p class="install-intro">
-            <strong>macOS and Linux</strong> (including stock macOS <code>/bin/bash</code> 3.2).
-            Copy one and go. One-liner bootstraps a tagged GitHub release (not floating <code>main</code>).
-            Installs both <code>vaulted-agent</code> and the short alias <code>va</code>
-            (skip with <code>--no-va</code>). Not for Windows natively - use WSL or a Linux/macOS host.
-            Writing this pattern down found five production bugs - the writeup is
-            <a href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">on the blog</a>.
+            <strong>macOS and Linux.</strong> One-liner bootstraps a tagged GitHub release
+            (not floating <code>main</code>). Installs <code>vaulted-agent</code> and the short alias
+            <code>va</code>. Then activate harnesses and put your vault token in <code>op.env</code>.
         </p>
 
         <div class="install-primary">
@@ -474,26 +516,6 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
             </div>
 
             <span class="install-label">
-                After install
-                <span class="install-platforms">same binary</span>
-            </span>
-            <div class="install-block" data-copy-block>
-                <button type="button" class="copy-btn" data-copy-target="cmd-va" aria-label="Copy va usage examples" title="Copy">
-                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 6 9 17l-5-5"></path>
-                    </svg>
-                </button>
-                <pre id="cmd-va"><code>vaulted-agent claude
-va claude                 # short alias (default)
-va pick
-sudo va uninstall</code></pre>
-            </div>
-
-            <span class="install-label">
                 Uninstall
                 <span class="install-platforms">macOS · Linux</span>
             </span>
@@ -525,15 +547,13 @@ sudo va uninstall</code></pre>
             <a class="cta cta-secondary" href="/vaulted-agent/install.sh">Raw install.sh</a>
         </div>
 
-        <h2 id="what-it-does">What it does</h2>
+        <h2 id="what-it-does">How it works</h2>
         <p>
-            One command, <code>vaulted-agent claude</code>, becomes a dedicated service
-            account, resolves a manifest of vault references into the process
-            environment, drops the vault token, and <code>exec</code>s the agent.
-            A second file per harness says what each agent may reach - Claude can
-            get a wide manifest; Codex a narrower one without production DB write
-            access. Diff the manifest and you have a written answer to “which agent
-            could reach what.” Secrets live in that process until it exits.
+            <code>vaulted-agent claude</code> (or <code>codex</code>, or <code>grok</code>) becomes a dedicated
+            service account, resolves that harness’s manifest into the process
+            environment, drops the vault token, and <code>exec</code>s the agent. Diff the
+            manifests and you have a written answer to “which agent could reach what.”
+            Secrets live in that process until it exits.
         </p>
         <pre class="flow" aria-label="Launch flow">you $ vaulted-agent claude
       │
