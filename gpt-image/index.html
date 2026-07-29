@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>gpt-image - generate and edit images from the terminal</title>
+  <meta name="description" content="gpt-image is a Python CLI for OpenAI's image models (gpt-image-2 by default): generate from a prompt, edit existing photos, or run a JSON batch. MIT, code-only repo.">
+  <meta property="og:title" content="gpt-image - CLI for OpenAI image models">
+  <meta property="og:description" content="Generate, edit, and batch images with gpt-image-2 from the terminal. One command for a lighthouse, a golden-hour edit, or a JSON manifest of both.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://stephens.page/gpt-image">
+  <meta property="og:image" content="https://stephens.page/gpt-image/lighthouse.png">
+  <meta property="og:site_name" content="Jacob Stephens">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="gpt-image">
+  <meta name="twitter:description" content="Python CLI for OpenAI gpt-image-2: generate, edit, batch.">
+  <meta name="twitter:image" content="https://stephens.page/gpt-image/lighthouse.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%230e0f12'/><text y='72' x='50' font-size='54' text-anchor='middle' fill='%235aa9ff' font-family='monospace'>img</text></svg>">
+  <style>
+    :root {
+      --bg: #0e0f12;
+      --panel: #171a1f;
+      --border: #2a2e36;
+      --fg: #d7dbe0;
+      --muted: #8a909a;
+      --accent: #5aa9ff;
+      --green: #6fdc8c;
+      --danger: #e5534b;
+      --warn: #f0c860;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    code, pre, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 940px; margin: 0 auto; padding: 0 22px; }
+
+    header.nav {
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: rgba(14,15,18,0.85);
+      backdrop-filter: blur(8px); z-index: 10;
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 58px; }
+    .brand { font-weight: 700; font-size: 18px; letter-spacing: 0.3px; }
+    .brand .prompt { color: var(--accent); }
+    .nav a { color: var(--muted); margin-left: 20px; font-size: 14px; }
+    .nav a:hover { color: var(--fg); text-decoration: none; }
+
+    .hero { padding: 48px 0 36px; text-align: center; }
+    .hero h1 { font-size: 52px; margin: 0 0 8px; letter-spacing: -0.5px; }
+    .hero h1 .prompt { color: var(--accent); }
+    .tagline { font-size: 21px; color: var(--fg); margin: 0 auto 10px; max-width: 680px; }
+    .subline { font-size: 16px; color: var(--muted); margin: 0 auto 22px; max-width: 640px; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block; padding: 11px 20px; border-radius: 8px;
+      border: 1px solid var(--border); font-size: 15px; font-weight: 600;
+    }
+    .btn-primary { background: var(--accent); color: #08111f; border-color: var(--accent); }
+    .btn-primary:hover { text-decoration: none; filter: brightness(1.08); }
+    .btn-ghost { color: var(--fg); background: #20252e; }
+    .btn-ghost:hover { text-decoration: none; border-color: var(--accent); }
+
+    .term {
+      margin: 28px auto 0; max-width: 760px; background: #0b0c0f;
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+      text-align: left; box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    }
+    .term-bar { display: flex; align-items: center; gap: 7px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: #14161b; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; }
+    .dot.r { background: #ff5f56; } .dot.y { background: #ffbd2e; } .dot.g { background: #27c93f; }
+    .term-title { margin-left: 8px; color: var(--muted); font-size: 12px; flex: 1; min-width: 0; }
+    .term-hint {
+      color: var(--accent); font-size: 11px; letter-spacing: 0.02em;
+      white-space: nowrap; opacity: 0.9;
+    }
+    .term pre { margin: 0; padding: 18px; font-size: 13.5px; line-height: 1.55; overflow-x: auto; color: var(--fg); }
+    .term .c-accent { color: var(--accent); }
+    .term .c-green { color: var(--green); }
+    .term .c-muted { color: var(--muted); }
+
+    /* Full-bleed hero shot: wider than the 940px content column */
+    .hero-shot-bleed {
+      width: 100vw;
+      max-width: 100vw;
+      margin: 28px 0 0;
+      margin-left: calc(50% - 50vw);
+      padding: 0 16px;
+      box-sizing: border-box;
+    }
+    .term.shot {
+      max-width: 1120px;
+      margin: 0 auto;
+      border-radius: 14px;
+      box-shadow:
+        0 28px 80px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(90,169,255,0.12);
+      transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    .term.shot.is-interactive {
+      cursor: pointer;
+    }
+    .term.shot.is-interactive:hover {
+      border-color: rgba(90,169,255,0.45);
+      box-shadow:
+        0 32px 90px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(90,169,255,0.35),
+        0 0 40px rgba(90,169,255,0.12);
+    }
+    .term.shot.is-interactive:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .term.shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+      background: #0b0c0f;
+      transition: opacity 0.25s ease;
+    }
+    .term.shot img.is-fading { opacity: 0.35; }
+    .img-caption {
+      margin: 12px auto 0; max-width: 1120px; font-size: 13px; color: var(--muted);
+      text-align: left; padding: 0 4px;
+    }
+    .img-caption .c-accent,
+    .img-caption .click-hint { color: var(--accent); }
+
+    section { padding: 46px 0; border-top: 1px solid var(--border); }
+    section h2 { font-size: 26px; margin: 0 0 6px; }
+    section .lead { color: var(--muted); margin: 0 0 26px; max-width: 700px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px 18px 20px; }
+    .card h3 { margin: 0 0 6px; font-size: 16px; }
+    .card p { margin: 0; color: var(--muted); font-size: 14.5px; }
+    .card .icon { color: var(--accent); font-size: 18px; }
+
+    pre.block {
+      background: #0b0c0f; border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 18px; overflow-x: auto; font-size: 13.5px; color: var(--fg); margin: 0 0 16px;
+    }
+    pre.block .cmt { color: var(--muted); }
+    pre.block .kw { color: var(--accent); }
+    pre.block .str { color: var(--green); }
+    .copy-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 18px; }
+    .copy-row pre.block { flex: 1; margin: 0; }
+    .copy-btn { border: 1px solid var(--border); background: #20252e; color: var(--fg); border-radius: 8px; padding: 0 14px; cursor: pointer; font-size: 13px; }
+    .copy-btn:hover { border-color: var(--accent); }
+
+    footer { border-top: 1px solid var(--border); padding: 30px 0 48px; color: var(--muted); font-size: 14px; }
+    footer .row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+    @media (max-width: 560px) {
+      .hero h1 { font-size: 40px; }
+      .tagline { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <span class="brand"><span class="prompt">$</span> gpt-image</span>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#install">Install</a>
+        <a href="#usage">Usage</a>
+        <a href="https://github.com/JacobStephens2/gpt-image">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" style="border-top:none">
+      <h1><span class="prompt">$</span> gpt-image</h1>
+      <p class="tagline">Generate and edit images from the terminal with OpenAI's image models. One CLI for a single prompt, a photo edit, or a JSON batch.</p>
+      <div class="cta" style="margin-bottom: 8px">
+        <a class="btn btn-primary" href="https://github.com/JacobStephens2/gpt-image">View on GitHub</a>
+        <a class="btn btn-ghost" href="#install">Quickstart</a>
+      </div>
+
+      <div class="hero-shot-bleed">
+        <div
+          class="term shot is-interactive"
+          id="hero-image-frame"
+          role="button"
+          tabindex="0"
+          aria-label="Toggle hero image. Click to switch between sample output and tool illustration."
+        >
+          <div class="term-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="term-title mono" id="hero-image-title">lighthouse.png · made with this CLI</span>
+            <span class="term-hint mono" id="hero-image-hint">click to swap · 1 / 2</span>
+          </div>
+          <img
+            id="hero-image"
+            src="lighthouse.png"
+            width="1536"
+            height="1024"
+            alt="Gouache-style lighthouse on a rocky headland in a storm, generated by gpt-image for this page"
+          >
+        </div>
+        <p class="img-caption mono" id="hero-image-caption">
+          Sample output from <span class="c-accent">gpt_image.py generate</span> - not a stock photo.
+          <span class="click-hint">Click the image</span> to see an illustration of the tool itself.
+        </p>
+      </div>
+
+      <div class="term">
+        <div class="term-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="term-title mono">generate · gpt-image-2 · high · 1536x1024</span>
+        </div>
+        <pre><span class="c-muted">$</span> python gpt_image.py generate <span class="c-green">"a lighthouse in a storm, gouache"</span> \
+    --output lighthouse.png --quality high --size 1536x1024
+<span class="c-green">Wrote</span> lighthouse.png</pre>
+      </div>
+
+      <p class="subline" style="margin-top: 28px">Defaults to <span class="mono">gpt-image-2</span>. Started as a hair-color photo-edit workaround against <a href="https://arena.ai/leaderboard/image-edit">Arena's image edit leaderboard</a>; grew into a general tool. The original <span class="mono">edit_hair_color.py</span> still works.</p>
+    </section>
+
+    <section id="features">
+      <h2>What it does</h2>
+      <p class="lead">Three commands, one API key, no browser. Point it at OpenAI's image models and keep inputs, outputs, and keys out of the repo.</p>
+      <div class="grid">
+        <div class="card">
+          <div class="icon">&#9733;</div>
+          <h3>Generate from a prompt</h3>
+          <p>One string in, one PNG (or JPEG/WebP) out. Quality, size, and model are flags; defaults are <span class="mono">gpt-image-2</span>, quality <span class="mono">auto</span>, size <span class="mono">auto</span>.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#9998;</div>
+          <h3>Edit existing images</h3>
+          <p>Pass one or more input paths and a prompt: golden-hour sky, recolor a door, or the original hair-color path. Same quality/size knobs as generate.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#9776;</div>
+          <h3>Batch from a JSON manifest</h3>
+          <p>A list of prompts (optional <span class="mono">edit_from</span>, per-item quality/size/output). Concurrent workers, retries with backoff, <span class="mono">--skip-existing</span>.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128270;</div>
+          <h3>Dry-run the plan</h3>
+          <p><span class="mono">--dry-run</span> prints what the batch would do without calling the API. Useful before a paid run of 30 items.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128273;</div>
+          <h3>Key on disk or in env</h3>
+          <p><span class="mono">OPENAI_API_KEY</span> or <span class="mono">--api-key-file ~/path/to/key.txt</span>. The key never has to live inside the clone.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128274;</div>
+          <h3>Code-only repo</h3>
+          <p><span class="mono">.gitignore</span> excludes image formats, <span class="mono">inputs/</span>, <span class="mono">outputs/</span>, local key files, and response JSON. Do not commit photos or keys.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <h2>Quickstart</h2>
+      <p class="lead">Clone, venv, install deps, export a key. On Debian/Ubuntu, use a project venv - bare <span class="mono">pip install</span> hits PEP 668 <span class="mono">externally-managed-environment</span>.</p>
+      <div class="copy-row">
+        <pre class="block" id="install-cmd">git clone https://github.com/JacobStephens2/gpt-image.git
+cd gpt-image
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
+        <button class="copy-btn" data-copy="install-cmd">Copy</button>
+      </div>
+      <p class="lead" style="margin:0">Or keep the key outside the repo and pass <span class="mono">--api-key-file ~/path/to/key.txt</span> on any command.</p>
+    </section>
+
+    <section id="usage">
+      <h2>Usage</h2>
+      <p class="lead">Generate, edit, or batch. Full flags and defaults live in the <a href="https://github.com/JacobStephens2/gpt-image#readme">README</a>.</p>
+
+      <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Generate</h3>
+      <div class="copy-row">
+        <pre class="block" id="gen-cmd">python gpt_image.py generate "a lighthouse in a storm, gouache" \
+  --output lighthouse.png --quality high --size 1536x1024</pre>
+        <button class="copy-btn" data-copy="gen-cmd">Copy</button>
+      </div>
+
+      <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Edit</h3>
+      <div class="copy-row">
+        <pre class="block" id="edit-cmd">python gpt_image.py edit photo.jpg --prompt "make the sky golden hour" --output golden.png</pre>
+        <button class="copy-btn" data-copy="edit-cmd">Copy</button>
+      </div>
+
+      <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Batch</h3>
+      <div class="copy-row">
+        <pre class="block" id="batch-cmd">python gpt_image.py batch manifest.json --output-dir outputs \
+  --quality high --size 1536x1024 --workers 3 --skip-existing</pre>
+        <button class="copy-btn" data-copy="batch-cmd">Copy</button>
+      </div>
+
+      <h3 style="font-size:16px;margin:18px 0 10px;color:var(--muted)">Manifest format</h3>
+      <p class="lead" style="margin-bottom:12px">JSON list (or an object with an <span class="mono">"images"</span> list). Each item needs a <span class="mono">prompt</span>; everything else is optional.</p>
+<pre class="block">[
+  {"id": "cover", "prompt": "a stone house on a sea cliff at dawn"},
+  {"id": "recolor", "prompt": "make the door red", "edit_from": "inputs/house.png",
+   "quality": "medium", "size": "1024x1024", "output": "outputs/red-door.png"}
+]</pre>
+      <p class="lead" style="margin:0"><span class="mono">id</span> names the output file when <span class="mono">output</span> is unset. <span class="mono">edit_from</span> (path or list) switches that item to edit. Failed items retry twice with backoff; exit code is non-zero if any still fail.</p>
+    </section>
+
+    <section id="legacy">
+      <h2>Hair-color legacy script</h2>
+      <p class="lead">The original one-purpose script still works for the Arena hair-color path.</p>
+      <div class="copy-row">
+        <pre class="block" id="hair-cmd">python edit_hair_color.py photo.jpg --output edited.png --color "strawberry blonde"</pre>
+        <button class="copy-btn" data-copy="hair-cmd">Copy</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap row">
+      <span>gpt-image - MIT. Built by <a href="https://stephens.page">Jacob Stephens</a>.</span>
+      <span><a href="https://github.com/JacobStephens2/gpt-image">github.com/JacobStephens2/gpt-image</a></span>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.copy-btn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var el = document.getElementById(b.getAttribute('data-copy'));
+        if (!el) return;
+        navigator.clipboard.writeText(el.textContent.trim()).then(function () {
+          var t = b.textContent; b.textContent = 'Copied';
+          setTimeout(function () { b.textContent = t; }, 1400);
+        });
+      });
+    });
+
+    // Hero gallery: lighthouse sample output <-> illustration of the gpt-image tool.
+    (function () {
+      var slides = [
+        {
+          src: 'lighthouse.png',
+          title: 'lighthouse.png · made with this CLI',
+          alt: 'Gouache-style lighthouse on a rocky headland in a storm, generated by gpt-image for this page',
+          captionHtml:
+            'Sample output from <span class="c-accent">gpt_image.py generate</span> - not a stock photo. ' +
+            '<span class="click-hint">Click the image</span> to see an illustration of the tool itself.'
+        },
+        {
+          src: 'tool.png',
+          title: 'tool.png · gpt-image as a product',
+          alt: 'Product illustration of the gpt-image CLI: a dark terminal generating a lighthouse, a portrait edit, and a batch grid of images',
+          captionHtml:
+            'Illustration of the tool itself - terminal in, images out (generate, edit, batch). ' +
+            'Also made with <span class="c-accent">gpt_image.py generate</span>. ' +
+            '<span class="click-hint">Click</span> to return to the lighthouse sample.'
+        }
+      ];
+
+      var img = document.getElementById('hero-image');
+      var frame = document.getElementById('hero-image-frame');
+      var title = document.getElementById('hero-image-title');
+      var hint = document.getElementById('hero-image-hint');
+      var cap = document.getElementById('hero-image-caption');
+      if (!img || !frame) return;
+
+      var index = 0;
+      var swapping = false;
+
+      // Prefetch the second slide so the first click is instant.
+      slides.forEach(function (slide, i) {
+        if (i === 0) return;
+        var pre = new Image();
+        pre.src = slide.src;
+      });
+
+      function applySlide(i, withFade) {
+        var slide = slides[i];
+        index = i;
+        if (hint) hint.textContent = 'click to swap · ' + (i + 1) + ' / ' + slides.length;
+        if (title) title.textContent = slide.title;
+        if (cap) cap.innerHTML = slide.captionHtml;
+        frame.setAttribute(
+          'aria-label',
+          'Hero image ' + (i + 1) + ' of ' + slides.length + '. ' + slide.alt + ' Click or press Enter to switch.'
+        );
+
+        function setSrc() {
+          img.alt = slide.alt;
+          if (img.getAttribute('src') !== slide.src) img.src = slide.src;
+          img.classList.remove('is-fading');
+          swapping = false;
+        }
+
+        if (withFade && img.getAttribute('src') !== slide.src) {
+          swapping = true;
+          img.classList.add('is-fading');
+          window.setTimeout(setSrc, 160);
+        } else {
+          setSrc();
+        }
+      }
+
+      function nextSlide() {
+        if (swapping) return;
+        applySlide((index + 1) % slides.length, true);
+      }
+
+      frame.addEventListener('click', nextSlide);
+      frame.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          nextSlide();
+        }
+      });
+
+      img.addEventListener('error', function () {
+        // If current slide fails, try the other; if both fail, hide the hero.
+        var other = (index + 1) % slides.length;
+        if (img.getAttribute('src') !== slides[other].src) {
+          applySlide(other, false);
+          return;
+        }
+        frame.hidden = true;
+        if (cap) cap.hidden = true;
+      });
+
+      applySlide(0, false);
+    })();
+  </script>
+</body>
+</html>
