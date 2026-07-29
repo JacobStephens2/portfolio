@@ -210,13 +210,24 @@
 
         /* Code blocks with Claude-docs-style copy icon on the right */
         .install-label {
-            display: block;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.45rem 0.65rem;
             font-size: 0.78rem;
             font-weight: 700;
             letter-spacing: 0.03em;
             text-transform: uppercase;
             color: var(--muted);
             margin: 0.65rem 0 0.3rem;
+        }
+
+        .install-platforms {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            color: var(--brand);
         }
 
         .install-block {
@@ -415,13 +426,18 @@
 
         <h2 id="install" class="install-heading">Install</h2>
         <p class="install-intro">
+            <strong>macOS and Linux</strong> (including stock macOS <code>/bin/bash</code> 3.2).
             Copy one and go. One-liner bootstraps a tagged GitHub release (not floating <code>main</code>).
+            Not for Windows natively - use WSL or a Linux/macOS host.
             Writing this pattern down found five production bugs - the writeup is
             <a href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">on the blog</a>.
         </p>
 
         <div class="install-primary">
-            <span class="install-label">One-liner</span>
+            <span class="install-label">
+                One-liner
+                <span class="install-platforms">macOS · Linux</span>
+            </span>
             <div class="install-block" data-copy-block>
                 <button type="button" class="copy-btn" data-copy-target="cmd-oneliner" aria-label="Copy one-liner install command" title="Copy">
                     <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -435,7 +451,10 @@
                 <pre id="cmd-oneliner"><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
             </div>
 
-            <span class="install-label">From GitHub</span>
+            <span class="install-label">
+                From GitHub
+                <span class="install-platforms">macOS · Linux</span>
+            </span>
             <div class="install-block" data-copy-block>
                 <button type="button" class="copy-btn" data-copy-target="cmd-github" aria-label="Copy GitHub install commands" title="Copy">
                     <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
