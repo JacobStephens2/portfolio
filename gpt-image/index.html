@@ -482,14 +482,38 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
 
       var widgetId = null;
       var busy = false;
+      var MAX_PROMPT = 500;
+      var MIN_PROMPT = 3;
 
       function log(msg, kind) {
         if (!logEl) return;
         var li = document.createElement('li');
         if (kind) li.className = kind;
+        // textContent only - never assign user input as HTML.
         li.textContent = msg;
         logEl.appendChild(li);
         logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      /** Client-side sanitize; server re-validates. */
+      function sanitizePrompt(raw) {
+        var s = String(raw == null ? '' : raw)
+          .replace(/\u0000/g, '')
+          .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+          .replace(/[\r\n\t]+/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        if (s.length > MAX_PROMPT) s = s.slice(0, MAX_PROMPT);
+        return s;
+      }
+
+      function sanitizeEmail(raw) {
+        return String(raw == null ? '' : raw)
+          .replace(/\u0000/g, '')
+          .replace(/[\r\n\t\s]+/g, '')
+          .toLowerCase()
+          .trim()
+          .slice(0, 254);
       }
 
       function setBusy(on) {
@@ -526,14 +550,19 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
       }
 
       function openGate() {
-        var prompt = (promptEl.value || '').trim();
+        var prompt = sanitizePrompt(promptEl.value);
+        promptEl.value = prompt;
         if (!prompt) {
           log('error: prompt is empty', 'err');
           promptEl.focus();
           return;
         }
-        if (prompt.length > 500) {
-          log('error: prompt must be under 500 characters', 'err');
+        if (prompt.length < MIN_PROMPT) {
+          log('error: prompt is too short', 'err');
+          return;
+        }
+        if (prompt.length > MAX_PROMPT) {
+          log('error: prompt must be under ' + MAX_PROMPT + ' characters', 'err');
           return;
         }
         gate.classList.add('is-open');
@@ -552,22 +581,28 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
 
       async function submitTry() {
         if (busy) return;
-        var prompt = (promptEl.value || '').trim();
-        var email = (emailEl && emailEl.value || '').trim();
+        var prompt = sanitizePrompt(promptEl.value);
+        var email = sanitizeEmail(emailEl && emailEl.value);
+        promptEl.value = prompt;
+        if (emailEl) emailEl.value = email;
         if (!prompt) {
           log('error: prompt is empty', 'err');
           return;
         }
-        if (!email) {
+        if (prompt.length < MIN_PROMPT) {
+          log('error: prompt is too short', 'err');
+          return;
+        }
+        if (!email || email.indexOf('@') < 1) {
           log('error: email required for newsletter gate', 'err');
           if (emailEl) emailEl.focus();
           return;
         }
         var token = '';
         if (window.turnstile && widgetId !== null) {
-          token = window.turnstile.getResponse(widgetId) || '';
+          token = String(window.turnstile.getResponse(widgetId) || '');
         }
-        if (!token) {
+        if (!token || token.length > 2048) {
           log('error: complete the Turnstile challenge', 'err');
           return;
         }
@@ -579,26 +614,41 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
           body.set('prompt', prompt);
           body.set('email', email);
           body.set('cf-turnstile-response', token);
-          body.set('website_url', websiteEl ? websiteEl.value : '');
-          var res = await fetch('try-submit.php', { method: 'POST', body: body, credentials: 'same-origin' });
+          // Honeypot only if empty; never send unexpected keys.
+          body.set('website_url', websiteEl && websiteEl.value ? String(websiteEl.value).slice(0, 200) : '');
+          var res = await fetch('try-submit.php', {
+            method: 'POST',
+            body: body,
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' },
+          });
           var data = {};
           try { data = await res.json(); } catch (e) { data = {}; }
+          if (!data || typeof data !== 'object') data = {};
           if (!data.ok) {
-            log('error: ' + (data.message || ('HTTP ' + res.status)), 'err');
+            var errMsg = (typeof data.message === 'string' && data.message)
+              ? data.message
+              : ('HTTP ' + res.status);
+            log('error: ' + errMsg, 'err');
             if (window.turnstile && widgetId !== null) window.turnstile.reset(widgetId);
             return;
           }
-          if (data.cost_line) {
+          if (typeof data.cost_line === 'string' && data.cost_line) {
             log('Wrote trial.png · ' + data.cost_line, 'ok');
-          } else if (data.cost_usd != null) {
+          } else if (data.cost_usd != null && isFinite(Number(data.cost_usd))) {
             log('Wrote trial.png · ~$' + Number(data.cost_usd).toFixed(4) + ' est.', 'ok');
           } else {
             log('Wrote trial.png', 'ok');
           }
-          if (data.message) log(data.message, 'ok');
-          if (data.image_b64 && imageEl && resultEl) {
-            imageEl.src = 'data:image/png;base64,' + data.image_b64;
-            resultEl.classList.add('is-visible');
+          if (typeof data.message === 'string' && data.message) log(data.message, 'ok');
+          if (typeof data.image_b64 === 'string' && data.image_b64.length > 64 && imageEl && resultEl) {
+            // Only accept base64 payload into a data: URL.
+            if (/^[A-Za-z0-9+/=]+$/.test(data.image_b64)) {
+              imageEl.src = 'data:image/png;base64,' + data.image_b64;
+              resultEl.classList.add('is-visible');
+            } else {
+              log('error: image payload rejected', 'err');
+            }
           }
           closeGate();
           if (window.turnstile && widgetId !== null) window.turnstile.reset(widgetId);
