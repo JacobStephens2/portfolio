@@ -547,6 +547,111 @@ function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null): ?
 }
 
 /**
+ * Email Jacob when a live-try image succeeds (Resend). Best-effort: never fails the user request.
+ *
+ * @param array{email: string, prompt: string, cost_usd: ?float, cost_line: string, latency_ms: int, gallery: ?array, spend: ?array, b64: string} $info
+ */
+function notify_admin_new_image(array $env, array $info): void {
+    $resendKey = (string) ($env['RESEND_API_KEY'] ?? '');
+    if ($resendKey === '') {
+        error_log('gpt-image try: notify skipped - no RESEND_API_KEY');
+        return;
+    }
+    $fromEmail = (string) ($env['CONTACT_FROM_EMAIL'] ?? 'jacob@stephens.page');
+    $fromName  = (string) ($env['CONTACT_FROM_NAME'] ?? 'gpt-image live try');
+    $toEmail   = (string) ($env['GPT_IMAGE_NOTIFY_TO'] ?? $env['CONTACT_TO_EMAIL'] ?? 'jacob@stephens.page');
+    if (!filter_var($toEmail, FILTER_VALIDATE_EMAIL)) {
+        $toEmail = 'jacob@stephens.page';
+    }
+
+    $userEmail = htmlspecialchars((string) ($info['email'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $prompt    = htmlspecialchars((string) ($info['prompt'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $costLine  = htmlspecialchars((string) ($info['cost_line'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $latency   = (int) ($info['latency_ms'] ?? 0);
+    $gallery   = is_array($info['gallery'] ?? null) ? $info['gallery'] : null;
+    $spend     = is_array($info['spend'] ?? null) ? $info['spend'] : null;
+    $b64       = (string) ($info['b64'] ?? '');
+
+    $galleryUrl = '';
+    if ($gallery && !empty($gallery['url']) && is_string($gallery['url'])) {
+        $galleryUrl = 'https://stephens.page/gpt-image/' . ltrim($gallery['url'], '/');
+    }
+    $galleryHtml = $galleryUrl !== ''
+        ? '<p style="margin:0 0 8px"><strong>Gallery:</strong> <a href="' . htmlspecialchars($galleryUrl, ENT_QUOTES, 'UTF-8') . '">'
+            . htmlspecialchars($galleryUrl, ENT_QUOTES, 'UTF-8') . '</a></p>'
+        : '';
+
+    $spendHtml = '';
+    if ($spend && isset($spend['total_usd'])) {
+        $spendHtml = '<p style="margin:0 0 8px"><strong>Running spend:</strong> ~$'
+            . htmlspecialchars(number_format((float) $spend['total_usd'], 4), ENT_QUOTES, 'UTF-8')
+            . ' est. (' . (int) ($spend['image_count'] ?? 0) . ' images)</p>';
+    }
+
+    $html = '<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#181512">'
+        . '<h2 style="color:#0e0f12;margin:0 0 12px">New gpt-image live try</h2>'
+        . '<p style="margin:0 0 8px"><strong>User email:</strong> <a href="mailto:' . $userEmail . '">' . $userEmail . '</a></p>'
+        . '<p style="margin:0 0 8px"><strong>Prompt:</strong></p>'
+        . '<p style="margin:0 0 12px;white-space:pre-wrap;background:#f4f1ea;padding:10px 12px;border-radius:6px">' . $prompt . '</p>'
+        . '<p style="margin:0 0 8px"><strong>Cost:</strong> ' . ($costLine !== '' ? $costLine : 'n/a') . '</p>'
+        . '<p style="margin:0 0 8px"><strong>Latency:</strong> ' . $latency . ' ms</p>'
+        . $spendHtml
+        . $galleryHtml
+        . '<p style="margin:12px 0 0"><a href="https://stephens.page/gpt-image/#gallery">Open community gallery</a>'
+        . ' · <a href="https://stephens.page/gpt-image/#try">Live try</a></p>'
+        . '</div>';
+
+    $text = "New gpt-image live try\n"
+        . "User: " . ($info['email'] ?? '') . "\n"
+        . "Prompt: " . ($info['prompt'] ?? '') . "\n"
+        . "Cost: " . ($info['cost_line'] ?? '') . "\n"
+        . ($galleryUrl !== '' ? "Gallery: {$galleryUrl}\n" : '')
+        . "https://stephens.page/gpt-image/#gallery\n";
+
+    $payload = [
+        'from'     => $fromName . ' <' . $fromEmail . '>',
+        'to'       => [$toEmail],
+        'reply_to' => (string) ($info['email'] ?? $toEmail),
+        'subject'  => 'gpt-image try: ' . mb_substr((string) ($info['prompt'] ?? 'new image'), 0, 60),
+        'html'     => $html,
+        'text'     => $text,
+    ];
+
+    // Attach the PNG when base64 looks valid (cap ~4MB attachment raw b64).
+    if ($b64 !== '' && strlen($b64) < 6_000_000 && preg_match('/^[A-Za-z0-9+\/]+=*$/', $b64)) {
+        $filename = 'trial.png';
+        if ($gallery && !empty($gallery['file']) && is_string($gallery['file'])
+            && preg_match('/^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp)$/', $gallery['file'])) {
+            $filename = $gallery['file'];
+        }
+        $payload['attachments'] = [[
+            'filename' => $filename,
+            'content'  => $b64,
+        ]];
+    }
+
+    $ch = curl_init('https://api.resend.com/emails');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $resendKey,
+            'Content-Type: application/json',
+        ],
+        CURLOPT_POSTFIELDS     => json_encode($payload),
+        CURLOPT_TIMEOUT        => 20,
+    ]);
+    $resp = curl_exec($ch);
+    $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $err = curl_error($ch);
+    curl_close($ch);
+
+    if ($resp === false || $status < 200 || $status >= 300) {
+        error_log('gpt-image try: notify Resend fail status=' . $status . ' err=' . $err . ' resp=' . substr((string) $resp, 0, 300));
+    }
+}
+
+/**
  * Estimate USD cost from Images API usage tokens.
  * Rates: OpenAI standard-tier gpt-image-2 per 1M tokens (text in $5, image in $8, image out $30).
  * The API does not return a dollar amount; this matches the gpt-image CLI.
@@ -806,6 +911,18 @@ if ($gallery) {
         'cost_usd' => $cost['cost_usd'],
     ]));
 }
+
+// Notify jacob@stephens.page (best-effort; does not fail the try).
+notify_admin_new_image($env, [
+    'email' => $email,
+    'prompt' => $prompt,
+    'cost_usd' => $cost['cost_usd'] ?? null,
+    'cost_line' => $costLine,
+    'latency_ms' => $latencyMs,
+    'gallery' => $gallery,
+    'spend' => $spend,
+    'b64' => $b64,
+]);
 
 respond(true, "Wrote trial.png · {$costLine} · {$subNote}", [
     'image_b64' => $b64,
