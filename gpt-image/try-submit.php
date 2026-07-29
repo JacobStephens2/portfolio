@@ -15,6 +15,10 @@ header('Cache-Control: no-store');
 const TRIALS_PATH = '/var/lib/gpt-image/trials.jsonl';
 const GALLERY_DIR = __DIR__ . '/gallery';
 const GALLERY_MANIFEST = GALLERY_DIR . '/manifest.json';
+/** Public running tally of live-try OpenAI spend (survives gallery pruning). */
+const SPEND_PATH = GALLERY_DIR . '/spend.json';
+/** Durable copy under /var/lib (same totals; public file is for the page). */
+const SPEND_PATH_LIB = '/var/lib/gpt-image/spend.json';
 const GALLERY_MAX_ITEMS = 48;
 const MAX_PROMPT = 500;
 const MIN_PROMPT = 3;
@@ -279,11 +283,166 @@ function openai_generate(string $apiKey, string $prompt): array {
 }
 
 /**
+ * Read spend tally from public file (and optionally durable lib copy).
+ *
+ * @return array{total_usd: float, image_count: int, updated_at: int}
+ */
+function read_spend(): array {
+    $empty = ['total_usd' => 0.0, 'image_count' => 0, 'updated_at' => 0];
+    foreach ([SPEND_PATH, SPEND_PATH_LIB] as $path) {
+        if (!is_readable($path)) {
+            continue;
+        }
+        $data = json_decode((string) file_get_contents($path), true);
+        if (!is_array($data)) {
+            continue;
+        }
+        return [
+            'total_usd' => (float) ($data['total_usd'] ?? 0),
+            'image_count' => (int) ($data['image_count'] ?? 0),
+            'updated_at' => (int) ($data['updated_at'] ?? 0),
+        ];
+    }
+    return $empty;
+}
+
+/**
+ * One-time backfill of spend from trials.jsonl when the tally file is empty
+ * but past successful generations exist.
+ */
+function maybe_backfill_spend_from_trials(array $spend): array {
+    if (($spend['image_count'] ?? 0) > 0 || ($spend['total_usd'] ?? 0) > 0) {
+        return $spend;
+    }
+    if (!is_readable(TRIALS_PATH)) {
+        return $spend;
+    }
+    $total = 0.0;
+    $count = 0;
+    $fh = @fopen(TRIALS_PATH, 'r');
+    if ($fh === false) {
+        return $spend;
+    }
+    while (($line = fgets($fh)) !== false) {
+        $line = trim($line);
+        if ($line === '') {
+            continue;
+        }
+        $ev = json_decode($line, true);
+        if (!is_array($ev)) {
+            continue;
+        }
+        if (($ev['event'] ?? '') !== 'try' || empty($ev['ok'])) {
+            continue;
+        }
+        if (!isset($ev['cost_usd']) || !is_numeric($ev['cost_usd'])) {
+            continue;
+        }
+        $total += (float) $ev['cost_usd'];
+        $count++;
+    }
+    fclose($fh);
+    if ($count === 0) {
+        return $spend;
+    }
+    return write_spend($total, $count);
+}
+
+/**
+ * Write spend tally to public + durable paths.
+ *
+ * @return array{total_usd: float, image_count: int, updated_at: int}
+ */
+function write_spend(float $totalUsd, int $imageCount): array {
+    $payload = [
+        'total_usd' => round(max(0, $totalUsd), 6),
+        'image_count' => max(0, $imageCount),
+        'updated_at' => time(),
+        'currency' => 'USD',
+        'note' => 'Estimated live-try OpenAI image spend (gpt-image-2 rates). Running tally; not pruned with gallery.',
+    ];
+    $json = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    if ($json === false) {
+        return $payload;
+    }
+    foreach ([SPEND_PATH, SPEND_PATH_LIB] as $path) {
+        $dir = dirname($path);
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0775, true);
+        }
+        @file_put_contents($path, $json . "\n", LOCK_EX);
+        @chmod($path, 0664);
+    }
+    return $payload;
+}
+
+/**
+ * Atomically add one successful generation's estimated cost to the running tally.
+ *
+ * @return array{total_usd: float, image_count: int, updated_at: int}
+ */
+function record_spend(?float $costUsd): array {
+    $add = ($costUsd !== null && $costUsd > 0) ? $costUsd : 0.0;
+    $path = SPEND_PATH;
+    $dir = dirname($path);
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0775, true);
+    }
+
+    $fp = @fopen($path, 'c+');
+    if ($fp === false) {
+        // Fallback without lock.
+        $cur = maybe_backfill_spend_from_trials(read_spend());
+        return write_spend($cur['total_usd'] + $add, $cur['image_count'] + 1);
+    }
+    try {
+        flock($fp, LOCK_EX);
+        $raw = stream_get_contents($fp);
+        $data = json_decode((string) $raw, true);
+        if (!is_array($data)) {
+            $data = maybe_backfill_spend_from_trials(read_spend());
+        }
+        $total = (float) ($data['total_usd'] ?? 0) + $add;
+        $count = (int) ($data['image_count'] ?? 0) + 1;
+        $payload = [
+            'total_usd' => round(max(0, $total), 6),
+            'image_count' => max(0, $count),
+            'updated_at' => time(),
+            'currency' => 'USD',
+            'note' => 'Estimated live-try OpenAI image spend (gpt-image-2 rates). Running tally; not pruned with gallery.',
+        ];
+        $json = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        if ($json !== false) {
+            ftruncate($fp, 0);
+            rewind($fp);
+            fwrite($fp, $json . "\n");
+            fflush($fp);
+        }
+        flock($fp, LOCK_UN);
+        fclose($fp);
+        // Mirror durable copy.
+        $libDir = dirname(SPEND_PATH_LIB);
+        if (!is_dir($libDir)) {
+            @mkdir($libDir, 0775, true);
+        }
+        @file_put_contents(SPEND_PATH_LIB, $json . "\n", LOCK_EX);
+        return $payload;
+    } catch (Throwable $e) {
+        error_log('gpt-image try: spend tally error: ' . $e->getMessage());
+        if (is_resource($fp)) {
+            @flock($fp, LOCK_UN);
+            @fclose($fp);
+        }
+        return read_spend();
+    }
+}
+
+/**
  * Persist a successful generation into the public community gallery.
  * No email is stored. Keeps the newest GALLERY_MAX_ITEMS entries.
  * Returns public relative paths or null on failure.
  */
-function save_to_gallery(string $b64, string $prompt): ?array {
+function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null): ?array {
     if (!is_dir(GALLERY_DIR)) {
         if (!@mkdir(GALLERY_DIR, 0775, true) && !is_dir(GALLERY_DIR)) {
             error_log('gpt-image try: cannot create gallery dir');
@@ -334,6 +493,7 @@ function save_to_gallery(string $b64, string $prompt): ?array {
         'model' => 'gpt-image-2',
         'quality' => 'medium',
         'size' => '1024x1024',
+        'cost_usd' => $costUsd,
     ];
 
     $fp = @fopen(GALLERY_MANIFEST, 'c+');
@@ -632,14 +792,18 @@ if (!preg_match('/^[A-Za-z0-9+\/]+=*$/', $b64) || strlen($b64) < 64) {
     respond(false, 'Image generation returned an unreadable result. Please try again.', [], 502);
 }
 
+// Running public spend tally (all successful live-tries; not reduced when gallery prunes).
+$spend = record_spend(isset($cost['cost_usd']) ? (float) $cost['cost_usd'] : null);
+
 // Public community gallery (no email). Best-effort; generation still succeeds if this fails.
-$gallery = save_to_gallery($b64, $prompt);
+$gallery = save_to_gallery($b64, $prompt, isset($cost['cost_usd']) ? (float) $cost['cost_usd'] : null);
 if ($gallery) {
     log_trial(array_merge($baseEvent, [
         'event' => 'gallery',
         'ok' => true,
         'gallery_id' => $gallery['id'],
         'gallery_file' => $gallery['file'],
+        'cost_usd' => $cost['cost_usd'],
     ]));
 }
 
@@ -659,4 +823,9 @@ respond(true, "Wrote trial.png · {$costLine} · {$subNote}", [
         'text_output' => $cost['text_output'],
     ],
     'gallery' => $gallery,
+    'spend' => [
+        'total_usd' => $spend['total_usd'],
+        'image_count' => $spend['image_count'],
+        'updated_at' => $spend['updated_at'] ?? time(),
+    ],
 ]);

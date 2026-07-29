@@ -319,6 +319,17 @@
     }
     .gallery-card .gallery-when { font-size: 11.5px; color: var(--muted); }
     .gallery-empty { color: var(--muted); font-size: 14.5px; }
+    .spend-tally {
+      display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: baseline;
+      margin: 0 0 18px; padding: 14px 16px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    }
+    .spend-tally .spend-main {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 1.25rem; font-weight: 700; color: var(--green);
+    }
+    .spend-tally .spend-meta { color: var(--muted); font-size: 13.5px; }
+    .spend-tally .spend-note { width: 100%; color: var(--muted); font-size: 12.5px; margin: 0; }
     .gallery-lightbox {
       position: fixed; inset: 0; z-index: 100;
       background: rgba(0,0,0,0.82);
@@ -504,6 +515,14 @@
         Recent images from the live try above. Newest first (keeps the last 48).
         Prompt only - no emails. Click a tile to enlarge.
       </p>
+      <div class="spend-tally" id="spend-tally" aria-live="polite">
+        <span class="spend-main" id="spend-total">~$0.00</span>
+        <span class="spend-meta mono" id="spend-count">0 images generated</span>
+        <p class="spend-note">
+          Running estimated OpenAI spend for all live-try generations on this page
+          (gpt-image-2 rates). Total is cumulative - it is not reduced when old gallery tiles rotate out.
+        </p>
+      </div>
       <div class="gallery-grid" id="gallery-grid" aria-live="polite">
         <p class="gallery-empty" id="gallery-empty">Loading gallery…</p>
       </div>
@@ -633,7 +652,7 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
       });
     });
 
-    // Community gallery: load public manifest, render grid, simple lightbox.
+    // Community gallery + running spend tally.
     (function () {
       var grid = document.getElementById('gallery-grid');
       var emptyEl = document.getElementById('gallery-empty');
@@ -641,7 +660,44 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
       var lbImg = document.getElementById('gallery-lb-img');
       var lbCap = document.getElementById('gallery-lb-cap');
       var lbClose = document.getElementById('gallery-lb-close');
+      var spendTotalEl = document.getElementById('spend-total');
+      var spendCountEl = document.getElementById('spend-count');
       if (!grid) return;
+
+      function formatUsd(n) {
+        var x = Number(n);
+        if (!isFinite(x) || x < 0) x = 0;
+        return '~$' + x.toFixed(x >= 1 ? 2 : 4);
+      }
+
+      function renderSpend(spend) {
+        if (!spend || typeof spend !== 'object') return;
+        var total = Number(spend.total_usd);
+        var count = parseInt(spend.image_count, 10) || 0;
+        if (spendTotalEl) spendTotalEl.textContent = formatUsd(total);
+        if (spendCountEl) {
+          spendCountEl.textContent = count + ' image' + (count === 1 ? '' : 's') + ' generated';
+        }
+      }
+
+      window.refreshGptImageSpend = function (fromResponse) {
+        if (fromResponse && typeof fromResponse === 'object') {
+          renderSpend(fromResponse);
+          return Promise.resolve(fromResponse);
+        }
+        return fetch('gallery/spend.json?_=' + Date.now(), { credentials: 'same-origin' })
+          .then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+          })
+          .then(function (data) {
+            renderSpend(data);
+            return data;
+          })
+          .catch(function () {
+            /* keep last displayed values */
+          });
+      };
 
       function formatWhen(ts) {
         if (!ts) return '';
@@ -762,6 +818,7 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
       };
 
       window.refreshGptImageGallery();
+      window.refreshGptImageSpend();
     })();
 
     // Live try: CLI-shaped prompt → newsletter + Turnstile → generate.
@@ -1059,6 +1116,21 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
                 if (typeof window.refreshGptImageGallery === 'function') {
                   window.refreshGptImageGallery();
                 }
+              }
+              if (data.spend && typeof window.refreshGptImageSpend === 'function') {
+                window.refreshGptImageSpend(data.spend);
+                if (data.spend.total_usd != null) {
+                  log(
+                    'community spend total: ~$' +
+                      Number(data.spend.total_usd).toFixed(4) +
+                      ' est. (' +
+                      (data.spend.image_count || 0) +
+                      ' images)',
+                    'ok'
+                  );
+                }
+              } else if (typeof window.refreshGptImageSpend === 'function') {
+                window.refreshGptImageSpend();
               }
             } else {
               log('error: image payload rejected', 'err');
