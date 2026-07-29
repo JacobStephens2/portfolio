@@ -8,6 +8,9 @@
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
+// Image generation often exceeds PHP's default 30s max_execution_time.
+@set_time_limit(200);
+@ini_set('max_execution_time', '200');
 
 const TRIALS_PATH = '/var/lib/gpt-image/trials.jsonl';
 const MAX_PROMPT = 500;
