@@ -1,85 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>vaulted-agent — install</title>
-    <meta name="description" content="Install vaulted-agent: launch AI coding agents with vault-resolved secrets in-process.">
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#9b4d24">
+    <title>vaulted-agent | stephens.page</title>
+    <meta name="description" content="Give an AI coding agent real credentials without leaving them on disk. One launcher, vault-resolved secrets in-process, Claude Code / Codex / Grok.">
+    <meta property="og:title" content="vaulted-agent — secrets for AI coding agents, not on disk">
+    <meta property="og:description" content="Launch Claude Code, Codex, or Grok with vault-resolved secrets in the process environment. One credential on disk; manifests for blast radius.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stephens.page/vaulted-agent">
+    <meta property="og:site_name" content="Jacob Stephens">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="vaulted-agent">
+    <meta name="twitter:description" content="Vault-resolved secrets for AI coding agents — install with one curl, or clone from GitHub.">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/theme.css">
     <script src="/theme.js" defer></script>
     <style>
+        :root {
+            --ink: #181512;
+            --brand: #9b4d24;
+            --brand-ink: #ffffff;
+            --muted: #625a52;
+            --surface: #ffffff;
+            --soft: #efe9df;
+            --rule: #d6d1c9;
+            --code-bg: #efe9df;
+        }
+
+        * { box-sizing: border-box; }
+
         body {
             margin: 0;
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.55;
-            color: var(--ink, #181512);
-            background: var(--surface, #fff);
+            font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--ink);
+            background: var(--surface);
+            min-height: 100vh;
         }
-        main {
-            max-width: 40rem;
+
+        a { color: var(--brand); text-decoration: none; }
+        a:hover, a:focus-visible {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.12em;
+        }
+
+        .container {
+            max-width: 720px;
             margin: 0 auto;
-            padding: 2.5rem 1.25rem 4rem;
+            padding: 1.5rem 1.1rem 3.5rem;
         }
-        h1 { font-size: 1.75rem; line-height: 1.2; margin: 0 0 0.5rem; }
-        .lede { color: var(--muted, #625a52); margin: 0 0 1.75rem; }
-        h2 { font-size: 1.05rem; margin: 1.75rem 0 0.6rem; }
-        pre, code {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-            font-size: 0.88rem;
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
         }
-        pre {
-            background: var(--code-bg, #efe9df);
-            border: 1px solid var(--rule, #d6d1c9);
-            border-radius: 0.5rem;
-            padding: 0.9rem 1rem;
+
+        .back-link {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .eyebrow {
+            display: block;
+            margin-bottom: 0.45rem;
+            color: var(--brand);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 2.55rem);
+            line-height: 1.08;
+            letter-spacing: -0.015em;
+            margin: 0 0 0.7rem;
+        }
+
+        .lede {
+            color: var(--muted);
+            font-size: 1.08rem;
+            max-width: 58ch;
+            margin: 0 0 1.75rem;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin: 0 0 2rem;
+        }
+
+        .chip {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            padding: 0.28rem 0.65rem;
+            border-radius: 999px;
+            border: 1px solid var(--rule);
+            background: var(--soft);
+            color: var(--ink);
+        }
+
+        h2 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin: 2.1rem 0 0.7rem;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 0 0 0.45rem;
+            color: var(--ink);
+        }
+
+        p { margin: 0 0 0.9rem; }
+        p:last-child { margin-bottom: 0; }
+
+        ul {
+            margin: 0 0 1rem;
+            padding-left: 1.2rem;
+        }
+
+        li { margin: 0.3rem 0; }
+        li::marker { color: var(--brand); }
+
+        .flow {
+            font-family: 'Source Code Pro', ui-monospace, Menlo, Consolas, monospace;
+            font-size: 0.78rem;
+            line-height: 1.45;
+            background: var(--code-bg);
+            border: 1px solid var(--rule);
+            border-radius: 10px;
+            padding: 1rem 1.05rem;
             overflow-x: auto;
-            margin: 0.5rem 0 1rem;
+            margin: 0.75rem 0 1.25rem;
+            white-space: pre;
+            color: var(--ink);
         }
-        a { color: var(--brand, #9b4d24); }
-        ul { padding-left: 1.2rem; color: var(--muted, #625a52); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.85rem;
+            margin: 0.85rem 0 1.25rem;
+        }
+
+        @media (max-width: 560px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            border-radius: 10px;
+            padding: 1rem 1.05rem;
+        }
+
+        .card.good h3 { color: var(--brand); }
+        .card.warn {
+            border-color: var(--rule);
+            background: var(--soft);
+        }
+
+        .card p, .card li {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .install-block {
+            border: 1px solid var(--rule);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0.85rem 0 1.15rem;
+            background: var(--surface);
+        }
+
+        .install-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.95rem;
+            background: var(--soft);
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .install-label {
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .copy-btn {
+            appearance: none;
+            border: 1px solid var(--rule);
+            background: var(--surface);
+            color: var(--ink);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.32rem 0.7rem;
+            border-radius: 6px;
+            cursor: pointer;
+            line-height: 1.2;
+        }
+
+        .copy-btn:hover,
+        .copy-btn:focus-visible {
+            border-color: var(--brand);
+            color: var(--brand);
+            outline: none;
+        }
+
+        .copy-btn.copied {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: var(--brand-ink);
+        }
+
+        .install-block pre {
+            margin: 0;
+            padding: 1rem 1.05rem;
+            overflow-x: auto;
+            font-family: 'Source Code Pro', ui-monospace, Menlo, Consolas, monospace;
+            font-size: 0.84rem;
+            line-height: 1.5;
+            background: var(--code-bg);
+            color: var(--ink);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .install-block code {
+            font-family: inherit;
+            font-size: inherit;
+        }
+
         .note {
-            border-left: 3px solid var(--brand, #9b4d24);
-            padding: 0.35rem 0 0.35rem 0.9rem;
-            margin: 1.25rem 0;
-            color: var(--muted, #625a52);
+            border-left: 3px solid var(--brand);
+            padding: 0.15rem 0 0.15rem 0.9rem;
+            margin: 0.75rem 0 1.25rem;
+            color: var(--muted);
+            font-size: 0.95rem;
         }
-        footer { margin-top: 2.5rem; font-size: 0.9rem; color: var(--muted, #625a52); }
+
+        .cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.55rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 1px solid transparent;
+        }
+
+        .cta:hover, .cta:focus-visible { text-decoration: none; }
+
+        .cta-primary {
+            background: var(--brand);
+            color: var(--brand-ink);
+        }
+
+        .cta-primary:hover, .cta-primary:focus-visible {
+            filter: brightness(1.05);
+        }
+
+        .cta-secondary {
+            background: var(--surface);
+            color: var(--ink);
+            border-color: var(--rule);
+        }
+
+        .cta-secondary:hover, .cta-secondary:focus-visible {
+            border-color: var(--brand);
+            color: var(--brand);
+        }
+
+        footer {
+            margin-top: 2.75rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--rule);
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        footer p { margin: 0.25rem 0; }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
     </style>
 </head>
 <body>
-<main>
-    <h1>vaulted-agent</h1>
-    <p class="lede">
-        Launch AI coding agents with vault-resolved secrets in-process —
-        one service-account token on disk, everything else only in the agent process.
-    </p>
+    <div class="container">
+        <div class="topbar">
+            <a class="back-link" href="/">← stephens.page</a>
+        </div>
 
-    <h2>Install (one-liner)</h2>
-    <pre><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
-    <p class="note">
-        This host only serves the bootstrap. The installer downloads a
-        <strong>tagged GitHub release</strong> and runs the real
-        <code>install.sh</code> from that tarball. It does not write your vault token.
-    </p>
+        <span class="eyebrow">Open source · secrets for agents</span>
+        <h1>vaulted-agent</h1>
+        <p class="lede">
+            Give an AI coding agent real credentials without leaving them on disk.
+            One small launcher resolves secrets from a vault into the agent’s
+            process at start, runs it as a service account, and gives each harness
+            only the secrets you named for it.
+        </p>
 
-    <h2>Install from GitHub</h2>
-    <pre><code>git clone --branch v0.1.0 --depth 1 \
+        <div class="chips">
+            <span class="chip">Claude Code</span>
+            <span class="chip">Codex</span>
+            <span class="chip">Grok</span>
+            <span class="chip">1Password · Bitwarden · pass</span>
+            <span class="chip">bash · sudo</span>
+        </div>
+
+        <div class="cta-row">
+            <a class="cta cta-primary" href="#install">Install</a>
+            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher">GitHub</a>
+            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.1.0">v0.1.0 release</a>
+        </div>
+
+        <h2>What it does</h2>
+        <p>
+            You type <code>vaulted-agent claude</code> (or codex, or grok). The launcher
+            becomes the agent account, scrubs the environment, injects only the
+            secrets in that harness’s manifest, drops the vault token, and
+            <code>exec</code>s the agent. Secrets live in that process until it exits.
+        </p>
+        <pre class="flow" aria-label="Launch flow">you $ vaulted-agent claude
+      │
+      ▼
+  /usr/local/bin/vaulted-agent
+      ├─ sudo -u agent                 become the service account
+      ├─ scrub environment             allowlist only
+      ├─ op inject -i full.env.tpl     vault refs → values, in memory
+      ├─ unset vault token             agent must not inherit the master key
+      └─ exec claude …
+             └─ secrets live here, until the process exits</pre>
+
+        <div class="grid-2">
+            <div class="card good">
+                <h3>What you get</h3>
+                <ul>
+                    <li>One vault token on disk instead of a fleet of <code>.env</code> files</li>
+                    <li>Central rotation — change the vault, every future launch picks it up</li>
+                    <li>Diffable manifests: which agent can reach what</li>
+                    <li>Nothing secret on the command line (<code>ps</code> stays clean)</li>
+                </ul>
+            </div>
+            <div class="card warn">
+                <h3>Honest limits</h3>
+                <ul>
+                    <li>Not “zero secrets on disk” — one service-account token remains</li>
+                    <li>The agent can read its own environment (and so can anything as that user)</li>
+                    <li>Manifests control blast radius, not full containment</li>
+                    <li>Root on the host can still read everything</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 id="install">Install</h2>
+        <p>
+            Two supported paths. The one-liner only bootstraps from this host;
+            the payload is always a <strong>tagged GitHub release</strong>, not floating
+            <code>main</code>. Neither path writes your vault token for you.
+        </p>
+
+        <div class="install-block" data-copy-block>
+            <div class="install-head">
+                <span class="install-label">One-liner</span>
+                <button type="button" class="copy-btn" data-copy-target="cmd-oneliner">Copy</button>
+            </div>
+            <pre id="cmd-oneliner"><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
+        </div>
+
+        <div class="install-block" data-copy-block>
+            <div class="install-head">
+                <span class="install-label">From GitHub (inspectable)</span>
+                <button type="button" class="copy-btn" data-copy-target="cmd-github">Copy</button>
+            </div>
+            <pre id="cmd-github"><code>git clone --branch v0.1.0 --depth 1 \
   https://github.com/JacobStephens2/vaulted-agent-launcher
-cd vaulted-agent-launcher &amp;&amp; sudo ./install.sh</code></pre>
+cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
+        </div>
 
-    <h2>Useful variants</h2>
-    <ul>
-        <li>Pin a version: <code>VAULTED_AGENT_VERSION=v0.1.0 curl -fsSL … | bash</code></li>
-        <li>Inspect first: download <a href="/vaulted-agent/install.sh"><code>install.sh</code></a>, read it, then <code>bash install.sh</code></li>
-        <li>Pass flags: <code>curl -fsSL … | bash -s -- --user agent</code></li>
-        <li>Try without installing: clone the repo and run <code>./demo/try-it.sh</code></li>
-    </ul>
+        <p class="note">
+            Prefer not to pipe to bash? Download
+            <a href="/vaulted-agent/install.sh">install.sh</a>, read it, then
+            <code>bash install.sh</code>. Pin with
+            <code>VAULTED_AGENT_VERSION=v0.1.0</code>. Pass installer flags after
+            <code>bash -s --</code> (for example <code>--user agent</code>).
+        </p>
 
-    <footer>
-        Source and docs:
-        <a href="https://github.com/JacobStephens2/vaulted-agent-launcher">github.com/JacobStephens2/vaulted-agent-launcher</a>
-        · <a href="/">stephens.page</a>
-    </footer>
-</main>
+        <h3>After install — vault token</h3>
+        <p>One credential stays on disk (1Password example; other backends in the README):</p>
+        <div class="install-block" data-copy-block>
+            <div class="install-head">
+                <span class="install-label">Configure token</span>
+                <button type="button" class="copy-btn" data-copy-target="cmd-token">Copy</button>
+            </div>
+            <pre id="cmd-token"><code>printf 'OP_SERVICE_ACCOUNT_TOKEN=ops_...\n' | sudo tee /etc/vaulted-agent/op.env >/dev/null
+sudo chown root:"$USER" /etc/vaulted-agent/op.env
+sudo chmod 0640 /etc/vaulted-agent/op.env
+
+sudo cp /etc/vaulted-agent/harnesses.d/claude.conf.example \
+        /etc/vaulted-agent/harnesses.d/claude.conf</code></pre>
+        </div>
+
+        <h2>Try without installing</h2>
+        <p>No root, no vault, nothing written outside a temp directory:</p>
+        <div class="install-block" data-copy-block>
+            <div class="install-head">
+                <span class="install-label">Demo</span>
+                <button type="button" class="copy-btn" data-copy-target="cmd-demo">Copy</button>
+            </div>
+            <pre id="cmd-demo"><code>git clone https://github.com/JacobStephens2/vaulted-agent-launcher
+cd vaulted-agent-launcher && ./demo/try-it.sh</code></pre>
+        </div>
+
+        <div class="cta-row">
+            <a class="cta cta-primary" href="https://github.com/JacobStephens2/vaulted-agent-launcher#install">Full docs on GitHub</a>
+            <a class="cta cta-secondary" href="/vaulted-agent/install.sh">Raw install.sh</a>
+        </div>
+
+        <footer>
+            <p>
+                Source:
+                <a href="https://github.com/JacobStephens2/vaulted-agent-launcher">JacobStephens2/vaulted-agent-launcher</a>
+                · MIT · <a href="/">stephens.page</a>
+            </p>
+            <p>&copy; <span id="current-year"></span> Stephens Page LLC</p>
+        </footer>
+    </div>
+
+    <script>
+      (function () {
+        var y = document.getElementById('current-year');
+        if (y) y.textContent = String(new Date().getFullYear());
+
+        function textOf(id) {
+          var el = document.getElementById(id);
+          if (!el) return '';
+          return (el.innerText || el.textContent || '').replace(/\n$/, '');
+        }
+
+        function setCopied(btn) {
+          var prev = btn.textContent;
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          window.setTimeout(function () {
+            btn.textContent = prev;
+            btn.classList.remove('copied');
+          }, 1600);
+        }
+
+        function copyText(text, btn) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function () {
+              setCopied(btn);
+            }).catch(function () {
+              legacyCopy(text, btn);
+            });
+            return;
+          }
+          legacyCopy(text, btn);
+        }
+
+        function legacyCopy(text, btn) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            setCopied(btn);
+          } catch (e) { /* ignore */ }
+          document.body.removeChild(ta);
+        }
+
+        document.querySelectorAll('.copy-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var id = btn.getAttribute('data-copy-target');
+            copyText(textOf(id), btn);
+          });
+        });
+      })();
+    </script>
 </body>
 </html>

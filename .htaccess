@@ -18,6 +18,9 @@ RewriteEngine On
 # repointable if the card URL ever changes, without browsers caching it forever.
 RewriteRule ^card/?$ https://hihello.com/p/451555c1-09ba-4900-a216-492f18f60866 [R=302,L]
 
+# Longer product name -> short install/product page.
+RewriteRule ^vaulted-agent-launcher/?$ /vaulted-agent/ [R=301,L]
+
 # Old top-level case-study URLs -> new /blog/ slugs.
 RewriteRule ^stacks/?$ /stack [R=301,L]
 RewriteRule ^eta-platform(\.html)?$ /blog/one-engineer-platform-production-systems/ [R=301,L]
