@@ -197,67 +197,34 @@
             font-size: 0.95rem;
         }
 
-        .install-block {
-            border: 1px solid var(--rule);
-            border-radius: 12px;
-            overflow: hidden;
-            margin: 0.85rem 0 1.15rem;
-            background: var(--surface);
-        }
-
-        .install-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.7rem 0.95rem;
-            background: var(--soft);
-            border-bottom: 1px solid var(--rule);
-        }
-
+        /* Code blocks with Claude-docs-style copy icon on the right */
         .install-label {
+            display: block;
             font-size: 0.82rem;
             font-weight: 700;
             letter-spacing: 0.03em;
             text-transform: uppercase;
             color: var(--muted);
+            margin: 1rem 0 0.45rem;
         }
 
-        .copy-btn {
-            appearance: none;
+        .install-block {
+            position: relative;
             border: 1px solid var(--rule);
-            background: var(--surface);
-            color: var(--ink);
-            font-family: inherit;
-            font-size: 0.82rem;
-            font-weight: 600;
-            padding: 0.32rem 0.7rem;
-            border-radius: 6px;
-            cursor: pointer;
-            line-height: 1.2;
-        }
-
-        .copy-btn:hover,
-        .copy-btn:focus-visible {
-            border-color: var(--brand);
-            color: var(--brand);
-            outline: none;
-        }
-
-        .copy-btn.copied {
-            background: var(--brand);
-            border-color: var(--brand);
-            color: var(--brand-ink);
+            border-radius: 10px;
+            margin: 0 0 1.15rem;
+            background: var(--code-bg);
+            overflow: hidden;
         }
 
         .install-block pre {
             margin: 0;
-            padding: 1rem 1.05rem;
+            padding: 0.95rem 3rem 0.95rem 1.05rem;
             overflow-x: auto;
             font-family: 'Source Code Pro', ui-monospace, Menlo, Consolas, monospace;
             font-size: 0.84rem;
             line-height: 1.5;
-            background: var(--code-bg);
+            background: transparent;
             color: var(--ink);
             white-space: pre-wrap;
             word-break: break-word;
@@ -267,6 +234,55 @@
             font-family: inherit;
             font-size: inherit;
         }
+
+        .copy-btn {
+            appearance: none;
+            position: absolute;
+            top: 0.55rem;
+            right: 0.55rem;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            padding: 0;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            line-height: 0;
+            transition: color 0.12s ease, background-color 0.12s ease, border-color 0.12s ease;
+        }
+
+        .copy-btn:hover,
+        .copy-btn:focus-visible {
+            color: var(--ink);
+            background: var(--surface);
+            border-color: var(--rule);
+            outline: none;
+        }
+
+        .copy-btn:focus-visible {
+            box-shadow: 0 0 0 2px var(--brand);
+        }
+
+        .copy-btn.copied {
+            color: var(--brand);
+            background: var(--surface);
+            border-color: var(--rule);
+        }
+
+        .copy-btn svg {
+            width: 1rem;
+            height: 1rem;
+            display: block;
+        }
+
+        .copy-btn .icon-check { display: none; }
+        .copy-btn.copied .icon-copy { display: none; }
+        .copy-btn.copied .icon-check { display: block; }
 
         .note {
             border-left: 3px solid var(--brand);
@@ -414,19 +430,31 @@
             <code>main</code>. Neither path writes your vault token for you.
         </p>
 
+        <span class="install-label">One-liner</span>
         <div class="install-block" data-copy-block>
-            <div class="install-head">
-                <span class="install-label">One-liner</span>
-                <button type="button" class="copy-btn" data-copy-target="cmd-oneliner">Copy</button>
-            </div>
+            <button type="button" class="copy-btn" data-copy-target="cmd-oneliner" aria-label="Copy one-liner install command" title="Copy">
+                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+            </button>
             <pre id="cmd-oneliner"><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
         </div>
 
+        <span class="install-label">From GitHub (inspectable)</span>
         <div class="install-block" data-copy-block>
-            <div class="install-head">
-                <span class="install-label">From GitHub (inspectable)</span>
-                <button type="button" class="copy-btn" data-copy-target="cmd-github">Copy</button>
-            </div>
+            <button type="button" class="copy-btn" data-copy-target="cmd-github" aria-label="Copy GitHub install commands" title="Copy">
+                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+            </button>
             <pre id="cmd-github"><code>git clone --branch v0.1.0 --depth 1 \
   https://github.com/JacobStephens2/vaulted-agent-launcher
 cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
@@ -442,11 +470,17 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
 
         <h3>After install — vault token</h3>
         <p>One credential stays on disk (1Password example; other backends in the README):</p>
+        <span class="install-label">Configure token</span>
         <div class="install-block" data-copy-block>
-            <div class="install-head">
-                <span class="install-label">Configure token</span>
-                <button type="button" class="copy-btn" data-copy-target="cmd-token">Copy</button>
-            </div>
+            <button type="button" class="copy-btn" data-copy-target="cmd-token" aria-label="Copy vault token setup commands" title="Copy">
+                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+            </button>
             <pre id="cmd-token"><code>printf 'OP_SERVICE_ACCOUNT_TOKEN=ops_...\n' | sudo tee /etc/vaulted-agent/op.env >/dev/null
 sudo chown root:"$USER" /etc/vaulted-agent/op.env
 sudo chmod 0640 /etc/vaulted-agent/op.env
@@ -457,11 +491,17 @@ sudo cp /etc/vaulted-agent/harnesses.d/claude.conf.example \
 
         <h2>Try without installing</h2>
         <p>No root, no vault, nothing written outside a temp directory:</p>
+        <span class="install-label">Demo</span>
         <div class="install-block" data-copy-block>
-            <div class="install-head">
-                <span class="install-label">Demo</span>
-                <button type="button" class="copy-btn" data-copy-target="cmd-demo">Copy</button>
-            </div>
+            <button type="button" class="copy-btn" data-copy-target="cmd-demo" aria-label="Copy demo commands" title="Copy">
+                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+            </button>
             <pre id="cmd-demo"><code>git clone https://github.com/JacobStephens2/vaulted-agent-launcher
 cd vaulted-agent-launcher && ./demo/try-it.sh</code></pre>
         </div>
@@ -493,12 +533,13 @@ cd vaulted-agent-launcher && ./demo/try-it.sh</code></pre>
         }
 
         function setCopied(btn) {
-          var prev = btn.textContent;
-          btn.textContent = 'Copied';
           btn.classList.add('copied');
+          btn.setAttribute('aria-label', 'Copied');
+          btn.setAttribute('title', 'Copied');
           window.setTimeout(function () {
-            btn.textContent = prev;
             btn.classList.remove('copied');
+            btn.setAttribute('aria-label', btn.getAttribute('data-label') || 'Copy');
+            btn.setAttribute('title', 'Copy');
           }, 1600);
         }
 
@@ -530,6 +571,7 @@ cd vaulted-agent-launcher && ./demo/try-it.sh</code></pre>
         }
 
         document.querySelectorAll('.copy-btn').forEach(function (btn) {
+          btn.setAttribute('data-label', btn.getAttribute('aria-label') || 'Copy');
           btn.addEventListener('click', function () {
             var id = btn.getAttribute('data-copy-target');
             copyText(textOf(id), btn);
