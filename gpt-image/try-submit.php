@@ -13,6 +13,9 @@ header('Cache-Control: no-store');
 @ini_set('max_execution_time', '200');
 
 const TRIALS_PATH = '/var/lib/gpt-image/trials.jsonl';
+const GALLERY_DIR = __DIR__ . '/gallery';
+const GALLERY_MANIFEST = GALLERY_DIR . '/manifest.json';
+const GALLERY_MAX_ITEMS = 48;
 const MAX_PROMPT = 500;
 const MIN_PROMPT = 3;
 const MAX_EMAIL = 254;
@@ -276,6 +279,114 @@ function openai_generate(string $apiKey, string $prompt): array {
 }
 
 /**
+ * Persist a successful generation into the public community gallery.
+ * No email is stored. Keeps the newest GALLERY_MAX_ITEMS entries.
+ * Returns public relative paths or null on failure.
+ */
+function save_to_gallery(string $b64, string $prompt): ?array {
+    if (!is_dir(GALLERY_DIR)) {
+        if (!@mkdir(GALLERY_DIR, 0775, true) && !is_dir(GALLERY_DIR)) {
+            error_log('gpt-image try: cannot create gallery dir');
+            return null;
+        }
+    }
+    if (!is_writable(GALLERY_DIR)) {
+        error_log('gpt-image try: gallery dir not writable');
+        return null;
+    }
+
+    $bytes = base64_decode($b64, true);
+    if ($bytes === false || strlen($bytes) < 64) {
+        return null;
+    }
+    // Basic PNG magic check (OpenAI returns png for this endpoint).
+    if (substr($bytes, 0, 8) !== "\x89PNG\r\n\x1a\n") {
+        // Still allow jpeg/webp if magic matches; otherwise reject.
+        $isJpeg = str_starts_with($bytes, "\xff\xd8\xff");
+        $isWebp = str_starts_with($bytes, 'RIFF') && str_contains(substr($bytes, 0, 16), 'WEBP');
+        if (!$isJpeg && !$isWebp) {
+            error_log('gpt-image try: gallery reject non-image payload');
+            return null;
+        }
+        $ext = $isJpeg ? 'jpg' : 'webp';
+    } else {
+        $ext = 'png';
+    }
+
+    $id = gmdate('Ymd-His') . '-' . bin2hex(random_bytes(4));
+    if (!preg_match('/^[a-zA-Z0-9-]+$/', $id)) {
+        return null;
+    }
+    $filename = $id . '.' . $ext;
+    $path = GALLERY_DIR . '/' . $filename;
+    if (@file_put_contents($path, $bytes, LOCK_EX) === false) {
+        error_log('gpt-image try: failed writing gallery image');
+        return null;
+    }
+    @chmod($path, 0664);
+
+    $entry = [
+        'id' => $id,
+        'file' => $filename,
+        'url' => 'gallery/' . $filename,
+        'prompt' => mb_substr($prompt, 0, 160),
+        'ts' => time(),
+        'model' => 'gpt-image-2',
+        'quality' => 'medium',
+        'size' => '1024x1024',
+    ];
+
+    $fp = @fopen(GALLERY_MANIFEST, 'c+');
+    if ($fp === false) {
+        return $entry; // image saved; manifest update best-effort
+    }
+    try {
+        if (!flock($fp, LOCK_EX)) {
+            fclose($fp);
+            return $entry;
+        }
+        $raw = stream_get_contents($fp);
+        $data = json_decode((string) $raw, true);
+        if (!is_array($data) || !isset($data['items']) || !is_array($data['items'])) {
+            $data = ['items' => []];
+        }
+        array_unshift($data['items'], $entry);
+        $toRemove = [];
+        if (count($data['items']) > GALLERY_MAX_ITEMS) {
+            $toRemove = array_slice($data['items'], GALLERY_MAX_ITEMS);
+            $data['items'] = array_slice($data['items'], 0, GALLERY_MAX_ITEMS);
+        }
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        if ($json !== false) {
+            ftruncate($fp, 0);
+            rewind($fp);
+            fwrite($fp, $json . "\n");
+            fflush($fp);
+        }
+        flock($fp, LOCK_UN);
+        fclose($fp);
+
+        foreach ($toRemove as $old) {
+            $oldFile = $old['file'] ?? '';
+            if (is_string($oldFile) && preg_match('/^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp)$/', $oldFile)) {
+                $oldPath = GALLERY_DIR . '/' . $oldFile;
+                if (is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('gpt-image try: gallery manifest error: ' . $e->getMessage());
+        if (is_resource($fp)) {
+            @flock($fp, LOCK_UN);
+            @fclose($fp);
+        }
+    }
+
+    return $entry;
+}
+
+/**
  * Estimate USD cost from Images API usage tokens.
  * Rates: OpenAI standard-tier gpt-image-2 per 1M tokens (text in $5, image in $8, image out $30).
  * The API does not return a dollar amount; this matches the gpt-image CLI.
@@ -521,6 +632,17 @@ if (!preg_match('/^[A-Za-z0-9+\/]+=*$/', $b64) || strlen($b64) < 64) {
     respond(false, 'Image generation returned an unreadable result. Please try again.', [], 502);
 }
 
+// Public community gallery (no email). Best-effort; generation still succeeds if this fails.
+$gallery = save_to_gallery($b64, $prompt);
+if ($gallery) {
+    log_trial(array_merge($baseEvent, [
+        'event' => 'gallery',
+        'ok' => true,
+        'gallery_id' => $gallery['id'],
+        'gallery_file' => $gallery['file'],
+    ]));
+}
+
 respond(true, "Wrote trial.png · {$costLine} · {$subNote}", [
     'image_b64' => $b64,
     'already_subscribed' => $already,
@@ -536,4 +658,5 @@ respond(true, "Wrote trial.png · {$costLine} · {$subNote}", [
         'image_output' => $cost['image_output'],
         'text_output' => $cost['text_output'],
     ],
+    'gallery' => $gallery,
 ]);

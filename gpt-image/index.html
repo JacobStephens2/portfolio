@@ -284,6 +284,65 @@
     footer { border-top: 1px solid var(--border); padding: 30px 0 48px; color: var(--muted); font-size: 14px; }
     footer .row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 
+    /* Community gallery */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .gallery-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .gallery-card:hover {
+      border-color: rgba(90,169,255,0.4);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    }
+    .gallery-card a.gallery-thumb {
+      display: block; aspect-ratio: 1; background: #0b0c0f; overflow: hidden;
+    }
+    .gallery-card img {
+      display: block; width: 100%; height: 100%; object-fit: cover;
+    }
+    .gallery-card .gallery-meta {
+      padding: 10px 12px 12px; font-size: 12.5px; color: var(--muted);
+      flex: 1;
+    }
+    .gallery-card .gallery-prompt {
+      color: var(--fg); margin: 0 0 6px; line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .gallery-card .gallery-when { font-size: 11.5px; color: var(--muted); }
+    .gallery-empty { color: var(--muted); font-size: 14.5px; }
+    .gallery-lightbox {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.82);
+      display: none; align-items: center; justify-content: center;
+      padding: 24px; cursor: zoom-out;
+    }
+    .gallery-lightbox.is-open { display: flex; }
+    .gallery-lightbox figure {
+      margin: 0; max-width: min(920px, 100%); max-height: 100%;
+      text-align: center; cursor: default;
+    }
+    .gallery-lightbox img {
+      max-width: 100%; max-height: min(78vh, 900px);
+      border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .gallery-lightbox figcaption {
+      color: var(--fg); margin-top: 12px; font-size: 14px; max-width: 640px; margin-left: auto; margin-right: auto;
+    }
+    .gallery-lightbox .lb-close {
+      position: absolute; top: 16px; right: 18px;
+      background: #20252e; color: var(--fg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 13px;
+    }
+
     @media (max-width: 560px) {
       .hero h1 { font-size: 40px; }
       .tagline { font-size: 18px; }
@@ -296,6 +355,7 @@
       <span class="brand"><span class="prompt">$</span> gpt-image</span>
       <nav>
         <a href="#try">Try</a>
+        <a href="#gallery">Gallery</a>
         <a href="#features">Features</a>
         <a href="#install">Install</a>
         <a href="#usage">Usage</a>
@@ -389,8 +449,10 @@
 
           <div class="try-gate" id="try-gate" aria-hidden="true">
             <p class="consent">
-              Free trial: one generate after you join the <strong>stephens.page blog newsletter</strong>.
-              Unsubscribe anytime from any email. Protected by Cloudflare Turnstile.
+              Free trial: generate after you join the <strong>stephens.page blog newsletter</strong>
+              (unsubscribe anytime). Protected by Cloudflare Turnstile.
+              Successful images are added to the <strong>public community gallery</strong> below
+              (prompt only - not your email).
             </p>
             <label for="try-email">Email</label>
             <input type="email" id="try-email" name="email" placeholder="you@example.com" autocomplete="email" required>
@@ -435,6 +497,25 @@
         </div>
       </div>
     </section>
+
+    <section id="gallery">
+      <h2>Community gallery</h2>
+      <p class="lead">
+        Recent images from the live try above. Newest first (keeps the last 48).
+        Prompt only - no emails. Click a tile to enlarge.
+      </p>
+      <div class="gallery-grid" id="gallery-grid" aria-live="polite">
+        <p class="gallery-empty" id="gallery-empty">Loading gallery…</p>
+      </div>
+    </section>
+
+    <div class="gallery-lightbox" id="gallery-lightbox" role="dialog" aria-modal="true" aria-label="Gallery image" hidden>
+      <button type="button" class="lb-close" id="gallery-lb-close">Close</button>
+      <figure>
+        <img id="gallery-lb-img" alt="">
+        <figcaption id="gallery-lb-cap"></figcaption>
+      </figure>
+    </div>
 
     <section id="features">
       <h2>What it does</h2>
@@ -551,6 +632,137 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
         });
       });
     });
+
+    // Community gallery: load public manifest, render grid, simple lightbox.
+    (function () {
+      var grid = document.getElementById('gallery-grid');
+      var emptyEl = document.getElementById('gallery-empty');
+      var lb = document.getElementById('gallery-lightbox');
+      var lbImg = document.getElementById('gallery-lb-img');
+      var lbCap = document.getElementById('gallery-lb-cap');
+      var lbClose = document.getElementById('gallery-lb-close');
+      if (!grid) return;
+
+      function formatWhen(ts) {
+        if (!ts) return '';
+        try {
+          return new Date(ts * 1000).toLocaleString(undefined, {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit',
+          });
+        } catch (e) {
+          return '';
+        }
+      }
+
+      function openLb(url, prompt, when) {
+        if (!lb || !lbImg) return;
+        lbImg.src = url;
+        lbImg.alt = prompt || 'Community gallery image';
+        if (lbCap) {
+          lbCap.textContent = (prompt || '') + (when ? ' · ' + when : '');
+        }
+        lb.hidden = false;
+        lb.classList.add('is-open');
+      }
+
+      function closeLb() {
+        if (!lb) return;
+        lb.classList.remove('is-open');
+        lb.hidden = true;
+        if (lbImg) lbImg.removeAttribute('src');
+      }
+
+      if (lbClose) lbClose.addEventListener('click', function (e) {
+        e.stopPropagation();
+        closeLb();
+      });
+      if (lb) {
+        lb.addEventListener('click', function (e) {
+          if (e.target === lb) closeLb();
+        });
+      }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lb && lb.classList.contains('is-open')) closeLb();
+      });
+
+      function render(items) {
+        grid.innerHTML = '';
+        if (!items || !items.length) {
+          var p = document.createElement('p');
+          p.className = 'gallery-empty';
+          p.id = 'gallery-empty';
+          p.textContent = 'No community images yet - be the first from Try it live above.';
+          grid.appendChild(p);
+          return;
+        }
+        items.forEach(function (item) {
+          var file = typeof item.file === 'string' ? item.file : '';
+          var url = typeof item.url === 'string' ? item.url : (file ? 'gallery/' + file : '');
+          // Path must stay under gallery/
+          if (!url || url.indexOf('..') !== -1 || url.indexOf('gallery/') !== 0) return;
+          var prompt = typeof item.prompt === 'string' ? item.prompt : '';
+          var when = formatWhen(item.ts);
+
+          var card = document.createElement('article');
+          card.className = 'gallery-card';
+
+          var link = document.createElement('a');
+          link.className = 'gallery-thumb';
+          link.href = url;
+          link.addEventListener('click', function (e) {
+            e.preventDefault();
+            openLb(url, prompt, when);
+          });
+
+          var img = document.createElement('img');
+          img.src = url;
+          img.alt = prompt || 'Community gallery image';
+          img.loading = 'lazy';
+          img.width = 1024;
+          img.height = 1024;
+          link.appendChild(img);
+
+          var meta = document.createElement('div');
+          meta.className = 'gallery-meta';
+          var pr = document.createElement('p');
+          pr.className = 'gallery-prompt';
+          pr.textContent = prompt || '(no prompt)';
+          meta.appendChild(pr);
+          if (when) {
+            var wh = document.createElement('div');
+            wh.className = 'gallery-when mono';
+            wh.textContent = when;
+            meta.appendChild(wh);
+          }
+
+          card.appendChild(link);
+          card.appendChild(meta);
+          grid.appendChild(card);
+        });
+      }
+
+      window.refreshGptImageGallery = function () {
+        return fetch('gallery/manifest.json?_=' + Date.now(), { credentials: 'same-origin' })
+          .then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+          })
+          .then(function (data) {
+            var items = (data && Array.isArray(data.items)) ? data.items : [];
+            render(items);
+          })
+          .catch(function () {
+            grid.innerHTML = '';
+            var p = document.createElement('p');
+            p.className = 'gallery-empty';
+            p.textContent = 'Gallery is unavailable right now.';
+            grid.appendChild(p);
+          });
+      };
+
+      window.refreshGptImageGallery();
+    })();
 
     // Live try: CLI-shaped prompt → newsletter + Turnstile → generate.
     (function () {
@@ -842,6 +1054,12 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
               resultEl.classList.add('is-visible');
               resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
               log('download ready: ' + filename, 'ok');
+              if (data.gallery && data.gallery.url) {
+                log('added to community gallery', 'ok');
+                if (typeof window.refreshGptImageGallery === 'function') {
+                  window.refreshGptImageGallery();
+                }
+              }
             } else {
               log('error: image payload rejected', 'err');
             }
