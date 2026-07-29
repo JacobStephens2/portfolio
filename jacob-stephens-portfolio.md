@@ -481,9 +481,11 @@ Web Crypto
 PWA
 Capacitor
 
-[Read the case study](/chart35.html)
+[Read the case study](/blog/a-privacy-first-fertility-chart-encrypted-on-your-device/)
 [Visit Site](https://chart35.com)
-[GitHub](https://github.com/JacobStephens2/Chart35Client)
+[Architecture showcase](https://github.com/JacobStephens2/chart35-showcase)
+[webcrypto-envelope](https://www.npmjs.com/package/@stephenspage/webcrypto-envelope)
+[webhook-verify](https://www.npmjs.com/package/@stephenspage/webhook-verify)
 
 ### Cascade
 

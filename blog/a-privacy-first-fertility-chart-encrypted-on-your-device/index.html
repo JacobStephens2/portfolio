@@ -184,7 +184,7 @@
                         <li><strong>Role</strong> Solo designer &amp; engineer</li>
                         <li><strong>Stack</strong> TypeScript, Vite, Dexie/IndexedDB, Web Crypto, Capacitor (Android)</li>
                         <li><strong>Users</strong> Found organically through search; used by real people beyond me</li>
-                        <li><strong>Live &amp; open</strong> <a href="https://chart35.com" target="_blank" rel="noopener">chart35.com</a> &#183; <a href="https://github.com/JacobStephens2/Chart35Client" target="_blank" rel="noopener">client source (AGPL)</a></li>
+                        <li><strong>Live &amp; open</strong> <a href="https://chart35.com" target="_blank" rel="noopener">chart35.com</a> &#183; <a href="https://github.com/JacobStephens2/chart35-showcase" target="_blank" rel="noopener">architecture showcase</a> &#183; <a href="https://www.npmjs.com/package/@stephenspage/webcrypto-envelope" target="_blank" rel="noopener">webcrypto-envelope</a></li>
                     </ul>
                 </aside>
             </section>
@@ -317,12 +317,12 @@
                 <div class="cs-stack">
                     <div class="cs-row"><b>TypeScript, no UI framework</b> - a small, auditable client; views render to the DOM directly, so there is less between a reader and the privacy-critical code.</div>
                     <div class="cs-row"><b>Dexie / IndexedDB</b> - local-first source of truth, so the app works fully offline and the network is optional.</div>
-                    <div class="cs-row"><b>Web Crypto - PBKDF2 + AES-256-GCM</b> - end-to-end encryption so the server is untrusted for health data, not just "encrypted at rest."</div>
+                    <div class="cs-row"><b>Web Crypto - PBKDF2 + AES-256-GCM</b> - end-to-end encryption so the server is untrusted for health data, not just "encrypted at rest." The web client uses the published <a href="https://www.npmjs.com/package/@stephenspage/webcrypto-envelope" target="_blank" rel="noopener">@stephenspage/webcrypto-envelope</a> package.</div>
                     <div class="cs-row"><b>vite-plugin-pwa</b> - installable, offline-capable, with a service worker caching the shell.</div>
                     <div class="cs-row"><b>Capacitor (Android)</b> - a native wrapper over chart35.com, shipping to the Play Store from the same codebase.</div>
-                    <div class="cs-row"><b>AGPL-3.0</b> - anyone redeploying a modified version as a service must publish their changes, keeping every deployed build auditable for a privacy app.</div>
+                    <div class="cs-row"><b>Stripe + webhook-verify</b> - optional Chart35 Sync billing; signature checks use the published <a href="https://www.npmjs.com/package/@stephenspage/webhook-verify" target="_blank" rel="noopener">@stephenspage/webhook-verify</a> package.</div>
                 </div>
-                <p class="cs-note">Auditability: the entire client - encryption, IndexedDB layer, chart rendering, provider-share filtering - is open at <a href="https://github.com/JacobStephens2/Chart35Client" target="_blank" rel="noopener">github.com/JacobStephens2/Chart35Client</a> (see its <a href="https://github.com/JacobStephens2/Chart35Client/blob/main/ARCHITECTURE.md" target="_blank" rel="noopener">ARCHITECTURE.md</a>). The sync server is a separate private repository; the client talks to it only over documented HTTPS endpoints.</p>
+                <p class="cs-note">Public surfaces: architecture and screenshots live in <a href="https://github.com/JacobStephens2/chart35-showcase" target="_blank" rel="noopener">chart35-showcase</a>. Production crypto and Stripe webhook verification dogfood the published packages <a href="https://www.npmjs.com/package/@stephenspage/webcrypto-envelope" target="_blank" rel="noopener">webcrypto-envelope</a> and <a href="https://www.npmjs.com/package/@stephenspage/webhook-verify" target="_blank" rel="noopener">webhook-verify</a>. An older AGPL web-client snapshot remains at <a href="https://github.com/JacobStephens2/Chart35Client" target="_blank" rel="noopener">Chart35Client</a> (archived; not the live deploy path). The sync server is private; the client talks to it only over documented HTTPS endpoints.</p>
                 <p class="cs-note">The Creighton Model FertilityCare System is a trademark of FertilityCare Centers of America, used descriptively. Chart35 is an independent project, not affiliated with or endorsed by them.</p>
             </section>
 
