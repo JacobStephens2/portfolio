@@ -14,15 +14,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#9b4d24">
     <title>vaulted-agent | stephens.page</title>
-    <meta name="description" content="Launch Claude Code, Codex, or Grok with vault-resolved secrets in-process. va run for any command, doctor, secrets helpers, prompt auth. v0.4.0.">
+    <meta name="description" content="Rust launcher for Claude Code, Codex, Grok, and Kimi. Vault-resolved secrets in-process (Bitwarden SM, 1Password, pass, sops). Install, setup, va claude. v0.4.0.">
     <meta property="og:title" content="vaulted-agent - secrets for AI agents, not a pile of .env files">
-    <meta property="og:description" content="One launcher, per-agent manifests, Bitwarden/1Password/pass. Optional prompt auth so the vault token need not live on disk. va run, doctor, secrets.">
+    <meta property="og:description" content="One Rust binary (va). Per-agent manifests. Bitwarden SM / 1Password / pass / sops. Optional prompt auth. macOS + Linux.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://stephens.page/vaulted-agent">
+    <meta property="og:image" content="https://stephens.page/vaulted-agent/tool.png">
     <meta property="og:site_name" content="Jacob Stephens">
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="vaulted-agent v0.4.0">
-    <meta name="twitter:description" content="Vault-resolved secrets for AI coding agents - install with one curl, or clone from GitHub.">
+    <meta name="twitter:description" content="Install with one curl. Wire a vault with va setup. Launch with va claude / va grok.">
+    <meta name="twitter:image" content="https://stephens.page/vaulted-agent/tool.png">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -553,6 +555,33 @@
         .term-session .in  { color: #8fd4a0; }
         .term-session .out { color: #d7d1c7; }
         .term-session .ok  { color: #6fdc8c; }
+
+        /* Product illustration (gpt-image) */
+        .product-shot {
+            margin: 0.85rem 0 1.1rem;
+            border: 1px solid var(--rule);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--soft);
+            box-shadow: 0 10px 28px rgba(24, 21, 18, 0.08);
+        }
+        .product-shot img {
+            display: block;
+            width: 100%;
+            height: auto;
+            vertical-align: middle;
+        }
+        .product-shot figcaption {
+            margin: 0;
+            padding: 0.55rem 0.85rem 0.65rem;
+            font-size: 0.82rem;
+            color: var(--muted);
+            border-top: 1px solid var(--rule);
+            background: var(--surface);
+        }
+        .product-shot figcaption code {
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -564,246 +593,93 @@
         <span class="eyebrow">Open source · secrets for agents · macOS · Linux</span>
         <h1>vaulted-agent <span class="version-pill">v0.4.0</span></h1>
         <p class="lede">
-            Launch Claude Code, Codex, Grok, or Kimi Code with vault-resolved
-            secrets in the process - not in a pile of <code>.env</code> files. One vault,
-            one launcher, different blast radius per agent. Optional prompt auth so
-            even the vault token need not live on disk. Same path for one-shot tools
-            via <code>va run</code>.
+            Launch Claude Code, Codex, Grok, or Kimi with vault-resolved secrets
+            <strong>in the process</strong> - not a pile of <code>.env</code> files.
+            One Rust binary (<code>va</code>), per-agent blast radius, optional prompt auth.
         </p>
+
+        <figure class="product-shot">
+            <img
+                src="/vaulted-agent/tool.png"
+                width="1536"
+                height="1024"
+                alt="Product illustration of vaulted-agent: a terminal running va claude with secrets resolving from a vault into the process for Claude, Codex, and Grok agents"
+                decoding="async"
+                fetchpriority="high"
+            >
+            <figcaption>
+                <code>va claude</code> - vault-resolved secrets in-process, not a pile of <code>.env</code> files.
+                Illustration made with <a href="/gpt-image/">gpt-image</a>.
+            </figcaption>
+        </figure>
 
         <nav class="toc" aria-label="On this page">
-            <a href="#install">1. Install</a>
-            <a href="#setup">2. Setup</a>
-            <a href="#usage">3. Launch</a>
-            <a href="#run">4. va run</a>
-            <a href="#auth">Auth modes</a>
-            <a href="#bitwarden">Bitwarden</a>
-            <a href="#ops">Doctor &amp; secrets</a>
+            <a href="#quick-start">Quick start</a>
+            <a href="#commands">Commands</a>
             <a href="#what-it-does">How it works</a>
         </nav>
-        <h2 id="install" class="install-heading">Install</h2>
-        <p class="install-intro">
-            <strong>macOS and Linux.</strong> One-liner bootstraps a tagged GitHub release
-            (default pin <code>v0.4.0</code>, not floating <code>main</code>). Installs
-            <code>vaulted-agent</code> + <code>va</code>, detects
-            claude / codex / grok / kimi on PATH with <code>workdir = caller</code>, and
-            can prompt for a vault backend plus auth mode. Override pin:
-            <code>VAULTED_AGENT_VERSION=v0.4.0</code> (or <code>latest</code>).
-        </p>
 
-        <div class="install-primary">
-            <span class="install-label">
-                One-liner
-                <span class="install-platforms">macOS · Linux</span>
-            </span>
-            <div class="install-block" data-copy-block>
-                <button type="button" class="copy-btn" data-copy-target="cmd-oneliner" aria-label="Copy one-liner install command" title="Copy">
-                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 6 9 17l-5-5"></path>
-                    </svg>
-                </button>
-                <pre id="cmd-oneliner"><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
-            </div>
-
-            <span class="install-label">
-                From GitHub
-                <span class="install-platforms">macOS · Linux</span>
-            </span>
-            <div class="install-block" data-copy-block>
-                <button type="button" class="copy-btn" data-copy-target="cmd-github" aria-label="Copy GitHub install commands" title="Copy">
-                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 6 9 17l-5-5"></path>
-                    </svg>
-                </button>
-                <pre id="cmd-github"><code>git clone --branch v0.4.0 --depth 1 \
-  https://github.com/JacobStephens2/vaulted-agent-launcher
-cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
-            </div>
-
-            <span class="install-label">
-                Uninstall
-                <span class="install-platforms">macOS · Linux</span>
-            </span>
-            <div class="install-block" data-copy-block>
-                <button type="button" class="copy-btn" data-copy-target="cmd-uninstall" aria-label="Copy uninstall command" title="Copy">
-                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 6 9 17l-5-5"></path>
-                    </svg>
-                </button>
-                <pre id="cmd-uninstall"><code>sudo vaulted-agent uninstall
-# or:  sudo va uninstall
-# also remove config:  sudo vaulted-agent uninstall --purge</code></pre>
-            </div>
-        </div>
-
-        <h2 id="setup" class="install-heading">After install: <code>va setup</code></h2>
-        <p class="install-intro">
-            Day-one harnesses start as <code>plainfile</code> + <code>empty.env</code>
-            (agents launch, but with no vault secrets). Wire a backend next.
-            Lifecycle as you scroll: install → setup → launch agents → optional
-            <code>va run</code> / doctor.
-        </p>
-
+        <h2 id="quick-start" class="install-heading">Quick start</h2>
         <ol class="lifecycle">
             <li>
-                <strong>Install</strong> the launcher (above). Auto-detect writes
-                harnesses for any of claude, codex, grok, or kimi already on PATH.
+                <strong>Install</strong>
+                <div class="install-block" data-copy-block style="margin-top:0.5rem">
+                    <button type="button" class="copy-btn" data-copy-target="cmd-oneliner" aria-label="Copy install" title="Copy">
+                        <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20 6 9 17l-5-5"></path>
+                        </svg>
+                    </button>
+                    <pre id="cmd-oneliner"><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
+                </div>
+                <p class="note" style="margin-top:0.4rem">macOS · Linux. Pins release <code>v0.4.0</code> (Rust). Detects agents on PATH.</p>
             </li>
             <li>
-                <strong>Setup</strong> a vault with <code>va setup</code> - pick a
-                backend, supply a token, optionally build a refs file (env var →
-                secret reference, never the secret value).
+                <strong>Wire a vault</strong>
+                <div class="install-block" data-copy-block style="margin-top:0.5rem">
+                    <button type="button" class="copy-btn" data-copy-target="cmd-setup" aria-label="Copy setup" title="Copy">
+                        <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20 6 9 17l-5-5"></path>
+                        </svg>
+                    </button>
+                    <pre id="cmd-setup"><code>va setup
+va doctor</code></pre>
+                </div>
+                <p class="note" style="margin-top:0.4rem">
+                    Pick Bitwarden SM, 1Password, pass, or sops. Bitwarden can write a
+                    <em>refs</em> file (env var → secret id/name only — never secret values).
+                </p>
             </li>
             <li>
-                <strong>Point harnesses</strong> at that refs file
-                (<code>backend = bitwarden</code> and
-                <code>manifest = openai.env.refs</code>), or use
-                <code>va run -m …</code> for one-shots.
-            </li>
-            <li>
-                <strong>Check, then launch:</strong>
-                <code>va doctor</code> → <code>va claude</code> /
-                <code>va grok -p</code> / <code>va kimi</code>.
+                <strong>Launch</strong>
+                <div class="install-block" data-copy-block style="margin-top:0.5rem">
+                    <button type="button" class="copy-btn" data-copy-target="cmd-usage" aria-label="Copy launch" title="Copy">
+                        <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20 6 9 17l-5-5"></path>
+                        </svg>
+                    </button>
+                    <pre id="cmd-usage"><code>va claude
+va codex
+va grok
+va kimi</code></pre>
+                </div>
+                <p class="note" style="margin-top:0.4rem">
+                    With prompt auth, paste the vault token when asked. Force once:
+                    <code>va grok -p</code>.
+                </p>
             </li>
         </ol>
-
-        <span class="install-label">
-            Run setup
-            <span class="install-platforms">interactive TTY</span>
-        </span>
-        <div class="install-block" data-copy-block>
-            <button type="button" class="copy-btn" data-copy-target="cmd-setup" aria-label="Copy va setup command" title="Copy">
-                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5"></path>
-                </svg>
-            </button>
-            <pre id="cmd-setup"><code>va setup
-# same binary:
-vaulted-agent setup</code></pre>
-        </div>
-
-        <p>
-            What you see depends on <code>auth_mode</code> (set at install or with
-            <code>va auth-mode</code>). Below is a typical <strong>Bitwarden Secrets
-            Manager</strong> path with <code>auth_mode=prompt</code> - the access
-            token is pasted for this session and <em>not</em> written to disk.
-            Input is shown in green; it is never echoed by the real CLI.
-        </p>
-
-        <pre class="term-session" aria-label="Example va setup session with Bitwarden"><span class="cmt">$ </span><span class="cmd">va setup</span>
-<span class="out">vaulted-agent setup
-
-Configure a vault backend credential for this machine.
-Auto-harnesses start as plainfile+empty.env; change their backend/manifest
-after this if you want vault injection.
-Current auth_mode: prompt  (change with: vaulted-agent auth-mode)
-
-  1) 1Password  (writes op.env with OP_SERVICE_ACCOUNT_TOKEN)
-  2) Bitwarden  (SM access token; optional secret → refs manifest)
-  3) Show pass / sops notes only
-  4) Change default auth mode (file vs prompt)
-  q) Quit
-
-choice: </span><span class="in">2</span>
-
-<span class="out">Bitwarden Secrets Manager
-  Needs a Machine Account access token (BWS_ACCESS_TOKEN),
-  not your personal vault master password or login API key.
-
-Bitwarden Secrets Manager access token (Machine Accounts → Access Tokens; not your vault password)
-(hidden, not echoed): </span><span class="in">••••••••</span>
-<span class="out">auth_mode=prompt — token not written to disk (good).
-  To store it anyway: vaulted-agent auth-mode file, then re-run setup.
-
-Secrets visible to this token:
-   1) a1b2c3d4-…-…                       openai-api-key  (project: tools)
-   2) e5f6a7b8-…-…                       github-token    (project: tools)
-
-Write a refs file from these secrets?
-  A refs file maps env var names to Bitwarden secret references only
-  (e.g. OPENAI_API_KEY=name:openai-api-key). It never stores secret values
-  or your access token. Harnesses point at it with: manifest = &lt;filename&gt;
-Build refs file? [y/N]: </span><span class="in">y</span>
-
-<span class="out">Filename for that refs file (under /etc/vaulted-agent/manifests).
-  Examples: openai.env.refs  (for image tools),  agent.env.refs  (for coding agents).
-  Press Enter for the default, or type a name / absolute path.
-Refs filename [openai.env.refs]: </span><span class="in">openai.env.refs</span>
-
-<span class="out">Which secrets from the list above go into that file?
-  Enter numbers from the list (comma-separated), or "all".
-  Each becomes one VAR=name:… (or UUID) line in the refs file.
-Secrets to include [all]: </span><span class="in">1</span>
-
-<span class="ok">Wrote refs file (references only, no secret values):
-  /etc/vaulted-agent/manifests/openai.env.refs
-Point a harness at it with:
-  backend  = bitwarden
-  manifest = openai.env.refs
-Or one-shot:
-  vaulted-agent run -m openai.env.refs --backend bitwarden -- your-command</span></pre>
-
-        <p class="note">
-            The refs file looks like
-            <code>OPENAI_API_KEY=name:openai-api-key</code> - references only.
-            With <code>auth_mode=file</code>, the same flow also writes
-            <code>/etc/vaulted-agent/bws.env</code> (<code>0640</code>). See
-            <a href="#auth">auth modes</a> and <a href="#bitwarden">Bitwarden</a>
-            for the full rules.
-        </p>
-
-        <span class="install-label">
-            Then check and launch
-            <span class="install-platforms">everyday</span>
-        </span>
-        <div class="install-block" data-copy-block>
-            <button type="button" class="copy-btn" data-copy-target="cmd-after-setup" aria-label="Copy post-setup commands" title="Copy">
-                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5"></path>
-                </svg>
-            </button>
-            <pre id="cmd-after-setup"><code>va doctor
-# wire a harness (example), then:
-#   backend  = bitwarden
-#   manifest = openai.env.refs
-va claude
-va grok -p
-va kimi --continue
-# or without editing a harness:
-va run -m openai.env.refs --backend bitwarden -p -- env | sort
-
-# later: added more secrets in Bitwarden SM? (same refs writer as setup)
-va refresh openai.env.refs              # merge: keep existing, append new
-va refresh openai.env.refs --all        # append every not-yet-mapped secret
-va refresh openai.env.refs --replace --all  # rewrite file from scratch</code></pre>
-        </div>
-        <p class="note">
-            <strong>Value vs list.</strong> Rotating a secret’s value in Secrets
-            Manager needs no command - the next launch fetches it live. Adding a
-            <em>new</em> secret uses the same refs-file process as setup, via
-            <code>va refresh</code> (default: merge into the existing file).
-            Hand-edit <code>OPENAI_API_KEY=name:…</code> lines if you prefer.
-        </p>
 
         <div class="cta-row hero-cta">
             <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher">
@@ -813,73 +689,12 @@ va refresh openai.env.refs --replace --all  # rewrite file from scratch</code></
                 GitHub
             </a>
             <a class="cta cta-secondary" href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">The writeup</a>
-            <a class="cta cta-secondary" href="#what-it-does">How it works</a>
-            <a class="cta cta-secondary" href="/vaulted-agent/install.sh">Raw install.sh</a>
+            <a class="cta cta-secondary" href="/vaulted-agent/install.sh">install.sh</a>
         </div>
 
-        <h2 id="usage" class="install-heading">Usage</h2>
-        <p class="install-intro">
-            Name the harness as the first argument. After install, if those CLIs
-            were on your PATH, harnesses are auto-created so these work immediately
-            (no vault secrets until you configure a backend). Short alias
-            <code>va</code> is the same binary.
-        </p>
-
-        <div class="install-primary">
-            <span class="install-label">
-                Launch an agent
-                <span class="install-platforms">everyday</span>
-            </span>
-            <div class="install-block" data-copy-block>
-                <button type="button" class="copy-btn" data-copy-target="cmd-usage" aria-label="Copy usage commands" title="Copy">
-                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 6 9 17l-5-5"></path>
-                    </svg>
-                </button>
-                <pre id="cmd-usage"><code>va claude
-va codex
-va grok
-va kimi                  # Kimi Code CLI if on PATH
-va pick
-# full name also works:
-vaulted-agent claude</code></pre>
-            </div>
-
-            <span class="install-label">
-                Wire a vault · check health
-                <span class="install-platforms">after install</span>
-            </span>
-            <div class="install-block" data-copy-block>
-                <button type="button" class="copy-btn" data-copy-target="cmd-ops" aria-label="Copy setup and doctor commands" title="Copy">
-                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 6 9 17l-5-5"></path>
-                    </svg>
-                </button>
-                <pre id="cmd-ops"><code>va setup                 # backend / token; Bitwarden can build a refs file
-va auth-mode             # file (token on disk) vs prompt (paste each launch)
-va doctor                # harnesses, CLIs, manifest syntax (no secret values)
-va version               # e.g. vaulted-agent 0.4.0
-va claude -p             # force token prompt this launch only</code></pre>
-            </div>
-        </div>
-
-        <h2 id="run" class="install-heading">One-shot commands: <code>va run</code></h2>
-        <p class="install-intro">
-            Inject a manifest into <em>any</em> command without writing a harness file.
-            Same scrub → resolve → drop vault token → <code>exec</code> path as
-            <code>va claude</code>. Useful for scripts, deploys, and tools like
-            <a href="/gpt-image">gpt-image</a>.
-        </p>
+        <h2 id="commands" class="install-heading">Everyday commands</h2>
         <div class="install-block" data-copy-block>
-            <button type="button" class="copy-btn" data-copy-target="cmd-run" aria-label="Copy va run examples" title="Copy">
+            <button type="button" class="copy-btn" data-copy-target="cmd-ops" aria-label="Copy commands" title="Copy">
                 <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="9" y="9" width="13" height="13" rx="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -888,60 +703,28 @@ va claude -p             # force token prompt this launch only</code></pre>
                     <path d="M20 6 9 17l-5-5"></path>
                 </svg>
             </button>
-            <pre id="cmd-run"><code>va run -m openai.env.refs --backend bitwarden -p -- \
-  python gpt_image.py generate "a lighthouse in a storm, gouache" \
-  --output out.png
-
-va run -m readonly.env --backend plainfile -- env | sort</code></pre>
+            <pre id="cmd-ops"><code>va                        # list harnesses
+va doctor                 # health check
+va secrets list           # Bitwarden SM
+va refresh                # update Bitwarden refs after new secrets
+va auth-mode prompt       # or: file
+va run -m REFS --backend bitwarden -p -- your-cmd
+sudo va uninstall</code></pre>
         </div>
         <p class="note">
-            <code>-m</code> is a refs file under <code>/etc/vaulted-agent/manifests/</code>
-            (or an absolute path). <code>-p</code> pastes the vault token for that launch
-            only and never writes it.
+            <strong>Bitwarden:</strong> use a Machine Account access token
+            (<code>BWS_ACCESS_TOKEN</code>), not your vault password.
+            Refs look like <code>OPENAI_API_KEY=name:openai-api-key</code>.
+            Rotating a secret’s value needs no command; adding a new mapping:
+            <code>va refresh</code>.
         </p>
-
-        <h2 id="auth">Auth modes: where the vault token lives</h2>
-        <p>
-            Machine-wide default is <code>/etc/vaulted-agent/defaults.conf</code>
-            (<code>auth_mode = file|prompt</code>. Set at install
-            (<code>--auth-mode</code>) or later with <code>va auth-mode</code>.
-            Per-launch override: <code>-p</code> / <code>--prompt-auth</code>.
-        </p>
-        <table class="docs">
-            <thead>
-                <tr>
-                    <th>Mode</th>
-                    <th>Token provision</th>
-                    <th>On disk</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>prompt</code></td>
-                    <td>Paste at each launch (TTY). Also if parent already exported the token.</td>
-                    <td><strong>Nothing</strong> written by the launcher.</td>
-                </tr>
-                <tr>
-                    <td><code>file</code></td>
-                    <td>Read from a dotenv file at launch.</td>
-                    <td>
-                        1Password: <code>/etc/vaulted-agent/op.env</code><br>
-                        Bitwarden: <code>/etc/vaulted-agent/bws.env</code><br>
-                        Mode <code>0640</code>, root + service-user group.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
         <p class="note">
-            Resolved secrets (API keys, DB passwords) are <em>never</em> written by the
-            launcher. Only the optional vault manager token can be. With
-            <code>auth_mode=prompt</code>, even that stays out of disk.
-            <code>va setup</code> only writes <code>bws.env</code> when auth mode is
-            <code>file</code>; under <code>prompt</code> it says so and continues
-            in-process only.
+            <strong>Auth:</strong> <code>prompt</code> = paste token each launch (nothing on disk).
+            <code>file</code> = <code>/etc/vaulted-agent/bws.env</code> or <code>op.env</code>.
+            Override once with <code>-p</code>.
         </p>
         <div class="install-block" data-copy-block>
-            <button type="button" class="copy-btn" data-copy-target="cmd-auth" aria-label="Copy auth-mode commands" title="Copy">
+            <button type="button" class="copy-btn" data-copy-target="cmd-github" aria-label="Copy clone install" title="Copy">
                 <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="9" y="9" width="13" height="13" rx="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -950,89 +733,13 @@ va run -m readonly.env --backend plainfile -- env | sort</code></pre>
                     <path d="M20 6 9 17l-5-5"></path>
                 </svg>
             </button>
-            <pre id="cmd-auth"><code>va auth-mode show
-va auth-mode prompt          # paste SM / OP token each launch
-va auth-mode file            # use op.env / bws.env
-va setup                     # interactive backend help
-# Bitwarden + nothing on disk from day one:
-#   curl … | bash -s -- --backend bitwarden --auth-mode prompt</code></pre>
+            <pre id="cmd-github"><code># From source instead of the one-liner:
+git clone --branch v0.4.0 --depth 1 \
+  https://github.com/JacobStephens2/vaulted-agent-launcher
+cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
         </div>
 
-        <h2 id="bitwarden">Bitwarden Secrets Manager</h2>
-        <p>
-            The <code>bitwarden</code> backend is <strong>Secrets Manager</strong>
-            (<code>bws</code>), not the personal vault CLI. The credential is a
-            <strong>Machine Account access token</strong>
-            (<code>BWS_ACCESS_TOKEN</code> - not your vault master password and not
-            a login API key. Wrong type fails with errors like “Doesn't contain a
-            decryption key.”
-        </p>
-        <p>
-            Manifests hold <em>references only</em> (safe to leave world-readable).
-            Supported forms:
-        </p>
-        <table class="docs">
-            <thead>
-                <tr><th>Ref form</th><th>Example</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>UUID</td><td><code>OPENAI_API_KEY=6a1c0e94-…</code></td></tr>
-                <tr><td><code>uuid:</code></td><td><code>OPENAI_API_KEY=uuid:6a1c0e94-…</code></td></tr>
-                <tr><td><code>name:</code></td><td><code>OPENAI_API_KEY=name:openai-api-key</code></td></tr>
-                <tr><td><code>project:/</code></td><td><code>OPENAI_API_KEY=project:tools/openai-api-key</code></td></tr>
-            </tbody>
-        </table>
-        <p>
-            Placeholders (<code>REPLACE_…</code>, all-zero UUIDs, …) fail validation
-            before launch - in <code>va doctor</code>, <code>va secrets validate</code>,
-            and every real launch.
-        </p>
-        <p>
-            <code>va setup</code> → Bitwarden can list secrets and write a
-            <strong>refs file</strong> (filename under
-            <code>/etc/vaulted-agent/manifests/</code>, e.g.
-            <code>openai.env.refs</code>). That file maps env var names to
-            <code>name:…</code> / UUID lines. It never stores secret values or the
-            access token. Point a harness with
-            <code>backend = bitwarden</code> and
-            <code>manifest = openai.env.refs</code>, or use
-            <code>va run -m openai.env.refs …</code>.
-        </p>
-
-        <h2 id="ops">Doctor &amp; secrets helpers</h2>
-        <div class="grid-3">
-            <div class="card good">
-                <h3>va doctor</h3>
-                <p>Version, service user, auth mode, whether <code>bws</code>/<code>op</code>/<code>sops</code>/<code>pass</code> are on PATH, auth files present, each harness’s backend/manifest/workdir, and manifest syntax. No secret values.</p>
-            </div>
-            <div class="card good">
-                <h3>va secrets</h3>
-                <p><code>list</code> · <code>get &lt;ref&gt;</code> · <code>which</code> (harness → var names only) · <code>validate</code>. Same token prompt/file rules as launches.</p>
-            </div>
-            <div class="card good">
-                <h3>va version</h3>
-                <p>Prints <code>vaulted-agent 0.4.0</code>. The remote installer pins the same series so README and one-liner stay aligned.</p>
-            </div>
-        </div>
-        <div class="install-block" data-copy-block>
-            <button type="button" class="copy-btn" data-copy-target="cmd-secrets" aria-label="Copy secrets helper commands" title="Copy">
-                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5"></path>
-                </svg>
-            </button>
-            <pre id="cmd-secrets"><code>va doctor
-va secrets list
-va secrets get name:openai-api-key
-va secrets which
-va secrets validate
-va secrets validate openai.env.refs bitwarden</code></pre>
-        </div>
-
-        <h2 id="what-it-does">How it works</h2>
+<h2 id="what-it-does">How it works</h2>
         <p>
             Treat the agent as the unit of authorization. A harness names a command
             and a manifest; the launcher becomes the service account, scrubs the
@@ -1062,7 +769,7 @@ va secrets validate openai.env.refs bitwarden</code></pre>
             <span class="chip">va run</span>
             <span class="chip">1Password · Bitwarden SM · pass · sops</span>
             <span class="chip">prompt auth</span>
-            <span class="chip">bash · sudo</span>
+            <span class="chip">Rust · sudo</span>
         </div>
 
         <div class="grid-2">
@@ -1089,53 +796,25 @@ va secrets validate openai.env.refs bitwarden</code></pre>
             </div>
         </div>
         <p style="color:var(--muted);font-size:0.95rem;margin:0.5rem 0 0">
-            Publishing forced five bug fixes (here-strings spilling to <code>/tmp</code>,
-            the vault token riding along, missing environment scrub, exported bash
-            functions, broken per-path sudoers). Full walkthrough:
+            The pattern was proven under a Bash prototype, then rewritten as a Rust
+            runtime (v0.4.0). Full walkthrough:
             <a href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">One Vault, Three Agents</a>.
         </p>
 
-        <h2 id="install-notes">Install flags &amp; resume</h2>
+                <h2 id="install-notes">More</h2>
         <p class="note" style="margin-top:0">
             Prefer not to pipe to bash? Download
-            <a href="/vaulted-agent/install.sh">install.sh</a>, read it, then
-            <code>bash install.sh</code>. Pin with
-            <code>VAULTED_AGENT_VERSION=v0.4.0</code>. Useful flags after
-            <code>bash -s --</code>:
+            <a href="/vaulted-agent/install.sh">install.sh</a>, read it, then run it.
+            Flags after <code>bash -s --</code>:
             <code>--backend bitwarden --auth-mode prompt</code>,
-            <code>--no-va</code>, <code>--no-auto-harness</code>,
-            <code>--backend onepassword --op-token-file ./token</code>.
-            Install rewrites the launcher’s default backend from
-            <code>--backend</code> and prints the matching token path
-            (<code>bws.env</code> vs <code>op.env</code>).
+            <code>--user agent</code>, <code>--no-auto-harness</code>.
+            Full reference on
+            <a href="https://github.com/JacobStephens2/vaulted-agent-launcher#install-details">GitHub</a>.
+            Resume works as usual: <code>va claude --resume &lt;id&gt;</code>,
+            <code>va codex resume &lt;id&gt;</code>, <code>va kimi --continue</code>.
         </p>
-        <p>Session resume is normalized across agents (Claude/Grok use
-            <code>--resume</code>; Codex uses the <code>resume</code> subcommand;
-            Kimi Code uses <code>--continue</code> / <code>--session</code>, with
-            bare <code>resume</code> rewritten). Harnesses default to
-            <code>workdir = caller</code> so sessions match the directory you
-            launched from. Auto-detect also wires <code>kimi</code> when the
-            <a href="https://www.kimi.com/code/en">Kimi Code CLI</a> is on PATH.</p>
-        <div class="install-block" data-copy-block>
-            <button type="button" class="copy-btn" data-copy-target="cmd-resume" aria-label="Copy resume examples" title="Copy">
-                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5"></path>
-                </svg>
-            </button>
-            <pre id="cmd-resume"><code>va claude --resume b03ca221-798e-457b-8f64-f71713e7066c
-va claude resume b03ca221-798e-457b-8f64-f71713e7066c
-va codex resume 019fabc2-fe4f-7e00-a431-a6a44d94b559
-va grok --resume 019fabde-7535-7cc2-ab09-7987edc08ff8
-va kimi --continue
-va kimi --session abc123
-va kimi resume abc123</code></pre>
-        </div>
 
-        <div class="cta-row">
+<div class="cta-row">
             <a class="cta cta-primary" href="https://github.com/JacobStephens2/vaulted-agent-launcher#usage">
                 <svg class="gh-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
