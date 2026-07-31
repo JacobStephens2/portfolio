@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>gpt-image - generate and edit images from the terminal</title>
+  <title>gpt-image v0.3.0 - generate and edit images from the terminal</title>
   <meta name="description" content="gpt-image v0.3.0 is a Go CLI for OpenAI's image models (gpt-image-2 by default): generate, edit, or batch, with agent-friendly --json and exit codes. Download a single binary for linux/macOS/Windows. MIT.">
   <meta property="og:title" content="gpt-image v0.3.0 - Go CLI for OpenAI image models">
-  <meta property="og:description" content="Generate, edit, and batch images with gpt-image-2 from the terminal. Download the Go binary - no Python. One command for a lighthouse, a golden-hour edit, or a JSON batch.">
+  <meta property="og:description" content="Generate, edit, and batch images with gpt-image-2 from the terminal. Single Go binary - agent-friendly --json and exit codes. linux/macOS/Windows.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stephens.page/gpt-image">
   <meta property="og:image" content="https://stephens.page/gpt-image/tool.png">
   <meta property="og:site_name" content="Jacob Stephens">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="gpt-image v0.3.0">
-  <meta name="twitter:description" content="Go CLI for OpenAI gpt-image-2: generate, edit, batch. Binary releases for linux/macOS/Windows.">
+  <meta name="twitter:description" content="Go CLI for OpenAI gpt-image-2: generate, edit, batch, --json for agents. Binary releases for linux/macOS/Windows.">
   <meta name="twitter:image" content="https://stephens.page/gpt-image/tool.png">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="favicon.png" sizes="32x32">
@@ -467,10 +467,13 @@
         </div>
         <pre><span class="c-muted">$</span> gpt-image generate <span class="c-green">"a lighthouse in a storm, gouache"</span> \
     --output lighthouse.png --quality high --size 1536x1024
-<span class="c-green">Wrote</span> lighthouse.png</pre>
+<span class="c-green">Wrote</span> lighthouse.png · ~$0.0531 est. · tokens in=18 out=1760 · 41s
+
+<span class="c-muted">$</span> gpt-image version
+gpt-image 0.3.0 (default model: gpt-image-2)</pre>
       </div>
 
-      <p class="subline" style="margin-top: 28px">Defaults to <span class="mono">gpt-image-2</span>. Started as a hair-color photo-edit workaround against <a href="https://arena.ai/leaderboard/image-edit">Arena's image edit leaderboard</a>; grew into a general Go CLI. The original hair-color path is <span class="mono">gpt-image hair-color</span>.</p>
+      <p class="subline" style="margin-top: 28px">Defaults to <span class="mono">gpt-image-2</span>. Started as a hair-color photo-edit workaround against <a href="https://arena.ai/leaderboard/image-edit">Arena's image edit leaderboard</a>; grew into a general Go CLI with agent-friendly <span class="mono">--json</span> and exit codes. The original hair-color path is <span class="mono">gpt-image hair-color</span>.</p>
     </section>
 
     <section id="try">
@@ -617,7 +620,7 @@
 
     <section id="features">
       <h2>What it does</h2>
-      <p class="lead">Three commands, one API key, no browser, no Python runtime. Download a single binary (or <span class="mono">go install</span>) and point it at OpenAI's image models. Keep inputs, outputs, and keys out of the repo.</p>
+      <p class="lead">Three commands, one API key, no browser, no Python runtime. Download a single binary (or <span class="mono">go install</span>) and point it at OpenAI's image models. Humans get a cost line on stdout; agents pass <span class="mono">--json</span> and branch on exit codes. Keep inputs, outputs, and keys out of the repo.</p>
       <div class="grid">
         <div class="card">
           <div class="icon">&#9733;</div>
@@ -671,7 +674,8 @@
   https://github.com/JacobStephens2/gpt-image/releases/latest/download/gpt-image-linux-amd64
 chmod +x gpt-image
 sudo mv gpt-image /usr/local/bin/gpt-image
-gpt-image version</pre>
+gpt-image version
+# gpt-image 0.3.0 (default model: gpt-image-2)</pre>
         <button class="copy-btn" data-copy="install-cmd">Copy</button>
       </div>
       <p class="lead" style="margin:0 0 16px">
@@ -708,12 +712,13 @@ gpt-image version</pre>
       <p class="lead" style="margin:12px 0 0">
         Prefer a file on disk if you do not want the key in shell history.
         Long high-quality runs print stderr heartbeats; see <span class="mono">--timeout</span> / <span class="mono">--quiet</span>.
+        Agents: read <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.0/AGENTS.md">AGENTS.md</a> or run <span class="mono">gpt-image --help-agent</span>.
       </p>
     </section>
 
     <section id="usage">
       <h2>Usage</h2>
-      <p class="lead">Generate, edit, or batch. Full flags and defaults live in the <a href="https://github.com/JacobStephens2/gpt-image#readme">README</a>.</p>
+      <p class="lead">Generate, edit, or batch. Pass <span class="mono">--json</span> when a machine must parse the result. Full flags and defaults live in the <a href="https://github.com/JacobStephens2/gpt-image#readme">README</a>; the agent contract is <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.0/AGENTS.md">AGENTS.md</a>.</p>
 
       <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Generate</h3>
       <div class="copy-row">
@@ -751,7 +756,7 @@ gpt-image version</pre>
   {"id": "recolor", "prompt": "make the door red", "edit_from": "inputs/house.png",
    "quality": "medium", "size": "1024x1024", "output": "outputs/red-door.png"}
 ]</pre>
-      <p class="lead" style="margin:0"><span class="mono">id</span> names the output file when <span class="mono">output</span> is unset. <span class="mono">edit_from</span> (path or list) switches that item to edit. Failed items retry twice with backoff; exit code is non-zero if any still fail.</p>
+      <p class="lead" style="margin:0"><span class="mono">id</span> names the output file when <span class="mono">output</span> is unset. <span class="mono">edit_from</span> (path or list) switches that item to edit. Failed items retry twice with backoff; the process exits non-zero if any still fail (see exit codes 1–5 under Features).</p>
     </section>
 
     <section id="legacy">
@@ -1450,7 +1455,7 @@ gpt-image version</pre>
         alt: 'Original product illustration of gpt-image when it was a Python CLI: terminal showing python gpt_image.py generate and edit commands with floating output images',
         captionHtml:
           'Original product illustration. The <strong>first version of gpt-image used Python</strong> ' +
-          '(<span class="mono">python gpt_image.py …</span>); v0.2+ is a single Go binary with the same generate / edit / batch flow. ' +
+          '(<span class="mono">python gpt_image.py …</span>); v0.2+ is a single Go binary, and v0.3.0 adds <span class="mono">--json</span> / exit codes for agents. ' +
           '<span class="click-hint">Click</span> for community samples (including lighthouse.png).'
       };
 
