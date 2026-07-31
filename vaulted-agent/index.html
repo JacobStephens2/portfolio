@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#9b4d24">
     <title>vaulted-agent | stephens.page</title>
-    <meta name="description" content="Rust launcher for Claude Code, Codex, Grok, and Kimi. Vault-resolved secrets in-process (Bitwarden SM, 1Password, pass, sops). Install, setup, va claude. v0.4.1.">
+    <meta name="description" content="Rust launcher for Claude Code, Codex, Grok, and Kimi. Vault-resolved secrets in-process (Bitwarden SM, 1Password, pass, sops). Install, setup, va claude. v0.4.2.">
     <meta property="og:title" content="vaulted-agent - secrets for AI agents, not a pile of .env files">
     <meta property="og:description" content="One Rust binary (va). Per-agent manifests. Bitwarden SM / 1Password / pass / sops. Optional prompt auth. macOS + Linux.">
     <meta property="og:type" content="website">
@@ -22,7 +22,7 @@
     <meta property="og:image" content="https://stephens.page/vaulted-agent/tool.png">
     <meta property="og:site_name" content="Jacob Stephens">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="vaulted-agent v0.4.1">
+    <meta name="twitter:title" content="vaulted-agent v0.4.2">
     <meta name="twitter:description" content="Install with one curl. Wire a vault with va setup. Launch with va claude / va grok.">
     <meta name="twitter:image" content="https://stephens.page/vaulted-agent/tool.png">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
@@ -591,7 +591,7 @@
         </div>
 
         <span class="eyebrow">Open source · secrets for agents · macOS · Linux</span>
-        <h1>vaulted-agent <span class="version-pill">v0.4.1</span></h1>
+        <h1>vaulted-agent <span class="version-pill">v0.4.2</span></h1>
         <p class="lede">
             Launch Claude Code, Codex, Grok, or Kimi with vault-resolved secrets
             <strong>in the process</strong> - not a pile of <code>.env</code> files.
@@ -635,7 +635,7 @@
                     </button>
                     <pre id="cmd-oneliner"><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
                 </div>
-                <p class="note" style="margin-top:0.4rem">macOS · Linux. Pins release <code>v0.4.1</code> (Rust). Linux binaries are static musl (no glibc floor). Detects agents on PATH.</p>
+                <p class="note" style="margin-top:0.4rem">macOS · Linux. Pins release <code>v0.4.2</code> (Rust). Linux binaries are static musl (no glibc floor). Detects agents on PATH.</p>
             </li>
             <li>
                 <strong>Wire a vault</strong>
@@ -653,8 +653,9 @@
 va doctor</code></pre>
                 </div>
                 <p class="note" style="margin-top:0.4rem">
-                    Pick Bitwarden SM, 1Password, pass, or sops. Bitwarden can write a
-                    <em>refs</em> file (env var → secret id/name only — never secret values).
+                    Pick Bitwarden SM, 1Password, pass, or sops.
+                    <code>va refresh</code> can build a <em>refs</em> file for Bitwarden or
+                    1Password (env var → secret id/name or <code>op://</code> path only - never secret values).
                 </p>
             </li>
             <li>
@@ -706,7 +707,7 @@ va kimi</code></pre>
             <pre id="cmd-ops"><code>va                        # list harnesses
 va doctor                 # health check
 va secrets list           # Bitwarden SM
-va refresh                # update Bitwarden refs after new secrets
+va refresh                # build/update refs (Bitwarden or 1Password)
 va auth-mode prompt       # or: file
 va run -m REFS --backend bitwarden -p -- your-cmd
 sudo va uninstall</code></pre>
@@ -715,6 +716,11 @@ sudo va uninstall</code></pre>
             <strong>Bitwarden:</strong> use a Machine Account access token
             (<code>BWS_ACCESS_TOKEN</code>), not your vault password.
             Refs look like <code>OPENAI_API_KEY=name:openai-api-key</code>.
+            <strong>1Password:</strong> service account token in
+            <code>OP_SERVICE_ACCOUNT_TOKEN</code>;
+            <code>va refresh</code> lists items the token can see, asks which to
+            include, and writes <code>VAR=op://VAULT/ITEM/FIELD</code> lines
+            (section-qualified when labels collide).
             Rotating a secret’s value needs no command; adding a new mapping:
             <code>va refresh</code>.
         </p>
@@ -734,7 +740,7 @@ sudo va uninstall</code></pre>
                 </svg>
             </button>
             <pre id="cmd-github"><code># From source instead of the one-liner:
-git clone --branch v0.4.1 --depth 1 \
+git clone --branch v0.4.2 --depth 1 \
   https://github.com/JacobStephens2/vaulted-agent-launcher
 cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
         </div>
@@ -821,7 +827,7 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                 </svg>
                 Full docs on GitHub
             </a>
-            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.4.1">v0.4.1 release notes</a>
+            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.4.2">v0.4.2 release notes</a>
             <a class="cta cta-secondary" href="/gpt-image">gpt-image example</a>
         </div>
 
@@ -834,7 +840,7 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                     </svg>
                     JacobStephens2/vaulted-agent-launcher
                 </a>
-                · MIT · v0.4.1 · <a href="/">stephens.page</a>
+                · MIT · v0.4.2 · <a href="/">stephens.page</a>
             </p>
             <p>&copy; <span id="current-year"></span> Stephens Page LLC</p>
         </footer>
