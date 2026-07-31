@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>gpt-image - generate and edit images from the terminal</title>
-  <meta name="description" content="gpt-image is a Python CLI for OpenAI's image models (gpt-image-2 by default): generate from a prompt, edit existing photos, or run a JSON batch. MIT, code-only repo.">
-  <meta property="og:title" content="gpt-image - CLI for OpenAI image models">
-  <meta property="og:description" content="Generate, edit, and batch images with gpt-image-2 from the terminal. One command for a lighthouse, a golden-hour edit, or a JSON manifest of both.">
+  <meta name="description" content="gpt-image v0.2.1 is a Go CLI for OpenAI's image models (gpt-image-2 by default): generate, edit, or batch. Download a single binary for linux/macOS/Windows. MIT.">
+  <meta property="og:title" content="gpt-image v0.2.1 - Go CLI for OpenAI image models">
+  <meta property="og:description" content="Generate, edit, and batch images with gpt-image-2 from the terminal. Download the Go binary - no Python. One command for a lighthouse, a golden-hour edit, or a JSON batch.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stephens.page/gpt-image">
   <meta property="og:image" content="https://stephens.page/gpt-image/tool.png">
   <meta property="og:site_name" content="Jacob Stephens">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="gpt-image">
-  <meta name="twitter:description" content="Python CLI for OpenAI gpt-image-2: generate, edit, batch.">
+  <meta name="twitter:title" content="gpt-image v0.2.1">
+  <meta name="twitter:description" content="Go CLI for OpenAI gpt-image-2: generate, edit, batch. Binary releases for linux/macOS/Windows.">
   <meta name="twitter:image" content="https://stephens.page/gpt-image/tool.png">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="favicon.png" sizes="32x32">
@@ -259,6 +259,33 @@
     }
     .try-cancel:hover { border-color: var(--accent); color: var(--fg); }
 
+    /* Invite-link optional newsletter (shown near Try entry, not required) */
+    .try-invite-nl {
+      display: none;
+      max-width: 860px;
+      margin: 0 auto 18px;
+      padding: 14px 16px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-align: left;
+    }
+    .try-invite-nl.is-visible { display: block; }
+    .try-invite-nl .consent { font-size: 13.5px; color: var(--muted); margin: 0 0 10px; max-width: 640px; }
+    .try-invite-nl label {
+      display: block; font-size: 12px; color: var(--muted); margin: 0 0 4px;
+    }
+    .try-invite-nl input[type="email"] {
+      width: 100%; max-width: 360px; box-sizing: border-box;
+      background: #0b0c0f; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--fg); padding: 10px 12px; font-size: 14px;
+    }
+    .try-invite-nl input[type="email"]:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+    .try-gate.is-invite-mode .try-email-required { display: none; }
+    .try-gate.is-invite-mode .consent-required { display: none; }
+    .try-gate .consent-invite { display: none; }
+    .try-gate.is-invite-mode .consent-invite { display: block; }
+
     section { padding: 46px 0; border-top: 1px solid var(--border); }
     section h2 { font-size: 26px; margin: 0 0 6px; }
     section .lead { color: var(--muted); margin: 0 0 26px; max-width: 700px; }
@@ -317,7 +344,25 @@
       color: var(--fg); margin: 0 0 6px; line-height: 1.4;
       display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
     }
+    .gallery-card .gallery-by { font-size: 12px; color: var(--accent); margin: 0 0 4px; }
     .gallery-card .gallery-when { font-size: 11.5px; color: var(--muted); }
+    .try-name-row {
+      display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+      margin: 0 0 12px; max-width: 860px;
+    }
+    .try-name-row label {
+      font-size: 13px; color: var(--muted);
+    }
+    .try-name-row input[type="text"] {
+      flex: 1 1 180px; max-width: 280px; box-sizing: border-box;
+      background: #0b0c0f; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--fg); padding: 8px 12px; font-size: 14px;
+    }
+    .try-name-row input[type="text"]:focus {
+      outline: 1px solid var(--accent); border-color: var(--accent);
+    }
+    .try-name-row input[type="text"]::placeholder { color: #4a5160; }
+    .try-name-row .try-name-hint { font-size: 12px; color: var(--muted); }
     .gallery-empty { color: var(--muted); font-size: 14.5px; }
     .spend-tally {
       display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: baseline;
@@ -363,13 +408,14 @@
 <body>
   <header class="nav">
     <div class="wrap nav-inner">
-      <span class="brand"><span class="prompt">$</span> gpt-image</span>
+      <span class="brand"><span class="prompt">$</span> gpt-image <span style="color:var(--muted);font-weight:600;font-size:13px">v0.2.1</span></span>
       <nav>
         <a href="#try">Try</a>
         <a href="#gallery">Gallery</a>
         <a href="#features">Features</a>
         <a href="#install">Install</a>
         <a href="#usage">Usage</a>
+        <a href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.2.1">v0.2.1</a>
         <a href="https://github.com/JacobStephens2/gpt-image">GitHub</a>
       </nav>
     </div>
@@ -378,9 +424,10 @@
   <main class="wrap">
     <section class="hero" style="border-top:none">
       <h1><span class="prompt">$</span> gpt-image</h1>
-      <p class="tagline">Generate and edit images from the terminal with OpenAI's image models. One CLI for a single prompt, a photo edit, or a JSON batch.</p>
+      <p class="tagline">Generate and edit images from the terminal with OpenAI's image models. One Go binary (v0.2.1) for a single prompt, a photo edit, or a JSON batch - no Python.</p>
       <div class="cta" style="margin-bottom: 8px">
         <a class="btn btn-primary" href="#try">Try in the browser</a>
+        <a class="btn btn-ghost" href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.2.1">Download v0.2.1</a>
         <a class="btn btn-ghost" href="https://github.com/JacobStephens2/gpt-image">View on GitHub</a>
         <a class="btn btn-ghost" href="#install">Quickstart</a>
       </div>
@@ -391,11 +438,11 @@
           id="hero-image-frame"
           role="button"
           tabindex="0"
-          aria-label="Toggle hero image. Click to switch between sample output and tool illustration."
+          aria-label="Hero image slideshow. Click to cycle through the tool illustration and community images."
         >
           <div class="term-bar">
             <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-            <span class="term-title mono" id="hero-image-title">tool.png · gpt-image as a product</span>
+            <span class="term-title mono" id="hero-image-title">tool.png · gpt-image as a product (Go)</span>
             <span class="term-hint mono" id="hero-image-hint">click to swap · 1 / 2</span>
           </div>
           <img
@@ -403,13 +450,13 @@
             src="tool.png"
             width="1536"
             height="1024"
-            alt="Product illustration of the gpt-image CLI: a dark terminal generating a lighthouse, a portrait edit, and a batch grid of images"
+            alt="Product illustration of the gpt-image Go CLI: a dark terminal generating a lighthouse, a portrait edit, and a batch grid of images"
           >
         </div>
         <p class="img-caption mono" id="hero-image-caption">
           Illustration of the tool itself - terminal in, images out (generate, edit, batch).
-          Also made with <span class="c-accent">gpt_image.py generate</span>.
-          <span class="click-hint">Click the image</span> to see the lighthouse sample output.
+          Also made with <span class="c-accent">gpt-image generate</span> (Go binary, v0.2.1).
+          <span class="click-hint">Click the image</span> for the original Python-era product shot, then community samples.
         </p>
       </div>
 
@@ -418,17 +465,41 @@
           <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
           <span class="term-title mono">generate · gpt-image-2 · high · 1536x1024</span>
         </div>
-        <pre><span class="c-muted">$</span> python gpt_image.py generate <span class="c-green">"a lighthouse in a storm, gouache"</span> \
+        <pre><span class="c-muted">$</span> gpt-image generate <span class="c-green">"a lighthouse in a storm, gouache"</span> \
     --output lighthouse.png --quality high --size 1536x1024
 <span class="c-green">Wrote</span> lighthouse.png</pre>
       </div>
 
-      <p class="subline" style="margin-top: 28px">Defaults to <span class="mono">gpt-image-2</span>. Started as a hair-color photo-edit workaround against <a href="https://arena.ai/leaderboard/image-edit">Arena's image edit leaderboard</a>; grew into a general tool. The original <span class="mono">edit_hair_color.py</span> still works.</p>
+      <p class="subline" style="margin-top: 28px">Defaults to <span class="mono">gpt-image-2</span>. Started as a hair-color photo-edit workaround against <a href="https://arena.ai/leaderboard/image-edit">Arena's image edit leaderboard</a>; grew into a general Go CLI. The original hair-color path is <span class="mono">gpt-image hair-color</span>.</p>
     </section>
 
     <section id="try">
       <h2>Try it live</h2>
-      <p class="lead">Type a prompt the way you would in the CLI. Generating an image requires joining Jacob Stephens' blog newsletter (Cloudflare Turnstile; free trial limits apply).</p>
+      <p class="lead" id="try-lead">Type a prompt the way you would in the CLI. Generating an image requires joining Jacob Stephens' blog newsletter (Cloudflare Turnstile; free trial limits apply).</p>
+
+      <div class="try-invite-nl" id="try-invite-nl" hidden>
+        <p class="consent">
+          Optional: join the <strong>stephens.page blog newsletter</strong> for more engineering writeups
+          (unsubscribe anytime). Not required to generate with this invite link.
+        </p>
+        <label for="try-email-invite">Email (optional)</label>
+        <input type="email" id="try-email-invite" name="email_invite" placeholder="you@example.com" autocomplete="email">
+      </div>
+
+      <div class="try-name-row" id="try-name-row">
+        <label for="try-name">Name on image (optional)</label>
+        <input
+          type="text"
+          id="try-name"
+          name="display_name"
+          maxlength="40"
+          placeholder="anonymous"
+          autocomplete="nickname"
+          spellcheck="false"
+          aria-describedby="try-name-hint"
+        >
+        <span class="try-name-hint" id="try-name-hint">Shown in the gallery. Leave blank for anonymous.</span>
+      </div>
 
       <div class="term try-term" id="try-term">
         <div class="term-bar">
@@ -438,7 +509,7 @@
         <div class="try-body">
           <div class="try-line mono">
             <span class="c-muted">$</span>
-            <span>python gpt_image.py generate</span>
+            <span>gpt-image generate</span>
             <span class="c-green">"</span>
             <input
               type="text"
@@ -455,18 +526,25 @@
           <div class="try-flags mono">\ --output trial.png --quality medium --size 1024x1024</div>
           <div class="try-actions">
             <button type="button" class="try-run" id="try-open-gate">Generate</button>
-            <span class="mono" style="color:var(--muted);font-size:12px">Enter runs · newsletter + Turnstile gate</span>
+            <span class="mono" style="color:var(--muted);font-size:12px" id="try-hint">Enter runs · newsletter + Turnstile gate</span>
           </div>
 
           <div class="try-gate" id="try-gate" aria-hidden="true">
-            <p class="consent">
+            <p class="consent consent-required">
               Free trial: generate after you join the <strong>stephens.page blog newsletter</strong>
               (unsubscribe anytime). Protected by Cloudflare Turnstile.
-              Successful images are added to the <strong>public community gallery</strong> below
-              (prompt only - not your email).
+              Successful images go to the <strong>public community gallery</strong> and hero slideshow
+              (prompt + optional display name - never your email).
             </p>
-            <label for="try-email">Email</label>
-            <input type="email" id="try-email" name="email" placeholder="you@example.com" autocomplete="email" required>
+            <p class="consent consent-invite">
+              Protected by Cloudflare Turnstile. Successful images go to the
+              <strong>public community gallery</strong> and hero slideshow
+              (prompt + optional display name).
+            </p>
+            <div class="try-email-required" id="try-email-required">
+              <label for="try-email">Email</label>
+              <input type="email" id="try-email" name="email" placeholder="you@example.com" autocomplete="email" required>
+            </div>
             <div class="hp" aria-hidden="true">
               <label for="try-website">Website</label>
               <input type="text" id="try-website" name="website_url" tabindex="-1" autocomplete="off">
@@ -512,8 +590,9 @@
     <section id="gallery">
       <h2>Community gallery</h2>
       <p class="lead">
-        Recent images from the live try above. Newest first (keeps the last 48).
-        Prompt only - no emails. Click a tile to enlarge.
+        Live-try generations plus sample outputs. Newest first (keeps the last 48; pinned samples stay).
+        Prompt and optional display name only - no emails. Click a tile to enlarge.
+        The same images cycle in the hero slideshow at the top of the page.
       </p>
       <div class="spend-tally" id="spend-tally" aria-live="polite">
         <span class="spend-main" id="spend-total">~$0.00</span>
@@ -538,7 +617,7 @@
 
     <section id="features">
       <h2>What it does</h2>
-      <p class="lead">Three commands, one API key, no browser. Point it at OpenAI's image models and keep inputs, outputs, and keys out of the repo.</p>
+      <p class="lead">Three commands, one API key, no browser, no Python runtime. Download a single binary (or <span class="mono">go install</span>) and point it at OpenAI's image models. Keep inputs, outputs, and keys out of the repo.</p>
       <div class="grid">
         <div class="card">
           <div class="icon">&#9733;</div>
@@ -575,17 +654,42 @@
 
     <section id="install">
       <h2>Quickstart</h2>
-      <p class="lead">Clone, venv, install deps, export a key. On Debian/Ubuntu, use a project venv - bare <span class="mono">pip install</span> hits PEP 668 <span class="mono">externally-managed-environment</span>.</p>
+      <p class="lead">
+        Go binary - no Python, no venv, no pip.
+        Current release: <a href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.2.1"><span class="mono">v0.2.1</span></a>
+        (linux / macOS / Windows).
+      </p>
+
+      <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Binary (recommended)</h3>
       <div class="copy-row">
-        <pre class="block" id="install-cmd">git clone https://github.com/JacobStephens2/gpt-image.git
-cd gpt-image
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
+        <pre class="block" id="install-cmd">curl -fsSL -o gpt-image \
+  https://github.com/JacobStephens2/gpt-image/releases/latest/download/gpt-image-linux-amd64
+chmod +x gpt-image
+sudo mv gpt-image /usr/local/bin/gpt-image
+export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"
+gpt-image version</pre>
         <button class="copy-btn" data-copy="install-cmd">Copy</button>
       </div>
-      <p class="lead" style="margin:0">Or keep the key outside the repo and pass <span class="mono">--api-key-file ~/path/to/key.txt</span> on any command.</p>
+      <p class="lead" style="margin:0 0 16px">
+        Other assets:
+        <span class="mono">gpt-image-linux-arm64</span>,
+        <span class="mono">gpt-image-darwin-amd64</span>,
+        <span class="mono">gpt-image-darwin-arm64</span>,
+        <span class="mono">gpt-image-windows-amd64.exe</span>,
+        plus <span class="mono">SHA256SUMS</span>.
+        <a href="https://github.com/JacobStephens2/gpt-image/releases/latest">All downloads</a>.
+      </p>
+
+      <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">With Go 1.22+</h3>
+      <div class="copy-row">
+        <pre class="block" id="install-go-cmd">go install github.com/JacobStephens2/gpt-image/cmd/gpt-image@v0.2.1</pre>
+        <button class="copy-btn" data-copy="install-go-cmd">Copy</button>
+      </div>
+      <p class="lead" style="margin:12px 0 0">
+        Or from a clone: <span class="mono">go build -o gpt-image ./cmd/gpt-image</span>.
+        Keep the key outside the repo and pass <span class="mono">--api-key-file ~/path/to/key.txt</span> if you prefer.
+        Long high-quality runs print stderr heartbeats; see <span class="mono">--timeout</span> / <span class="mono">--quiet</span>.
+      </p>
     </section>
 
     <section id="usage">
@@ -594,20 +698,20 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
 
       <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Generate</h3>
       <div class="copy-row">
-        <pre class="block" id="gen-cmd">python gpt_image.py generate "a lighthouse in a storm, gouache" \
+        <pre class="block" id="gen-cmd">gpt-image generate "a lighthouse in a storm, gouache" \
   --output lighthouse.png --quality high --size 1536x1024</pre>
         <button class="copy-btn" data-copy="gen-cmd">Copy</button>
       </div>
 
       <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Edit</h3>
       <div class="copy-row">
-        <pre class="block" id="edit-cmd">python gpt_image.py edit photo.jpg --prompt "make the sky golden hour" --output golden.png</pre>
+        <pre class="block" id="edit-cmd">gpt-image edit photo.jpg --prompt "make the sky golden hour" --output golden.png</pre>
         <button class="copy-btn" data-copy="edit-cmd">Copy</button>
       </div>
 
       <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Batch</h3>
       <div class="copy-row">
-        <pre class="block" id="batch-cmd">python gpt_image.py batch manifest.json --output-dir outputs \
+        <pre class="block" id="batch-cmd">gpt-image batch manifest.json --output-dir outputs \
   --quality high --size 1536x1024 --workers 3 --skip-existing</pre>
         <button class="copy-btn" data-copy="batch-cmd">Copy</button>
       </div>
@@ -623,10 +727,10 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
     </section>
 
     <section id="legacy">
-      <h2>Hair-color legacy script</h2>
-      <p class="lead">The original one-purpose script still works for the Arena hair-color path.</p>
+      <h2>Hair-color path</h2>
+      <p class="lead">The original Arena hair-color workflow is a first-class subcommand (same API edit under the hood).</p>
       <div class="copy-row">
-        <pre class="block" id="hair-cmd">python edit_hair_color.py photo.jpg --output edited.png --color "strawberry blonde"</pre>
+        <pre class="block" id="hair-cmd">gpt-image hair-color photo.jpg --output edited.png --color "strawberry blonde"</pre>
         <button class="copy-btn" data-copy="hair-cmd">Copy</button>
       </div>
     </section>
@@ -634,8 +738,12 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
 
   <footer>
     <div class="wrap row">
-      <span>gpt-image - MIT. Built by <a href="https://stephens.page">Jacob Stephens</a>.</span>
-      <span><a href="https://github.com/JacobStephens2/gpt-image">github.com/JacobStephens2/gpt-image</a></span>
+      <span>gpt-image v0.2.1 - MIT. Built by <a href="https://stephens.page">Jacob Stephens</a>.</span>
+      <span>
+        <a href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.2.1">Release</a>
+        ·
+        <a href="https://github.com/JacobStephens2/gpt-image">github.com/JacobStephens2/gpt-image</a>
+      </span>
     </div>
   </footer>
 
@@ -711,12 +819,16 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
         }
       }
 
-      function openLb(url, prompt, when) {
+      function openLb(url, prompt, when, by) {
         if (!lb || !lbImg) return;
         lbImg.src = url;
         lbImg.alt = prompt || 'Community gallery image';
         if (lbCap) {
-          lbCap.textContent = (prompt || '') + (when ? ' · ' + when : '');
+          var parts = [];
+          if (by) parts.push('by ' + by);
+          if (prompt) parts.push(prompt);
+          if (when) parts.push(when);
+          lbCap.textContent = parts.join(' · ');
         }
         lb.hidden = false;
         lb.classList.add('is-open');
@@ -742,6 +854,26 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
         if (e.key === 'Escape' && lb && lb.classList.contains('is-open')) closeLb();
       });
 
+      /** Safe public image paths: gallery/* or known root samples. */
+      function safeImageUrl(item) {
+        var file = typeof item.file === 'string' ? item.file : '';
+        var url = typeof item.url === 'string' ? item.url : (file ? 'gallery/' + file : '');
+        if (!url || url.indexOf('..') !== -1 || url.indexOf('\\') !== -1) return '';
+        if (url.indexOf('gallery/') === 0) {
+          var rest = url.slice('gallery/'.length);
+          if (!/^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp)$/.test(rest)) return '';
+          return url;
+        }
+        // Root-level seeds (lighthouse sample lives next to index.html).
+        if (/^(lighthouse|tool)\.png$/.test(url)) return url;
+        return '';
+      }
+
+      function itemBy(item) {
+        var by = typeof item.by === 'string' ? item.by.trim() : '';
+        return by || 'anonymous';
+      }
+
       function render(items) {
         grid.innerHTML = '';
         if (!items || !items.length) {
@@ -753,11 +885,10 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
           return;
         }
         items.forEach(function (item) {
-          var file = typeof item.file === 'string' ? item.file : '';
-          var url = typeof item.url === 'string' ? item.url : (file ? 'gallery/' + file : '');
-          // Path must stay under gallery/
-          if (!url || url.indexOf('..') !== -1 || url.indexOf('gallery/') !== 0) return;
+          var url = safeImageUrl(item);
+          if (!url) return;
           var prompt = typeof item.prompt === 'string' ? item.prompt : '';
+          var by = itemBy(item);
           var when = formatWhen(item.ts);
 
           var card = document.createElement('article');
@@ -768,12 +899,12 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
           link.href = url;
           link.addEventListener('click', function (e) {
             e.preventDefault();
-            openLb(url, prompt, when);
+            openLb(url, prompt, when, by);
           });
 
           var img = document.createElement('img');
           img.src = url;
-          img.alt = prompt || 'Community gallery image';
+          img.alt = (prompt || 'Community gallery image') + ' by ' + by;
           img.loading = 'lazy';
           img.width = 1024;
           img.height = 1024;
@@ -781,6 +912,10 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
 
           var meta = document.createElement('div');
           meta.className = 'gallery-meta';
+          var byEl = document.createElement('div');
+          byEl.className = 'gallery-by';
+          byEl.textContent = 'by ' + by;
+          meta.appendChild(byEl);
           var pr = document.createElement('p');
           pr.className = 'gallery-prompt';
           pr.textContent = prompt || '(no prompt)';
@@ -798,7 +933,8 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
         });
       }
 
-      window.refreshGptImageGallery = function () {
+      window.refreshGptImageGallery = function (opts) {
+        opts = opts || {};
         return fetch('gallery/manifest.json?_=' + Date.now(), { credentials: 'same-origin' })
           .then(function (r) {
             if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -807,6 +943,12 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
           .then(function (data) {
             var items = (data && Array.isArray(data.items)) ? data.items : [];
             render(items);
+            if (typeof window.setHeroGalleryItems === 'function') {
+              window.setHeroGalleryItems(items, {
+                focusUrl: opts.focusUrl || '',
+              });
+            }
+            return items;
           })
           .catch(function () {
             grid.innerHTML = '';
@@ -822,14 +964,22 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
     })();
 
     // Live try: CLI-shaped prompt → newsletter + Turnstile → generate.
+    // Invite mode (?invite=<token>): newsletter optional; Turnstile still required.
     (function () {
       var TURNSTILE_SITE_KEY = '0x4AAAAAADk4Vi9kg773i1pu';
+      // Must match GPT_IMAGE_INVITE_TOKEN in private/.env (shareable link token).
+      var INVITE_TOKEN = 'bf8b6c15b67108d745557f63';
       var promptEl = document.getElementById('try-prompt');
       var openBtn = document.getElementById('try-open-gate');
       var submitBtn = document.getElementById('try-submit');
       var cancelBtn = document.getElementById('try-cancel');
       var gate = document.getElementById('try-gate');
       var emailEl = document.getElementById('try-email');
+      var emailInviteEl = document.getElementById('try-email-invite');
+      var nameEl = document.getElementById('try-name');
+      var inviteNlEl = document.getElementById('try-invite-nl');
+      var tryLeadEl = document.getElementById('try-lead');
+      var tryHintEl = document.getElementById('try-hint');
       var websiteEl = document.getElementById('try-website');
       var logEl = document.getElementById('try-log');
       var resultEl = document.getElementById('try-result');
@@ -845,19 +995,56 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
       var tryTerm = document.getElementById('try-term');
       if (!promptEl || !openBtn || !gate) return;
 
+      var inviteToken = '';
+      try {
+        var qs = new URLSearchParams(window.location.search || '');
+        var rawInvite = String(qs.get('invite') || '').trim();
+        if (rawInvite && rawInvite === INVITE_TOKEN) {
+          inviteToken = rawInvite;
+        }
+      } catch (e) {
+        inviteToken = '';
+      }
+      var isInvite = inviteToken !== '';
+
+      if (isInvite) {
+        if (tryLeadEl) {
+          tryLeadEl.textContent =
+            'Type a prompt the way you would in the CLI. This invite link skips the newsletter requirement (Cloudflare Turnstile and free trial limits still apply).';
+        }
+        if (tryHintEl) {
+          tryHintEl.textContent = 'Enter runs · Turnstile only · newsletter optional';
+        }
+        if (inviteNlEl) {
+          inviteNlEl.hidden = false;
+          inviteNlEl.classList.add('is-visible');
+        }
+        gate.classList.add('is-invite-mode');
+        if (emailEl) emailEl.removeAttribute('required');
+        if (submitBtn) submitBtn.textContent = 'Generate';
+      }
+
       var widgetId = null;
       var busy = false;
       var MAX_PROMPT = 500;
       var MIN_PROMPT = 3;
       var progressTick = null;
       var progressStarted = 0;
-      var PROGRESS_STEPS = [
-        { at: 0,  label: 'Starting…', detail: 'Checking newsletter signup and Turnstile…' },
-        { at: 3,  label: 'Generating image…', detail: 'Calling OpenAI gpt-image-2 (medium / 1024). Usually 20–90 seconds.' },
-        { at: 20, label: 'Still generating…', detail: 'High-quality image models take a bit - leave this tab open.' },
-        { at: 45, label: 'Almost there…', detail: 'Still waiting on the model. This is normal for medium quality.' },
-        { at: 75, label: 'Taking longer than usual…', detail: 'Hang tight - the request is still in flight.' },
-      ];
+      var PROGRESS_STEPS = isInvite
+        ? [
+            { at: 0,  label: 'Starting…', detail: 'Checking Turnstile…' },
+            { at: 3,  label: 'Generating image…', detail: 'Calling OpenAI gpt-image-2 (medium / 1024). Usually 20–90 seconds.' },
+            { at: 20, label: 'Still generating…', detail: 'High-quality image models take a bit - leave this tab open.' },
+            { at: 45, label: 'Almost there…', detail: 'Still waiting on the model. This is normal for medium quality.' },
+            { at: 75, label: 'Taking longer than usual…', detail: 'Hang tight - the request is still in flight.' },
+          ]
+        : [
+            { at: 0,  label: 'Starting…', detail: 'Checking newsletter signup and Turnstile…' },
+            { at: 3,  label: 'Generating image…', detail: 'Calling OpenAI gpt-image-2 (medium / 1024). Usually 20–90 seconds.' },
+            { at: 20, label: 'Still generating…', detail: 'High-quality image models take a bit - leave this tab open.' },
+            { at: 45, label: 'Almost there…', detail: 'Still waiting on the model. This is normal for medium quality.' },
+            { at: 75, label: 'Taking longer than usual…', detail: 'Hang tight - the request is still in flight.' },
+          ];
 
       function log(msg, kind) {
         if (!logEl) return;
@@ -888,6 +1075,17 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
           .toLowerCase()
           .trim()
           .slice(0, 254);
+      }
+
+      function sanitizeName(raw) {
+        var s = String(raw == null ? '' : raw)
+          .replace(/\u0000/g, '')
+          .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+          .replace(/[\r\n\t]+/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 40);
+        return s;
       }
 
       function applyProgressStep(seconds) {
@@ -944,10 +1142,24 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
         if (cancelBtn) cancelBtn.disabled = on;
         promptEl.disabled = on;
         if (emailEl) emailEl.disabled = on;
+        if (emailInviteEl) emailInviteEl.disabled = on;
+        if (nameEl) nameEl.disabled = on;
         openBtn.textContent = on ? 'Generating…' : 'Generate';
-        if (submitBtn) submitBtn.textContent = on ? 'Generating…' : 'Subscribe & generate';
+        if (submitBtn) {
+          submitBtn.textContent = on
+            ? 'Generating…'
+            : (isInvite ? 'Generate' : 'Subscribe & generate');
+        }
         if (on) startProgress();
         else stopProgress();
+      }
+
+      /** Gate email (required mode) or optional invite field. */
+      function currentEmail() {
+        if (isInvite) {
+          return sanitizeEmail(emailInviteEl && emailInviteEl.value);
+        }
+        return sanitizeEmail(emailEl && emailEl.value);
       }
 
       function ensureTurnstile() {
@@ -994,10 +1206,14 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
         gate.classList.add('is-open');
         gate.setAttribute('aria-hidden', 'false');
         ensureTurnstile();
-        if (emailEl) emailEl.focus();
-        log('$ python gpt_image.py generate "' + prompt.replace(/"/g, '\\"') + '" \\');
+        if (isInvite) {
+          if (submitBtn) submitBtn.focus();
+        } else if (emailEl) {
+          emailEl.focus();
+        }
+        log('$ gpt-image generate "' + prompt.replace(/"/g, '\\"') + '" \\');
         log('    --output trial.png --quality medium --size 1024x1024');
-        log('# newsletter gate required…');
+        log(isInvite ? '# invite link · Turnstile required · newsletter optional…' : '# newsletter gate required…');
       }
 
       function closeGate() {
@@ -1008,9 +1224,15 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
       async function submitTry() {
         if (busy) return;
         var prompt = sanitizePrompt(promptEl.value);
-        var email = sanitizeEmail(emailEl && emailEl.value);
+        var email = currentEmail();
+        var displayName = sanitizeName(nameEl && nameEl.value);
         promptEl.value = prompt;
-        if (emailEl) emailEl.value = email;
+        if (nameEl) nameEl.value = displayName;
+        if (isInvite) {
+          if (emailInviteEl) emailInviteEl.value = email;
+        } else if (emailEl) {
+          emailEl.value = email;
+        }
         if (!prompt) {
           log('error: prompt is empty', 'err');
           return;
@@ -1019,9 +1241,15 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
           log('error: prompt is too short', 'err');
           return;
         }
-        if (!email || email.indexOf('@') < 1) {
+        if (!isInvite && (!email || email.indexOf('@') < 1)) {
           log('error: email required for newsletter gate', 'err');
           if (emailEl) emailEl.focus();
+          return;
+        }
+        // Optional invite email: if typed, require it to look valid.
+        if (isInvite && email !== '' && email.indexOf('@') < 1) {
+          log('error: that email does not look valid (leave blank to skip newsletter)', 'err');
+          if (emailInviteEl) emailInviteEl.focus();
           return;
         }
         var token = '';
@@ -1049,7 +1277,9 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
           var body = new FormData();
           body.set('prompt', prompt);
           body.set('email', email);
+          body.set('name', displayName);
           body.set('cf-turnstile-response', token);
+          if (isInvite) body.set('invite', inviteToken);
           // Honeypot only if empty; never send unexpected keys.
           body.set('website_url', websiteEl && websiteEl.value ? String(websiteEl.value).slice(0, 200) : '');
           var res = await fetch('try-submit.php', {
@@ -1112,9 +1342,10 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
               resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
               log('download ready: ' + filename, 'ok');
               if (data.gallery && data.gallery.url) {
-                log('added to community gallery', 'ok');
+                var byNote = (data.by || data.gallery.by || displayName || 'anonymous');
+                log('added to community gallery · by ' + byNote, 'ok');
                 if (typeof window.refreshGptImageGallery === 'function') {
-                  window.refreshGptImageGallery();
+                  window.refreshGptImageGallery({ focusUrl: data.gallery.url });
                 }
               }
               if (data.spend && typeof window.refreshGptImageSpend === 'function') {
@@ -1163,30 +1394,39 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
           }
         });
       }
+      if (emailInviteEl) {
+        emailInviteEl.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            openGate();
+          }
+        });
+      }
     })();
 
-    // Hero gallery: tool illustration (default) <-> lighthouse sample.
+    // Hero slideshow: Go tool.png first, Python-era product shot second, then community gallery.
     (function () {
-      var slides = [
-        {
-          src: 'tool.png',
-          title: 'tool.png · gpt-image as a product',
-          alt: 'Product illustration of the gpt-image CLI: a dark terminal generating a lighthouse, a portrait edit, and a batch grid of images',
-          captionHtml:
-            'Illustration of the tool itself - terminal in, images out (generate, edit, batch). ' +
-            'Also made with <span class="c-accent">gpt_image.py generate</span>. ' +
-            '<span class="click-hint">Click the image</span> to see the lighthouse sample output.'
-        },
-        {
-          src: 'lighthouse.png',
-          title: 'lighthouse.png · made with this CLI',
-          alt: 'Gouache-style lighthouse on a rocky headland in a storm, generated by gpt-image for this page',
-          captionHtml:
-            'Sample output from <span class="c-accent">gpt_image.py generate</span> - not a stock photo. ' +
-            '<span class="click-hint">Click</span> to return to the tool illustration.'
-        }
-      ];
+      var TOOL_SLIDE = {
+        src: 'tool.png',
+        title: 'tool.png · gpt-image as a product (Go)',
+        alt: 'Product illustration of the gpt-image Go CLI: a dark terminal generating a lighthouse, a portrait edit, and a batch grid of images',
+        captionHtml:
+          'Illustration of the tool itself - terminal in, images out (generate, edit, batch). ' +
+          'Also made with <span class="c-accent">gpt-image generate</span> (Go binary, v0.2.1). ' +
+          '<span class="click-hint">Click the image</span> for the original Python-era product shot, then community samples.'
+      };
 
+      var TOOL_PYTHON_SLIDE = {
+        src: 'tool-python-legacy.png',
+        title: 'tool.png · first version (Python)',
+        alt: 'Original product illustration of gpt-image when it was a Python CLI: terminal showing python gpt_image.py generate and edit commands with floating output images',
+        captionHtml:
+          'Original product illustration. The <strong>first version of gpt-image used Python</strong> ' +
+          '(<span class="mono">python gpt_image.py …</span>); v0.2+ is a single Go binary with the same generate / edit / batch flow. ' +
+          '<span class="click-hint">Click</span> for community samples (including lighthouse.png).'
+      };
+
+      var slides = [TOOL_SLIDE, TOOL_PYTHON_SLIDE];
       var img = document.getElementById('hero-image');
       var frame = document.getElementById('hero-image-frame');
       var title = document.getElementById('hero-image-title');
@@ -1196,23 +1436,68 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
 
       var index = 0;
       var swapping = false;
+      var failStreak = 0;
 
-      // Prefetch the second slide so the first click is instant.
-      slides.forEach(function (slide, i) {
-        if (i === 0) return;
-        var pre = new Image();
-        pre.src = slide.src;
-      });
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function safeGalleryUrl(item) {
+        var file = typeof item.file === 'string' ? item.file : '';
+        var url = typeof item.url === 'string' ? item.url : (file ? 'gallery/' + file : '');
+        if (!url || url.indexOf('..') !== -1 || url.indexOf('\\') !== -1) return '';
+        if (url.indexOf('gallery/') === 0) {
+          var rest = url.slice('gallery/'.length);
+          if (!/^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp)$/.test(rest)) return '';
+          return url;
+        }
+        if (/^(lighthouse|tool|tool-python-legacy)\.png$/.test(url)) return url;
+        return '';
+      }
+
+      function isToolSlideSrc(src) {
+        return src === 'tool.png' || src === 'tool-python-legacy.png';
+      }
+
+      function gallerySlideFromItem(item) {
+        var src = safeGalleryUrl(item);
+        if (!src || isToolSlideSrc(src)) return null;
+        var prompt = typeof item.prompt === 'string' ? item.prompt : '';
+        var by = (typeof item.by === 'string' && item.by.trim()) ? item.by.trim() : 'anonymous';
+        var file = typeof item.file === 'string' ? item.file : src.split('/').pop();
+        var titleText = (file || 'gallery') + ' · by ' + by;
+        var alt = (prompt || 'Community image') + ' by ' + by;
+        var cap =
+          'By <strong>' + escapeHtml(by) + '</strong>' +
+          (prompt ? ' · ' + escapeHtml(prompt) : '') +
+          ' · made with <span class="c-accent">gpt-image</span> / live try. ' +
+          '<span class="click-hint">Click</span> for the next image.';
+        return {
+          src: src,
+          title: titleText,
+          alt: alt,
+          captionHtml: cap,
+        };
+      }
 
       function applySlide(i, withFade) {
-        var slide = slides[i];
-        index = i;
-        if (hint) hint.textContent = 'click to swap · ' + (i + 1) + ' / ' + slides.length;
+        if (!slides.length) return;
+        var slide = slides[((i % slides.length) + slides.length) % slides.length];
+        index = ((i % slides.length) + slides.length) % slides.length;
+        if (hint) hint.textContent = 'click to swap · ' + (index + 1) + ' / ' + slides.length;
         if (title) title.textContent = slide.title;
-        if (cap) cap.innerHTML = slide.captionHtml;
+        if (cap) {
+          cap.innerHTML = slide.captionHtml;
+          cap.hidden = false;
+        }
+        frame.hidden = false;
         frame.setAttribute(
           'aria-label',
-          'Hero image ' + (i + 1) + ' of ' + slides.length + '. ' + slide.alt + ' Click or press Enter to switch.'
+          'Hero image ' + (index + 1) + ' of ' + slides.length + '. ' + slide.alt + ' Click or press Enter to switch.'
         );
 
         function setSrc() {
@@ -1232,9 +1517,63 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
       }
 
       function nextSlide() {
-        if (swapping) return;
-        applySlide((index + 1) % slides.length, true);
+        if (swapping || slides.length < 2) return;
+        applySlide(index + 1, true);
       }
+
+      function rebuildSlides(items, opts) {
+        opts = opts || {};
+        var next = [TOOL_SLIDE, TOOL_PYTHON_SLIDE];
+        var seen = { 'tool.png': true, 'tool-python-legacy.png': true };
+        (items || []).forEach(function (item) {
+          var slide = gallerySlideFromItem(item);
+          if (!slide || seen[slide.src]) return;
+          seen[slide.src] = true;
+          next.push(slide);
+        });
+        // Fallback if gallery fetch failed: still show lighthouse sample after the two tool shots.
+        if (next.length === 2) {
+          next.push({
+            src: 'lighthouse.png',
+            title: 'lighthouse.png · by Jacob Stephens',
+            alt: 'Gouache-style lighthouse on a rocky headland in a storm, generated by gpt-image for this page',
+            captionHtml:
+              'By <strong>Jacob Stephens</strong> · a lighthouse in a storm, gouache. ' +
+              'Sample from <span class="c-accent">gpt-image generate</span>. ' +
+              '<span class="click-hint">Click</span> to return to the tool illustration.',
+          });
+        }
+        var prevSrc = slides[index] && slides[index].src;
+        slides = next;
+        // Prefetch a few upcoming slides.
+        slides.slice(1, 6).forEach(function (slide) {
+          var pre = new Image();
+          pre.src = slide.src;
+        });
+
+        var focus = opts.focusUrl || '';
+        var newIndex = 0;
+        if (focus) {
+          for (var i = 0; i < slides.length; i++) {
+            if (slides[i].src === focus) {
+              newIndex = i;
+              break;
+            }
+          }
+        } else if (prevSrc) {
+          for (var j = 0; j < slides.length; j++) {
+            if (slides[j].src === prevSrc) {
+              newIndex = j;
+              break;
+            }
+          }
+        }
+        applySlide(newIndex, false);
+      }
+
+      window.setHeroGalleryItems = function (items, opts) {
+        rebuildSlides(items || [], opts || {});
+      };
 
       frame.addEventListener('click', nextSlide);
       frame.addEventListener('keydown', function (e) {
@@ -1245,16 +1584,21 @@ export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"</pre>
       });
 
       img.addEventListener('error', function () {
-        // If current slide fails, try the other; if both fail, hide the hero.
-        var other = (index + 1) % slides.length;
-        if (img.getAttribute('src') !== slides[other].src) {
-          applySlide(other, false);
+        failStreak += 1;
+        if (failStreak >= slides.length) {
+          frame.hidden = true;
+          if (cap) cap.hidden = true;
           return;
         }
-        frame.hidden = true;
-        if (cap) cap.hidden = true;
+        if (slides.length > 1) {
+          applySlide(index + 1, false);
+        }
+      });
+      img.addEventListener('load', function () {
+        failStreak = 0;
       });
 
+      // Go + Python product shots first until gallery/manifest loads.
       applySlide(0, false);
     })();
   </script>

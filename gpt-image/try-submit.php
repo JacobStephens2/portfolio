@@ -4,6 +4,9 @@
  *
  * Deep public module: one POST interface. Secrets from /private/.env (gitignored).
  * Trial log: /var/lib/gpt-image/trials.jsonl
+ *
+ * Invite bypass: POST invite= matching GPT_IMAGE_INVITE_TOKEN makes email/newsletter optional
+ * (Turnstile + IP rate limits still apply). Shareable URL: /gpt-image/?invite=<token>
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -23,8 +26,9 @@ const GALLERY_MAX_ITEMS = 48;
 const MAX_PROMPT = 500;
 const MIN_PROMPT = 3;
 const MAX_EMAIL = 254;
+const MAX_NAME = 40;
 const MAX_TURNSTILE = 2048;
-const MAX_POST_FIELDS = 16;
+const MAX_POST_FIELDS = 20;
 const IP_LIMIT = 5;
 const IP_WINDOW = 3600;
 const EMAIL_LIMIT = 3;
@@ -85,6 +89,30 @@ function sanitize_email(string $email): string {
 }
 
 /**
+ * Optional public display name for gallery attribution.
+ * Empty input becomes "anonymous". Never stores email.
+ */
+function sanitize_display_name(string $name): string {
+    $name = str_replace("\0", '', $name);
+    $name = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $name) ?? '';
+    $name = str_replace(["\r", "\n", "\t"], ' ', $name);
+    $name = preg_replace('/\s+/u', ' ', $name) ?? '';
+    $name = trim($name);
+    if ($name === '') {
+        return 'anonymous';
+    }
+    if (mb_strlen($name) > MAX_NAME) {
+        $name = mb_substr($name, 0, MAX_NAME);
+    }
+    // Require at least one letter or number (blocks emoji-only / punctuation spam).
+    $alnum = preg_match_all('/[\p{L}\p{N}]/u', $name);
+    if ($alnum === false || $alnum < 1) {
+        return 'anonymous';
+    }
+    return $name;
+}
+
+/**
  * Image prompt: printable text only, normalized whitespace, length bounds.
  * Returns [prompt, error_code|null].
  */
@@ -127,6 +155,34 @@ function sanitize_turnstile(string $token): string {
         return '';
     }
     return $token;
+}
+
+/**
+ * Invite link token from POST (hex-ish secrets only). Empty if missing/invalid shape.
+ */
+function sanitize_invite(string $token): string {
+    $token = trim(str_replace(["\0", "\r", "\n", "\t", ' '], '', $token));
+    if ($token === '' || strlen($token) > 128) {
+        return '';
+    }
+    if (!preg_match('/^[A-Za-z0-9._\-+]+$/', $token)) {
+        return '';
+    }
+    return $token;
+}
+
+/**
+ * Constant-time compare of invite token against env secret.
+ */
+function invite_ok(string $posted, string $expected): bool {
+    if ($posted === '' || $expected === '') {
+        return false;
+    }
+    if (strlen($posted) !== strlen($expected)) {
+        // hash_equals requires equal length; length mismatch is not a valid invite.
+        return false;
+    }
+    return hash_equals($expected, $posted);
 }
 
 function sanitize_ip(string $ip): string {
@@ -438,11 +494,126 @@ function record_spend(?float $costUsd): array {
 }
 
 /**
+ * Seed entries always present in the public gallery (not under gallery/ disk pruning).
+ *
+ * @return list<array<string, mixed>>
+ */
+function gallery_seed_items(): array {
+    return [
+        [
+            'id' => 'lighthouse',
+            'file' => 'lighthouse.png',
+            'url' => 'lighthouse.png',
+            'prompt' => 'a lighthouse in a storm, gouache',
+            'by' => 'Jacob Stephens',
+            'ts' => 1753830660,
+            'pinned' => true,
+            'model' => 'gpt-image-2',
+            'quality' => 'high',
+            'size' => '1536x1024',
+            'cost_usd' => null,
+        ],
+    ];
+}
+
+function gallery_item_is_pinned(array $item): bool {
+    if (!empty($item['pinned'])) {
+        return true;
+    }
+    $id = (string) ($item['id'] ?? '');
+    return $id === 'lighthouse';
+}
+
+/**
+ * Ensure seed items exist; de-dupe by id (first wins - keeps newer unshifted gens).
+ *
+ * @param list<array<string, mixed>> $items
+ * @return list<array<string, mixed>>
+ */
+function ensure_gallery_seeds(array $items): array {
+    $seen = [];
+    $out = [];
+    foreach ($items as $it) {
+        if (!is_array($it)) {
+            continue;
+        }
+        $id = (string) ($it['id'] ?? '');
+        if ($id !== '' && isset($seen[$id])) {
+            continue;
+        }
+        if ($id !== '') {
+            $seen[$id] = true;
+        }
+        $out[] = $it;
+    }
+    foreach (gallery_seed_items() as $seed) {
+        $id = (string) ($seed['id'] ?? '');
+        if ($id !== '' && isset($seen[$id])) {
+            continue;
+        }
+        if ($id !== '') {
+            $seen[$id] = true;
+        }
+        $out[] = $seed;
+    }
+    return $out;
+}
+
+/**
+ * Keep newest unpinned items within max, always retaining pinned seeds.
+ * Returns [kept_items, items_to_remove_from_disk].
+ *
+ * @param list<array<string, mixed>> $items
+ * @return array{0: list<array<string, mixed>>, 1: list<array<string, mixed>>}
+ */
+function prune_gallery_items(array $items, int $max): array {
+    $pinned = [];
+    $rest = [];
+    foreach ($items as $it) {
+        if (gallery_item_is_pinned($it)) {
+            $pinned[] = $it;
+        } else {
+            $rest[] = $it;
+        }
+    }
+    $keepRest = max(0, $max - count($pinned));
+    $toRemove = array_slice($rest, $keepRest);
+    $keptRest = array_slice($rest, 0, $keepRest);
+    // Newest first for live gens; pinned seeds after (typically older).
+    return [array_merge($keptRest, $pinned), $toRemove];
+}
+
+/**
+ * Only unlink files that live under gallery/ (never root seeds like lighthouse.png).
+ */
+function gallery_maybe_unlink_file(array $old): void {
+    if (gallery_item_is_pinned($old)) {
+        return;
+    }
+    $url = (string) ($old['url'] ?? '');
+    $oldFile = (string) ($old['file'] ?? '');
+    // Must be a gallery/ path with a safe filename.
+    if ($url !== '' && !str_starts_with($url, 'gallery/')) {
+        return;
+    }
+    if ($oldFile === '' || !preg_match('/^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp)$/', $oldFile)) {
+        return;
+    }
+    if (str_contains($oldFile, '..') || str_contains($oldFile, '/')) {
+        return;
+    }
+    $oldPath = GALLERY_DIR . '/' . $oldFile;
+    if (is_file($oldPath)) {
+        @unlink($oldPath);
+    }
+}
+
+/**
  * Persist a successful generation into the public community gallery.
- * No email is stored. Keeps the newest GALLERY_MAX_ITEMS entries.
+ * No email is stored. Optional public display name ($by). Keeps newest + pinned seeds.
  * Returns public relative paths or null on failure.
  */
-function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null): ?array {
+function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null, string $by = 'anonymous'): ?array {
     if (!is_dir(GALLERY_DIR)) {
         if (!@mkdir(GALLERY_DIR, 0775, true) && !is_dir(GALLERY_DIR)) {
             error_log('gpt-image try: cannot create gallery dir');
@@ -484,11 +655,14 @@ function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null): ?
     }
     @chmod($path, 0664);
 
+    $by = sanitize_display_name($by);
+
     $entry = [
         'id' => $id,
         'file' => $filename,
         'url' => 'gallery/' . $filename,
         'prompt' => mb_substr($prompt, 0, 160),
+        'by' => $by,
         'ts' => time(),
         'model' => 'gpt-image-2',
         'quality' => 'medium',
@@ -511,11 +685,9 @@ function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null): ?
             $data = ['items' => []];
         }
         array_unshift($data['items'], $entry);
-        $toRemove = [];
-        if (count($data['items']) > GALLERY_MAX_ITEMS) {
-            $toRemove = array_slice($data['items'], GALLERY_MAX_ITEMS);
-            $data['items'] = array_slice($data['items'], 0, GALLERY_MAX_ITEMS);
-        }
+        $data['items'] = ensure_gallery_seeds($data['items']);
+        [$kept, $toRemove] = prune_gallery_items($data['items'], GALLERY_MAX_ITEMS);
+        $data['items'] = $kept;
         $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         if ($json !== false) {
             ftruncate($fp, 0);
@@ -527,12 +699,8 @@ function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null): ?
         fclose($fp);
 
         foreach ($toRemove as $old) {
-            $oldFile = $old['file'] ?? '';
-            if (is_string($oldFile) && preg_match('/^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp)$/', $oldFile)) {
-                $oldPath = GALLERY_DIR . '/' . $oldFile;
-                if (is_file($oldPath)) {
-                    @unlink($oldPath);
-                }
+            if (is_array($old)) {
+                gallery_maybe_unlink_file($old);
             }
         }
     } catch (Throwable $e) {
@@ -564,13 +732,16 @@ function notify_admin_new_image(array $env, array $info): void {
         $toEmail = 'jacob@stephens.page';
     }
 
-    $userEmail = htmlspecialchars((string) ($info['email'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $rawEmail  = (string) ($info['email'] ?? '');
+    $userEmail = htmlspecialchars($rawEmail !== '' ? $rawEmail : '(invite · no email)', ENT_QUOTES, 'UTF-8');
+    $byName    = htmlspecialchars((string) ($info['by'] ?? 'anonymous'), ENT_QUOTES, 'UTF-8');
     $prompt    = htmlspecialchars((string) ($info['prompt'] ?? ''), ENT_QUOTES, 'UTF-8');
     $costLine  = htmlspecialchars((string) ($info['cost_line'] ?? ''), ENT_QUOTES, 'UTF-8');
     $latency   = (int) ($info['latency_ms'] ?? 0);
     $gallery   = is_array($info['gallery'] ?? null) ? $info['gallery'] : null;
     $spend     = is_array($info['spend'] ?? null) ? $info['spend'] : null;
     $b64       = (string) ($info['b64'] ?? '');
+    $inviteTag = !empty($info['invite']) ? ' · invite' : '';
 
     $galleryUrl = '';
     if ($gallery && !empty($gallery['url']) && is_string($gallery['url'])) {
@@ -588,9 +759,14 @@ function notify_admin_new_image(array $env, array $info): void {
             . ' est. (' . (int) ($spend['image_count'] ?? 0) . ' images)</p>';
     }
 
+    $emailHtml = $rawEmail !== ''
+        ? '<p style="margin:0 0 8px"><strong>User email:</strong> <a href="mailto:' . htmlspecialchars($rawEmail, ENT_QUOTES, 'UTF-8') . '">' . $userEmail . '</a></p>'
+        : '<p style="margin:0 0 8px"><strong>User email:</strong> ' . $userEmail . '</p>';
+
     $html = '<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#181512">'
-        . '<h2 style="color:#0e0f12;margin:0 0 12px">New gpt-image live try</h2>'
-        . '<p style="margin:0 0 8px"><strong>User email:</strong> <a href="mailto:' . $userEmail . '">' . $userEmail . '</a></p>'
+        . '<h2 style="color:#0e0f12;margin:0 0 12px">New gpt-image live try' . htmlspecialchars($inviteTag, ENT_QUOTES, 'UTF-8') . '</h2>'
+        . '<p style="margin:0 0 8px"><strong>Display name:</strong> ' . $byName . '</p>'
+        . $emailHtml
         . '<p style="margin:0 0 8px"><strong>Prompt:</strong></p>'
         . '<p style="margin:0 0 12px;white-space:pre-wrap;background:#f4f1ea;padding:10px 12px;border-radius:6px">' . $prompt . '</p>'
         . '<p style="margin:0 0 8px"><strong>Cost:</strong> ' . ($costLine !== '' ? $costLine : 'n/a') . '</p>'
@@ -601,8 +777,9 @@ function notify_admin_new_image(array $env, array $info): void {
         . ' · <a href="https://stephens.page/gpt-image/#try">Live try</a></p>'
         . '</div>';
 
-    $text = "New gpt-image live try\n"
-        . "User: " . ($info['email'] ?? '') . "\n"
+    $text = "New gpt-image live try{$inviteTag}\n"
+        . "By: " . ($info['by'] ?? 'anonymous') . "\n"
+        . "User: " . ($rawEmail !== '' ? $rawEmail : '(invite · no email)') . "\n"
         . "Prompt: " . ($info['prompt'] ?? '') . "\n"
         . "Cost: " . ($info['cost_line'] ?? '') . "\n"
         . ($galleryUrl !== '' ? "Gallery: {$galleryUrl}\n" : '')
@@ -611,11 +788,13 @@ function notify_admin_new_image(array $env, array $info): void {
     $payload = [
         'from'     => $fromName . ' <' . $fromEmail . '>',
         'to'       => [$toEmail],
-        'reply_to' => (string) ($info['email'] ?? $toEmail),
-        'subject'  => 'gpt-image try: ' . mb_substr((string) ($info['prompt'] ?? 'new image'), 0, 60),
+        'subject'  => 'gpt-image try' . $inviteTag . ': ' . mb_substr((string) ($info['prompt'] ?? 'new image'), 0, 60),
         'html'     => $html,
         'text'     => $text,
     ];
+    if ($rawEmail !== '' && filter_var($rawEmail, FILTER_VALIDATE_EMAIL)) {
+        $payload['reply_to'] = $rawEmail;
+    }
 
     // Attach the PNG when base64 looks valid (cap ~4MB attachment raw b64).
     if ($b64 !== '' && strlen($b64) < 6_000_000 && preg_match('/^[A-Za-z0-9+\/]+=*$/', $b64)) {
@@ -751,27 +930,41 @@ if (post_string('website_url', 200) !== '') {
 
 $emailRaw = post_string('email', MAX_EMAIL + 32);
 $promptRaw = post_string('prompt', MAX_PROMPT + 64);
+$nameRaw = post_string('name', MAX_NAME + 32);
 $tsToken = sanitize_turnstile(post_string('cf-turnstile-response', MAX_TURNSTILE + 32));
+$invitePosted = sanitize_invite(post_string('invite', 128));
+$inviteExpected = trim((string) ($env['GPT_IMAGE_INVITE_TOKEN'] ?? ''));
+$isInvite = invite_ok($invitePosted, $inviteExpected);
 
 $email = sanitize_email($emailRaw);
+$displayName = sanitize_display_name($nameRaw);
 [$prompt, $promptErr] = sanitize_prompt($promptRaw);
 
 // Log only sanitized values (never raw POST).
 $baseEvent = [
     'event' => 'try',
     'ip' => $ip,
+    'invite' => $isInvite,
+    'by' => $displayName,
     'email' => $email !== '' ? $email : mb_substr(preg_replace('/[^\x20-\x7E]/', '', $emailRaw) ?? '', 0, 64),
     'prompt' => $prompt !== '' ? $prompt : mb_substr(preg_replace('/[^\x20-\x7E]/', '', $promptRaw) ?? '', 0, 80),
     'prompt_len' => mb_strlen($prompt !== '' ? $prompt : $promptRaw),
 ];
 
-if ($email === '' && ($prompt === '' && ($promptErr === null || $promptErr === 'empty'))) {
-    log_trial($baseEvent + ['ok' => false, 'error' => 'missing_fields']);
-    respond(false, 'Enter an image description and your email to continue.');
-}
-if ($email === '') {
-    log_trial($baseEvent + ['ok' => false, 'error' => 'bad_email']);
-    respond(false, 'Please enter a valid email address.');
+// Email required unless a valid invite link is used.
+if (!$isInvite) {
+    if ($email === '' && ($prompt === '' && ($promptErr === null || $promptErr === 'empty'))) {
+        log_trial($baseEvent + ['ok' => false, 'error' => 'missing_fields']);
+        respond(false, 'Enter an image description and your email to continue.');
+    }
+    if ($email === '') {
+        log_trial($baseEvent + ['ok' => false, 'error' => 'bad_email']);
+        respond(false, 'Please enter a valid email address.');
+    }
+} elseif ($emailRaw !== '' && $email === '') {
+    // Invite user typed something that is not a valid email.
+    log_trial($baseEvent + ['ok' => false, 'error' => 'bad_email_optional']);
+    respond(false, 'That email does not look valid. Leave it blank to skip the newsletter, or enter a real address.');
 }
 if ($promptErr === 'too_short') {
     log_trial($baseEvent + ['ok' => false, 'error' => 'prompt_too_short']);
@@ -795,10 +988,14 @@ if (count($ipHits) >= IP_LIMIT) {
     log_trial($baseEvent + ['ok' => false, 'error' => 'rate_ip']);
     respond(false, 'Too many tries from this connection. Please wait an hour and try again.', [], 429);
 }
-[$emFile, $emHits] = rate_hits('email:' . $email, EMAIL_WINDOW);
-if (count($emHits) >= EMAIL_LIMIT) {
-    log_trial($baseEvent + ['ok' => false, 'error' => 'rate_email']);
-    respond(false, 'This email has reached the free trial limit for today (3 images). Try again tomorrow.', [], 429);
+$emFile = '';
+$emHits = [];
+if ($email !== '') {
+    [$emFile, $emHits] = rate_hits('email:' . $email, EMAIL_WINDOW);
+    if (count($emHits) >= EMAIL_LIMIT) {
+        log_trial($baseEvent + ['ok' => false, 'error' => 'rate_email']);
+        respond(false, 'This email has reached the free trial limit for today (3 images). Try again tomorrow.', [], 429);
+    }
 }
 
 $tsSecret = $env['TURNSTILE_SECRET'] ?? '';
@@ -819,30 +1016,44 @@ if (!turnstile_ok($tsSecret, $tsToken, $tsIp)) {
 
 // Record attempt against rate limits only after Turnstile (blocks pure spam burn).
 rate_record($ipFile, $ipHits, $now);
-rate_record($emFile, $emHits, $now);
+if ($email !== '' && $emFile !== '') {
+    rate_record($emFile, $emHits, $now);
+}
 
-$nlUrl = $env['NEWSLETTER_ADMIN_URL'] ?? 'http://127.0.0.1:3462';
-$nlTok = $env['NEWSLETTER_ADMIN_TOKEN'] ?? '';
 $already = false;
-if ($nlTok === '') {
-    log_trial($baseEvent + ['ok' => false, 'error' => 'config_newsletter']);
-    respond(false, 'Newsletter is not configured yet. Please email jacob@stephens.page.', [], 500);
-}
-[$nlStatus, $nlBody, $nlErr] = newsletter_add($nlUrl, $nlTok, $email);
-if ($nlStatus < 200 || $nlStatus >= 300 || !($nlBody['ok'] ?? false)) {
-    error_log('gpt-image try: newsletter add failed status=' . $nlStatus . ' err=' . $nlErr . ' body=' . substr(json_encode($nlBody), 0, 200));
-    log_trial($baseEvent + ['ok' => false, 'error' => 'newsletter_fail', 'http' => $nlStatus]);
-    respond(false, 'Could not complete newsletter signup. Please try again in a moment.', [], 502);
-}
-$msg = (string) ($nlBody['message'] ?? '');
-if (stripos($msg, 'already') !== false) {
-    $already = true;
+$subscribed = false;
+// Newsletter: required for anonymous; optional when invite + email provided; skip if invite with no email.
+if ($email !== '') {
+    $nlUrl = $env['NEWSLETTER_ADMIN_URL'] ?? 'http://127.0.0.1:3462';
+    $nlTok = $env['NEWSLETTER_ADMIN_TOKEN'] ?? '';
+    if ($nlTok === '') {
+        log_trial($baseEvent + ['ok' => false, 'error' => 'config_newsletter']);
+        respond(false, 'Newsletter is not configured yet. Please email jacob@stephens.page.', [], 500);
+    }
+    [$nlStatus, $nlBody, $nlErr] = newsletter_add($nlUrl, $nlTok, $email);
+    if ($nlStatus < 200 || $nlStatus >= 300 || !($nlBody['ok'] ?? false)) {
+        error_log('gpt-image try: newsletter add failed status=' . $nlStatus . ' err=' . $nlErr . ' body=' . substr(json_encode($nlBody), 0, 200));
+        log_trial($baseEvent + ['ok' => false, 'error' => 'newsletter_fail', 'http' => $nlStatus]);
+        respond(false, 'Could not complete newsletter signup. Please try again in a moment.', [], 502);
+    }
+    $subscribed = true;
+    $msg = (string) ($nlBody['message'] ?? '');
+    if (stripos($msg, 'already') !== false) {
+        $already = true;
+    }
+} elseif (!$isInvite) {
+    // Should be unreachable (email required above); belt-and-suspenders.
+    log_trial($baseEvent + ['ok' => false, 'error' => 'bad_email']);
+    respond(false, 'Please enter a valid email address.');
 }
 
 $apiKey = $env['OPENAI_API_KEY'] ?? '';
 if ($apiKey === '') {
-    log_trial($baseEvent + ['ok' => false, 'error' => 'config_openai', 'subscribed' => true]);
-    respond(false, 'Image generation is not configured yet. Your newsletter signup was recorded - thank you.', [], 500);
+    log_trial($baseEvent + ['ok' => false, 'error' => 'config_openai', 'subscribed' => $subscribed]);
+    $cfgMsg = $subscribed
+        ? 'Image generation is not configured yet. Your newsletter signup was recorded - thank you.'
+        : 'Image generation is not configured yet. Please email jacob@stephens.page.';
+    respond(false, $cfgMsg, [], 500);
 }
 
 [$oStatus, $oBody, $oErr] = openai_generate($apiKey, $prompt);
@@ -859,19 +1070,22 @@ if ($oStatus < 200 || $oStatus >= 300 || !is_string($b64) || $b64 === '') {
         'error' => 'openai_fail',
         'http' => $oStatus,
         'latency_ms' => $latencyMs,
-        'subscribed' => true,
+        'subscribed' => $subscribed,
         'already_subscribed' => $already,
         'cost_usd' => $cost['cost_usd'],
         'input_tokens' => $cost['input_tokens'],
         'output_tokens' => $cost['output_tokens'],
     ]);
-    respond(false, 'Image generation failed. Your newsletter signup was recorded - please try a different prompt later.', [], 502);
+    $failMsg = $subscribed
+        ? 'Image generation failed. Your newsletter signup was recorded - please try a different prompt later.'
+        : 'Image generation failed. Please try a different prompt later.';
+    respond(false, $failMsg, [], 502);
 }
 
 log_trial($baseEvent + [
     'ok' => true,
     'latency_ms' => $latencyMs,
-    'subscribed' => true,
+    'subscribed' => $subscribed,
     'already_subscribed' => $already,
     'model' => 'gpt-image-2',
     'quality' => 'medium',
@@ -883,9 +1097,15 @@ log_trial($baseEvent + [
     'image_output' => $cost['image_output'],
 ]);
 
-$subNote = $already
-    ? "You're already on the list - thanks for reading."
-    : "You're on Jacob Stephens' blog newsletter (unsubscribe anytime from any email).";
+if ($subscribed) {
+    $subNote = $already
+        ? "You're already on the list - thanks for reading."
+        : "You're on Jacob Stephens' blog newsletter (unsubscribe anytime from any email).";
+} elseif ($isInvite) {
+    $subNote = 'Invite link trial - newsletter skipped.';
+} else {
+    $subNote = '';
+}
 
 $costLine = $cost['cost_line'] !== ''
     ? $cost['cost_line'] . " · {$latencySec}s"
@@ -900,14 +1120,20 @@ if (!preg_match('/^[A-Za-z0-9+\/]+=*$/', $b64) || strlen($b64) < 64) {
 // Running public spend tally (all successful live-tries; not reduced when gallery prunes).
 $spend = record_spend(isset($cost['cost_usd']) ? (float) $cost['cost_usd'] : null);
 
-// Public community gallery (no email). Best-effort; generation still succeeds if this fails.
-$gallery = save_to_gallery($b64, $prompt, isset($cost['cost_usd']) ? (float) $cost['cost_usd'] : null);
+// Public community gallery (no email; optional display name). Best-effort.
+$gallery = save_to_gallery(
+    $b64,
+    $prompt,
+    isset($cost['cost_usd']) ? (float) $cost['cost_usd'] : null,
+    $displayName
+);
 if ($gallery) {
     log_trial(array_merge($baseEvent, [
         'event' => 'gallery',
         'ok' => true,
         'gallery_id' => $gallery['id'],
         'gallery_file' => $gallery['file'],
+        'by' => $gallery['by'] ?? $displayName,
         'cost_usd' => $cost['cost_usd'],
     ]));
 }
@@ -915,6 +1141,8 @@ if ($gallery) {
 // Notify jacob@stephens.page (best-effort; does not fail the try).
 notify_admin_new_image($env, [
     'email' => $email,
+    'invite' => $isInvite,
+    'by' => $displayName,
     'prompt' => $prompt,
     'cost_usd' => $cost['cost_usd'] ?? null,
     'cost_line' => $costLine,
@@ -929,6 +1157,7 @@ respond(true, "Wrote trial.png · {$costLine} · {$subNote}", [
     'already_subscribed' => $already,
     'latency_ms' => $latencyMs,
     'output' => 'trial.png',
+    'by' => $displayName,
     'cost_usd' => $cost['cost_usd'],
     'cost_line' => $costLine,
     'input_tokens' => $cost['input_tokens'],
