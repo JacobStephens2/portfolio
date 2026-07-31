@@ -424,7 +424,7 @@
   <main class="wrap">
     <section class="hero" style="border-top:none">
       <h1><span class="prompt">$</span> gpt-image</h1>
-      <p class="tagline">Generate and edit images from the terminal with OpenAI's image models. One Go binary (v0.2.1) for a single prompt, a photo edit, or a JSON batch - no Python.</p>
+      <p class="tagline">Generate and edit images from the terminal with OpenAI's image models. One Go binary (v0.2.1) for a single prompt, a photo edit, or a JSON batch.</p>
       <div class="cta" style="margin-bottom: 8px">
         <a class="btn btn-primary" href="#try">Try in the browser</a>
         <a class="btn btn-ghost" href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.2.1">Download v0.2.1</a>
@@ -666,7 +666,6 @@
   https://github.com/JacobStephens2/gpt-image/releases/latest/download/gpt-image-linux-amd64
 chmod +x gpt-image
 sudo mv gpt-image /usr/local/bin/gpt-image
-export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"
 gpt-image version</pre>
         <button class="copy-btn" data-copy="install-cmd">Copy</button>
       </div>
@@ -685,9 +684,24 @@ gpt-image version</pre>
         <pre class="block" id="install-go-cmd">go install github.com/JacobStephens2/gpt-image/cmd/gpt-image@v0.2.1</pre>
         <button class="copy-btn" data-copy="install-go-cmd">Copy</button>
       </div>
+      <p class="lead" style="margin:12px 0 18px">
+        Or from a clone: <span class="mono">go build -o gpt-image ./cmd/gpt-image</span>
+        (<span class="mono">go install</span> puts the binary in <span class="mono">$(go env GOPATH)/bin</span> - put that on your <span class="mono">PATH</span>).
+      </p>
+
+      <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">API key (required)</h3>
+      <p class="lead" style="margin:0 0 10px">
+        Every generate, edit, and batch call needs an OpenAI API key with access to image models.
+        Create one in the <a href="https://platform.openai.com/api-keys">OpenAI dashboard</a>, then either export it in your shell or pass a file outside the repo.
+        Without a key the CLI exits with <span class="mono">missing API key</span>.
+      </p>
+      <div class="copy-row">
+        <pre class="block" id="install-key-cmd">export OPENAI_API_KEY="&lt;your_openai_api_key&gt;"
+# or: gpt-image generate "…" --api-key-file ~/path/to/key.txt</pre>
+        <button class="copy-btn" data-copy="install-key-cmd">Copy</button>
+      </div>
       <p class="lead" style="margin:12px 0 0">
-        Or from a clone: <span class="mono">go build -o gpt-image ./cmd/gpt-image</span>.
-        Keep the key outside the repo and pass <span class="mono">--api-key-file ~/path/to/key.txt</span> if you prefer.
+        Prefer a file on disk if you do not want the key in shell history.
         Long high-quality runs print stderr heartbeats; see <span class="mono">--timeout</span> / <span class="mono">--quiet</span>.
       </p>
     </section>
