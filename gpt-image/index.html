@@ -142,13 +142,29 @@
     .try-body { padding: 16px 18px 18px; text-align: left; }
     .try-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-size: 13.5px; line-height: 1.55; }
     .try-prompt-input {
-      flex: 1 1 220px; min-width: 0;
-      background: transparent; border: none; border-bottom: 1px dashed var(--border);
-      color: var(--green); font: inherit; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      padding: 2px 4px; outline: none;
+      display: block;
+      width: 100%;
+      min-height: 5.5em;
+      max-height: 40vh;
+      resize: vertical;
+      box-sizing: border-box;
+      margin: 4px 0 2px;
+      background: #0b0c0f;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--green);
+      font: inherit;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13.5px;
+      line-height: 1.5;
+      padding: 10px 12px;
+      outline: none;
+      white-space: pre-wrap;
+      overflow-y: auto;
     }
-    .try-prompt-input:focus { border-bottom-color: var(--accent); }
-    .try-prompt-input::placeholder { color: #4a5160; }
+    .try-prompt-input:focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .try-prompt-input::placeholder { color: #4a5160; white-space: pre-wrap; }
+    .try-prompt-wrap { width: 100%; margin: 2px 0 4px; }
     .try-flags { color: var(--muted); font-size: 12.5px; margin: 6px 0 12px; padding-left: 1.1em; }
     .try-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
     .try-run {
@@ -478,7 +494,7 @@ gpt-image 0.3.0 (default model: gpt-image-2)</pre>
 
     <section id="try">
       <h2>Try it live</h2>
-      <p class="lead" id="try-lead">Type a prompt the way you would in the CLI. Generating an image requires joining Jacob Stephens' blog newsletter (Cloudflare Turnstile; free trial limits apply).</p>
+      <p class="lead" id="try-lead">Type or paste a multi-paragraph prompt the way you would in the CLI. Generating an image requires joining Jacob Stephens' blog newsletter (Cloudflare Turnstile; free trial limits apply).</p>
 
       <div class="try-invite-nl" id="try-invite-nl" hidden>
         <p class="consent">
@@ -514,22 +530,24 @@ gpt-image 0.3.0 (default model: gpt-image-2)</pre>
             <span class="c-muted">$</span>
             <span>gpt-image generate</span>
             <span class="c-green">"</span>
-            <input
-              type="text"
+          </div>
+          <div class="try-prompt-wrap">
+            <textarea
               id="try-prompt"
               class="try-prompt-input"
-              maxlength="500"
-              placeholder="a red paper boat on still water at dusk"
+              maxlength="2000"
+              rows="4"
+              placeholder="a red paper boat on still water at dusk&#10;&#10;Paste multi-paragraph prompts here — line breaks are kept."
               autocomplete="off"
               spellcheck="false"
-              aria-label="Image prompt"
-            >
-            <span class="c-green">"</span>
+              aria-label="Image prompt (multi-line; Ctrl/Cmd+Enter to generate)"
+            ></textarea>
           </div>
+          <div class="try-line mono"><span class="c-green">"</span></div>
           <div class="try-flags mono">\ --output trial.png --quality medium --size 1024x1024</div>
           <div class="try-actions">
             <button type="button" class="try-run" id="try-open-gate">Generate</button>
-            <span class="mono" style="color:var(--muted);font-size:12px" id="try-hint">Enter runs · newsletter + Turnstile gate</span>
+            <span class="mono" style="color:var(--muted);font-size:12px" id="try-hint">Ctrl/Cmd+Enter runs · multi-line paste OK · newsletter + Turnstile gate</span>
           </div>
 
           <div class="try-gate" id="try-gate" aria-hidden="true">
@@ -1132,10 +1150,10 @@ gpt-image version</pre>
       if (isInvite) {
         if (tryLeadEl) {
           tryLeadEl.textContent =
-            'Type a prompt the way you would in the CLI. This invite link skips the newsletter requirement (Cloudflare Turnstile and free trial limits still apply).';
+            'Type or paste a multi-paragraph prompt the way you would in the CLI. This invite link skips the newsletter requirement (Cloudflare Turnstile and free trial limits still apply).';
         }
         if (tryHintEl) {
-          tryHintEl.textContent = 'Enter runs · Turnstile only · newsletter optional';
+          tryHintEl.textContent = 'Ctrl/Cmd+Enter runs · multi-line paste OK · Turnstile only · newsletter optional';
         }
         if (inviteNlEl) {
           inviteNlEl.hidden = false;
@@ -1148,7 +1166,7 @@ gpt-image version</pre>
 
       var widgetId = null;
       var busy = false;
-      var MAX_PROMPT = 500;
+      var MAX_PROMPT = 2000;
       var MIN_PROMPT = 3;
       var progressTick = null;
       var progressStarted = 0;
@@ -1180,12 +1198,20 @@ gpt-image version</pre>
 
       /** Client-side sanitize; server re-validates. */
       function sanitizePrompt(raw) {
+        // Keep paragraph breaks so multi-line pastes survive (server re-validates).
         var s = String(raw == null ? '' : raw)
           .replace(/\u0000/g, '')
+          .replace(/\r\n/g, '\n')
+          .replace(/\r/g, '\n')
+          // Drop C0 controls except newline (\n) and tab.
           .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-          .replace(/[\r\n\t]+/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim();
+          .replace(/\t/g, ' ');
+        // Collapse horizontal whitespace within lines; preserve newlines.
+        s = s.replace(/[^\S\n]+/g, ' ');
+        s = s.replace(/ *\n */g, '\n');
+        // Cap blank lines at one paragraph break.
+        s = s.replace(/\n{3,}/g, '\n\n');
+        s = s.trim();
         if (s.length > MAX_PROMPT) s = s.slice(0, MAX_PROMPT);
         return s;
       }
@@ -1502,8 +1528,9 @@ gpt-image version</pre>
       openBtn.addEventListener('click', openGate);
       if (cancelBtn) cancelBtn.addEventListener('click', closeGate);
       if (submitBtn) submitBtn.addEventListener('click', submitTry);
+      // Multi-line textarea: plain Enter inserts a newline; Ctrl/Cmd+Enter generates.
       promptEl.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
           e.preventDefault();
           openGate();
         }

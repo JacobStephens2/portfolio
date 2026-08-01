@@ -23,7 +23,7 @@ const SPEND_PATH = GALLERY_DIR . '/spend.json';
 /** Durable copy under /var/lib (same totals; public file is for the page). */
 const SPEND_PATH_LIB = '/var/lib/gpt-image/spend.json';
 const GALLERY_MAX_ITEMS = 48;
-const MAX_PROMPT = 500;
+const MAX_PROMPT = 2000;
 const MIN_PROMPT = 3;
 const MAX_EMAIL = 254;
 const MAX_NAME = 40;
@@ -118,11 +118,16 @@ function sanitize_display_name(string $name): string {
  */
 function sanitize_prompt(string $prompt): array {
     $prompt = str_replace("\0", '', $prompt);
-    // Drop C0/C1 controls except tab/newline; map newlines/tabs to spaces.
+    // Normalize newlines; keep paragraph breaks for multi-line pastes.
+    $prompt = str_replace(["\r\n", "\r"], "\n", $prompt);
+    // Drop C0 controls except newline and tab.
     $prompt = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $prompt) ?? '';
-    $prompt = str_replace(["\r", "\n", "\t"], ' ', $prompt);
-    // Collapse runs of whitespace.
-    $prompt = preg_replace('/\s+/u', ' ', $prompt) ?? '';
+    $prompt = str_replace("\t", ' ', $prompt);
+    // Collapse horizontal whitespace only; preserve newlines.
+    $prompt = preg_replace('/[^\S\n]+/u', ' ', $prompt) ?? '';
+    $prompt = preg_replace('/ *\n */u', "\n", $prompt) ?? '';
+    // Cap runs of blank lines at a single paragraph break.
+    $prompt = preg_replace('/\n{3,}/u', "\n\n", $prompt) ?? '';
     $prompt = trim($prompt);
     if ($prompt === '') {
         return ['', 'empty'];
