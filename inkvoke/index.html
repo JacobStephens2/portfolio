@@ -454,12 +454,12 @@
           id="hero-image-frame"
           role="button"
           tabindex="0"
-          aria-label="Hero image slideshow. Click to cycle through the tool illustration and community images."
+          aria-label="Hero image slideshow. Click or use arrow keys to cycle through product history and community images."
         >
           <div class="term-bar">
             <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
             <span class="term-title mono" id="hero-image-title">tool.png · inkvoke as a product (Go)</span>
-            <span class="term-hint mono" id="hero-image-hint">click to swap · 1 / 2</span>
+            <span class="term-hint mono" id="hero-image-hint">click or ← → · 1 / 3</span>
           </div>
           <img
             id="hero-image"
@@ -1213,7 +1213,7 @@ sudo inkvoke --uninstall</pre>
         logEl.scrollTop = logEl.scrollHeight;
       }
 
-      /** Client-side sanitize; server re-validates. */
+      /** Client-side sanitize; server re-validates (never trust this alone). */
       function sanitizePrompt(raw) {
         // Keep paragraph breaks so multi-line pastes survive (server re-validates).
         var s = String(raw == null ? '' : raw)
@@ -1222,6 +1222,10 @@ sudo inkvoke --uninstall</pre>
           .replace(/\r/g, '\n')
           // Drop C0 controls except newline (\n) and tab.
           .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+          // Unicode line/paragraph separators (can break logs / inject structure).
+          .replace(/[\u2028\u2029]/g, '\n')
+          // Bidi / format controls (U+200B–U+200F, U+202A–U+202E, U+2060–U+206F, BOM, etc.).
+          .replace(/[\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]/g, '')
           .replace(/\t/g, ' ');
         // Collapse horizontal whitespace within lines; preserve newlines.
         s = s.replace(/[^\S\n]+/g, ' ');
@@ -1234,22 +1238,33 @@ sudo inkvoke --uninstall</pre>
       }
 
       function sanitizeEmail(raw) {
-        return String(raw == null ? '' : raw)
+        var s = String(raw == null ? '' : raw)
           .replace(/\u0000/g, '')
           .replace(/[\r\n\t\s]+/g, '')
           .toLowerCase()
           .trim()
           .slice(0, 254);
+        // Conservative shape check; server re-validates with FILTER_VALIDATE_EMAIL.
+        if (s !== '' && !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i.test(s)) {
+          return '';
+        }
+        return s;
       }
 
       function sanitizeName(raw) {
         var s = String(raw == null ? '' : raw)
           .replace(/\u0000/g, '')
           .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+          .replace(/[\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]/g, '')
+          .replace(/[<>&"'`]/g, '')
           .replace(/[\r\n\t]+/g, ' ')
           .replace(/\s+/g, ' ')
           .trim()
           .slice(0, 40);
+        // Require at least one letter or number (matches server).
+        if (s !== '' && !/[\p{L}\p{N}]/u.test(s)) {
+          return '';
+        }
         return s;
       }
 
@@ -1673,7 +1688,7 @@ sudo inkvoke --uninstall</pre>
         if (!slides.length) return;
         var slide = slides[((i % slides.length) + slides.length) % slides.length];
         index = ((i % slides.length) + slides.length) % slides.length;
-        if (hint) hint.textContent = 'click to swap · ' + (index + 1) + ' / ' + slides.length;
+        if (hint) hint.textContent = 'click or ← → · ' + (index + 1) + ' / ' + slides.length;
         if (title) title.textContent = slide.title;
         if (cap) {
           cap.innerHTML = slide.captionHtml;
@@ -1682,7 +1697,8 @@ sudo inkvoke --uninstall</pre>
         frame.hidden = false;
         frame.setAttribute(
           'aria-label',
-          'Hero image ' + (index + 1) + ' of ' + slides.length + '. ' + slide.alt + ' Click or press Enter to switch.'
+          'Hero image ' + (index + 1) + ' of ' + slides.length + '. ' + slide.alt +
+            ' Click, press Enter, or use Left and Right arrow keys to switch.'
         );
 
         function setSrc() {
@@ -1704,6 +1720,11 @@ sudo inkvoke --uninstall</pre>
       function nextSlide() {
         if (swapping || slides.length < 2) return;
         applySlide(index + 1, true);
+      }
+
+      function prevSlide() {
+        if (swapping || slides.length < 2) return;
+        applySlide(index - 1, true);
       }
 
       function rebuildSlides(items, opts) {
@@ -1755,11 +1776,29 @@ sudo inkvoke --uninstall</pre>
         rebuildSlides(items || [], opts || {});
       };
 
-      frame.addEventListener('click', nextSlide);
+      // Click advances; keep focus so Left/Right arrows work on this element only.
+      frame.addEventListener('click', function () {
+        try {
+          frame.focus({ preventScroll: true });
+        } catch (err) {
+          try { frame.focus(); } catch (err2) {}
+        }
+        nextSlide();
+      });
       frame.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           nextSlide();
+          return;
+        }
+        if (e.key === 'ArrowRight' || e.key === 'Right') {
+          e.preventDefault();
+          nextSlide();
+          return;
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'Left') {
+          e.preventDefault();
+          prevSlide();
         }
       });
 

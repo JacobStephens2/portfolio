@@ -95,6 +95,9 @@ function sanitize_email(string $email): string {
 function sanitize_display_name(string $name): string {
     $name = str_replace("\0", '', $name);
     $name = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $name) ?? '';
+    $name = preg_replace('/[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{206F}\x{FEFF}]/u', '', $name) ?? '';
+    // Never allow markup / attribute breakers in a public attribution field.
+    $name = str_replace(['<', '>', '&', '"', "'", '`'], '', $name);
     $name = str_replace(["\r", "\n", "\t"], ' ', $name);
     $name = preg_replace('/\s+/u', ' ', $name) ?? '';
     $name = trim($name);
@@ -120,8 +123,12 @@ function sanitize_prompt(string $prompt): array {
     $prompt = str_replace("\0", '', $prompt);
     // Normalize newlines; keep paragraph breaks for multi-line pastes.
     $prompt = str_replace(["\r\n", "\r"], "\n", $prompt);
+    // Unicode line/paragraph separators → newline (avoids log / structure injection).
+    $prompt = str_replace(["\u{2028}", "\u{2029}"], "\n", $prompt);
     // Drop C0 controls except newline and tab.
     $prompt = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $prompt) ?? '';
+    // Bidi / zero-width / format controls (homoglyph smuggling, spoofed UI text).
+    $prompt = preg_replace('/[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{206F}\x{FEFF}]/u', '', $prompt) ?? '';
     $prompt = str_replace("\t", ' ', $prompt);
     // Collapse horizontal whitespace only; preserve newlines.
     $prompt = preg_replace('/[^\S\n]+/u', ' ', $prompt) ?? '';
@@ -661,12 +668,16 @@ function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null, st
     @chmod($path, 0664);
 
     $by = sanitize_display_name($by);
+    // Prompt was already sanitized at the gate; re-bound for public manifest (plain text only).
+    $publicPrompt = mb_substr($prompt, 0, 160);
+    $publicPrompt = str_replace(['<', '>', '`'], '', $publicPrompt);
+    $publicPrompt = trim($publicPrompt);
 
     $entry = [
         'id' => $id,
         'file' => $filename,
         'url' => 'gallery/' . $filename,
-        'prompt' => mb_substr($prompt, 0, 160),
+        'prompt' => $publicPrompt,
         'by' => $by,
         'ts' => time(),
         'model' => 'gpt-image-2',
