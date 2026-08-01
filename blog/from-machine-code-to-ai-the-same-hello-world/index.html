@@ -17,14 +17,14 @@
     <title>From Machine Code to AI: the Same Hello World | Jacob Stephens</title>
     <link rel="canonical" href="https://stephens.page/blog/from-machine-code-to-ai-the-same-hello-world/">
     <link rel="alternate" type="text/markdown" href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md" title="Agent-oriented version (markdown)">
-    <meta name="description" content="One Hello World climbed from machine code through Assembly, C, C++, Rust, Go, C#, Python, JavaScript, and AI - each with a real Run Program button that executes allowlisted code on stephens.page.">
+    <meta name="description" content="Twelve Hello Worlds from ELF binary through Assembly, C/C++, Rust, Go, C#, Python, JS, AI engineering, and vibe coding - each with a real Run Program button on stephens.page.">
     <meta property="og:title" content="From Machine Code to AI: the Same Hello World">
-    <meta property="og:description" content="Click Run Program on ten layers of the same Hello World. The server executes allowlisted builds - not arbitrary code.">
+    <meta property="og:description" content="Click Run Program on twelve layers of the same Hello World. Allowlisted builds on the server, syntax-highlighted in the browser.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://stephens.page/blog/from-machine-code-to-ai-the-same-hello-world/">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="From Machine Code to AI: the Same Hello World">
-    <meta name="twitter:description" content="Ten Hello Worlds, real server-side Run Program buttons, from bytes to prompts.">
+    <meta name="twitter:description" content="Twelve Hello Worlds, real server-side Run Program buttons, from ELF bytes to vibe coding.">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -38,6 +38,12 @@
             --ink: #181512; --brand: #9b4d24; --brand-ink: #ffffff; --muted: #625a52;
             --surface: #ffffff; --soft: #efe9df; --rule: #d6d1c9; --code-bg: #efe9df; --bar-bg: #ece6dc;
             --ok: #1b5e20; --bad: #8b1a1a; --term: #1a1814; --term-fg: #e8e2d6;
+            --syntax-comment: #6d655c; --syntax-keyword: #9b4d24; --syntax-type: #0b5f4a;
+            --syntax-function: #1f4e79; --syntax-literal: #6b3fa0; --syntax-string: #2f6b3a;
+        }
+        html[data-theme="dark"] {
+            --syntax-comment: #9a9286; --syntax-keyword: #e0a070; --syntax-type: #7dcea0;
+            --syntax-function: #85c1e9; --syntax-literal: #c39bd3; --syntax-string: #82e0aa;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Source Sans 3', Arial, Helvetica, sans-serif; background: var(--surface); color: var(--ink); line-height: 1.7; min-height: 100vh; }
@@ -55,8 +61,20 @@
         ol, ul { margin-bottom: 1rem; padding-left: 1.4rem; }
         ol li, ul li { margin-bottom: 0.4rem; }
         code { background: var(--code-bg); padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.92em; }
-        pre { background: var(--code-bg); padding: 1rem 1.1rem; border-radius: 6px; overflow-x: auto; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.82rem; line-height: 1.5; margin-bottom: 0; }
-        pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+        pre { background: var(--code-bg); padding: 1rem 1.1rem; border-radius: 6px; overflow-x: auto; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.82rem; line-height: 1.5; margin-bottom: 0; max-height: 22rem; }
+        pre code { background: none; padding: 0; color: inherit; font-size: inherit; display: block; }
+        /* highlight.js token colors (theme tokens; same approach as the-animation-is-a-replay) */
+        .ladder code.hljs { background: transparent; }
+        .ladder .hljs-comment, .ladder .hljs-quote { color: var(--syntax-comment); font-style: italic; }
+        .ladder .hljs-keyword, .ladder .hljs-selector-tag, .ladder .hljs-meta .hljs-keyword { color: var(--syntax-keyword); font-weight: 600; }
+        .ladder .hljs-type, .ladder .hljs-built_in, .ladder .hljs-title.class_ { color: var(--syntax-type); font-weight: 600; }
+        .ladder .hljs-title.function_, .ladder .hljs-title { color: var(--syntax-function); font-weight: 600; }
+        .ladder .hljs-literal, .ladder .hljs-number, .ladder .hljs-symbol, .ladder .hljs-bullet, .ladder .hljs-meta { color: var(--syntax-literal); }
+        .ladder .hljs-string, .ladder .hljs-doctag, .ladder .hljs-regexp { color: var(--syntax-string); }
+        .ladder .hljs-variable, .ladder .hljs-params, .ladder .hljs-property, .ladder .hljs-attr { color: var(--ink); }
+        .ladder .hljs-section, .ladder .hljs-name { color: var(--syntax-keyword); font-weight: 600; }
+        .ladder .hljs-emphasis { font-style: italic; }
+        .ladder .hljs-strong { font-weight: 700; }
         a { color: var(--brand); text-decoration: none; }
         a:hover { text-decoration: underline; text-underline-offset: 0.12em; }
         .fig { margin: 1.4rem 0 1.6rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); overflow: hidden; }
@@ -155,28 +173,30 @@
         <article class="note">
             <div class="eyebrow">Notes · Languages · Interactive</div>
             <h1 class="title">From Machine Code to AI: the Same Hello World</h1>
-            <p class="meta"><strong>August 1, 2026</strong> · ~1,100 words · 10 live Run Program rungs · reading this as an AI agent? <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a> is for you</p>
+            <p class="meta"><strong>August 1, 2026</strong> · ~1,200 words · 12 live Run Program rungs · reading this as an AI agent? <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a> is for you</p>
 
-            <p>Every layer of the stack can print <code>Hello, World!</code>. The point of this page is not the string - it is what each layer <em>hides</em>, and that the buttons below really run allowlisted programs on this host (Linux x86_64), not a fake terminal.</p>
+            <p>Every layer of the stack can print <code>Hello, World!</code>. The point of this page is not the string - it is what each layer <em>hides</em>, and that the buttons below really run allowlisted programs on this host (Linux x86_64), not a fake terminal. Source panels are syntax-highlighted in the browser with <a href="https://highlightjs.org/" rel="noopener">highlight.js 11.11.1</a> (same library family as <a href="/blog/the-animation-is-a-replay/">The Animation Is a Replay</a>), themed with this site's CSS tokens so light/dark still match.</p>
 
-            <p>I have been learning ARM64 Assembly on an Apple Silicon Mac in a private teach-skill workspace. Side by side with that practice, I wanted a public ladder: the same program from bytes to prompts, including C++ and C#, with a server that compiles and executes what you see. The Assembly here is <strong>x86_64 Linux GAS</strong> - the dialect this machine runs - not the macOS ARM64 sources from the private course. Naming that gap is part of the lesson.</p>
+            <p>I have been learning ARM64 Assembly on an Apple Silicon Mac in a private teach-skill workspace. Side by side with that practice, I wanted a public ladder: the same program from an opaque ELF binary up through prompts and vibe coding, including C++ and C#, with a server that compiles and executes what you see. The Assembly here is <strong>x86_64 Linux GAS</strong> - the dialect this machine runs - not the macOS ARM64 sources from the private course. Naming that gap is part of the lesson.</p>
 
             <p id="api-status" class="status-pill"><span class="status-dot" aria-hidden="true"></span><span class="status-text">Checking runner…</span></p>
 
             <h2>What each level hides</h2>
-            <p>Robert C. Martin has spent decades arguing that software history is a climb through successive languages and abstractions - and that craft still matters at every step. One framing of that arc shows up in his conversation with <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">Kent Dodds</a>. This ladder is abstraction order (how much of the machine you still name), not a pure release-year timeline. Lisp is older than C; Java sits between C and Go; history is messier than a blog figure.</p>
+            <p>Robert C. Martin has spent decades arguing that software history is a climb through successive languages and abstractions - and that craft still matters at every step. One framing of that arc shows up in his conversation with <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">Kent Dodds</a>. This ladder is abstraction order (how much of the machine you still name), not a pure release-year timeline. Lisp is older than C; Java sits between C and Go; "vibe coding" is newer than either.</p>
 
             <ul class="timeline">
-                <li><strong>Machine code</strong> - the bytes. The only language the CPU executes.</li>
+                <li><strong>Binary program</strong> - the ELF you ship. Opaque file bytes; no source language on this rung.</li>
+                <li><strong>Machine code</strong> - decoded instructions in <code>main</code> (what the CPU executes).</li>
                 <li><strong>Assembly</strong> - human names for those encodings and registers.</li>
                 <li><strong>C / C++</strong> - portable systems languages; compilers choose instructions.</li>
                 <li><strong>Rust / Go / C#</strong> - more runtime or safety machinery (ownership, GC, CLR/Mono).</li>
                 <li><strong>Python / JavaScript</strong> - VMs and JITs; you almost never name registers.</li>
-                <li><strong>AI engineering</strong> - intent in natural language. Still bottoms out below.</li>
+                <li><strong>AI engineering</strong> - precise intent in natural language; still bottoms out below.</li>
+                <li><strong>Vibe coding</strong> - the chat <em>is</em> the process; accept whatever the agent dropped and run it.</li>
             </ul>
 
-            <h2>Fig. 1 · Ten rungs, real execution</h2>
-            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}</code>. The body carries only the language key. Source is fixed under <code>programs/</code> on the server. There is no arbitrary remote code execution - only an allowlist of Hello Worlds.</p>
+            <h2>Fig. 1 · Twelve rungs, real execution</h2>
+            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}</code>. The body carries only the language key. Source is fixed under <code>programs/</code> on the server. There is no arbitrary remote code execution - only an allowlist of Hello Worlds. Binary vs machine code is intentional: one shows the shipped file, the other shows instruction encodings inside it.</p>
 
             <div class="ladder" id="ladder" aria-live="polite"></div>
 
@@ -198,10 +218,11 @@
 
             <h2>What you should notice when you mash Run</h2>
             <ul>
-                <li><strong>stdout converges</strong> - almost every rung prints the same line. The interesting delta is wall time, toolchains, and the machine-code dump.</li>
+                <li><strong>stdout converges</strong> - almost every rung prints the same line. The interesting delta is wall time, toolchains, the ELF hex dump, and the objdump of <code>main</code>.</li>
+                <li><strong>Binary ≠ machine code view</strong> - binary is "here is the file"; machine code is "here are the instructions that ran."</li>
                 <li><strong>C is a hinge</strong> - short source, native binary, still close enough that compiler output looks like Assembly.</li>
                 <li><strong>Managed runtimes show up as process shape</strong> - Mono for C#, Node for JS, CPython for Python - not as different letters on the screen.</li>
-                <li><strong>AI is an interface, not an escape hatch</strong> - the AI rung returns a deterministic stand-in for an LLM so the page stays free and reproducible. A real model would still emit text or code that bottoms out in one of the lower rungs.</li>
+                <li><strong>AI engineering vs vibe coding</strong> - both stand-ins avoid calling a live model on this host. Engineering shows a tight prompt contract; vibe shows a chat transcript whose frozen artifact is <code>vibe-hello.py</code>. Same stdout, different discipline.</li>
             </ul>
 
             <h2>Quiz · don't leave until one answer sticks</h2>
@@ -217,25 +238,27 @@
             </div>
 
             <h2>What's still open</h2>
-            <p>The private ARM64 teach path and this public x86_64 ladder are deliberately different ISAs - good for honesty, awkward for copy-paste between Mac and server. A dual-target Assembly pair (Apple Silicon vs Linux amd64) would make the platform gap visceral. The AI rung is also intentionally not a live model call; wiring a budgeted, logged, content-filtered model would be a different post about product risk, not Hello World.</p>
+            <p>The private ARM64 teach path and this public x86_64 ladder are deliberately different ISAs - good for honesty, awkward for copy-paste between Mac and server. A dual-target Assembly pair (Apple Silicon vs Linux amd64) would make the platform gap visceral. The AI and vibe rungs are intentionally not live model calls; wiring a budgeted, logged, content-filtered model would be a different post about product risk, not Hello World. highlight.js is loaded modularly from esm.sh - if that CDN is blocked, sources stay readable as plain text.</p>
 
             <h2>Sources</h2>
             <div class="sources">
                 <h3>Ideas and authorities</h3>
                 <ul>
                     <li><span class="cite-title">Robert C. Martin with Kent Dodds, Architecture, AI agents, and product empathy</span> (YouTube) - long-view framing for languages and abstraction over time. <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">youtube.com</a></li>
-                    <li><span class="cite-title">Arm / Intel instruction manuals</span> - the ultimate ground for machine encodings (this page shows Linux amd64 via <code>objdump</code>).</li>
+                    <li><span class="cite-title">Andrej Karpathy on "vibe coding"</span> (2025) - the casual chat-driven coding style contrasted here with tighter AI engineering prompts.</li>
+                    <li><span class="cite-title">Arm / Intel instruction manuals</span> - the ultimate ground for machine encodings (this page shows Linux amd64 via <code>objdump</code> / <code>xxd</code>).</li>
                 </ul>
                 <h3>Tools demonstrated or referenced</h3>
                 <ul>
                     <li><span class="cite-title">gcc / g++ / rustc / go / mcs+mono / CPython / Node</span> - toolchains on the stephens.page host for each native or interpreted rung.</li>
+                    <li><span class="cite-title">highlight.js 11.11.1</span> - browser syntax highlighting for ladder source panels (esm.sh modular load). <a href="https://highlightjs.org/" rel="noopener">highlightjs.org</a></li>
                     <li><span class="cite-title">FastAPI + uvicorn</span> - loopback runner at port 3521, proxied under this post's <code>/api/</code>.</li>
                     <li><span class="cite-title">Private teach workspace</span> - ARM64 Assembly practice that motivated the public ladder (not the same ISA as this page).</li>
                 </ul>
             </div>
 
             <div class="ai-note">
-                Drafted from the private <code>learn-assembly</code> teach-skill workspace and this site's existing interactive-post pattern (<code>the-animation-is-a-replay</code> server + Apache proxy). Every Run Program button hits a real allowlisted build/execute path on Linux x86_64 except the AI rung, which is an honest deterministic stand-in for an LLM. The decisions, the hosting, and the words are mine; the technical collaborator for scaffolding was Grok.
+                Drafted from the private <code>learn-assembly</code> teach-skill workspace and this site's existing interactive-post pattern (<code>the-animation-is-a-replay</code> server, Apache proxy, and highlight.js usage). Every Run Program button hits a real allowlisted build/execute path on Linux x86_64 except the AI and vibe rungs, which are honest deterministic stand-ins (no live LLM). The decisions, the hosting, and the words are mine; the technical collaborator for scaffolding was Grok.
             </div>
 
             <p><strong>For AI agents:</strong> the machine-oriented version is at <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a>, with directives, the allowlist contract, verified endpoints, an operational checklist, and a self-test.</p>
@@ -254,23 +277,26 @@
   'use strict';
 
   var API = '/blog/from-machine-code-to-ai-the-same-hello-world/api';
+  var hljsApi = null;
 
-  // Fallback sources if /languages fails (keep in sync with programs/).
   var FALLBACK = [
-    { id: 'machine', title: 'Machine code', level: 0, hides: 'Hides nothing. Bytes in, execution out.', sourceFile: 'hello.s', source: '; run executes the assembled binary; response includes objdump of <main>' },
-    { id: 'assembly', title: 'Assembly (x86_64 Linux)', level: 1, hides: 'Hides bit encodings; still names registers and calls.', sourceFile: 'hello.s', source: '' },
-    { id: 'c', title: 'C', level: 2, hides: 'Hides registers and instruction selection.', sourceFile: 'hello.c', source: '' },
-    { id: 'cpp', title: 'C++', level: 3, hides: 'Hides more library/runtime than C; still native.', sourceFile: 'hello.cpp', source: '' },
-    { id: 'rust', title: 'Rust', level: 4, hides: 'Ownership/type safety as compile-time machinery.', sourceFile: 'hello.rs', source: '' },
-    { id: 'go', title: 'Go', level: 5, hides: 'GC and a larger runtime than C.', sourceFile: 'hello.go', source: '' },
-    { id: 'csharp', title: 'C#', level: 6, hides: 'CLR/Mono runtime and a managed object model.', sourceFile: 'hello.cs', source: '' },
-    { id: 'python', title: 'Python', level: 7, hides: 'Almost the entire machine; bytecode + VM.', sourceFile: 'hello.py', source: '' },
-    { id: 'javascript', title: 'JavaScript', level: 8, hides: 'The machine behind engines and JITs.', sourceFile: 'hello.js', source: '' },
-    { id: 'ai', title: 'AI engineering', level: 9, hides: 'Code itself behind intent - until you need reliability.', sourceFile: 'ai-prompt.txt', source: '' }
+    { id: 'binary', title: 'Binary program (ELF)', level: 0, sourceFile: 'binary-readme.txt', highlight: 'plaintext', source: '# ELF executable (hex dump loads from API when online)' },
+    { id: 'machine', title: 'Machine code', level: 1, sourceFile: 'hello.s', highlight: 'x86asm', source: '' },
+    { id: 'assembly', title: 'Assembly (x86_64 Linux)', level: 2, sourceFile: 'hello.s', highlight: 'x86asm', source: '' },
+    { id: 'c', title: 'C', level: 3, sourceFile: 'hello.c', highlight: 'c', source: '' },
+    { id: 'cpp', title: 'C++', level: 4, sourceFile: 'hello.cpp', highlight: 'cpp', source: '' },
+    { id: 'rust', title: 'Rust', level: 5, sourceFile: 'hello.rs', highlight: 'rust', source: '' },
+    { id: 'go', title: 'Go', level: 6, sourceFile: 'hello.go', highlight: 'go', source: '' },
+    { id: 'csharp', title: 'C#', level: 7, sourceFile: 'hello.cs', highlight: 'csharp', source: '' },
+    { id: 'python', title: 'Python', level: 8, sourceFile: 'hello.py', highlight: 'python', source: '' },
+    { id: 'javascript', title: 'JavaScript', level: 9, sourceFile: 'hello.js', highlight: 'javascript', source: '' },
+    { id: 'ai', title: 'AI engineering', level: 10, sourceFile: 'ai-prompt.txt', highlight: 'plaintext', source: '' },
+    { id: 'vibe', title: 'Vibe coding', level: 11, sourceFile: 'vibe-session.md', highlight: 'markdown', source: '' }
   ];
 
   var HIDES = {
-    machine: 'Hides nothing. Bytes in, execution out.',
+    binary: 'Hides all source. The program is an ELF file you can execute.',
+    machine: 'Hides almost nothing: instruction encodings the CPU runs.',
     assembly: 'Hides bit encodings; still names registers and calls.',
     c: 'Hides registers and instruction selection.',
     cpp: 'Hides more library/runtime than C; still native.',
@@ -279,7 +305,8 @@
     csharp: 'CLR/Mono runtime and a managed object model.',
     python: 'Almost the entire machine; bytecode + VM.',
     javascript: 'The machine behind engines and JITs.',
-    ai: 'Code itself behind intent - until you need reliability.'
+    ai: 'Code behind a precise natural-language contract.',
+    vibe: 'Even the contract - chat is the process; accept and run.'
   };
 
   var statusEl = document.getElementById('api-status');
@@ -298,9 +325,56 @@
       .replace(/>/g, '&gt;');
   }
 
+  function loadHighlighting() {
+    return Promise.all([
+      import('https://esm.sh/highlight.js@11.11.1/lib/core'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/c'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/cpp'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/rust'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/go'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/csharp'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/python'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/javascript'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/x86asm'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/markdown'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/plaintext')
+    ]).then(function (mods) {
+      var hljs = mods[0].default;
+      var names = ['c', 'cpp', 'rust', 'go', 'csharp', 'python', 'javascript', 'x86asm', 'markdown', 'plaintext'];
+      names.forEach(function (name, i) {
+        hljs.registerLanguage(name, mods[i + 1].default);
+      });
+      hljs.configure({ ignoreUnescapedHTML: true });
+      hljsApi = hljs;
+      return hljs;
+    }).catch(function () {
+      hljsApi = null;
+      return null;
+    });
+  }
+
+  function highlightBlock(codeEl, lang) {
+    if (!codeEl) return;
+    var text = codeEl.textContent;
+    if (!hljsApi || !lang || lang === 'plaintext') {
+      codeEl.className = 'src language-plaintext';
+      codeEl.textContent = text;
+      return;
+    }
+    try {
+      var result = hljsApi.highlight(text, { language: lang, ignoreIllegals: true });
+      codeEl.className = 'src hljs language-' + lang;
+      codeEl.innerHTML = result.value;
+    } catch (e) {
+      codeEl.className = 'src language-plaintext';
+      codeEl.textContent = text;
+    }
+  }
+
   function renderRungs(langs) {
     ladderEl.innerHTML = '';
     langs.forEach(function (lang) {
+      var hl = lang.highlight || 'plaintext';
       var article = document.createElement('article');
       article.className = 'rung';
       article.id = 'rung-' + lang.id;
@@ -315,15 +389,17 @@
         '</div>' +
         '<div class="rung-body two">' +
           '<div>' +
-            '<div class="panel-label">Source</div>' +
-            '<pre><code class="src"></code></pre>' +
+            '<div class="panel-label">Source' + (lang.id === 'binary' ? ' (ELF bytes)' : '') + '</div>' +
+            '<pre><code class="src language-' + esc(hl) + '" data-hl="' + esc(hl) + '"></code></pre>' +
           '</div>' +
           '<div>' +
             '<div class="panel-label">Output (from server)</div>' +
             '<div class="term out"><span class="dim">Click Run Program to execute this allowlisted Hello World on stephens.page.</span></div>' +
           '</div>' +
         '</div>';
-      article.querySelector('.src').textContent = lang.source || '(source loads from API)';
+      var codeEl = article.querySelector('.src');
+      codeEl.textContent = lang.source || '(source loads from API)';
+      highlightBlock(codeEl, hl);
       ladderEl.appendChild(article);
     });
 
@@ -373,9 +449,16 @@
           lines.push('<span class="dim">--- objdump &lt;main&gt; ---</span>');
           lines.push(esc(b.machineView));
         }
+        if (b.binaryView) {
+          lines.push('<span class="dim">--- ELF view (also in Source panel) ---</span>');
+          lines.push(esc(b.binaryView.split('\n').slice(0, 8).join('\n')) + '\n…');
+        }
         if (b.prompt) {
           lines.push('<span class="dim">--- prompt ---</span>');
           lines.push(esc(b.prompt));
+        }
+        if (b.session) {
+          lines.push('<span class="dim">--- vibe session (see Source) ---</span>');
         }
         out.innerHTML = lines.join('\n');
       })
@@ -414,19 +497,22 @@
     });
   }
 
-  fetch(API + '/health')
-    .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('health ' + r.status)); })
-    .then(function (h) {
-      setStatus(true, 'Runner online · ' + (h.machine || '?') + ' ' + (h.system || '') + ' · ' + (h.languages ? h.languages.length : '?') + ' languages');
-      return fetch(API + '/languages').then(function (r) { return r.json(); });
-    })
-    .then(function (langs) {
-      renderRungs(langs);
-    })
-    .catch(function () {
-      setStatus(false, 'Runner offline - showing fallback cards (Run may fail until API is up)');
-      renderRungs(FALLBACK);
-    });
+  loadHighlighting().then(function () {
+    return fetch(API + '/health')
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('health ' + r.status)); })
+      .then(function (h) {
+        var hlNote = hljsApi ? ' · highlight.js on' : ' · plain source (CDN unavailable)';
+        setStatus(true, 'Runner online · ' + (h.machine || '?') + ' ' + (h.system || '') + ' · ' + (h.languages ? h.languages.length : '?') + ' languages' + hlNote);
+        return fetch(API + '/languages').then(function (r) { return r.json(); });
+      })
+      .then(function (langs) {
+        renderRungs(langs);
+      })
+      .catch(function () {
+        setStatus(false, 'Runner offline - showing fallback cards (Run may fail until API is up)');
+        renderRungs(FALLBACK);
+      });
+  });
 
   initQuiz();
 })();
