@@ -146,11 +146,13 @@
         .term {
             background: var(--term); color: var(--term-fg); border-radius: 6px; padding: 0.75rem 0.85rem;
             font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.78rem; line-height: 1.45;
-            min-height: 8rem; white-space: pre-wrap; word-break: break-word;
+            min-height: 8rem; max-height: 28rem; overflow: auto;
+            white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word;
         }
         .term .dim { color: #9a9286; }
         .term .ok { color: #9ccc65; }
         .term .bad { color: #ef9a9a; }
+        .term .line { display: block; }
         .rung details { border-top: 1px dashed var(--rule); padding: 0.65rem 0.95rem 0.85rem; }
         .rung summary { cursor: pointer; color: var(--muted); font-size: 0.88rem; font-weight: 600; }
         .rung summary:hover { color: var(--brand); }
@@ -427,60 +429,92 @@
     });
   }
 
+  /** Append a styled line to the terminal using DOM APIs only (never innerHTML with server text). */
+  function termLine(out, cls, text) {
+    var line = document.createElement('span');
+    line.className = 'line' + (cls ? ' ' + cls : '');
+    line.textContent = text == null ? '' : String(text);
+    out.appendChild(line);
+  }
+
+  function clearTerm(out) {
+    while (out.firstChild) out.removeChild(out.firstChild);
+  }
+
+  function detailText(detail) {
+    if (detail == null) return '';
+    if (typeof detail === 'string') return detail;
+    try { return JSON.stringify(detail); } catch (e) { return String(detail); }
+  }
+
   function runLang(id, btn) {
     var rung = document.getElementById('rung-' + id);
+    if (!rung || !btn) return;
     var out = rung.querySelector('.out');
+    if (!out) return;
     btn.disabled = true;
-    out.innerHTML = '<span class="dim">Running…</span>';
+    clearTerm(out);
+    termLine(out, 'dim', 'Running…');
     fetch(API + '/run/' + encodeURIComponent(id), { method: 'POST', headers: { 'Accept': 'application/json' } })
       .then(function (res) {
         return res.json().then(function (body) {
           return { ok: res.ok, status: res.status, body: body };
+        }).catch(function () {
+          return { ok: false, status: res.status, body: { detail: 'Non-JSON response (HTTP ' + res.status + ')' } };
         });
       })
       .then(function (result) {
+        clearTerm(out);
         if (!result.ok) {
-          var detail = (result.body && (result.body.detail || result.body.message)) || ('HTTP ' + result.status);
-          out.innerHTML = '<span class="bad">Error: ' + esc(detail) + '</span>';
+          termLine(out, 'bad', 'Error: ' + (detailText(result.body && (result.body.detail || result.body.message)) || ('HTTP ' + result.status)));
           return;
         }
-        var b = result.body;
-        var lines = [];
-        lines.push('<span class="dim">$ POST /run/' + esc(id) + '</span>');
+        var b = result.body || {};
+        termLine(out, 'dim', '$ POST /run/' + id);
         if (b.command) {
-          lines.push('<span class="dim"># ' + esc(JSON.stringify(b.command)) + '</span>');
+          termLine(out, 'dim', '# ' + JSON.stringify(b.command));
         }
         if (b.stdout) {
-          lines.push('<span class="ok">' + esc(b.stdout.replace(/\n$/, '')) + '</span>');
+          termLine(out, 'ok', String(b.stdout).replace(/\n$/, ''));
         } else {
-          lines.push('<span class="dim">(empty stdout)</span>');
+          termLine(out, 'dim', '(empty stdout)');
         }
         if (b.stderr) {
-          lines.push('<span class="bad">' + esc(b.stderr) + '</span>');
+          termLine(out, 'bad', String(b.stderr));
         }
-        lines.push('<span class="dim">exit ' + esc(b.exitCode) + ' · ' + esc(b.wallMs) + ' ms · ' + esc((b.host && b.host.machine) || '?') + ' ' + esc((b.host && b.host.system) || '') + '</span>');
+        termLine(
+          out,
+          'dim',
+          'exit ' + b.exitCode + ' · ' + b.wallMs + ' ms · ' +
+            ((b.host && b.host.machine) || '?') + ' ' + ((b.host && b.host.system) || '')
+        );
         if (b.note) {
-          lines.push('<span class="dim">' + esc(b.note) + '</span>');
+          termLine(out, 'dim', String(b.note));
         }
+        // Dumps live in the Source panel already; keep the terminal short so layout stays stable.
         if (b.machineView) {
-          lines.push('<span class="dim">--- objdump &lt;main&gt; ---</span>');
-          lines.push(esc(b.machineView));
+          termLine(out, 'dim', '--- objdump <main> (truncated) ---');
+          String(b.machineView).split('\n').slice(0, 12).forEach(function (ln) {
+            termLine(out, 'dim', ln);
+          });
+          termLine(out, 'dim', '…');
         }
         if (b.binaryView) {
-          lines.push('<span class="dim">--- ELF view (also in Source panel) ---</span>');
-          lines.push(esc(b.binaryView.split('\n').slice(0, 8).join('\n')) + '\n…');
+          termLine(out, 'dim', 'ELF hex dump is in the Source panel (left).');
         }
         if (b.prompt) {
-          lines.push('<span class="dim">--- prompt ---</span>');
-          lines.push(esc(b.prompt));
+          termLine(out, 'dim', '--- prompt ---');
+          String(b.prompt).split('\n').forEach(function (ln) {
+            termLine(out, 'dim', ln);
+          });
         }
         if (b.session) {
-          lines.push('<span class="dim">--- vibe session (see Source) ---</span>');
+          termLine(out, 'dim', 'Vibe session transcript is in the Source panel.');
         }
-        out.innerHTML = lines.join('\n');
       })
       .catch(function (err) {
-        out.innerHTML = '<span class="bad">Network error: ' + esc(err.message || err) + '</span>';
+        clearTerm(out);
+        termLine(out, 'bad', 'Network error: ' + (err && err.message ? err.message : String(err)));
       })
       .finally(function () {
         btn.disabled = false;
