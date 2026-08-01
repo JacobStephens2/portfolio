@@ -653,6 +653,43 @@
                         </div>
                     </article>
 
+                    <article class="portfolio-item" id="software-factory">
+                        <button class="image-button" type="button" data-image="screenshots/software-factory.svg" data-title="ETA Software Factory architecture">
+                            <img src="screenshots/software-factory.svg" alt="Diagram of the ETA Software Factory: intake, supervisor, Firecracker worker, verify, and human merge gate" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">ETA Software Factory</h3>
+                            <p class="portfolio-summary">An agentic engineering platform for Educational Travel Adventures: small, self-describing staff requests in; evidenced draft pull requests out. One human gate - the PR - held by engineering and the company owner. The production deploy path is never touched.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>Useful Tourbot changes die in inboxes because every request needs engineer time end to end. Managers already prototype inside sandboxed agents, but the company needed a purpose-built pipeline that turns a staff request into a reviewable PR - with isolation strong enough that untrusted screenshots and agent-written code never sit next to crown-jewel credentials.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>A Rust control plane (Axum supervisor, dashboard, <code>factoryctl</code>) on a dedicated host with socket-only PostgreSQL, an append-only ledger, and a draft-only publisher under a GitHub App machine identity. A separate secret-free worker droplet - OpenTofu + Ansible desired state, clean-room replaceable - runs implement and verify work inside Firecracker microVMs with no vault, fleet SSH, or Tourbot database access and only spend-capped model egress. Evidence capture, adversarial cross-family review, and a constitution (<code>AGENTS.md</code>) SHA-pinned in CI keep every run attributable. Phase 1 sessions covering isolation, verifier, publisher, dashboard, and the evidence lifecycle are merged on live infrastructure at <code>factory.etadventures.com</code>.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>Staff requests become draft PRs with patches, rationale, and verification evidence - review is the only human cost, and nothing auto-merges or deploys. The same trust model is written up interactively in two public posts: the factory's process as a canonical model with live diagrams, and multi-engine discrete-event animation of that model.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Rust</span>
+                                <span class="portfolio-tag">Axum</span>
+                                <span class="portfolio-tag">Firecracker</span>
+                                <span class="portfolio-tag">PostgreSQL</span>
+                                <span class="portfolio-tag">OpenTofu</span>
+                                <span class="portfolio-tag">Ansible</span>
+                                <span class="portfolio-tag">AI Agents</span>
+                                <span class="portfolio-tag">Human-in-the-loop</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="/blog/the-diagram-is-not-the-model/" class="portfolio-link">The diagram is not the model &rarr;</a>
+                                <a href="/blog/the-animation-is-a-replay/" class="portfolio-link">The animation is a replay &rarr;</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
                     <article class="portfolio-item">
                         <button class="image-button" type="button" data-image="screenshots/guides.etadventures.com.png" data-title="ETA Guides Portal screenshot">
                             <img src="screenshots/guides.etadventures.com.png" alt="ETA Guides Portal mobile-first contractor application" class="portfolio-image">
@@ -682,6 +719,73 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://guides.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item" id="parent-engagement">
+                        <button class="image-button" type="button" data-image="screenshots/parent-engagement.svg" data-title="Parent Engagement funnel architecture">
+                            <img src="screenshots/parent-engagement.svg" alt="Diagram of the Parent Engagement funnel: teacher invite, RSVP drip, attendance, registration into Tourbot" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">Parent Engagement</h3>
+                            <p class="portfolio-summary">A FastAPI service that helps ETA trip-leader teachers recruit parents for a group tour - info-night invites, RSVPs, drip emails, attendance, and a registration funnel - on its own host, with a read-only live path into Tourbot.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>Group trips fill when teachers can run parent recruitment themselves. The company needed a focused tool for invites, RSVPs, and follow-up without bolting a second product onto the main ERP or giving teachers write access to production Tourbot data.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>A Python 3.12 / FastAPI / HTMX app on a dedicated Rocky 9 droplet (Caddy, Postgres 16, systemd web + scheduler + nightly backup, SELinux enforcing). Teachers see live registration counts from Tourbot via read-only views; Mandrill engagement webhooks are HMAC-verified with the same webhook-verify primitive used elsewhere on the platform; email delivery is flag-gated so pilot runs cannot spam by accident. Split out of the orchestration monorepo into its own deployable service with a documented hybrid cutover plan.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>A live pre-pilot at parents.etadventures.com with architecture locked, Tourbot live-reads on, and a path to production that keeps write authority out of the engagement app until the pilot is ready.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Python</span>
+                                <span class="portfolio-tag">FastAPI</span>
+                                <span class="portfolio-tag">PostgreSQL</span>
+                                <span class="portfolio-tag">HTMX</span>
+                                <span class="portfolio-tag">Caddy</span>
+                                <span class="portfolio-tag">Mandrill</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://parents.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
+                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item" id="prospectforge">
+                        <button class="image-button" type="button" data-image="screenshots/prospectforge.png" data-title="ProspectForge review UI">
+                            <img src="screenshots/prospectforge.png" alt="ProspectForge contact-sourcing and review interface" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">ProspectForge</h3>
+                            <p class="portfolio-summary">ETA's internal contact-sourcing tool - paste a URL, crawl and qualify educational-travel leads, review enrichments, and export into the sales pipeline - built in-house after rejecting general-purpose list tools that could not fit the market.</p>
+                            <div class="portfolio-block">
+                                <strong>Problem</strong>
+                                <span>Buying or composing leads in generic tools (e.g. Clay) meant too many knobs and no "paste a school or association URL and get ETA-shaped contacts." Sales needed a pre-configured source that understands educational travel segments - band, theater, choir, districts - not another enrichment workbench.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What I Built</strong>
+                                <span>A FastAPI + SQLAlchemy 2.0 backend with Alembic migrations and RQ workers, Postgres 16 + Redis, and a Next.js 15 review UI. Crawl tiers discover and scrub page content, enrichment batches can be applied or held one click at a time, and the deploy story is single-host Docker Compose with systemd/Caddy infra for production. Designed around ETA's industry instead of exposing every dial.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>Result</strong>
+                                <span>An in-house prospecting lane the sales team can run without composing a third-party workflow graph - URL in, qualified contacts out, review in the middle.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Python</span>
+                                <span class="portfolio-tag">FastAPI</span>
+                                <span class="portfolio-tag">SQLAlchemy</span>
+                                <span class="portfolio-tag">Next.js</span>
+                                <span class="portfolio-tag">Redis</span>
+                                <span class="portfolio-tag">PostgreSQL</span>
+                            </div>
+                            <div class="portfolio-links">
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
@@ -1029,6 +1133,66 @@
                     <p>A curated set of personal builds, selected for relevance to platform and AI-infrastructure work. The full shelf of published apps lives at <a href="/apps.html" class="portfolio-link">stephens.page/apps</a>.</p>
                 </div>
                 <div class="portfolio-grid">
+                    <article class="portfolio-item" id="vaulted-agent">
+                        <button class="image-button" type="button" data-image="screenshots/vaulted-agent.png" data-title="vaulted-agent product illustration">
+                            <img src="screenshots/vaulted-agent.png" alt="vaulted-agent: terminal launching va claude with vault-resolved secrets" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">vaulted-agent</h3>
+                            <p class="portfolio-summary">A Rust launcher (<code>va</code>) that gives Claude Code, Codex, Grok, and Kimi real vault credentials in-process - Bitwarden Secrets Manager, 1Password, pass, or sops - with per-agent manifests and optional prompt auth so the vault master token never has to live on disk.</p>
+                            <div class="portfolio-block">
+                                <strong>Why it matters</strong>
+                                <span>AI coding agents need API keys and DB passwords, but a pile of <code>.env</code> files on every host is a secrets-management failure waiting to happen. Centralizing resolution in a launcher means rotation is one vault change, and a mis-scoped manifest is visible before the agent starts.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What stands out</strong>
+                                <span>Publishing the pattern found five production bugs - including one that handed every agent the credential that unlocks the whole vault. The fix is fail-closed manifests, scrub-then-exec so the child never inherits the manager token, and an honest threat model about what still lives on disk when auth is file-based. One curl install, <code>va setup</code>, <code>va claude</code>.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Rust</span>
+                                <span class="portfolio-tag">1Password</span>
+                                <span class="portfolio-tag">Bitwarden SM</span>
+                                <span class="portfolio-tag">AI Agents</span>
+                                <span class="portfolio-tag">Secrets</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="/vaulted-agent/" class="portfolio-link">Product page</a>
+                                <a href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/" class="portfolio-link">Write-up &rarr;</a>
+                                <a href="https://github.com/JacobStephens2/vaulted-agent-launcher" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="portfolio-item" id="inkvoke">
+                        <button class="image-button" type="button" data-image="screenshots/inkvoke.png" data-title="inkvoke product illustration">
+                            <img src="screenshots/inkvoke.png" alt="inkvoke: agent-friendly image generation CLI" class="portfolio-image">
+                        </button>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-title">inkvoke</h3>
+                            <p class="portfolio-summary">A single-binary Go CLI for OpenAI image models (gpt-image-2 by default): generate, edit, or batch from the terminal - with machine-readable <code>--json</code> output and exit codes so coding agents can drive it without scraping human text.</p>
+                            <div class="portfolio-block">
+                                <strong>Why it matters</strong>
+                                <span>Image generation is useful inside agent workflows only if the tool speaks a stable contract. inkvoke ships an AGENTS.md interface, structured results (path, cost, tokens, errors), and exit codes that separate usage, auth, permanent API, retryable API, and I/O failures.</span>
+                            </div>
+                            <div class="portfolio-block">
+                                <strong>What stands out</strong>
+                                <span>One static binary for macOS/Linux/Windows (amd64 and arm64) - no Python runtime. Batch manifests, photo-edit paths, and a live try surface on the product page. Designed so an autonomous agent can install and invoke it from documentation alone.</span>
+                            </div>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Go</span>
+                                <span class="portfolio-tag">OpenAI</span>
+                                <span class="portfolio-tag">CLI</span>
+                                <span class="portfolio-tag">AI Agents</span>
+                                <span class="portfolio-tag">gpt-image-2</span>
+                            </div>
+                            <div class="portfolio-links">
+                                <a href="https://inkvoke.dev" class="portfolio-link" target="_blank" rel="noreferrer">Product site</a>
+                                <a href="/inkvoke/" class="portfolio-link">On stephens.page</a>
+                                <a href="https://github.com/JacobStephens2/inkvoke" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+                            </div>
+                        </div>
+                    </article>
+
                     <article class="portfolio-item" id="muxboard">
                         <button class="image-button" type="button" data-image="screenshots/muxboard.png" data-title="muxboard dashboard">
                             <img src="screenshots/muxboard.png" alt="muxboard tmux web dashboard" class="portfolio-image">
@@ -1135,7 +1299,7 @@
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>A small stateless FastAPI service (multi-stage, non-root image) fronting a Redis StatefulSet with a PersistentVolumeClaim, with production-grade manifests: a rolling-update Deployment with liveness/readiness probes, CPU/memory limits, a hardened securityContext (non-root, read-only root filesystem, dropped capabilities), ConfigMap and Secret injected via envFrom, a HorizontalPodAutoscaler, a Traefik ingress, and kustomize. Terraform plus cloud-init provision an AWS EC2 node and bootstrap k3s and the app; cert-manager and Let's Encrypt issue TLS. The manifests are schema-validated with kubeconform in CI, and a five-rule OPA Gatekeeper admission layer (non-root, resource limits, no <code>:latest</code>, the hardening triad, required probes) enforces the same posture at the API server - rejected-if-violated, not trusted-by-convention - with one rule re-expressed as a built-in ValidatingAdmissionPolicy in CEL to make the engine choice legible.</span>
+                                <span>A small stateless Go service (static binary in a multi-stage, non-root <code>FROM scratch</code> image) fronting a Redis StatefulSet with a PersistentVolumeClaim, with production-grade manifests: a rolling-update Deployment with liveness/readiness probes, CPU/memory limits, a hardened securityContext (non-root, read-only root filesystem, dropped capabilities), ConfigMap and Secret injected via envFrom, a HorizontalPodAutoscaler, a Traefik ingress, and kustomize. Terraform plus cloud-init provision an AWS EC2 node and bootstrap k3s and the app; cert-manager and Let's Encrypt issue TLS. The manifests are schema-validated with kubeconform in CI, and a five-rule OPA Gatekeeper admission layer (non-root, resource limits, no <code>:latest</code>, the hardening triad, required probes) enforces the same posture at the API server - rejected-if-violated, not trusted-by-convention - with one rule re-expressed as a built-in ValidatingAdmissionPolicy in CEL to make the engine choice legible.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>

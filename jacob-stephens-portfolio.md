@@ -106,6 +106,32 @@ AI Agents
 
 [The boundary pattern it runs inside →](https://stephens.page/notes/human-in-the-loop-ai-agents/)
 
+### ETA Software Factory
+
+An agentic engineering platform for Educational Travel Adventures: small, self-describing staff requests in; evidenced draft pull requests out. One human gate - the PR - held by engineering and the company owner. The production deploy path is never touched.
+
+**Problem**
+Useful Tourbot changes die in inboxes because every request needs engineer time end to end. Managers already prototype inside sandboxed agents, but the company needed a purpose-built pipeline that turns a staff request into a reviewable PR - with isolation strong enough that untrusted screenshots and agent-written code never sit next to crown-jewel credentials.
+
+**What I Built**
+A Rust control plane (Axum supervisor, dashboard, `factoryctl`) on a dedicated host with socket-only PostgreSQL, an append-only ledger, and a draft-only publisher under a GitHub App machine identity. A separate secret-free worker droplet - OpenTofu + Ansible desired state, clean-room replaceable - runs implement and verify work inside Firecracker microVMs with no vault, fleet SSH, or Tourbot database access and only spend-capped model egress. Evidence capture, adversarial cross-family review, and a constitution (`AGENTS.md`) SHA-pinned in CI keep every run attributable. Phase 1 sessions covering isolation, verifier, publisher, dashboard, and the evidence lifecycle are merged on live infrastructure at `factory.etadventures.com`.
+
+**Result**
+Staff requests become draft PRs with patches, rationale, and verification evidence - review is the only human cost, and nothing auto-merges or deploys. The same trust model is written up interactively in two public posts: the factory's process as a canonical model with live diagrams, and multi-engine discrete-event animation of that model.
+
+Rust
+Axum
+Firecracker
+PostgreSQL
+OpenTofu
+Ansible
+AI Agents
+Human-in-the-loop
+
+[The diagram is not the model →](/blog/the-diagram-is-not-the-model/)
+[The animation is a replay →](/blog/the-animation-is-a-replay/)
+[Organization](https://github.com/Educational-Travel-Adventures)
+
 ### ETA Guides Portal
 
 A mobile-first PWA for tour guide contractors at Educational Travel Adventures - itinerary and medical info access, document workflows, daily and summary reporting with live auto-save, expense tracking with receipt uploads, SMS messaging to travelers, calendar scheduling, and manager-side administration.
@@ -127,6 +153,51 @@ Service Workers
 PWA
 
 [Visit Site](https://guides.etadventures.com)
+[Organization](https://github.com/Educational-Travel-Adventures)
+
+### Parent Engagement
+
+A FastAPI service that helps ETA trip-leader teachers recruit parents for a group tour - info-night invites, RSVPs, drip emails, attendance, and a registration funnel - on its own host, with a read-only live path into Tourbot.
+
+**Problem**
+Group trips fill when teachers can run parent recruitment themselves. The company needed a focused tool for invites, RSVPs, and follow-up without bolting a second product onto the main ERP or giving teachers write access to production Tourbot data.
+
+**What I Built**
+A Python 3.12 / FastAPI / HTMX app on a dedicated Rocky 9 droplet (Caddy, Postgres 16, systemd web + scheduler + nightly backup, SELinux enforcing). Teachers see live registration counts from Tourbot via read-only views; Mandrill engagement webhooks are HMAC-verified with the same webhook-verify primitive used elsewhere on the platform; email delivery is flag-gated so pilot runs cannot spam by accident. Split out of the orchestration monorepo into its own deployable service with a documented hybrid cutover plan.
+
+**Result**
+A live pre-pilot at parents.etadventures.com with architecture locked, Tourbot live-reads on, and a path to production that keeps write authority out of the engagement app until the pilot is ready.
+
+Python
+FastAPI
+PostgreSQL
+HTMX
+Caddy
+Mandrill
+
+[Visit Site](https://parents.etadventures.com)
+[Organization](https://github.com/Educational-Travel-Adventures)
+
+### ProspectForge
+
+ETA's internal contact-sourcing tool - paste a URL, crawl and qualify educational-travel leads, review enrichments, and export into the sales pipeline - built in-house after rejecting general-purpose list tools that could not fit the market.
+
+**Problem**
+Buying or composing leads in generic tools (e.g. Clay) meant too many knobs and no "paste a school or association URL and get ETA-shaped contacts." Sales needed a pre-configured source that understands educational travel segments - band, theater, choir, districts - not another enrichment workbench.
+
+**What I Built**
+A FastAPI + SQLAlchemy 2.0 backend with Alembic migrations and RQ workers, Postgres 16 + Redis, and a Next.js 15 review UI. Crawl tiers discover and scrub page content, enrichment batches can be applied or held one click at a time, and the deploy story is single-host Docker Compose with systemd/Caddy infra for production. Designed around ETA's industry instead of exposing every dial.
+
+**Result**
+An in-house prospecting lane the sales team can run without composing a third-party workflow graph - URL in, qualified contacts out, review in the middle.
+
+Python
+FastAPI
+SQLAlchemy
+Next.js
+Redis
+PostgreSQL
+
 [Organization](https://github.com/Educational-Travel-Adventures)
 
 ### ETA Orchestration & Status
@@ -354,6 +425,46 @@ Brand Presence
 
 A curated set of personal builds, selected for relevance to platform and AI-infrastructure work. The full shelf of published apps lives at [stephens.page/apps](/apps.html).
 
+### vaulted-agent
+
+A Rust launcher (`va`) that gives Claude Code, Codex, Grok, and Kimi real vault credentials in-process - Bitwarden Secrets Manager, 1Password, pass, or sops - with per-agent manifests and optional prompt auth so the vault master token never has to live on disk.
+
+**Why it matters**
+AI coding agents need API keys and DB passwords, but a pile of `.env` files on every host is a secrets-management failure waiting to happen. Centralizing resolution in a launcher means rotation is one vault change, and a mis-scoped manifest is visible before the agent starts.
+
+**What stands out**
+Publishing the pattern found five production bugs - including one that handed every agent the credential that unlocks the whole vault. The fix is fail-closed manifests, scrub-then-exec so the child never inherits the manager token, and an honest threat model about what still lives on disk when auth is file-based. One curl install, `va setup`, `va claude`.
+
+Rust
+1Password
+Bitwarden SM
+AI Agents
+Secrets
+
+[Product page](/vaulted-agent/)
+[Write-up →](/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/)
+[GitHub](https://github.com/JacobStephens2/vaulted-agent-launcher)
+
+### inkvoke
+
+A single-binary Go CLI for OpenAI image models (gpt-image-2 by default): generate, edit, or batch from the terminal - with machine-readable `--json` output and exit codes so coding agents can drive it without scraping human text.
+
+**Why it matters**
+Image generation is useful inside agent workflows only if the tool speaks a stable contract. inkvoke ships an AGENTS.md interface, structured results (path, cost, tokens, errors), and exit codes that separate usage, auth, permanent API, retryable API, and I/O failures.
+
+**What stands out**
+One static binary for macOS/Linux/Windows (amd64 and arm64) - no Python runtime. Batch manifests, photo-edit paths, and a live try surface on the product page. Designed so an autonomous agent can install and invoke it from documentation alone.
+
+Go
+OpenAI
+CLI
+AI Agents
+gpt-image-2
+
+[Product site](https://inkvoke.dev)
+[On stephens.page](/inkvoke/)
+[GitHub](https://github.com/JacobStephens2/inkvoke)
+
 ### muxboard
 
 A Flask blueprint that puts a web dashboard over tmux - across one host or a whole fleet - with a live in-browser terminal, built default-deny with attach caps and a documented threat model for handing out remote-shell access over the web.
@@ -424,7 +535,7 @@ A live, HTTPS-secured two-tier Kubernetes app on a single k3s node - a stateless
 I run production as systemd services on one VPS, which is the right tool for a single box - an orchestrator there would add control-plane and networking complexity for no benefit. But I wanted a genuine, running Kubernetes artifact that demonstrates real cluster operations, without putting an orchestrator under live services.
 
 **What I Built**
-A small stateless FastAPI service (multi-stage, non-root image) fronting a Redis StatefulSet with a PersistentVolumeClaim, with production-grade manifests: a rolling-update Deployment with liveness/readiness probes, CPU/memory limits, a hardened securityContext (non-root, read-only root filesystem, dropped capabilities), ConfigMap and Secret injected via envFrom, a HorizontalPodAutoscaler, a Traefik ingress, and kustomize. Terraform plus cloud-init provision an AWS EC2 node and bootstrap k3s and the app; cert-manager and Let's Encrypt issue TLS. The manifests are schema-validated with kubeconform in CI, and a five-rule OPA Gatekeeper admission layer (non-root, resource limits, no `:latest`, the hardening triad, required probes) enforces the same posture at the API server - rejected-if-violated, not trusted-by-convention - with one rule re-expressed as a built-in ValidatingAdmissionPolicy in CEL to make the engine choice legible.
+A small stateless Go service (static binary in a multi-stage, non-root `FROM scratch` image) fronting a Redis StatefulSet with a PersistentVolumeClaim, with production-grade manifests: a rolling-update Deployment with liveness/readiness probes, CPU/memory limits, a hardened securityContext (non-root, read-only root filesystem, dropped capabilities), ConfigMap and Secret injected via envFrom, a HorizontalPodAutoscaler, a Traefik ingress, and kustomize. Terraform plus cloud-init provision an AWS EC2 node and bootstrap k3s and the app; cert-manager and Let's Encrypt issue TLS. The manifests are schema-validated with kubeconform in CI, and a five-rule OPA Gatekeeper admission layer (non-root, resource limits, no `:latest`, the hardening triad, required probes) enforces the same posture at the API server - rejected-if-violated, not trusted-by-convention - with one rule re-expressed as a built-in ValidatingAdmissionPolicy in CEL to make the engine choice legible.
 
 **Result**
 A clickable, TLS-secured demo where `/count` increments a counter held in Redis and shared across both app pods - the whole path from `terraform apply` to a running, HTTPS-terminated cluster, as code.
