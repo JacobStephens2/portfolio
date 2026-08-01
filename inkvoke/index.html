@@ -472,7 +472,7 @@
         <p class="img-caption mono" id="hero-image-caption">
           Current product shot - terminal in, images out (generate, edit, batch). Branding: <span class="c-accent">inkvoke</span>.
           Made with <span class="c-accent">inkvoke generate</span> (Go binary, v1.0.1).
-          <span class="click-hint">Click the image</span> for the original Python-era shot (when it was still named gpt-image), then community samples.
+          <span class="click-hint">Click the image</span> for the product-history slides (gpt-image Go binary, then the Python first version), then community samples.
         </p>
       </div>
 
@@ -1570,7 +1570,7 @@ sudo inkvoke --uninstall</pre>
       }
     })();
 
-    // Hero slideshow: Go tool.png first, Python-era product shot second, then community gallery.
+    // Hero slideshow: inkvoke Go → gpt-image Go binary → Python first version → community gallery.
     (function () {
       var TOOL_SLIDE = {
         src: 'tool.png',
@@ -1579,7 +1579,19 @@ sudo inkvoke --uninstall</pre>
         captionHtml:
           'Current product shot - terminal in, images out (generate, edit, batch). Branding: <span class="c-accent">inkvoke</span>. ' +
           'Made with <span class="c-accent">inkvoke generate</span> (Go binary, v1.0.1). ' +
-          '<span class="click-hint">Click the image</span> for the original Python-era shot (when it was still named gpt-image), then community samples.'
+          '<span class="click-hint">Click the image</span> for the product-history slides (gpt-image Go binary, then the Python first version), then community samples.'
+      };
+
+      // Intermediate branding: Go binary still named gpt-image (pre-v1.0.0 rename).
+      var TOOL_GPT_IMAGE_SLIDE = {
+        src: 'tool-gpt-image-legacy.png',
+        title: 'tool-gpt-image-legacy.png · Go binary still named gpt-image',
+        alt: 'Product illustration of the Go CLI when the program was still named gpt-image: laptop terminal showing gpt-image generate, edit, and batch commands',
+        captionHtml:
+          'History: the <strong>Go binary when it was still named <span class="mono">gpt-image</span></strong> ' +
+          '(same generate / edit / batch surface; mug and terminal title say gpt-image). ' +
+          'Renamed to <span class="c-accent">inkvoke</span> in v1.0.0. ' +
+          '<span class="click-hint">Click</span> for the original Python first version, then community samples.'
       };
 
       var TOOL_PYTHON_SLIDE = {
@@ -1588,12 +1600,13 @@ sudo inkvoke --uninstall</pre>
         alt: 'Original product illustration from the first version: a Python CLI named gpt-image, with terminal showing python gpt_image.py generate and edit commands and floating output images',
         captionHtml:
           'History: the <strong>first version was a Python script named <span class="mono">gpt-image</span></strong> ' +
-          '(<span class="mono">python gpt_image.py …</span>). Renamed to <span class="c-accent">inkvoke</span> in v1.0.0; ' +
-          'v0.2+ is a single Go binary; v0.3.0 added <span class="mono">--json</span> / exit codes for agents. ' +
-          '<span class="click-hint">Click</span> for community samples (including lighthouse.png).'
+          '(<span class="mono">python gpt_image.py …</span>). Then a Go binary still called gpt-image; ' +
+          'renamed to <span class="c-accent">inkvoke</span> in v1.0.0; v0.3.0 added <span class="mono">--json</span> / exit codes for agents. ' +
+          '<span class="click-hint">Click</span> for community samples.'
       };
 
-      var slides = [TOOL_SLIDE, TOOL_PYTHON_SLIDE];
+      var TOOL_HISTORY = [TOOL_SLIDE, TOOL_GPT_IMAGE_SLIDE, TOOL_PYTHON_SLIDE];
+      var slides = TOOL_HISTORY.slice();
       var img = document.getElementById('hero-image');
       var frame = document.getElementById('hero-image-frame');
       var title = document.getElementById('hero-image-title');
@@ -1622,12 +1635,16 @@ sudo inkvoke --uninstall</pre>
           if (!/^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|webp)$/.test(rest)) return '';
           return url;
         }
-        if (/^(lighthouse|tool|tool-python-legacy)\.png$/.test(url)) return url;
+        if (/^(lighthouse|tool|tool-gpt-image-legacy|tool-python-legacy)\.png$/.test(url)) return url;
         return '';
       }
 
       function isToolSlideSrc(src) {
-        return src === 'tool.png' || src === 'tool-python-legacy.png';
+        return (
+          src === 'tool.png' ||
+          src === 'tool-gpt-image-legacy.png' ||
+          src === 'tool-python-legacy.png'
+        );
       }
 
       function gallerySlideFromItem(item) {
@@ -1691,26 +1708,21 @@ sudo inkvoke --uninstall</pre>
 
       function rebuildSlides(items, opts) {
         opts = opts || {};
-        var next = [TOOL_SLIDE, TOOL_PYTHON_SLIDE];
-        var seen = { 'tool.png': true, 'tool-python-legacy.png': true };
+        // Product history first; gallery samples follow. No separate lighthouse hero
+        // slide - it already appears in the product shots and (when live) the gallery.
+        var next = TOOL_HISTORY.slice();
+        var seen = {
+          'tool.png': true,
+          'tool-gpt-image-legacy.png': true,
+          'tool-python-legacy.png': true,
+          'lighthouse.png': true,
+        };
         (items || []).forEach(function (item) {
           var slide = gallerySlideFromItem(item);
           if (!slide || seen[slide.src]) return;
           seen[slide.src] = true;
           next.push(slide);
         });
-        // Fallback if gallery fetch failed: still show lighthouse sample after the two tool shots.
-        if (next.length === 2) {
-          next.push({
-            src: 'lighthouse.png',
-            title: 'lighthouse.png · by Jacob Stephens',
-            alt: 'Gouache-style lighthouse on a rocky headland in a storm, generated by inkvoke for this page',
-            captionHtml:
-              'By <strong>Jacob Stephens</strong> · a lighthouse in a storm, gouache. ' +
-              'Sample from <span class="c-accent">inkvoke generate</span>. ' +
-              '<span class="click-hint">Click</span> to return to the tool illustration.',
-          });
-        }
         var prevSrc = slides[index] && slides[index].src;
         slides = next;
         // Prefetch a few upcoming slides.
