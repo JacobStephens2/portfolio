@@ -39,14 +39,20 @@ class ExecuteApiTests(unittest.TestCase):
         with self.assertRaises(core.UnknownLanguage):
             core.run_samples("not-a-language", samples=1)
 
-    def test_run_samples_ai_standin(self):
-        result = core.run_samples("ai", samples=5)
+    def test_run_samples_ai_requires_key_or_runs(self):
+        import os
+        if not os.environ.get("OPENAI_API_KEY"):
+            # Without a key the live path should fail cleanly (config error).
+            result = core.run_samples("ai", samples=1)
+            self.assertEqual(result["samples"], 1)
+            self.assertIn(result["exitCode"], (0, 1))
+            if result["exitCode"] != 0:
+                self.assertIn("OPENAI", result.get("stderr") or result.get("displayStdout") or "")
+            return
+        result = core.run_samples("ai", samples=1)
         self.assertEqual(result["exitCode"], 0)
-        self.assertEqual(result["displayStdout"], "Hello, World!")
-        self.assertEqual(result["samples"], 5)
-        self.assertIsNotNone(result["avgMs"])
-        self.assertTrue(result["stdoutConsistent"])
-        self.assertIn("prompt", result)
+        self.assertTrue(result.get("displayStdout"))
+        self.assertIsNotNone(result.get("costUsd"))
 
     def test_run_samples_python(self):
         if not shutil.which("python3"):
@@ -84,14 +90,14 @@ class ExecuteApiTests(unittest.TestCase):
     def test_benchmark_subset(self):
         if not shutil.which("python3"):
             self.skipTest("python3 missing")
-        result = core.benchmark(samples=2, languages=["ai", "python"])
+        result = core.benchmark(samples=2, languages=["python", "bash"])
         self.assertEqual(result["samples"], 2)
         self.assertEqual(result["count"], 2)
         self.assertIn("hardware", result)
         ids = {r["id"] for r in result["rows"]}
-        self.assertEqual(ids, {"ai", "python"})
+        self.assertEqual(ids, {"python", "bash"})
         for row in result["rows"]:
-            self.assertTrue(row["ok"])
+            self.assertTrue(row["ok"], row)
             self.assertIsNotNone(row["avgMs"])
             self.assertIn("Hello, World!", row["stdout"])
 

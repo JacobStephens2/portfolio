@@ -360,7 +360,7 @@
 
             <ul class="timeline">
                 <li><strong>Binary program</strong> (c. 1945) - the ELF you ship. After Run, look for a green <em>RESULT</em> strip under the header (not only the hex dump).</li>
-                <li><strong>Machine code</strong> (c. 1940s) - instruction encodings. Carousel includes <em>Hand-entered hex</em>: the short opcode list people would have keyed before assemblers.</li>
+                <li><strong>Machine code</strong> (c. 1940s) - instruction encodings. Carousel includes <em>Hand-entered hex</em> (front-panel opcodes) and <em>Punch cards (sim)</em> (80-col deck teaching sheet - not a live reader).</li>
                 <li><strong>Assembly</strong> (c. 1949) - mnemonics for those encodings.</li>
                 <li><strong>Early high-level</strong> (1957–1959) - FORTRAN, Lisp, COBOL: formulas, lists, business data.</li>
                 <li><strong>Systems</strong> (1970–1985) - Pascal, C, C++ (PascalCase comes from Pascal).</li>
@@ -419,7 +419,7 @@
                 <li><strong>Carousel bands</strong> - Early high-level, systems, managed, and scripting pack peers on one rung; years label each language.</li>
                 <li><strong>1950s high-level is not "toy"</strong> - FORTRAN, Lisp, and COBOL still compile and run here via gfortran, SBCL, and GnuCOBOL.</li>
                 <li><strong>C is a hinge</strong> - short source, native binary, still close enough that compiler output looks like Assembly.</li>
-                <li><strong>AI engineering vs vibe coding</strong> - both stand-ins avoid a live model. Engineering: tight prompt. Vibe: chat transcript + frozen <code>vibe-hello.py</code>.</li>
+                <li><strong>AI engineering vs vibe coding</strong> - both call live GPT-5.6 Luna (effort low). Engineering uses a tight prompt; vibe uses a casual chat-style prompt. Cost appears on the RESULT strip and on the dashboard.</li>
             </ul>
 
             <h2>Quiz · don't leave until one answer sticks</h2>
@@ -435,7 +435,7 @@
             </div>
 
             <h2>What's still open</h2>
-            <p>The private ARM64 teach path and this public x86_64 ladder are deliberately different ISAs - good for honesty, awkward for copy-paste between Mac and server. A dual-target Assembly pair (Apple Silicon vs Linux amd64) would make the platform gap visceral. The AI and vibe rungs are intentionally not live model calls; wiring a budgeted, logged, content-filtered model would be a different post about product risk, not Hello World. highlight.js is loaded modularly from esm.sh - if that CDN is blocked, sources stay readable as plain text.</p>
+            <p>The private ARM64 teach path and this public x86_64 ladder are deliberately different ISAs - good for honesty, awkward for copy-paste between Mac and server. A dual-target Assembly pair (Apple Silicon vs Linux amd64) would make the platform gap visceral. AI and vibe rungs call GPT-5.6 Luna with per-request cost reporting, a cumulative ledger, and an email if spend exceeds $5. highlight.js is loaded modularly from esm.sh - if that CDN is blocked, sources stay readable as plain text.</p>
 
             <h2>Sources</h2>
             <div class="sources">
@@ -468,7 +468,7 @@
             </div>
 
             <div class="ai-note">
-                Drafted from the private <code>learn-assembly</code> teach-skill workspace (including its early high-level timeline note) and this site's interactive-post pattern (<code>the-animation-is-a-replay</code> server, Apache proxy, highlight.js). Run Program hits allowlisted builds on Linux x86_64 for metal through scripting; AI and vibe are deterministic stand-ins (no live LLM). Multi-language bands use click-only carousels. The decisions, the hosting, and the words are mine; the technical collaborator for scaffolding was Grok.
+                Drafted from the private <code>learn-assembly</code> teach-skill workspace (including its early high-level timeline note) and this site's interactive-post pattern (<code>the-animation-is-a-replay</code> server, Apache proxy, highlight.js). Run Program hits allowlisted builds on Linux x86_64 for metal through scripting; AI engineering and vibe coding call live <code>gpt-5.6-luna</code> (reasoning effort low); spend is tallied and shown on each response. Multi-language bands use click-only carousels. The decisions, the hosting, and the words are mine; the technical collaborator for scaffolding was Grok.
             </div>
 
             <p><strong>For AI agents:</strong> the machine-oriented version is at <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a>, with directives, the allowlist contract, verified endpoints, an operational checklist, and a self-test.</p>
@@ -513,7 +513,8 @@
       blurb: 'Raw opcodes.',
       variants: [
         { id: 'machine', title: 'Machine code (objdump)', year: 'c. 1940s', sourceFile: 'hello.s', highlight: 'x86asm', source: '' },
-        { id: 'handcode', title: 'Hand-entered hex', year: 'c. 1940s–50s', sourceFile: 'hand-entry.txt', highlight: 'plaintext', source: '' }
+        { id: 'handcode', title: 'Hand-entered hex', year: 'c. 1940s–50s', sourceFile: 'hand-entry.txt', highlight: 'plaintext', source: '' },
+        { id: 'punchcard', title: 'Punch cards (sim)', year: 'c. 1890–1970s', sourceFile: 'punch-card.txt', highlight: 'plaintext', source: '' }
       ]
     },
     {
@@ -893,7 +894,7 @@
     renderTally();
   }
 
-  function setRunResult(rung, ok, stdout, meta) {
+  function setRunResult(rung, ok, stdout, meta, costLine) {
     var el = rung.querySelector('.run-result');
     if (!el) return;
     el.className = 'run-result is-visible' + (ok ? '' : ' is-error');
@@ -911,6 +912,12 @@
       m.className = 'rr-meta';
       m.textContent = meta;
       el.appendChild(m);
+    }
+    if (costLine) {
+      var c = document.createElement('div');
+      c.className = 'rr-meta';
+      c.textContent = costLine;
+      el.appendChild(c);
     }
     try { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { /* ignore */ }
   }
@@ -979,7 +986,16 @@
           String(b.prompt).split('\n').forEach(function (ln) { termLine(out, 'dim', ln); });
         }
         if (b.session) termLine(out, 'dim', 'Vibe session transcript is in the Source panel.');
-        setRunResult(rung, true, display || '(empty)', meta);
+        var costLine = '';
+        if (b.costUsd != null) {
+          costLine = 'This request ~$' + Number(b.costUsd).toFixed(6);
+          if (b.spendTotalUsd != null) {
+            costLine += ' · ladder LLM total $' + Number(b.spendTotalUsd).toFixed(4);
+          }
+          if (b.model) costLine += ' · ' + b.model + (b.reasoningEffort ? ' (effort=' + b.reasoningEffort + ')' : '');
+          termLine(out, 'dim', costLine);
+        }
+        setRunResult(rung, true, display || '(empty)', meta, costLine);
         recordTime(id, b.title || id, b.year || '', Number(b.avgMs != null ? b.avgMs : b.wallMs), b.samples || 1);
         try { out.scrollTop = 0; } catch (e2) { /* ignore */ }
       })

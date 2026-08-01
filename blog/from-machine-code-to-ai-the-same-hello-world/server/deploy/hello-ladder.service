@@ -7,17 +7,27 @@ Type=simple
 User=jacob
 Group=jacob
 WorkingDirectory=/var/www/stephens.page/blog/from-machine-code-to-ai-the-same-hello-world/server
-ExecStart=/home/jacob/venvs/hello-ladder/bin/uvicorn app:app --host 127.0.0.1 --port 3521 --proxy-headers --forwarded-allow-ips=127.0.0.1
-Restart=on-failure
-RestartSec=3
+# SMTP_PASS (Resend) for $5 spend alert emails; OPENAI from private/.env
+EnvironmentFile=-/var/www/stephens.page/private/.env
 Environment=PYTHONUNBUFFERED=1
 Environment=PYTHONDONTWRITEBYTECODE=1
 Environment=HELLO_LADDER_PATH=/home/jacob/.cargo/bin:/usr/local/go/bin:/usr/bin:/bin
+Environment=HELLO_LADDER_SPEND_DIR=/var/lib/hello-ladder
+Environment=HELLO_LADDER_LLM_MODEL=gpt-5.6-luna
+Environment=HELLO_LADDER_LLM_REASONING=low
+Environment=HELLO_LADDER_SPEND_ALERT_USD=5.0
+Environment=HELLO_LADDER_ADMIN_EMAIL=jacob@stephens.page
+Environment=MAIL_FROM_EMAIL=jacob@stephens.page
+ExecStart=/usr/local/bin/secret-env /etc/shared-secrets/smtp.env.sops /home/jacob/venvs/hello-ladder/bin/uvicorn app:app --host 127.0.0.1 --port 3521 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+RestartSec=3
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths=/var/www/stephens.page/blog/from-machine-code-to-ai-the-same-hello-world/cache
+ReadWritePaths=/var/www/stephens.page/blog/from-machine-code-to-ai-the-same-hello-world/cache /var/lib/hello-ladder
+# Allow reading private/.env for OPENAI_API_KEY
+ReadOnlyPaths=/var/www/stephens.page/private
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 MemoryMax=512M
 

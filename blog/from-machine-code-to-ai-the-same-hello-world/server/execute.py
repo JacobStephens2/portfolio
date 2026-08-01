@@ -163,6 +163,17 @@ LANGS: dict[str, dict] = {
         "run": [str(CACHE / "hello-asm")],
         "build_source": "hello.s",
     },
+    "punchcard": {
+        "title": "Punch cards (sim)",
+        "year": "c. 1890–1970s",
+        "year_note": "Hollerith → unit record → source/data decks; often numeric/tabular output",
+        "band": "machine",
+        "source_file": "punch-card.txt",
+        "kind": "punchcard-sim",
+        "highlight": "plaintext",
+        "build": None,
+        "run": None,
+    },
     "assembly": {
         "title": "Assembly (x86_64 Linux)",
         "year": "c. 1949",
@@ -366,24 +377,26 @@ LANGS: dict[str, dict] = {
     "ai": {
         "title": "AI engineering",
         "year": "c. 2022",
-        "year_note": "LLM-as-interface enters mainstream product engineering",
+        "year_note": "LLM-as-interface; live GPT-5.6 Luna (reasoning low) on this host",
         "band": "ai",
         "source_file": "ai-prompt.txt",
-        "kind": "ai-standin",
+        "kind": "ai-llm",
         "highlight": "plaintext",
         "build": None,
         "run": None,
+        "llm_mode": "ai-engineering",
     },
     "vibe": {
         "title": "Vibe coding",
         "year": "2025",
-        "year_note": "term popularized by Andrej Karpathy",
+        "year_note": "Karpathy coinage; live GPT-5.6 Luna (reasoning low) on this host",
         "band": "vibe",
         "source_file": "vibe-session.md",
-        "kind": "vibe-standin",
+        "kind": "vibe-llm",
         "highlight": "markdown",
         "build": None,
-        "run": ["python3", str(PROGRAMS / "vibe-hello.py")],
+        "run": None,
+        "llm_mode": "vibe-coding",
         "artifact": "vibe-hello.py",
     },
 }
@@ -578,6 +591,10 @@ def run_samples(language: str, samples: int = 10, *, detail: bool = True) -> dic
     if language not in LANGS:
         raise UnknownLanguage(language)
     samples = max(BENCH_SAMPLES_MIN, min(BENCH_SAMPLES_MAX, int(samples)))
+    meta = LANGS[language]
+    # Live LLM / punch sim: single shot (don't multiply API spend or fake multi-runs).
+    if meta.get("kind") in ("ai-llm", "vibe-llm", "punchcard-sim"):
+        samples = 1
 
     # Build once (untimed), then time execute-only samples.
     build_lang = {
@@ -585,7 +602,6 @@ def run_samples(language: str, samples: int = 10, *, detail: bool = True) -> dic
         "handcode": "handcode",
         "binary": "binary",
     }.get(language, language)
-    meta = LANGS[language]
     if meta.get("build"):
         ensure_built(build_lang)
 
@@ -621,6 +637,111 @@ def run_samples(language: str, samples: int = 10, *, detail: bool = True) -> dic
         )
     return last
 
+def _run_llm_rung(lang: str, meta: dict, band_level: int, *, detail: bool) -> dict:
+    """Live GPT-5.6 Luna (reasoning low) for AI engineering / vibe coding."""
+    import llm_client
+    from llm_spend import read_spend
+
+    prompt_path = PROGRAMS / meta["source_file"]
+    source_text = prompt_path.read_text(encoding="utf-8") if prompt_path.exists() else ""
+
+    if meta["kind"] == "ai-llm":
+        system = (
+            "You are a precise program. Follow the user's specification exactly. "
+            "Output only what is required - no markdown fences unless asked."
+        )
+        user = source_text.strip() or (
+            "Print exactly one line to stdout:\nHello, World!\n"
+            "No quotes, no extra whitespace, no explanation."
+        )
+        mode = "ai-engineering"
+    else:
+        system = (
+            "You are a casual coding agent in a vibe-coding chat. "
+            "Be brief. Prefer a single working line of output the user can run or see."
+        )
+        user = (
+            "hey can you make a hello world for me real quick - just print Hello, World! "
+            "as the only line of your reply"
+        )
+        mode = "vibe-coding"
+
+    started = time.perf_counter()
+    try:
+        llm = llm_client.complete(mode=mode, system=system, user=user)
+        err = ""
+        exit_code = 0
+    except Exception as exc:  # noqa: BLE001
+        wall_ms = (time.perf_counter() - started) * 1000
+        spend = read_spend()
+        return {
+            "language": lang,
+            "title": meta["title"],
+            "year": meta.get("year"),
+            "level": band_level,
+            "stdout": "",
+            "stderr": str(exc),
+            "exitCode": 1,
+            "wallMs": round(wall_ms, 3),
+            "host": _host() if detail else {},
+            "sourceFile": meta["source_file"],
+            "highlight": meta.get("highlight", "plaintext"),
+            "displayStdout": f"(LLM error: {exc})",
+            "costUsd": 0.0,
+            "spendTotalUsd": float(spend.get("total_usd") or 0),
+            "model": llm_client.MODEL,
+            "reasoningEffort": llm_client.REASONING_EFFORT,
+            "note": f"Live LLM call failed: {exc}",
+            "samples": 1,
+            "avgMs": round(wall_ms, 3),
+            "minMs": round(wall_ms, 3),
+            "maxMs": round(wall_ms, 3),
+            "stdevMs": 0.0,
+        }
+
+    wall_ms = llm.get("llmWallMs") or ((time.perf_counter() - started) * 1000)
+    display = llm["displayStdout"]
+    payload = {
+        "language": lang,
+        "title": meta["title"],
+        "year": meta.get("year"),
+        "level": band_level,
+        "stdout": llm.get("stdout") or (display + "\n"),
+        "stderr": err,
+        "exitCode": exit_code,
+        "wallMs": round(float(wall_ms), 3),
+        "host": _host() if detail else {},
+        "sourceFile": meta["source_file"],
+        "highlight": meta.get("highlight", "plaintext"),
+        "displayStdout": display,
+        "costUsd": llm.get("costUsd"),
+        "spendTotalUsd": llm.get("spendTotalUsd"),
+        "spendRequestCount": llm.get("spendRequestCount"),
+        "inputTokens": llm.get("inputTokens"),
+        "outputTokens": llm.get("outputTokens"),
+        "cachedInputTokens": llm.get("cachedInputTokens"),
+        "model": llm.get("model"),
+        "reasoningEffort": llm.get("reasoningEffort"),
+        "note": (
+            f"Live OpenAI {llm.get('model')} with reasoning.effort="
+            f"{llm.get('reasoningEffort')}. This request ~${float(llm.get('costUsd') or 0):.6f}; "
+            f"ladder cumulative LLM spend ${float(llm.get('spendTotalUsd') or 0):.4f} "
+            f"({llm.get('spendRequestCount')} requests)."
+        ),
+        "samples": 1,
+        "avgMs": round(float(wall_ms), 3),
+        "minMs": round(float(wall_ms), 3),
+        "maxMs": round(float(wall_ms), 3),
+        "stdevMs": 0.0,
+    }
+    if detail and meta["kind"] == "ai-llm":
+        payload["prompt"] = source_text
+    if detail and meta["kind"] == "vibe-llm":
+        payload["session"] = source_text
+        payload["prompt"] = user
+    return payload
+
+
 def run_language(lang: str, *, detail: bool = True) -> dict:
     if lang not in LANGS:
         raise UnknownLanguage(lang)
@@ -628,9 +749,42 @@ def run_language(lang: str, *, detail: bool = True) -> dict:
     started = time.perf_counter()
     band_level = next(b["level"] for b in BANDS if b["id"] == meta["band"])
 
-    if meta["kind"] == "ai-standin":
+    if meta["kind"] in ("ai-llm", "vibe-llm"):
+        return _run_llm_rung(lang, meta, band_level, detail=detail)
+
+    if meta["kind"] == "punchcard-sim":
         wall_ms = (time.perf_counter() - started) * 1000
-        payload = {
+        out = "HELLO, WORLD!\n"
+        return {
+            "language": lang,
+            "title": meta["title"],
+            "year": meta.get("year"),
+            "level": band_level,
+            "stdout": out,
+            "stderr": "",
+            "exitCode": 0,
+            "wallMs": round(wall_ms, 3),
+            "host": _host() if detail else {},
+            "sourceFile": meta["source_file"],
+            "highlight": "plaintext",
+            "displayStdout": "HELLO, WORLD!",
+            "costUsd": 0.0,
+            "note": (
+                "Simulated card-deck job: period systems often printed fixed-width "
+                "lines or punched result cards - not a modern interactive terminal. "
+                "See source sheet for history. Not a live card reader."
+            ),
+            "samples": 1,
+            "avgMs": round(wall_ms, 3),
+            "minMs": round(wall_ms, 3),
+            "maxMs": round(wall_ms, 3),
+            "stdevMs": 0.0,
+        }
+
+    if meta["kind"] in ("ai-standin", "vibe-standin"):
+        # Legacy kinds kept for tests; prefer ai-llm / vibe-llm in LANGS.
+        wall_ms = (time.perf_counter() - started) * 1000
+        return {
             "language": lang,
             "title": meta["title"],
             "year": meta.get("year"),
@@ -643,41 +797,9 @@ def run_language(lang: str, *, detail: bool = True) -> dict:
             "sourceFile": meta["source_file"],
             "highlight": meta.get("highlight", "plaintext"),
             "displayStdout": "Hello, World!",
-            "note": (
-                "Deterministic stand-in for an LLM: the server does not call a model. "
-                "It returns the exact one-line output the engineered prompt asks for."
-            ),
+            "costUsd": 0.0,
+            "note": "Legacy deterministic stand-in (no live model).",
         }
-        if detail:
-            payload["prompt"] = (PROGRAMS / "ai-prompt.txt").read_text(encoding="utf-8")
-        return payload
-
-    if meta["kind"] == "vibe-standin":
-        result = _run_cmd(meta["run"], RUN_TIMEOUT_SECONDS)
-        wall_ms = (time.perf_counter() - started) * 1000
-        stdout = (result.stdout or "").replace("\r\n", "\n")
-        payload = {
-            "language": lang,
-            "title": meta["title"],
-            "year": meta.get("year"),
-            "level": band_level,
-            "stdout": stdout,
-            "stderr": result.stderr,
-            "exitCode": result.returncode,
-            "wallMs": round(wall_ms, 3),
-            "host": _host() if detail else {},
-            "sourceFile": meta["source_file"],
-            "highlight": meta.get("highlight", "markdown"),
-            "command": meta["run"],
-            "displayStdout": stdout.strip() or "(empty stdout)",
-            "note": (
-                "Vibe coding stand-in: chat transcript is the process; "
-                "Run executes programs/vibe-hello.py. No live model."
-            ),
-        }
-        if detail:
-            payload["session"] = (PROGRAMS / meta["source_file"]).read_text(encoding="utf-8")
-        return payload
 
     build_lang = {
         "machine": "assembly",
