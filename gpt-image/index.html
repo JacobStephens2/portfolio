@@ -669,6 +669,73 @@ gpt-image 0.3.0 (default model: gpt-image-2)</pre>
       </p>
 
       <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Binary (recommended)</h3>
+      <p class="lead" style="margin:0 0 12px">
+        Download the asset that matches <strong>both</strong> your OS and CPU.
+        The wrong file (Linux on macOS, or <span class="mono">amd64</span> on Apple Silicon) fails with
+        <span class="mono">exec format error</span> or a wrong-architecture message.
+        <a href="https://github.com/JacobStephens2/gpt-image/releases/latest">All downloads</a>
+        · <span class="mono">SHA256SUMS</span> included.
+      </p>
+
+      <h4 style="font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600">Which binary? (<span class="mono">amd64</span> vs <span class="mono">arm64</span>)</h4>
+      <div style="overflow-x:auto;margin:0 0 14px">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;color:var(--fg)">
+          <thead>
+            <tr style="text-align:left;border-bottom:1px solid var(--border);color:var(--muted)">
+              <th style="padding:8px 10px 8px 0;font-weight:600">Suffix</th>
+              <th style="padding:8px 10px;font-weight:600">CPU</th>
+              <th style="padding:8px 0 8px 10px;font-weight:600">Typical machines</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px 10px 10px 0"><span class="mono">amd64</span></td>
+              <td style="padding:10px">Intel/AMD 64-bit (x86_64)</td>
+              <td style="padding:10px 0 10px 10px">Most Windows/Linux PCs; older Intel Macs</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 10px 10px 0"><span class="mono">arm64</span></td>
+              <td style="padding:10px">ARM 64-bit (aarch64)</td>
+              <td style="padding:10px 0 10px 10px">Apple Silicon Macs (M1–M4); many Pi / Graviton hosts</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="lead" style="margin:0 0 14px;padding-left:1.2em">
+        <li><strong>macOS Apple Silicon</strong> → <span class="mono">gpt-image-darwin-arm64</span></li>
+        <li><strong>macOS Intel</strong> → <span class="mono">gpt-image-darwin-amd64</span></li>
+        <li><strong>Linux x86_64</strong> → <span class="mono">gpt-image-linux-amd64</span></li>
+        <li><strong>Linux ARM64</strong> → <span class="mono">gpt-image-linux-arm64</span></li>
+        <li><strong>Windows x86_64</strong> → <span class="mono">gpt-image-windows-amd64.exe</span></li>
+      </ul>
+      <p class="lead" style="margin:0 0 16px">
+        Check if unsure:
+        <span class="mono">uname -s</span> (Darwin = macOS, Linux = Linux) ·
+        <span class="mono">uname -m</span> (<span class="mono">arm64</span>/<span class="mono">aarch64</span> → arm64; <span class="mono">x86_64</span> → amd64).
+      </p>
+
+      <h4 style="font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600">macOS (Apple Silicon — arm64)</h4>
+      <div class="copy-row">
+        <pre class="block" id="install-cmd-darwin-arm64">curl -fsSL -o gpt-image \
+  https://github.com/JacobStephens2/gpt-image/releases/latest/download/gpt-image-darwin-arm64
+chmod +x gpt-image
+sudo mv gpt-image /usr/local/bin/gpt-image
+gpt-image version
+# gpt-image 0.3.0 (default model: gpt-image-2)</pre>
+        <button class="copy-btn" data-copy="install-cmd-darwin-arm64">Copy</button>
+      </div>
+
+      <h4 style="font-size:14px;margin:16px 0 8px;color:var(--muted);font-weight:600">macOS (Intel — amd64)</h4>
+      <div class="copy-row">
+        <pre class="block" id="install-cmd-darwin-amd64">curl -fsSL -o gpt-image \
+  https://github.com/JacobStephens2/gpt-image/releases/latest/download/gpt-image-darwin-amd64
+chmod +x gpt-image
+sudo mv gpt-image /usr/local/bin/gpt-image
+gpt-image version</pre>
+        <button class="copy-btn" data-copy="install-cmd-darwin-amd64">Copy</button>
+      </div>
+
+      <h4 style="font-size:14px;margin:16px 0 8px;color:var(--muted);font-weight:600">Linux (amd64)</h4>
       <div class="copy-row">
         <pre class="block" id="install-cmd">curl -fsSL -o gpt-image \
   https://github.com/JacobStephens2/gpt-image/releases/latest/download/gpt-image-linux-amd64
@@ -678,14 +745,30 @@ gpt-image version
 # gpt-image 0.3.0 (default model: gpt-image-2)</pre>
         <button class="copy-btn" data-copy="install-cmd">Copy</button>
       </div>
+
+      <h4 style="font-size:14px;margin:16px 0 8px;color:var(--muted);font-weight:600">Linux (arm64)</h4>
+      <div class="copy-row">
+        <pre class="block" id="install-cmd-linux-arm64">curl -fsSL -o gpt-image \
+  https://github.com/JacobStephens2/gpt-image/releases/latest/download/gpt-image-linux-arm64
+chmod +x gpt-image
+sudo mv gpt-image /usr/local/bin/gpt-image
+gpt-image version</pre>
+        <button class="copy-btn" data-copy="install-cmd-linux-arm64">Copy</button>
+      </div>
+
+      <h4 style="font-size:14px;margin:16px 0 8px;color:var(--muted);font-weight:600">Windows (amd64)</h4>
       <p class="lead" style="margin:0 0 16px">
-        Other assets:
-        <span class="mono">gpt-image-linux-arm64</span>,
-        <span class="mono">gpt-image-darwin-amd64</span>,
-        <span class="mono">gpt-image-darwin-arm64</span>,
-        <span class="mono">gpt-image-windows-amd64.exe</span>,
-        plus <span class="mono">SHA256SUMS</span>.
-        <a href="https://github.com/JacobStephens2/gpt-image/releases/latest">All downloads</a>.
+        Download
+        <a href="https://github.com/JacobStephens2/gpt-image/releases/latest/download/gpt-image-windows-amd64.exe"><span class="mono">gpt-image-windows-amd64.exe</span></a>,
+        rename to <span class="mono">gpt-image.exe</span> if you like, put it on your <span class="mono">PATH</span>, then run
+        <span class="mono">gpt-image version</span>.
+      </p>
+
+      <h4 style="font-size:14px;margin:0 0 8px;color:var(--muted);font-weight:600">Uninstall</h4>
+      <p class="lead" style="margin:0 0 16px">
+        Install is a single file on your <span class="mono">PATH</span>. There is no <span class="mono">gpt-image uninstall</span> command — remove the binary:
+        <span class="mono">sudo rm /usr/local/bin/gpt-image</span>
+        (or <span class="mono">$(go env GOPATH)/bin/gpt-image</span> if you used <span class="mono">go install</span>).
       </p>
 
       <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">With Go 1.22+</h3>
