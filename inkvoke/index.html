@@ -466,13 +466,13 @@
             src="tool.png"
             width="1536"
             height="1024"
-            alt="Product illustration of the inkvoke Go CLI: a dark terminal generating a lighthouse, a portrait edit, and a batch grid of images"
+            alt="Product illustration of the inkvoke Go CLI: laptop terminal running inkvoke generate, edit, and batch, with floating lighthouse, portrait, and architecture outputs"
           >
         </div>
         <p class="img-caption mono" id="hero-image-caption">
-          Illustration of the tool itself - terminal in, images out (generate, edit, batch).
-          Also made with <span class="c-accent">inkvoke generate</span> (Go binary, v1.0.0).
-          <span class="click-hint">Click the image</span> for the original Python-era product shot, then community samples.
+          Current product shot - terminal in, images out (generate, edit, batch). Branding: <span class="c-accent">inkvoke</span>.
+          Made with <span class="c-accent">inkvoke generate</span> (Go binary, v1.0.1).
+          <span class="click-hint">Click the image</span> for the original Python-era shot (when it was still named gpt-image), then community samples.
         </p>
       </div>
 
@@ -1575,20 +1575,21 @@ sudo inkvoke --uninstall</pre>
       var TOOL_SLIDE = {
         src: 'tool.png',
         title: 'tool.png · inkvoke as a product (Go)',
-        alt: 'Product illustration of the inkvoke Go CLI: a dark terminal generating a lighthouse, a portrait edit, and a batch grid of images',
+        alt: 'Product illustration of the inkvoke Go CLI: laptop terminal running inkvoke generate, edit, and batch, with floating lighthouse, portrait, and architecture outputs',
         captionHtml:
-          'Illustration of the tool itself - terminal in, images out (generate, edit, batch). ' +
-          'Also made with <span class="c-accent">inkvoke generate</span> (Go binary, v1.0.0). ' +
-          '<span class="click-hint">Click the image</span> for the original Python-era product shot, then community samples.'
+          'Current product shot - terminal in, images out (generate, edit, batch). Branding: <span class="c-accent">inkvoke</span>. ' +
+          'Made with <span class="c-accent">inkvoke generate</span> (Go binary, v1.0.1). ' +
+          '<span class="click-hint">Click the image</span> for the original Python-era shot (when it was still named gpt-image), then community samples.'
       };
 
       var TOOL_PYTHON_SLIDE = {
         src: 'tool-python-legacy.png',
-        title: 'tool.png · first version (Python)',
-        alt: 'Original product illustration of inkvoke when it was a Python CLI: terminal showing python gpt_image.py generate and edit commands with floating output images',
+        title: 'tool-python-legacy.png · first version (Python · gpt-image)',
+        alt: 'Original product illustration from the first version: a Python CLI named gpt-image, with terminal showing python gpt_image.py generate and edit commands and floating output images',
         captionHtml:
-          'Original product illustration. The <strong>first version of inkvoke used Python</strong> ' +
-          '(<span class="mono">python gpt_image.py …</span>); v0.2+ is a single Go binary, and v0.3.0 adds <span class="mono">--json</span> / exit codes for agents. ' +
+          'History: the <strong>first version was a Python script named <span class="mono">gpt-image</span></strong> ' +
+          '(<span class="mono">python gpt_image.py …</span>). Renamed to <span class="c-accent">inkvoke</span> in v1.0.0; ' +
+          'v0.2+ is a single Go binary; v0.3.0 added <span class="mono">--json</span> / exit codes for agents. ' +
           '<span class="click-hint">Click</span> for community samples (including lighthouse.png).'
       };
 
