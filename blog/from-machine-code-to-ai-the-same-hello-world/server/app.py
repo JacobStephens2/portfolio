@@ -142,6 +142,15 @@ def _env() -> dict[str, str]:
     env = os.environ.copy()
     env["PATH"] = PATH_PREFIX
     env["HOME"] = "/home/jacob"
+    # systemd ProtectHome=read-only blocks ~/.cache; keep tool caches under CACHE.
+    cache_tmp = CACHE / "tmp"
+    cache_tmp.mkdir(parents=True, exist_ok=True)
+    env["TMPDIR"] = str(cache_tmp)
+    env["TMP"] = str(cache_tmp)
+    env["TEMP"] = str(cache_tmp)
+    env["GOCACHE"] = str(CACHE / "go-build")
+    env["GOMODCACHE"] = str(CACHE / "go-mod")
+    env["GOTMPDIR"] = str(cache_tmp)
     # Keep Go happy without network for a single-file build.
     env.setdefault("GO111MODULE", "off")
     env.setdefault("GOTOOLCHAIN", "local")
