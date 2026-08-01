@@ -8,13 +8,13 @@
   <meta property="og:title" content="inkvoke v1.0.0 - Go CLI for OpenAI image models">
   <meta property="og:description" content="Generate, edit, and batch images with gpt-image-2 from the terminal. Single Go binary - agent-friendly --json and exit codes. linux/macOS/Windows.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://stephens.page/inkvoke">
-  <meta property="og:image" content="https://stephens.page/inkvoke/tool.png">
+  <meta property="og:url" content="https://inkvoke.dev">
+  <meta property="og:image" content="https://inkvoke.dev/tool.png">
   <meta property="og:site_name" content="Jacob Stephens">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="inkvoke v1.0.0">
   <meta name="twitter:description" content="Go CLI for OpenAI gpt-image-2: generate, edit, batch, --json for agents. Binary releases for linux/macOS/Windows.">
-  <meta name="twitter:image" content="https://stephens.page/inkvoke/tool.png">
+  <meta name="twitter:image" content="https://inkvoke.dev/tool.png">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="favicon.png" sizes="32x32">
   <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
@@ -1020,9 +1020,19 @@ sudo inkvoke --uninstall</pre>
         return by || 'anonymous';
       }
 
+      function isGalleryVisible(item) {
+        // Admin can hide tiles from the public gallery via dashboard.stephens.page.
+        return !(item && (item.hidden === true || item.hidden === 1 || item.hidden === '1'));
+      }
+
+      function publicItems(items) {
+        return (items || []).filter(isGalleryVisible);
+      }
+
       function render(items) {
         grid.innerHTML = '';
-        if (!items || !items.length) {
+        var visible = publicItems(items);
+        if (!visible.length) {
           var p = document.createElement('p');
           p.className = 'gallery-empty';
           p.id = 'gallery-empty';
@@ -1030,7 +1040,7 @@ sudo inkvoke --uninstall</pre>
           grid.appendChild(p);
           return;
         }
-        items.forEach(function (item) {
+        visible.forEach(function (item) {
           var url = safeImageUrl(item);
           if (!url) return;
           var prompt = typeof item.prompt === 'string' ? item.prompt : '';
@@ -1088,13 +1098,14 @@ sudo inkvoke --uninstall</pre>
           })
           .then(function (data) {
             var items = (data && Array.isArray(data.items)) ? data.items : [];
+            var shown = publicItems(items);
             render(items);
             if (typeof window.setHeroGalleryItems === 'function') {
-              window.setHeroGalleryItems(items, {
+              window.setHeroGalleryItems(shown, {
                 focusUrl: opts.focusUrl || '',
               });
             }
-            return items;
+            return shown;
           })
           .catch(function () {
             grid.innerHTML = '';
@@ -1619,6 +1630,7 @@ sudo inkvoke --uninstall</pre>
       }
 
       function gallerySlideFromItem(item) {
+        if (item && (item.hidden === true || item.hidden === 1 || item.hidden === '1')) return null;
         var src = safeGalleryUrl(item);
         if (!src || isToolSlideSrc(src)) return null;
         var prompt = typeof item.prompt === 'string' ? item.prompt : '';
