@@ -32,8 +32,10 @@ Upstream: `127.0.0.1:3521`
 | GET | `/levels` | **preferred** - bands with `era`, `hides`, ordered `variants` |
 | GET | `/languages` | flat list (legacy) |
 | GET | `/health` | includes `hardware` (CPU model, vCPU, RAM, OS) and `defaultSamples` |
-| POST | `/run/{language}?samples=N` | execute allowlisted program N times (default 10); returns mean/min/max/stdev |
-| POST | `/benchmark` | body `{ "samples": 10\|100, "languages"?: [...] }` - full comparison table |
+| POST | `/run/{language}?samples=N` | thin adapter → `execute.run_samples(language, N)` |
+| POST | `/benchmark` | thin adapter → `execute.benchmark(samples, languages?)` |
+
+Deep execute module: `server/execute.py` (allowlist, build, timing, catalog). HTTP: `server/app.py`.
 
 ## Bands (level order)
 

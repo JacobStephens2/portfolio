@@ -1,16 +1,43 @@
 # Hello ladder runner
 
-FastAPI service that executes **allowlisted** Hello World programs for the blog post.
+## Architecture
 
-- Listens on `127.0.0.1:3521`
-- Public path: `/blog/from-machine-code-to-ai-the-same-hello-world/api/`
-- Never accepts source code from the client - only a language key
+```
+index.html  →  HTTP (app.py)  →  deep execute (execute.py)  →  allowlisted programs/
+```
+
+| Module | Role |
+|--------|------|
+| **`execute.py`** | **Deep execute API** — all allowlisted build/run/stats logic |
+| **`app.py`** | Thin FastAPI adapter (rate limits, JSON, timeouts) |
+| **`programs/`** | Fixed Hello World sources (never from the client) |
+
+### Deep execute interface
+
+```python
+import execute as core
+
+core.run_samples("python", samples=10)
+# → stdout, avgMs, minMs, maxMs, stdevMs, exitCode, ...
+
+core.benchmark(samples=10, languages=["c", "python"])
+# → { samples, hardware, rows: [...] }
+
+core.catalog_levels()   # bands + variants for the UI
+core.hardware_info()    # host facts for the page
+```
+
+Callers never pass source code — only language ids from the allowlist.
 
 ## Endpoints
 
-- `GET /health`
-- `GET /languages` - ids, titles, source text
-- `POST /run/{language}` - run allowlisted program
+| Method | Path | Maps to |
+|--------|------|---------|
+| GET | `/health` | tools + hardware + language list |
+| GET | `/levels` | `catalog_levels()` |
+| GET | `/languages` | `catalog_languages()` |
+| POST | `/run/{language}?samples=N` | `run_samples(language, N)` |
+| POST | `/benchmark` | `benchmark(samples, languages?)` |
 
 ## Deploy
 
@@ -20,6 +47,15 @@ python3 -m venv /home/jacob/venvs/hello-ladder
 sudo cp deploy/hello-ladder.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now hello-ladder.service
-# Add ProxyPass lines from deploy/apache-proxy.conf to stephens.page-le-ssl.conf
+# ProxyPass from deploy/apache-proxy.conf
 sudo systemctl reload apache2
 ```
+
+## Tests
+
+```bash
+cd server
+python3 test_execute.py -v
+```
+
+Tests hit `execute.py` only (no HTTP, stdlib unittest).
