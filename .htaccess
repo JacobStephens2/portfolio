@@ -48,3 +48,5 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^([^.]+)$ $1.html [L]
+# gpt-image → inkvoke rename (2026-08-01)
+RedirectMatch 301 ^/gpt-image/?(.*)$ /inkvoke/$1
