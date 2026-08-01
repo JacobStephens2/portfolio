@@ -1,0 +1,756 @@
+@font-face {
+    font-family: 'Source Serif 4';
+    src: url('fonts/source-serif-4-latin.woff2') format('woff2');
+    font-weight: 600 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Source Sans 3';
+    src: url('fonts/source-sans-3-latin.woff2') format('woff2');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Source Sans 3';
+    src: url('fonts/source-sans-3-italic-latin.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+*,
+:after,
+:before {
+    box-sizing: border-box
+}
+
+:root {
+    color-scheme: light dark;
+    --primary-black: #181512;
+    --brand-blue: #9b4d24;
+    --accent-orange: #9b4d24;
+    --brand-ink: #ffffff;
+    --secondary-gray: #625a52;
+    --surface: #ffffff;
+    --surface-soft: #efe9df;
+    --rule: #d6d1c9;
+    --theme-toggle-size: 2.25rem;
+}
+
+/* Explicit light (overrides a dark system preference). */
+html[data-theme="light"] {
+    color-scheme: light;
+    --primary-black: #181512;
+    --brand-blue: #9b4d24;
+    --accent-orange: #9b4d24;
+    --brand-ink: #ffffff;
+    --secondary-gray: #625a52;
+    --surface: #ffffff;
+    --surface-soft: #efe9df;
+    --rule: #d6d1c9;
+}
+
+/* Explicit dark (overrides a light system preference). */
+html[data-theme="dark"] {
+    color-scheme: dark;
+    --primary-black: #f0ebe4;
+    --brand-blue: #d4a07a;
+    --accent-orange: #d4a07a;
+    --brand-ink: #141210;
+    --secondary-gray: #a89f94;
+    --surface: #141210;
+    --surface-soft: #1e1a16;
+    --rule: #3a342e;
+}
+
+/* System dark when the user has not pinned a theme. */
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]):not([data-theme="dark"]) {
+        color-scheme: dark;
+        --primary-black: #f0ebe4;
+        --brand-blue: #d4a07a;
+        --accent-orange: #d4a07a;
+        --brand-ink: #141210;
+        --secondary-gray: #a89f94;
+        --surface: #141210;
+        --surface-soft: #1e1a16;
+        --rule: #3a342e;
+    }
+}
+
+html.theme-ready,
+html.theme-ready body {
+    transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.theme-ready,
+    html.theme-ready body {
+        transition: none !important;
+    }
+}
+
+html {
+    line-sizing: normal
+}
+
+[hidden] {
+    display: none
+}
+
+h1 {
+    font-size: 2rem
+}
+
+h2 {
+    font-size: 1.5rem
+}
+
+h3 {
+    font-size: 1.17rem
+}
+
+h4 {
+    font-size: 1rem
+}
+
+h5 {
+    font-size: .83rem
+}
+
+h6 {
+    font-size: .67rem
+}
+
+h1 {
+    margin: .67em 0
+}
+
+pre {
+    white-space: pre-wrap
+}
+
+hr {
+    border-style: solid;
+    border-width: 1px 0 0;
+    color: inherit;
+    height: 0;
+    overflow: visible
+}
+
+audio,
+canvas,
+embed,
+iframe,
+img,
+object,
+svg,
+video {
+    display: block;
+    max-width: 100%;
+    vertical-align: middle
+}
+
+audio:not([controls]) {
+    display: none
+}
+
+picture {
+    display: contents
+}
+
+source {
+    display: none
+}
+
+canvas,
+img,
+svg,
+video {
+    height: auto
+}
+
+audio {
+    width: 100%
+}
+
+img {
+    border-style: none
+}
+
+svg {
+    overflow: hidden
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section {
+    display: block
+}
+
+[type=checkbox],
+[type=radio] {
+    box-sizing: border-box;
+    padding: 0
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    padding: 0.5rem 1rem;
+    background: var(--accent-orange);
+    color: var(--brand-ink);
+    font-weight: 600;
+    z-index: 100
+}
+
+.skip-link:focus {
+    top: 0
+}
+
+body {
+    font-family: 'Source Sans 3', Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    color: var(--primary-black);
+    background: var(--surface);
+    padding: 0
+}
+
+a,
+a:visited {
+    color: var(--brand-blue);
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid var(--accent-orange);
+    outline-offset: 2px
+}
+
+h1 {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 700;
+    font-size: 2.3rem;
+    line-height: 1.05
+}
+
+h2 {
+    margin-bottom: 0;
+    margin-top: 0;
+    color: var(--brand-blue);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 600;
+    font-size: 1.55rem;
+    line-height: 1.2
+}
+
+h3 {
+    font-size: 1.16rem;
+    font-weight: 700;
+    margin: .75rem 0 0
+}
+
+h4 {
+    font-size: 1.05rem;
+    font-style: italic;
+    font-weight: 400;
+    margin: 0
+}
+
+ul {
+    margin-top: 0;
+    padding-left: 1rem
+}
+
+li {
+    padding-top: 4px
+}
+
+li::marker {
+    color: var(--brand-blue)
+}
+
+li:first-of-type {
+    padding-top: 0
+}
+
+p {
+    margin: 0 0 .5rem 0
+}
+
+.content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 3rem
+}
+
+.date {
+    display: inline
+}
+
+.date,
+.nowrap {
+    white-space: nowrap
+}
+
+#download-pdf-btn {
+    margin-bottom: 1rem;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.9rem;
+    background-color: var(--accent-orange);
+    color: var(--brand-ink);
+    border: 1px solid var(--accent-orange);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 700
+}
+
+.dl-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-start
+}
+
+/* normalize the <button> and the <a> so they share font + height */
+#download-pdf-btn,
+#download-md-btn {
+    font-family: inherit;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box
+}
+
+#download-md-btn {
+    margin-bottom: 1rem;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.9rem;
+    background-color: var(--surface);
+    color: var(--accent-orange);
+    border: 1px solid var(--accent-orange);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 700;
+    text-decoration: none
+}
+
+#download-md-btn:hover,
+#download-md-btn:focus { background-color: var(--surface-soft) }
+
+/* Theme toggle - matches stephens.page control */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--theme-toggle-size);
+    height: var(--theme-toggle-size);
+    margin: 0 0 1rem;
+    padding: 0;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--surface-soft);
+    color: var(--primary-black);
+    cursor: pointer;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+    border-color: var(--accent-orange);
+    color: var(--accent-orange);
+    outline: none;
+}
+
+.theme-toggle:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-orange) 28%, transparent);
+}
+
+.theme-toggle svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    display: block;
+    pointer-events: none;
+}
+
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+    display: none;
+}
+
+html[data-theme="dark"] .theme-toggle .icon-sun {
+    display: block;
+}
+
+html[data-theme="light"] .theme-toggle .icon-moon {
+    display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]):not([data-theme="dark"]) .theme-toggle .icon-sun {
+        display: block;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    html:not([data-theme="light"]):not([data-theme="dark"]) .theme-toggle .icon-moon {
+        display: block;
+    }
+}
+
+.header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
+.header-actions .dl-buttons {
+    margin: 0;
+}
+
+.header-actions #download-pdf-btn,
+.header-actions #download-md-btn,
+.header-actions .theme-toggle {
+    margin-bottom: 0;
+}
+
+.sticky-mobile-header .theme-toggle {
+    margin: 0 0 0 auto;
+    width: 2.4rem;
+    height: 2.4rem;
+}
+
+.page-break-before {
+    page-break-before: always;
+    break-before: page
+}
+
+.content a {
+    text-decoration: none
+}
+
+.content a:hover,
+.content a:focus {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.12em
+}
+
+.contact-info {
+    margin-right: 0;
+    color: var(--secondary-gray)
+}
+
+.summary {
+    font-size: 0.95rem;
+    color: var(--secondary-gray);
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.5
+}
+
+.sticky-mobile-header {
+    display: none
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 1rem
+}
+
+section.skills,
+section.work,
+section.projects,
+section.education {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule)
+}
+
+.skill-groups {
+    display: block
+}
+
+.skill-group {
+    margin-bottom: 0.85rem
+}
+
+.skill-group h3 {
+    font-family: 'Source Sans 3', Arial, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--secondary-gray);
+    margin: 0
+}
+
+.skill-group ul {
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+
+.skill-group li {
+    display: inline;
+    padding: 0
+}
+
+.skill-group li+li::before {
+    content: " \00b7  ";
+    color: var(--brand-blue)
+}
+
+.skill-group a {
+    color: inherit
+}
+
+.skill-group a:hover,
+.skill-group a:focus {
+    color: var(--brand-blue)
+}
+
+.contact-icon {
+    display: inline-block;
+    min-width: 1.1rem;
+    color: var(--secondary-gray);
+    font-size: 0.92em
+}
+
+.work p,
+.education p {
+    color: var(--secondary-gray)
+}
+
+@page {
+    size: letter;
+    margin: 0.28in 0.5in;
+}
+
+@media print {
+    /* Always print light - ink on paper, not the dark screen palette. */
+    html,
+    html[data-theme="dark"],
+    html[data-theme="light"] {
+        color-scheme: light;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        --primary-black: #181512;
+        --brand-blue: #9b4d24;
+        --accent-orange: #9b4d24;
+        --brand-ink: #ffffff;
+        --secondary-gray: #625a52;
+        --surface: #ffffff;
+        --surface-soft: #efe9df;
+        --rule: #d6d1c9
+    }
+
+    .theme-toggle {
+        display: none !important
+    }
+
+    body {
+        font-size: 14px;
+        line-height: 1.2;
+        color: #181512;
+        background: #fff
+    }
+
+    header {
+        padding-bottom: 0.3rem
+    }
+
+    section.skills,
+    section.work,
+    section.projects,
+    section.education {
+        margin-top: 0.3rem;
+        padding-top: 0.12rem
+    }
+
+    a {
+        text-decoration: none !important
+    }
+
+    .skill-group {
+        break-inside: avoid;
+        margin-bottom: 0.2rem
+    }
+
+    .skill-group h3 {
+        font-size: 0.66rem
+    }
+
+    h1,
+    h2 {
+        margin-top: 0
+    }
+
+    h1 {
+        font-size: 2rem
+    }
+
+    h2 {
+        margin-bottom: 0;
+        font-size: 1.18rem
+    }
+
+    h3 {
+        margin: 0;
+        font-size: 1rem
+    }
+
+    ul {
+        margin-bottom: .08rem
+    }
+
+    li {
+        padding-top: 0
+    }
+
+    .content {
+        max-width: none;
+        padding: 0
+    }
+
+    .summary,
+    p,
+    li {
+        font-size: 0.84rem;
+        line-height: 1.17
+    }
+
+    .work li,
+    .projects li {
+        padding-top: 1px;
+        break-inside: avoid
+    }
+
+    code {
+        font-size: .9em
+    }
+
+    .contact-info {
+        font-size: 0.9rem
+    }
+
+    #download-pdf-btn,
+    #download-md-btn,
+    .sticky-mobile-header {
+        display: none !important
+    }
+
+    .work h3,
+    .work h3 + p {
+        break-inside: avoid;
+        break-after: avoid
+    }
+
+    .work h3:first-of-type + p + ul {
+        break-inside: avoid
+    }
+
+    div.print_spacer {
+        height: 7rem;
+    }
+}
+
+@media screen and (max-width:640px) {
+    body {
+        padding-top: 3.6rem
+    }
+
+    .sticky-mobile-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: color-mix(in srgb, var(--surface) 96%, transparent);
+        border-bottom: 1px solid var(--rule);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px)
+    }
+
+    .sticky-download-btn {
+        padding: 0.6rem 0.9rem;
+        background: var(--accent-orange);
+        border: none;
+        border-radius: 4px;
+        color: var(--brand-ink);
+        font-size: 0.95rem;
+        font-weight: 700
+    }
+
+    .sticky-download-md {
+        padding: 0.6rem 0.9rem;
+        background: var(--surface);
+        color: var(--accent-orange);
+        border: 1px solid var(--accent-orange);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap
+    }
+
+    header {
+        flex-direction: column;
+        align-items: stretch
+    }
+
+    /* Download buttons + desktop theme toggle live in the sticky bar on mobile. */
+    .dl-buttons,
+    .header-actions .theme-toggle {
+        display: none
+    }
+
+    /* Anthropic variant: lone PDF button also moves to sticky bar. */
+    header > #download-pdf-btn,
+    .header-actions > #download-pdf-btn {
+        display: none
+    }
+
+    .content {
+        padding-top: 1rem
+    }
+
+    li {
+        padding-top: 2px
+    }
+}
+
+:is([id*='google_ads_iframe'], [id*='taboola-'], .taboolaHeight, .taboola-placeholder, #credential_picker_container, #credentials-picker-container, #credential_picker_iframe, [id*='google-one-tap-iframe'], #google-one-tap-popup-container, .google-one-tap-modal-div, #amp_floatingAdDiv, #ez-content-blocker-container, #notify-adblock) {
+    display: none !important;
+    min-height: 0 !important;
+    height: 0 !important;
+}

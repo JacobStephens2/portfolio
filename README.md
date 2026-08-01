@@ -1,7 +1,10 @@
 # stephens.page
 
-Source for [stephens.page](https://stephens.page), my professional website,
-portfolio, decision record, and interactive technical blog.
+Source for [stephens.page](https://stephens.page), my professional website:
+resume, portfolio, decision records, and interactive technical blog.
+
+Formerly two repos (`portfolio` and `resume`); both now live here so one
+document tree matches the live site.
 
 The site is static-first: most pages are hand-authored HTML, CSS, and JavaScript
 served directly by Apache. Individual articles can bring the real tools needed
@@ -14,6 +17,8 @@ to be executable.
 
 - **Professional profile** - background, experience, technical focus, and ways
   to connect.
+- **Resume** - print-oriented HTML resume, Markdown source, PDF download, and
+  job-specific variants under `/resume/`.
 - **Portfolio and applications** - selected software, experiments, screenshots,
   and project writeups.
 - **Technical blog** - teaching-first engineering posts with live figures,
@@ -45,13 +50,18 @@ salabim and Pillow in the browser to generate a genuine animation.
 | [`index.html`](https://stephens.page/) | Main professional landing page |
 | [`about.html`](https://stephens.page/about) | Background, experience, and technical profile |
 | [`portfolio.html`](https://stephens.page/portfolio) | Selected projects and case studies |
+| [`resume/`](https://stephens.page/resume/) | Resume HTML, Markdown, PDF, and tailored variants |
 | [`apps.html`](https://stephens.page/apps) | Software and application index |
 | [`blog/`](https://stephens.page/blog/) | Canonical human posts and their agent-oriented companions |
 | [`decisions/`](https://stephens.page/decisions/) | Public decision records |
 | `screenshots/` | Portfolio and project imagery |
 | [`theme.css`](https://stephens.page/theme.css), [`theme.js`](https://stephens.page/theme.js) | Shared light/dark theme and persistent theme control |
 | [`contact.html`](https://stephens.page/contact), `contact-submit.php` | Contact page and server-side form handler |
+| `private/render_resume_pdf.sh` | Headless Chrome PDF render used by `resume/download-pdf.php` |
 | `.htaccess` | Apache routing, redirects, and content-type configuration |
+
+`resume.stephens.page` should redirect to `https://stephens.page/resume/` so old
+links keep working after the resume was folded into this tree.
 
 ## Architecture
 

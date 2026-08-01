@@ -11,7 +11,7 @@ if (!fs.existsSync(screenshotsDir)) {
 }
 
 const projects = [
-    { url: 'https://resume.stephens.page/', filename: 'resume.stephens.page.png' },
+    { url: 'https://stephens.page/resume/', filename: 'resume.stephens.page.png' },
     { url: 'https://wedding.stephens.page', filename: 'wedding.stephens.page.png' },
     { url: 'https://dailydozen.jacobstephens.net/', filename: 'dailydozen.jacobstephens.net.png' },
     { url: 'https://wadadli.stephens.page', filename: 'wadadli.stephens.page.png' },
