@@ -28,6 +28,18 @@ from pydantic import BaseModel, Field
 POST_DIR = Path(__file__).resolve().parent.parent
 PROGRAMS = POST_DIR / "programs"
 CACHE = POST_DIR / "cache"
+GITHUB_TREE = (
+    "https://github.com/JacobStephens2/stephens.page/tree/main/"
+    "blog/from-machine-code-to-ai-the-same-hello-world"
+)
+GITHUB_BLOB_PROGRAMS = (
+    "https://github.com/JacobStephens2/stephens.page/blob/main/"
+    "blog/from-machine-code-to-ai-the-same-hello-world/programs"
+)
+GITHUB_BLOB_SERVER = (
+    "https://github.com/JacobStephens2/stephens.page/blob/main/"
+    "blog/from-machine-code-to-ai-the-same-hello-world/server"
+)
 
 RATE_LIMIT = 60
 RATE_WINDOW_SECONDS = 60
@@ -808,15 +820,17 @@ def _variant_payload(key: str) -> dict:
     else:
         source_path = PROGRAMS / meta["source_file"]
         source = source_path.read_text(encoding="utf-8") if source_path.exists() else ""
+    src_name = meta["source_file"]
     return {
         "id": key,
         "title": meta["title"],
         "year": meta.get("year"),
         "yearNote": meta.get("year_note", ""),
-        "sourceFile": meta["source_file"],
+        "sourceFile": src_name,
         "source": source,
         "highlight": meta.get("highlight", "plaintext"),
         "runnable": True,
+        "githubUrl": f"{GITHUB_BLOB_PROGRAMS}/{src_name}",
     }
 
 
@@ -917,6 +931,9 @@ def levels() -> list[dict]:
                 "hides": band["hides"],
                 "blurb": band["blurb"],
                 "variants": variants,
+                "githubTree": GITHUB_TREE,
+                "githubPrograms": GITHUB_BLOB_PROGRAMS,
+                "githubServer": GITHUB_BLOB_SERVER,
             }
         )
     return result

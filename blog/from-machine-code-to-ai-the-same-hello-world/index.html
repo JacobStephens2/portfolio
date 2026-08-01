@@ -160,7 +160,7 @@
         .carousel-dot[aria-current="true"] { background: var(--brand); border-color: var(--brand); }
 
         .carousel-viewport {
-            overflow: hidden; width: 100%; position: relative;
+            overflow: hidden; width: 100%; max-width: 100%; position: relative;
             border: 1px solid var(--rule); border-radius: 6px; background: var(--code-bg);
         }
         .carousel-track {
@@ -169,12 +169,18 @@
             will-change: transform;
         }
         .carousel-slide {
-            flex: 0 0 100%; width: 100%; min-width: 100%;
+            flex: 0 0 100%; width: 100%; min-width: 100%; max-width: 100%;
             box-sizing: border-box; padding: 0;
         }
         .carousel-slide pre {
             margin: 0; border: none; border-radius: 0; max-height: 28rem;
+            overflow-x: auto; max-width: 100%;
         }
+        .gh-link {
+            font-weight: 600; font-size: 0.78rem; letter-spacing: 0.02em;
+            text-transform: none; margin-left: 0.35rem;
+        }
+        .panel-label .gh-link { text-transform: none; letter-spacing: 0; }
         .carousel-nav .carousel-btn:active { transform: scale(0.96); }
         .bench-panel {
             margin: 1.4rem 0 1.6rem; border: 1px solid var(--rule); border-radius: 8px;
@@ -223,9 +229,8 @@
             font-size: 0.75rem; color: var(--muted); margin-left: 0.35rem;
         }
         .rung-body { display: grid; gap: 0.75rem; padding: 0.85rem; }
-        @media (min-width: 900px) {
-            .rung-body.two { grid-template-columns: 1.25fr 1fr; align-items: stretch; }
-        }
+        .rung-body.two > * { min-width: 0; } /* prevent long hex lines from crushing columns */
+        .panel-out, .panel-src { min-width: 0; max-width: 100%; }
         .panel-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
         .term {
             background: var(--term); color: var(--term-fg); border-radius: 6px; padding: 0.75rem 0.85rem;
@@ -255,13 +260,22 @@
         }
         .run-result .rr-stdout { font-size: 1.35rem; font-weight: 700; line-height: 1.3; }
         .run-result .rr-meta { font-size: 0.8rem; opacity: 0.8; margin-top: 0.25rem; }
-        .rung-body .panel-out { order: -1; }
+        /* Mobile: output above source so RESULT isn't lost under hex dumps */
+        .rung-body.two .panel-out { order: -1; }
         @media (min-width: 900px) {
-            .rung-body.two { grid-template-columns: 1fr 1.15fr; }
-            .rung-body .panel-out { order: 0; }
-            .rung-body .panel-src { order: 0; }
-            /* Put OUTPUT first in reading order for metal-heavy cards */
+            /* Default: source | output with healthy output width */
+            .rung-body.two {
+                grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.95fr);
+                align-items: stretch;
+            }
+            .rung-body.two .panel-out { order: 0; }
+            .rung-body.two .panel-src { order: 0; }
+            /* Binary/machine: output first, at least ~40% width so the terminal is readable */
+            .rung-body.out-first {
+                grid-template-columns: minmax(18rem, 1fr) minmax(0, 1.15fr);
+            }
             .rung-body.out-first .panel-out { order: -1; }
+            .rung-body.out-first .panel-src { order: 0; }
         }
         .timing-tally {
             position: fixed; z-index: 40; right: 0.75rem; bottom: 0.75rem;
@@ -359,7 +373,7 @@
             <p>Before FORTRAN and COBOL, people still wrote real programs - just not in those languages. ENIAC-era work used plugboards and absolute machine words; later machines took hex or octal on a front panel, paper tape, or punched cards. The jobs were numerical tables, ballistics, census-style tabulation, payroll, and short loops (load / add / store / branch), not "Hello, World!" as a cultural phrase (that demo is much later). We cannot put a 1949 console in your browser, but the Machine code band's <strong>Hand-entered hex</strong> sheet is the real opcode stream for this page's <code>main</code>, presented the way a human would have written bytes down. Run still executes the linked ELF - we do not make you toggle twenty-three switches.</p>
 
             <h2>Fig. 1 · Nine bands, carousel variants, real execution</h2>
-            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}?samples=10</code> by default: the server runs the allowlisted program <strong>ten times</strong> and returns the <em>mean</em> wall time (plus min/max/stdev) so a single noisy sample does not mislead. Multi-language bands use animated Prev/Next carousels (manual only). A sticky <strong>Run times</strong> tally keeps the averages you have collected this session.</p>
+            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}?samples=10</code> by default: the server runs the allowlisted program <strong>ten times</strong> and returns the <em>mean</em> wall time (plus min/max/stdev) so a single noisy sample does not mislead. Multi-language bands use animated Prev/Next carousels (manual only). A sticky <strong>Run times</strong> tally keeps the averages you have collected this session. Full sources: <a href="https://github.com/JacobStephens2/stephens.page/tree/main/blog/from-machine-code-to-ai-the-same-hello-world/programs" rel="noopener" target="_blank"><code>programs/</code></a> · runner <a href="https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/server/app.py" rel="noopener" target="_blank"><code>server/app.py</code></a> · page <a href="https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/index.html" rel="noopener" target="_blank"><code>index.html</code></a>. Each Source panel also has <em>View on GitHub</em>.</p>
             <p id="hardware-line" class="bench-hw">Loading host hardware…</p>
 
             <div class="bench-panel" id="bench-panel">
@@ -409,7 +423,7 @@
             </ul>
 
             <h2>Quiz · don't leave until one answer sticks</h2>
-            <div class="quiz" data-answer="2" data-explain="Correct - the browser only sends a language key; sources live in programs/ on the server.">
+            <div class="quiz" data-answer="2" data-explain="Correct - the browser only sends a language key; full sources are the allowlisted files under programs/ on GitHub and the server.">
                 <p class="quiz-q">When you click Run Program, what does the browser send to the server?</p>
                 <div class="quiz-options">
                     <button type="button" data-choice="0">The full source code of that rung</button>
@@ -449,7 +463,7 @@
                     <li><span class="cite-title">highlight.js 11.11.1</span> - browser syntax highlighting for ladder source panels (esm.sh modular load). <a href="https://highlightjs.org/" rel="noopener">highlightjs.org</a></li>
                     <li><span class="cite-title">FastAPI + uvicorn</span> - loopback runner at port 3521; <code>GET /levels</code> groups variants for carousels. <a href="https://fastapi.tiangolo.com/" rel="noopener">fastapi.tiangolo.com</a></li>
                     <li><span class="cite-title">The Animation Is a Replay</span> - sibling stephens.page post that pioneered real server runners + highlight.js on this blog. <a href="/blog/the-animation-is-a-replay/">stephens.page</a></li>
-                    <li><span class="cite-title">Source for this post</span> - programs, FastAPI runner, and page. <a href="https://github.com/JacobStephens2/stephens.page/tree/main/blog/from-machine-code-to-ai-the-same-hello-world/" rel="noopener">GitHub tree</a></li>
+                    <li><span class="cite-title">Source for this post</span> - <a href="https://github.com/JacobStephens2/stephens.page/tree/main/blog/from-machine-code-to-ai-the-same-hello-world/" rel="noopener">post tree</a> · <a href="https://github.com/JacobStephens2/stephens.page/tree/main/blog/from-machine-code-to-ai-the-same-hello-world/programs" rel="noopener">programs/</a> · <a href="https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/server/app.py" rel="noopener">server/app.py</a> · <a href="https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/index.html" rel="noopener">index.html</a></li>
                 </ul>
             </div>
 
@@ -479,6 +493,9 @@
   'use strict';
 
   var API = '/blog/from-machine-code-to-ai-the-same-hello-world/api';
+  var GH_PROGRAMS = 'https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/programs';
+  var GH_TREE = 'https://github.com/JacobStephens2/stephens.page/tree/main/blog/from-machine-code-to-ai-the-same-hello-world';
+  var GH_SERVER = 'https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/server/app.py';
   var hljsApi = null;
   // bandId -> active variant index (carousel state; never auto-advances)
   var carouselIndex = {};
@@ -577,6 +594,18 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
   }
+
+  function ghUrl(file) {
+    if (!file) return GH_PROGRAMS;
+    return GH_PROGRAMS + '/' + encodeURIComponent(file).replace(/%2F/g, '/');
+  }
+
+  function fileLink(file, label) {
+    var href = ghUrl(file);
+    var text = label || file || 'on GitHub';
+    return '<a class="gh-link" href="' + esc(href) + '" rel="noopener" target="_blank">' + esc(text) + '</a>';
+  }
+
 
   function loadHighlighting() {
     return Promise.all([
@@ -681,7 +710,8 @@
     if (meta) {
       meta.innerHTML = '<strong>' + esc(v.title) + '</strong>' +
         '<span class="variant-year">' + esc(v.year || '') + '</span>' +
-        (v.yearNote ? ' · ' + esc(v.yearNote) : '');
+        (v.yearNote ? ' · ' + esc(v.yearNote) : '') +
+        (v.sourceFile ? ' · ' + fileLink(v.sourceFile, v.sourceFile) : '');
     }
     if (idLine) {
       idLine.textContent = 'Level ' + band.level + ' · ' + band.id +
@@ -742,6 +772,7 @@
             '<div class="carousel-meta"><strong>' + esc(v.title) + '</strong>' +
               '<span class="variant-year">' + esc(v.year || '') + '</span>' +
               (v.yearNote ? ' · ' + esc(v.yearNote) : '') +
+              (v.sourceFile ? ' · ' + fileLink(v.sourceFile, v.sourceFile) : '') +
             '</div>' +
             '<div class="carousel-dots">' + dots + '</div>' +
             '<button type="button" class="carousel-btn" data-band="' + esc(band.id) +
@@ -753,6 +784,7 @@
             '<div class="carousel-meta"><strong>' + esc(v.title) + '</strong>' +
               '<span class="variant-year">' + esc(v.year || band.era || '') + '</span>' +
               (v.yearNote ? ' · ' + esc(v.yearNote) : '') +
+              (v.sourceFile ? ' · ' + fileLink(v.sourceFile, v.sourceFile) : '') +
             '</div>' +
           '</div>';
       }
@@ -760,9 +792,11 @@
       var outFirst = (band.id === 'binary' || band.id === 'machine') ? ' out-first' : '';
       var slides = band.variants.map(function (vv) {
         var label = vv.id === 'binary' ? ' (ELF bytes)' : (vv.id === 'handcode' ? ' (hand-entry sheet)' : '');
+        var ghref = vv.githubUrl || ghUrl(vv.sourceFile);
         return '<div class="carousel-slide" data-lang="' + esc(vv.id) + '">' +
           '<div class="panel-label" style="padding:0.55rem 0.75rem 0">Source' + label +
-          ' · ' + esc(vv.sourceFile || '') + '</div>' +
+          ' · ' + esc(vv.sourceFile || '') +
+          ' · <a class="gh-link" href="' + esc(ghref) + '" rel="noopener" target="_blank">View on GitHub</a></div>' +
           '<pre><code class="src language-' + esc(vv.highlight || 'plaintext') +
           '" data-hl="' + esc(vv.highlight || 'plaintext') + '"></code></pre></div>';
       }).join('');
