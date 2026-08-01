@@ -38,7 +38,7 @@ Upstream: `127.0.0.1:3521`
 | Level | Band id | Era | Example variants |
 |------:|---------|-----|------------------|
 | 0 | binary | c. 1945 | binary |
-| 1 | machine | c. 1940s | machine |
+| 1 | machine | c. 1940s | machine, handcode |
 | 2 | assembly | c. 1949 | assembly |
 | 3 | early-hl | 1957–1959 | fortran, lisp, cobol |
 | 4 | systems | 1972–1985 | c, cpp |
