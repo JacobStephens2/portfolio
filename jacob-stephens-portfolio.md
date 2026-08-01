@@ -437,7 +437,7 @@ xterm.js
 tmux
 SSH
 
-[Visit Site](https://muxboard.stephens.page)
+[Visit Site](https://muxboard.dev)
 [GitHub](https://github.com/JacobStephens2/muxboard)
 
 ### Open-Source Fix: MySQL 8.4 Binlog Auth
