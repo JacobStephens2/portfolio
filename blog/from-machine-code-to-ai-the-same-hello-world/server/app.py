@@ -56,7 +56,7 @@ BANDS: list[dict] = [
         "title": "Machine code",
         "era": "c. 1940s",
         "hides": "Hides almost nothing: instruction encodings the CPU runs.",
-        "blurb": "Raw opcodes - the only language the execution units ultimately care about.",
+        "blurb": "Raw opcodes - and a hand-entry hex sheet for how people loaded them before assemblers.",
     },
     {
         "id": "assembly",
@@ -132,7 +132,7 @@ LANGS: dict[str, dict] = {
         "build_source": "hello.c",
     },
     "machine": {
-        "title": "Machine code",
+        "title": "Machine code (objdump)",
         "year": "c. 1940s",
         "year_note": "plugboards and binary programs predate assemblers",
         "band": "machine",
@@ -142,6 +142,19 @@ LANGS: dict[str, dict] = {
         "binary": "hello-asm",
         "build": ["gcc", "-O0", "-o", str(CACHE / "hello-asm"), str(PROGRAMS / "hello.s")],
         "run": [str(CACHE / "hello-asm")],
+    },
+    "handcode": {
+        "title": "Hand-entered hex",
+        "year": "c. 1940s–50s",
+        "year_note": "front panels, paper tape, absolute hex before assemblers",
+        "band": "machine",
+        "source_file": "hand-entry.txt",
+        "kind": "handcode",
+        "highlight": "plaintext",
+        "binary": "hello-asm",
+        "build": ["gcc", "-O0", "-o", str(CACHE / "hello-asm"), str(PROGRAMS / "hello.s")],
+        "run": [str(CACHE / "hello-asm")],
+        "build_source": "hello.s",
     },
     "assembly": {
         "title": "Assembly (x86_64 Linux)",
@@ -542,18 +555,24 @@ def run_language(lang: str) -> dict:
             ),
         }
 
-    build_lang = {"machine": "assembly", "binary": "binary"}.get(lang, lang)
+    build_lang = {
+        "machine": "assembly",
+        "handcode": "handcode",
+        "binary": "binary",
+    }.get(lang, lang)
     ensure_built(build_lang)
     result = _run_cmd(meta["run"], RUN_TIMEOUT_SECONDS)
     wall_ms = (time.perf_counter() - started) * 1000
 
     band_level = next(b["level"] for b in BANDS if b["id"] == meta["band"])
+    # Normalize stdout so UI banners are easy to spot (strip Fortran-style padding).
+    stdout = (result.stdout or "").replace("\r\n", "\n")
     payload: dict = {
         "language": lang,
         "title": meta["title"],
         "year": meta.get("year"),
         "level": band_level,
-        "stdout": result.stdout,
+        "stdout": stdout,
         "stderr": result.stderr,
         "exitCode": result.returncode,
         "wallMs": round(wall_ms, 3),
@@ -561,18 +580,24 @@ def run_language(lang: str) -> dict:
         "sourceFile": meta["source_file"],
         "highlight": meta.get("highlight", "plaintext"),
         "command": meta["run"],
+        "displayStdout": stdout.strip() or "(empty stdout)",
     }
     if lang == "machine":
         payload["machineView"] = machine_hex_snippet()
         payload["note"] = (
             "stdout is from executing the assembled binary. "
-            "machineView is objdump of <main>."
+            "machineView is objdump of <main>. For hand-keyed hex, carousel to Hand-entered hex."
+        )
+    if lang == "handcode":
+        payload["note"] = (
+            "Executed the same ELF as Assembly/Machine. The source sheet is a teaching "
+            "re-enactment of absolute hex entry (front panel / paper tape style) - not a 1949 ISA."
         )
     if lang == "binary":
         payload["binaryView"] = binary_source_view()
         payload["note"] = (
-            "No source language on this rung: Run executes a real ELF built from C. "
-            "Source panel is file(1) + xxd head."
+            "Executed a real ELF (chmod +x style program). "
+            "Stdout is the program output; the source dump is the file format, not what you type by hand."
         )
     return payload
 

@@ -177,6 +177,63 @@
         .term .ok { color: #9ccc65; }
         .term .bad { color: #ef9a9a; }
         .term .line { display: block; }
+        .term .stdout-big {
+            display: block; margin: 0.35rem 0 0.5rem; padding: 0.55rem 0.65rem;
+            font-size: 1.15rem; font-weight: 700; color: #c8f0a0;
+            border: 1px solid #4a6b3a; border-radius: 6px; background: #24301c;
+        }
+        .run-result {
+            display: none; margin: 0; padding: 0.75rem 0.95rem;
+            border-bottom: 1px solid var(--rule); background: #1e2a18; color: #d8f5b0;
+            font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+        }
+        .run-result.is-visible { display: block; }
+        .run-result.is-error { background: #2a1818; color: #f0b0b0; }
+        .run-result .rr-label {
+            font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; opacity: 0.85; margin-bottom: 0.25rem;
+        }
+        .run-result .rr-stdout { font-size: 1.35rem; font-weight: 700; line-height: 1.3; }
+        .run-result .rr-meta { font-size: 0.8rem; opacity: 0.8; margin-top: 0.25rem; }
+        .rung-body .panel-out { order: -1; }
+        @media (min-width: 900px) {
+            .rung-body.two { grid-template-columns: 1fr 1.15fr; }
+            .rung-body .panel-out { order: 0; }
+            .rung-body .panel-src { order: 0; }
+            /* Put OUTPUT first in reading order for metal-heavy cards */
+            .rung-body.out-first .panel-out { order: -1; }
+        }
+        .timing-tally {
+            position: fixed; z-index: 40; right: 0.75rem; bottom: 0.75rem;
+            width: min(20rem, calc(100vw - 1.5rem));
+            max-height: min(50vh, 22rem); overflow: auto;
+            border: 1px solid var(--rule); border-radius: 10px;
+            background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+            font-size: 0.82rem;
+        }
+        .timing-tally summary {
+            cursor: pointer; list-style: none; padding: 0.65rem 0.8rem;
+            font-weight: 700; color: var(--brand); background: var(--soft);
+            border-bottom: 1px solid var(--rule); position: sticky; top: 0;
+        }
+        .timing-tally summary::-webkit-details-marker { display: none; }
+        .timing-tally .tally-sub {
+            padding: 0.35rem 0.8rem 0.55rem; color: var(--muted); font-size: 0.75rem;
+            border-bottom: 1px solid var(--rule);
+        }
+        .timing-tally ol { list-style: none; padding: 0.35rem 0; margin: 0; }
+        .timing-tally li {
+            display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;
+            padding: 0.35rem 0.8rem; border-bottom: 1px solid var(--rule);
+            font-variant-numeric: tabular-nums;
+        }
+        .timing-tally li:last-child { border-bottom: 0; }
+        .timing-tally .tally-name { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .timing-tally .tally-ms { color: var(--brand); font-weight: 700; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; }
+        .timing-tally .tally-empty { padding: 0.75rem 0.8rem; color: var(--muted); }
+        @media (max-width: 720px) {
+            .timing-tally { left: 0.5rem; right: 0.5rem; width: auto; bottom: 0.5rem; }
+        }
         .rung details { border-top: 1px dashed var(--rule); padding: 0.65rem 0.95rem 0.85rem; }
         .rung summary { cursor: pointer; color: var(--muted); font-size: 0.88rem; font-weight: 600; }
         .rung summary:hover { color: var(--brand); }
@@ -228,8 +285,8 @@
             <p>Robert C. Martin has spent decades arguing that software history is a climb through successive languages and abstractions - and that craft still matters at every step. One framing of that arc shows up in his conversation with <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">Kent Dodds</a>. Bands are ordered by abstraction, not pure release-year purity (Lisp is older than C; Java sits between C and Go). Years on each variant are introduction years, not "first Hello World ever printed."</p>
 
             <ul class="timeline">
-                <li><strong>Binary program</strong> (c. 1945) - the file you ship; stored-program era.</li>
-                <li><strong>Machine code</strong> (c. 1940s) - instruction encodings the CPU runs.</li>
+                <li><strong>Binary program</strong> (c. 1945) - the ELF you ship. After Run, look for a green <em>RESULT</em> strip under the header (not only the hex dump).</li>
+                <li><strong>Machine code</strong> (c. 1940s) - instruction encodings. Carousel includes <em>Hand-entered hex</em>: the short opcode list people would have keyed before assemblers.</li>
                 <li><strong>Assembly</strong> (c. 1949) - mnemonics for those encodings.</li>
                 <li><strong>Early high-level</strong> (1957–1959) - FORTRAN, Lisp, COBOL: formulas, lists, business data.</li>
                 <li><strong>Systems</strong> (1972–1985) - C, C++.</li>
@@ -239,8 +296,10 @@
                 <li><strong>Vibe coding</strong> (2025) - chat as the process; accept and run.</li>
             </ul>
 
+            <p>Before FORTRAN and COBOL, people still wrote real programs - just not in those languages. ENIAC-era work used plugboards and absolute machine words; later machines took hex or octal on a front panel, paper tape, or punched cards. The jobs were numerical tables, ballistics, census-style tabulation, payroll, and short loops (load / add / store / branch), not "Hello, World!" as a cultural phrase (that demo is much later). We cannot put a 1949 console in your browser, but the Machine code band's <strong>Hand-entered hex</strong> sheet is the real opcode stream for this page's <code>main</code>, presented the way a human would have written bytes down. Run still executes the linked ELF - we do not make you toggle twenty-three switches.</p>
+
             <h2>Fig. 1 · Nine bands, carousel variants, real execution</h2>
-            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}</code> with only an allowlisted language key. Multi-language bands use Prev/Next to rotate the active Hello World; Run always executes the variant currently shown. Binary vs machine code is intentional: one is the shipped file, the other is decoded instructions inside it.</p>
+            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}</code> with only an allowlisted language key. Multi-language bands use Prev/Next to rotate the active Hello World; Run always executes the variant currently shown. After each successful run, a sticky <strong>Run times</strong> panel (bottom-right) records wall-clock milliseconds so you can compare layers. Binary vs machine: one is the shipped file format; the other is the short instruction stream people once entered by hand.</p>
 
             <div class="ladder" id="ladder" aria-live="polite"></div>
 
@@ -289,15 +348,27 @@
                 <h3>Ideas and authorities</h3>
                 <ul>
                     <li><span class="cite-title">Robert C. Martin with Kent Dodds, Architecture, AI agents, and product empathy</span> (YouTube) - long-view framing for languages and abstraction over time. <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">youtube.com</a></li>
-                    <li><span class="cite-title">Andrej Karpathy on "vibe coding"</span> (2025) - the casual chat-driven coding style contrasted here with tighter AI engineering prompts.</li>
-                    <li><span class="cite-title">Arm / Intel instruction manuals</span> - the ultimate ground for machine encodings (this page shows Linux amd64 via <code>objdump</code> / <code>xxd</code>).</li>
+                    <li><span class="cite-title">Andrej Karpathy on "vibe coding"</span> (2025) - the casual chat-driven coding style contrasted here with tighter AI engineering prompts. <a href="https://x.com/karpathy/status/1886192184808149383" rel="noopener">x.com/karpathy</a></li>
+                    <li><span class="cite-title">Brian Kernighan &amp; Dennis Ritchie, The C Programming Language</span> (1978 / 2nd ed. 1988) - the cultural home of the Hello World demo in systems programming.</li>
+                    <li><span class="cite-title">John Backus et al., FORTRAN</span> (1957) - early high-level formula translation. Overview: <a href="https://en.wikipedia.org/wiki/Fortran" rel="noopener">Wikipedia: Fortran</a>.</li>
+                    <li><span class="cite-title">John McCarthy, Lisp</span> (1958) - list processing / symbolic computation. <a href="https://en.wikipedia.org/wiki/Lisp_(programming_language)" rel="noopener">Wikipedia: Lisp</a>.</li>
+                    <li><span class="cite-title">CODASYL, COBOL</span> (1959) - business-oriented high-level language. <a href="https://en.wikipedia.org/wiki/COBOL" rel="noopener">Wikipedia: COBOL</a>.</li>
+                    <li><span class="cite-title">ENIAC / stored-program transition</span> - plugboards and absolute machine programming before symbolic assemblers. <a href="https://en.wikipedia.org/wiki/ENIAC" rel="noopener">Wikipedia: ENIAC</a>, <a href="https://en.wikipedia.org/wiki/Stored-program_computer" rel="noopener">Stored-program computer</a>.</li>
+                    <li><span class="cite-title">EDSAC and early assembly</span> - symbolic instruction entry in the late 1940s. <a href="https://en.wikipedia.org/wiki/EDSAC" rel="noopener">Wikipedia: EDSAC</a>, <a href="https://en.wikipedia.org/wiki/Assembly_language" rel="noopener">Assembly language</a>.</li>
+                    <li><span class="cite-title">Arm Architecture Reference Manual (A-profile)</span> - instruction encodings (this page's live dumps are Linux amd64 via <code>objdump</code>). <a href="https://developer.arm.com/documentation/ddi0487/latest/" rel="noopener">developer.arm.com</a></li>
+                    <li><span class="cite-title">Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</span> - calling conventions for AArch64 (relevant to the private Apple Silicon track). <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" rel="noopener">github.com/ARM-software/abi-aa</a></li>
                 </ul>
                 <h3>Tools demonstrated or referenced</h3>
                 <ul>
                     <li><span class="cite-title">gcc / g++ / gfortran / cobc / sbcl / javac / rustc / go / mcs+mono / bash / perl / php / CPython / Node</span> - toolchains on the stephens.page host for allowlisted Hello Worlds.</li>
+                    <li><span class="cite-title">GnuCOBOL</span> - free COBOL compiler used for the COBOL variant. <a href="https://gnucobol.sourceforge.io/" rel="noopener">gnucobol.sourceforge.io</a></li>
+                    <li><span class="cite-title">SBCL</span> - Steel Bank Common Lisp for the Lisp variant. <a href="https://www.sbcl.org/" rel="noopener">sbcl.org</a></li>
+                    <li><span class="cite-title">HelloSilicon</span> - Apple Silicon assembly examples (contrast with this page's Linux x86_64 GAS). <a href="https://github.com/below/HelloSilicon" rel="noopener">github.com/below/HelloSilicon</a></li>
+                    <li><span class="cite-title">Writing ARM64 code for Apple platforms</span> - Apple ABI notes for the private Mac track. <a href="https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms" rel="noopener">developer.apple.com</a></li>
                     <li><span class="cite-title">highlight.js 11.11.1</span> - browser syntax highlighting for ladder source panels (esm.sh modular load). <a href="https://highlightjs.org/" rel="noopener">highlightjs.org</a></li>
-                    <li><span class="cite-title">FastAPI + uvicorn</span> - loopback runner at port 3521; <code>GET /levels</code> groups variants for carousels.</li>
-                    <li><span class="cite-title">Private teach workspace</span> - ARM64 Assembly practice that motivated the public ladder (not the same ISA as this page).</li>
+                    <li><span class="cite-title">FastAPI + uvicorn</span> - loopback runner at port 3521; <code>GET /levels</code> groups variants for carousels. <a href="https://fastapi.tiangolo.com/" rel="noopener">fastapi.tiangolo.com</a></li>
+                    <li><span class="cite-title">The Animation Is a Replay</span> - sibling stephens.page post that pioneered real server runners + highlight.js on this blog. <a href="/blog/the-animation-is-a-replay/">stephens.page</a></li>
+                    <li><span class="cite-title">Source for this post</span> - programs, FastAPI runner, and page. <a href="https://github.com/JacobStephens2/stephens.page/tree/main/blog/from-machine-code-to-ai-the-same-hello-world/" rel="noopener">GitHub tree</a></li>
                 </ul>
             </div>
 
@@ -312,6 +383,12 @@
             &copy; <span id="current-year"></span> Jacob Stephens
         </footer>
     </div>
+
+    <details class="timing-tally" id="timing-tally" open>
+        <summary>Run times</summary>
+        <div class="tally-sub">Wall-clock ms from this browser session (sticky). Sorted fastest first.</div>
+        <ol id="tally-list"><li class="tally-empty">Run a program to start the tally.</li></ol>
+    </details>
 
     <script>
       document.getElementById('current-year').textContent = new Date().getFullYear();
@@ -336,7 +413,10 @@
       id: 'machine', level: 1, title: 'Machine code', era: 'c. 1940s',
       hides: 'Hides almost nothing: instruction encodings the CPU runs.',
       blurb: 'Raw opcodes.',
-      variants: [{ id: 'machine', title: 'Machine code', year: 'c. 1940s', sourceFile: 'hello.s', highlight: 'x86asm', source: '' }]
+      variants: [
+        { id: 'machine', title: 'Machine code (objdump)', year: 'c. 1940s', sourceFile: 'hello.s', highlight: 'x86asm', source: '' },
+        { id: 'handcode', title: 'Hand-entered hex', year: 'c. 1940s–50s', sourceFile: 'hand-entry.txt', highlight: 'plaintext', source: '' }
+      ]
     },
     {
       id: 'assembly', level: 2, title: 'Assembly', era: 'c. 1949',
@@ -540,20 +620,21 @@
           '</div>';
       }
 
+      var outFirst = (band.id === 'binary' || band.id === 'machine') ? ' out-first' : '';
       var body =
-        '<div class="rung-body two">' +
-          '<div>' +
+        '<div class="run-result" aria-live="polite"></div>' +
+        '<div class="rung-body two' + outFirst + '">' +
+          '<div class="panel-out">' +
+            '<div class="panel-label">Output (from server)</div>' +
+            '<div class="term out"><span class="line dim">Click Run Program — stdout appears here and in the RESULT strip above.</span></div>' +
+          '</div>' +
+          '<div class="panel-src">' +
             '<div class="panel-label">Source' +
-              (v.id === 'binary' ? ' (ELF bytes)' : '') +
+              (v.id === 'binary' ? ' (ELF bytes)' : (v.id === 'handcode' ? ' (hand-entry sheet)' : '')) +
               ' · ' + esc(v.sourceFile || '') +
             '</div>' +
             '<pre><code class="src language-' + esc(v.highlight || 'plaintext') +
               '" data-hl="' + esc(v.highlight || 'plaintext') + '"></code></pre>' +
-          '</div>' +
-          '<div>' +
-            '<div class="panel-label">Output (from server)</div>' +
-            '<div class="term out"><span class="line dim">Click Run Program to execute ' +
-              esc(v.title) + ' on stephens.page.</span></div>' +
           '</div>' +
         '</div>';
 
@@ -601,6 +682,52 @@
     try { return JSON.stringify(detail); } catch (e) { return String(detail); }
   }
 
+  var runTimes = {}; // languageId -> { title, ms, year }
+
+  function renderTally() {
+    var list = document.getElementById('tally-list');
+    if (!list) return;
+    var rows = Object.keys(runTimes).map(function (id) { return runTimes[id]; });
+    if (!rows.length) {
+      list.innerHTML = '<li class="tally-empty">Run a program to start the tally.</li>';
+      return;
+    }
+    rows.sort(function (a, b) { return a.ms - b.ms; });
+    list.innerHTML = rows.map(function (r) {
+      return '<li><span class="tally-name" title="' + esc(r.title) + '">' + esc(r.title) +
+        (r.year ? ' <span class="variant-year">' + esc(r.year) + '</span>' : '') +
+        '</span><span class="tally-ms">' + r.ms.toFixed(2) + ' ms</span></li>';
+    }).join('');
+  }
+
+  function recordTime(id, title, year, ms) {
+    if (typeof ms !== 'number' || !isFinite(ms)) return;
+    runTimes[id] = { id: id, title: title || id, year: year || '', ms: ms };
+    renderTally();
+  }
+
+  function setRunResult(rung, ok, stdout, meta) {
+    var el = rung.querySelector('.run-result');
+    if (!el) return;
+    el.className = 'run-result is-visible' + (ok ? '' : ' is-error');
+    el.replaceChildren();
+    var lab = document.createElement('div');
+    lab.className = 'rr-label';
+    lab.textContent = ok ? 'Result (stdout)' : 'Result (error)';
+    var out = document.createElement('div');
+    out.className = 'rr-stdout';
+    out.textContent = stdout == null || stdout === '' ? '(empty)' : String(stdout);
+    el.appendChild(lab);
+    el.appendChild(out);
+    if (meta) {
+      var m = document.createElement('div');
+      m.className = 'rr-meta';
+      m.textContent = meta;
+      el.appendChild(m);
+    }
+    try { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { /* ignore */ }
+  }
+
   function runLang(id, btn) {
     var rung = btn.closest('.rung');
     if (!rung || !btn) return;
@@ -609,6 +736,8 @@
     btn.disabled = true;
     clearTerm(out);
     termLine(out, 'dim', 'Running…');
+    var rr = rung.querySelector('.run-result');
+    if (rr) { rr.className = 'run-result'; rr.replaceChildren(); }
     fetch(API + '/run/' + encodeURIComponent(id), { method: 'POST', headers: { 'Accept': 'application/json' } })
       .then(function (res) {
         return res.json().then(function (body) {
@@ -620,22 +749,28 @@
       .then(function (result) {
         clearTerm(out);
         if (!result.ok) {
-          termLine(out, 'bad', 'Error: ' + (detailText(result.body && (result.body.detail || result.body.message)) || ('HTTP ' + result.status)));
+          var err = detailText(result.body && (result.body.detail || result.body.message)) || ('HTTP ' + result.status);
+          termLine(out, 'bad', 'Error: ' + err);
+          setRunResult(rung, false, err, '');
           return;
         }
         var b = result.body || {};
+        var display = (b.displayStdout != null ? b.displayStdout : (b.stdout || '')).toString().replace(/\n$/, '');
         termLine(out, 'dim', '$ POST /run/' + id);
         if (b.year) termLine(out, 'dim', '# introduced ' + b.year);
         if (b.command) termLine(out, 'dim', '# ' + JSON.stringify(b.command));
-        if (b.stdout) termLine(out, 'ok', String(b.stdout).replace(/\n$/, ''));
-        else termLine(out, 'dim', '(empty stdout)');
+        if (display) {
+          var big = document.createElement('span');
+          big.className = 'line stdout-big';
+          big.textContent = display;
+          out.appendChild(big);
+        } else {
+          termLine(out, 'dim', '(empty stdout)');
+        }
         if (b.stderr) termLine(out, 'bad', String(b.stderr));
-        termLine(
-          out,
-          'dim',
-          'exit ' + b.exitCode + ' · ' + b.wallMs + ' ms · ' +
-            ((b.host && b.host.machine) || '?') + ' ' + ((b.host && b.host.system) || '')
-        );
+        var meta = 'exit ' + b.exitCode + ' · ' + b.wallMs + ' ms · ' +
+          ((b.host && b.host.machine) || '?') + ' ' + ((b.host && b.host.system) || '');
+        termLine(out, 'dim', meta);
         if (b.note) termLine(out, 'dim', String(b.note));
         if (b.machineView) {
           termLine(out, 'dim', '--- objdump <main> (truncated) ---');
@@ -644,16 +779,21 @@
           });
           termLine(out, 'dim', '…');
         }
-        if (b.binaryView) termLine(out, 'dim', 'ELF hex dump is in the Source panel (left).');
+        if (b.binaryView) termLine(out, 'dim', 'ELF packaging dump is in the Source panel — stdout is above.');
         if (b.prompt) {
           termLine(out, 'dim', '--- prompt ---');
           String(b.prompt).split('\n').forEach(function (ln) { termLine(out, 'dim', ln); });
         }
         if (b.session) termLine(out, 'dim', 'Vibe session transcript is in the Source panel.');
+        setRunResult(rung, true, display || '(empty)', meta);
+        recordTime(id, b.title || id, b.year || '', Number(b.wallMs));
+        try { out.scrollTop = 0; } catch (e2) { /* ignore */ }
       })
       .catch(function (err) {
         clearTerm(out);
-        termLine(out, 'bad', 'Network error: ' + (err && err.message ? err.message : String(err)));
+        var msg = 'Network error: ' + (err && err.message ? err.message : String(err));
+        termLine(out, 'bad', msg);
+        setRunResult(rung, false, msg, '');
       })
       .finally(function () {
         btn.disabled = false;
