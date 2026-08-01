@@ -31,7 +31,9 @@ Upstream: `127.0.0.1:3521`
 | GET | `/health` | tools, language ids, band count |
 | GET | `/levels` | **preferred** - bands with `era`, `hides`, ordered `variants` |
 | GET | `/languages` | flat list (legacy) |
-| POST | `/run/{language}` | execute allowlisted program |
+| GET | `/health` | includes `hardware` (CPU model, vCPU, RAM, OS) and `defaultSamples` |
+| POST | `/run/{language}?samples=N` | execute allowlisted program N times (default 10); returns mean/min/max/stdev |
+| POST | `/benchmark` | body `{ "samples": 10\|100, "languages"?: [...] }` - full comparison table |
 
 ## Bands (level order)
 
@@ -41,7 +43,7 @@ Upstream: `127.0.0.1:3521`
 | 1 | machine | c. 1940s | machine, handcode |
 | 2 | assembly | c. 1949 | assembly |
 | 3 | early-hl | 1957–1959 | fortran, lisp, cobol |
-| 4 | systems | 1972–1985 | c, cpp |
+| 4 | systems | 1970–1985 | pascal, c, cpp |
 | 5 | managed | 1995–2015 | java, csharp, go, rust |
 | 6 | scripting | 1987–1995 | perl, bash, python, php, javascript |
 | 7 | ai | c. 2022 | ai |
