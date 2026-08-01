@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>gpt-image v0.3.2 - generate and edit images from the terminal</title>
-  <meta name="description" content="gpt-image v0.3.2 is a Go CLI for OpenAI's image models (gpt-image-2 by default): generate, edit, or batch, with agent-friendly --json and exit codes. Download a single binary for linux/macOS/Windows. MIT.">
-  <meta property="og:title" content="gpt-image v0.3.2 - Go CLI for OpenAI image models">
+  <title>gpt-image v0.3.3 - generate and edit images from the terminal</title>
+  <meta name="description" content="gpt-image v0.3.3 is a Go CLI for OpenAI's image models (gpt-image-2 by default): generate, edit, or batch, with agent-friendly --json and exit codes. Download a single binary for linux/macOS/Windows. MIT.">
+  <meta property="og:title" content="gpt-image v0.3.3 - Go CLI for OpenAI image models">
   <meta property="og:description" content="Generate, edit, and batch images with gpt-image-2 from the terminal. Single Go binary - agent-friendly --json and exit codes. linux/macOS/Windows.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stephens.page/gpt-image">
   <meta property="og:image" content="https://stephens.page/gpt-image/tool.png">
   <meta property="og:site_name" content="Jacob Stephens">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="gpt-image v0.3.2">
+  <meta name="twitter:title" content="gpt-image v0.3.3">
   <meta name="twitter:description" content="Go CLI for OpenAI gpt-image-2: generate, edit, batch, --json for agents. Binary releases for linux/macOS/Windows.">
   <meta name="twitter:image" content="https://stephens.page/gpt-image/tool.png">
   <link rel="icon" href="favicon.ico" sizes="any">
@@ -424,14 +424,14 @@
 <body>
   <header class="nav">
     <div class="wrap nav-inner">
-      <span class="brand"><span class="prompt">$</span> gpt-image <span style="color:var(--muted);font-weight:600;font-size:13px">v0.3.2</span></span>
+      <span class="brand"><span class="prompt">$</span> gpt-image <span style="color:var(--muted);font-weight:600;font-size:13px">v0.3.3</span></span>
       <nav>
         <a href="#try">Try</a>
         <a href="#gallery">Gallery</a>
         <a href="#features">Features</a>
         <a href="#install">Install</a>
         <a href="#usage">Usage</a>
-        <a href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.3.2">v0.3.2</a>
+        <a href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.3.3">v0.3.3</a>
         <a href="https://github.com/JacobStephens2/gpt-image">GitHub</a>
       </nav>
     </div>
@@ -440,10 +440,10 @@
   <main class="wrap">
     <section class="hero" style="border-top:none">
       <h1><span class="prompt">$</span> gpt-image</h1>
-      <p class="tagline">Generate and edit images from the terminal with OpenAI's image models. One Go binary (v0.3.2) for a single prompt, a photo edit, a JSON batch - and machine-readable <span class="mono">--json</span> output for agents.</p>
+      <p class="tagline">Generate and edit images from the terminal with OpenAI's image models. One Go binary (v0.3.3) for a single prompt, a photo edit, a JSON batch - and machine-readable <span class="mono">--json</span> output for agents.</p>
       <div class="cta" style="margin-bottom: 8px">
         <a class="btn btn-primary" href="#try">Try in the browser</a>
-        <a class="btn btn-ghost" href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.3.2">Download v0.3.2</a>
+        <a class="btn btn-ghost" href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.3.3">Download v0.3.3</a>
         <a class="btn btn-ghost" href="https://github.com/JacobStephens2/gpt-image">View on GitHub</a>
         <a class="btn btn-ghost" href="#install">Quickstart</a>
       </div>
@@ -471,7 +471,7 @@
         </div>
         <p class="img-caption mono" id="hero-image-caption">
           Illustration of the tool itself - terminal in, images out (generate, edit, batch).
-          Also made with <span class="c-accent">gpt-image generate</span> (Go binary, v0.3.2).
+          Also made with <span class="c-accent">gpt-image generate</span> (Go binary, v0.3.3).
           <span class="click-hint">Click the image</span> for the original Python-era product shot, then community samples.
         </p>
       </div>
@@ -486,7 +486,7 @@
 <span class="c-green">Wrote</span> lighthouse.png · ~$0.0531 est. · tokens in=18 out=1760 · 41s
 
 <span class="c-muted">$</span> gpt-image version
-gpt-image 0.3.2 (default model: gpt-image-2)</pre>
+gpt-image 0.3.3 (default model: gpt-image-2)</pre>
       </div>
 
       <p class="subline" style="margin-top: 28px">Defaults to <span class="mono">gpt-image-2</span>. Started as a hair-color photo-edit workaround against <a href="https://arena.ai/leaderboard/image-edit">Arena's image edit leaderboard</a>; grew into a general Go CLI with agent-friendly <span class="mono">--json</span> and exit codes. The original hair-color path is <span class="mono">gpt-image hair-color</span>.</p>
@@ -663,7 +663,7 @@ gpt-image 0.3.2 (default model: gpt-image-2)</pre>
         <div class="card">
           <div class="icon">&#123;&#125;</div>
           <h3>Machine-readable for agents</h3>
-          <p><span class="mono">--json</span> emits one result object on stdout (path, cost, tokens, errors). Exit codes 1–5 separate usage, auth, permanent API, retryable API, and I/O. See <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.2/AGENTS.md">AGENTS.md</a> or <span class="mono">gpt-image --help-agent</span>.</p>
+          <p><span class="mono">--json</span> emits one result object on stdout (path, cost, tokens, errors). Exit codes 1–5 separate usage, auth, permanent API, retryable API, and I/O. See <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.3/AGENTS.md">AGENTS.md</a> or <span class="mono">gpt-image --help-agent</span>.</p>
         </div>
         <div class="card">
           <div class="icon">&#128273;</div>
@@ -682,7 +682,7 @@ gpt-image 0.3.2 (default model: gpt-image-2)</pre>
       <h2>Quickstart</h2>
       <p class="lead">
         Go binary - no Python, no venv, no pip.
-        Current release: <a href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.3.2"><span class="mono">v0.3.2</span></a>
+        Current release: <a href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.3.3"><span class="mono">v0.3.3</span></a>
         (linux / macOS / Windows) — includes interactive multi-line paste (end prompt with <span class="mono">---</span>), API-key prompt, and <span class="mono">gpt-image --uninstall</span>.
       </p>
 
@@ -742,7 +742,7 @@ gpt-image version</pre>
         <button class="copy-btn" data-copy="install-cmd-darwin-arm64">Copy</button>
       </div>
       <p class="lead" style="margin:8px 0 0;font-size:14px;color:var(--muted)">
-        Expected: <span class="mono">gpt-image 0.3.2 (default model: gpt-image-2)</span>
+        Expected: <span class="mono">gpt-image 0.3.3 (default model: gpt-image-2)</span>
         — do not paste this line; it is sample output.
       </p>
 
@@ -766,7 +766,7 @@ gpt-image version</pre>
         <button class="copy-btn" data-copy="install-cmd">Copy</button>
       </div>
       <p class="lead" style="margin:8px 0 0;font-size:14px;color:var(--muted)">
-        Expected: <span class="mono">gpt-image 0.3.2 (default model: gpt-image-2)</span>
+        Expected: <span class="mono">gpt-image 0.3.3 (default model: gpt-image-2)</span>
         — do not paste this line; it is sample output.
       </p>
 
@@ -803,7 +803,7 @@ sudo gpt-image --uninstall</pre>
 
       <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">With Go 1.22+</h3>
       <div class="copy-row">
-        <pre class="block" id="install-go-cmd">go install github.com/JacobStephens2/gpt-image/cmd/gpt-image@v0.3.2</pre>
+        <pre class="block" id="install-go-cmd">go install github.com/JacobStephens2/gpt-image/cmd/gpt-image@v0.3.3</pre>
         <button class="copy-btn" data-copy="install-go-cmd">Copy</button>
       </div>
       <p class="lead" style="margin:12px 0 18px">
@@ -825,13 +825,13 @@ sudo gpt-image --uninstall</pre>
       <p class="lead" style="margin:12px 0 0">
         Prefer a file on disk if you do not want the key in shell history.
         Long high-quality runs print stderr heartbeats; see <span class="mono">--timeout</span> / <span class="mono">--quiet</span>.
-        Agents: read <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.2/AGENTS.md">AGENTS.md</a> or run <span class="mono">gpt-image --help-agent</span>.
+        Agents: read <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.3/AGENTS.md">AGENTS.md</a> or run <span class="mono">gpt-image --help-agent</span>.
       </p>
     </section>
 
     <section id="usage">
       <h2>Usage</h2>
-      <p class="lead">Generate, edit, or batch. Pass <span class="mono">--json</span> when a machine must parse the result. Full flags and defaults live in the <a href="https://github.com/JacobStephens2/gpt-image#readme">README</a>; the agent contract is <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.2/AGENTS.md">AGENTS.md</a>.</p>
+      <p class="lead">Generate, edit, or batch. Pass <span class="mono">--json</span> when a machine must parse the result. Full flags and defaults live in the <a href="https://github.com/JacobStephens2/gpt-image#readme">README</a>; the agent contract is <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.3/AGENTS.md">AGENTS.md</a>.</p>
 
       <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Generate</h3>
       <div class="copy-row">
@@ -847,7 +847,7 @@ sudo gpt-image --uninstall</pre>
   --quality high --json</pre>
         <button class="copy-btn" data-copy="gen-json-cmd">Copy</button>
       </div>
-      <p class="lead" style="margin:0 0 16px">Stdout is one JSON object (path, bytes, cost, tokens). Heartbeats stay on stderr. Prefer this over regexing the human cost line. Full contract: <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.2/AGENTS.md">AGENTS.md</a>.</p>
+      <p class="lead" style="margin:0 0 16px">Stdout is one JSON object (path, bytes, cost, tokens). Heartbeats stay on stderr. Prefer this over regexing the human cost line. Full contract: <a href="https://github.com/JacobStephens2/gpt-image/blob/v0.3.3/AGENTS.md">AGENTS.md</a>.</p>
 
       <h3 style="font-size:16px;margin:0 0 10px;color:var(--muted)">Edit</h3>
       <div class="copy-row">
@@ -884,9 +884,9 @@ sudo gpt-image --uninstall</pre>
 
   <footer>
     <div class="wrap row">
-      <span>gpt-image v0.3.2 - MIT. Built by <a href="https://stephens.page">Jacob Stephens</a>.</span>
+      <span>gpt-image v0.3.3 - MIT. Built by <a href="https://stephens.page">Jacob Stephens</a>.</span>
       <span>
-        <a href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.3.2">Release</a>
+        <a href="https://github.com/JacobStephens2/gpt-image/releases/tag/v0.3.3">Release</a>
         ·
         <a href="https://github.com/JacobStephens2/gpt-image">github.com/JacobStephens2/gpt-image</a>
       </span>
@@ -1567,7 +1567,7 @@ sudo gpt-image --uninstall</pre>
         alt: 'Product illustration of the gpt-image Go CLI: a dark terminal generating a lighthouse, a portrait edit, and a batch grid of images',
         captionHtml:
           'Illustration of the tool itself - terminal in, images out (generate, edit, batch). ' +
-          'Also made with <span class="c-accent">gpt-image generate</span> (Go binary, v0.3.2). ' +
+          'Also made with <span class="c-accent">gpt-image generate</span> (Go binary, v0.3.3). ' +
           '<span class="click-hint">Click the image</span> for the original Python-era product shot, then community samples.'
       };
 
