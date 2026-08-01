@@ -10,7 +10,8 @@
             "model": "gpt-image-2",
             "quality": "medium",
             "size": "1024x1024",
-            "cost_usd": 0.053255
+            "cost_usd": 0.053255,
+            "hidden": true
         },
         {
             "id": "lighthouse",
@@ -25,5 +26,6 @@
             "size": "1536x1024",
             "cost_usd": null
         }
-    ]
+    ],
+    "updated_at": 1785562259
 }
