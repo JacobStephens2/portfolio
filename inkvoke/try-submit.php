@@ -1,12 +1,12 @@
 <?php
 /**
- * Live try for gpt-image: Turnstile → newsletter subscribe → OpenAI generate → metrics log.
+ * Live try for inkvoke: Turnstile → newsletter subscribe → OpenAI generate → metrics log.
  *
  * Deep public module: one POST interface. Secrets from /private/.env (gitignored).
  * Trial log: /var/lib/gpt-image/trials.jsonl
  *
  * Invite bypass: POST invite= matching GPT_IMAGE_INVITE_TOKEN makes email/newsletter optional
- * (Turnstile + IP rate limits still apply). Shareable URL: /gpt-image/?invite=<token>
+ * (Turnstile + IP rate limits still apply). Shareable URL: /inkvoke/?invite=<token>
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -489,7 +489,7 @@ function record_spend(?float $costUsd): array {
         @file_put_contents(SPEND_PATH_LIB, $json . "\n", LOCK_EX);
         return $payload;
     } catch (Throwable $e) {
-        error_log('gpt-image try: spend tally error: ' . $e->getMessage());
+        error_log('inkvoke try: spend tally error: ' . $e->getMessage());
         if (is_resource($fp)) {
             @flock($fp, LOCK_UN);
             @fclose($fp);
@@ -621,12 +621,12 @@ function gallery_maybe_unlink_file(array $old): void {
 function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null, string $by = 'anonymous'): ?array {
     if (!is_dir(GALLERY_DIR)) {
         if (!@mkdir(GALLERY_DIR, 0775, true) && !is_dir(GALLERY_DIR)) {
-            error_log('gpt-image try: cannot create gallery dir');
+            error_log('inkvoke try: cannot create gallery dir');
             return null;
         }
     }
     if (!is_writable(GALLERY_DIR)) {
-        error_log('gpt-image try: gallery dir not writable');
+        error_log('inkvoke try: gallery dir not writable');
         return null;
     }
 
@@ -640,7 +640,7 @@ function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null, st
         $isJpeg = str_starts_with($bytes, "\xff\xd8\xff");
         $isWebp = str_starts_with($bytes, 'RIFF') && str_contains(substr($bytes, 0, 16), 'WEBP');
         if (!$isJpeg && !$isWebp) {
-            error_log('gpt-image try: gallery reject non-image payload');
+            error_log('inkvoke try: gallery reject non-image payload');
             return null;
         }
         $ext = $isJpeg ? 'jpg' : 'webp';
@@ -655,7 +655,7 @@ function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null, st
     $filename = $id . '.' . $ext;
     $path = GALLERY_DIR . '/' . $filename;
     if (@file_put_contents($path, $bytes, LOCK_EX) === false) {
-        error_log('gpt-image try: failed writing gallery image');
+        error_log('inkvoke try: failed writing gallery image');
         return null;
     }
     @chmod($path, 0664);
@@ -709,7 +709,7 @@ function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null, st
             }
         }
     } catch (Throwable $e) {
-        error_log('gpt-image try: gallery manifest error: ' . $e->getMessage());
+        error_log('inkvoke try: gallery manifest error: ' . $e->getMessage());
         if (is_resource($fp)) {
             @flock($fp, LOCK_UN);
             @fclose($fp);
@@ -727,7 +727,7 @@ function save_to_gallery(string $b64, string $prompt, ?float $costUsd = null, st
 function notify_admin_new_image(array $env, array $info): void {
     $resendKey = (string) ($env['RESEND_API_KEY'] ?? '');
     if ($resendKey === '') {
-        error_log('gpt-image try: notify skipped - no RESEND_API_KEY');
+        error_log('inkvoke try: notify skipped - no RESEND_API_KEY');
         return;
     }
     $fromEmail = (string) ($env['CONTACT_FROM_EMAIL'] ?? 'jacob@stephens.page');
@@ -831,7 +831,7 @@ function notify_admin_new_image(array $env, array $info): void {
     curl_close($ch);
 
     if ($resp === false || $status < 200 || $status >= 300) {
-        error_log('gpt-image try: notify Resend fail status=' . $status . ' err=' . $err . ' resp=' . substr((string) $resp, 0, 300));
+        error_log('inkvoke try: notify Resend fail status=' . $status . ' err=' . $err . ' resp=' . substr((string) $resp, 0, 300));
     }
 }
 
@@ -1037,7 +1037,7 @@ if ($email !== '') {
     }
     [$nlStatus, $nlBody, $nlErr] = newsletter_add($nlUrl, $nlTok, $email);
     if ($nlStatus < 200 || $nlStatus >= 300 || !($nlBody['ok'] ?? false)) {
-        error_log('gpt-image try: newsletter add failed status=' . $nlStatus . ' err=' . $nlErr . ' body=' . substr(json_encode($nlBody), 0, 200));
+        error_log('inkvoke try: newsletter add failed status=' . $nlStatus . ' err=' . $nlErr . ' body=' . substr(json_encode($nlBody), 0, 200));
         log_trial($baseEvent + ['ok' => false, 'error' => 'newsletter_fail', 'http' => $nlStatus]);
         respond(false, 'Could not complete newsletter signup. Please try again in a moment.', [], 502);
     }
@@ -1069,7 +1069,7 @@ $cost = estimate_cost_from_usage(is_array($oBody['usage'] ?? null) ? $oBody['usa
 
 if ($oStatus < 200 || $oStatus >= 300 || !is_string($b64) || $b64 === '') {
     $apiMsg = $oBody['error']['message'] ?? $oErr ?: 'unknown';
-    error_log('gpt-image try: openai fail status=' . $oStatus . ' msg=' . substr((string) $apiMsg, 0, 300));
+    error_log('inkvoke try: openai fail status=' . $oStatus . ' msg=' . substr((string) $apiMsg, 0, 300));
     log_trial($baseEvent + [
         'ok' => false,
         'error' => 'openai_fail',
