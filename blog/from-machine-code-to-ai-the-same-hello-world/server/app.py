@@ -23,15 +23,21 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from pydantic import BaseModel, Field
 
 POST_DIR = Path(__file__).resolve().parent.parent
 PROGRAMS = POST_DIR / "programs"
 CACHE = POST_DIR / "cache"
 
-RATE_LIMIT = 40
+RATE_LIMIT = 60
 RATE_WINDOW_SECONDS = 60
+BENCH_RATE_LIMIT = 4
+BENCH_RATE_WINDOW_SECONDS = 300
 RUN_TIMEOUT_SECONDS = 3
 BUILD_TIMEOUT_SECONDS = 60
+BENCH_SAMPLES_MIN = 1
+BENCH_SAMPLES_MAX = 100
+BENCH_TOTAL_TIMEOUT_SECONDS = 420
 
 PATH_PREFIX = os.environ.get(
     "HELLO_LADDER_PATH",
@@ -39,6 +45,7 @@ PATH_PREFIX = os.environ.get(
 )
 
 _requests: dict[str, deque[float]] = defaultdict(deque)
+_bench_requests: dict[str, deque[float]] = defaultdict(deque)
 
 # Abstraction bands (ordered). Each band may hold multiple language variants.
 BANDS: list[dict] = [
@@ -78,9 +85,9 @@ BANDS: list[dict] = [
         "id": "systems",
         "level": 4,
         "title": "Systems languages",
-        "era": "1972–1985",
+        "era": "1970–1985",
         "hides": "Hides instruction selection; still close to the machine model.",
-        "blurb": "C and C++ - portable systems programming with a thin runtime.",
+        "blurb": "Pascal, C, and C++ - structured systems programming with a thin runtime.",
     },
     {
         "id": "managed",
@@ -209,6 +216,25 @@ LANGS: dict[str, dict] = {
             str(PROGRAMS / "hello.cob"),
         ],
         "run": [str(CACHE / "hello-cobol")],
+    },
+    "pascal": {
+        "title": "Pascal",
+        "year": "1970",
+        "year_note": "Niklaus Wirth; namesake of PascalCase",
+        "band": "systems",
+        "source_file": "hello.pas",
+        "kind": "native",
+        "highlight": "plaintext",
+        "binary": "hello-pascal",
+        "build": [
+            "fpc",
+            "-O1",
+            f"-FE{CACHE}",
+            f"-FU{CACHE}",
+            f"-o{CACHE / 'hello-pascal'}",
+            str(PROGRAMS / "hello.pas"),
+        ],
+        "run": [str(CACHE / "hello-pascal")],
     },
     "c": {
         "title": "C",
@@ -389,19 +415,45 @@ def _env() -> dict[str, str]:
     return env
 
 
-def enforce_rate_limit(request: Request) -> None:
+def _rate_limit(
+    store: dict[str, deque[float]],
+    request: Request,
+    limit: int,
+    window: int,
+    message: str,
+) -> None:
     client = request.client.host if request.client else "unknown"
     now = time.monotonic()
-    bucket = _requests[client]
-    while bucket and bucket[0] <= now - RATE_WINDOW_SECONDS:
+    bucket = store[client]
+    while bucket and bucket[0] <= now - window:
         bucket.popleft()
-    if len(bucket) >= RATE_LIMIT:
+    if len(bucket) >= limit:
         raise HTTPException(
             status_code=429,
-            detail="Run limit reached; try again in one minute.",
-            headers={"Retry-After": str(RATE_WINDOW_SECONDS)},
+            detail=message,
+            headers={"Retry-After": str(window)},
         )
     bucket.append(now)
+
+
+def enforce_rate_limit(request: Request) -> None:
+    _rate_limit(
+        _requests,
+        request,
+        RATE_LIMIT,
+        RATE_WINDOW_SECONDS,
+        "Run limit reached; try again in one minute.",
+    )
+
+
+def enforce_bench_rate_limit(request: Request) -> None:
+    _rate_limit(
+        _bench_requests,
+        request,
+        BENCH_RATE_LIMIT,
+        BENCH_RATE_WINDOW_SECONDS,
+        "Benchmark limit reached; try again in a few minutes.",
+    )
 
 
 def _run_cmd(cmd: list[str], timeout: float) -> subprocess.CompletedProcess[str]:
@@ -495,65 +547,207 @@ def machine_hex_snippet() -> str:
     return "\n".join(raw_lines or out)
 
 
-def _host() -> dict[str, str]:
+def _read_first(path: str) -> str:
+    try:
+        return Path(path).read_text(encoding="utf-8", errors="replace").strip()
+    except OSError:
+        return ""
+
+
+def hardware_info() -> dict:
+    """Facts about the production host that executes allowlisted programs."""
+    model = ""
+    cpus = os.cpu_count() or 0
+    try:
+        with open("/proc/cpuinfo", encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if line.lower().startswith("model name"):
+                    model = line.split(":", 1)[1].strip()
+                    break
+    except OSError:
+        model = platform.processor() or "unknown"
+
+    mem_total_kib = 0
+    try:
+        with open("/proc/meminfo", encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if line.startswith("MemTotal:"):
+                    parts = line.split()
+                    mem_total_kib = int(parts[1])
+                    break
+    except (OSError, ValueError, IndexError):
+        mem_total_kib = 0
+
+    pretty = ""
+    for line in _read_first("/etc/os-release").splitlines():
+        if line.startswith("PRETTY_NAME="):
+            pretty = line.split("=", 1)[1].strip().strip('"')
+            break
+
     return {
-        "machine": platform.machine(),
-        "system": platform.system(),
+        "provider": "DigitalOcean droplet",
+        "model": model or "DO-Premium-AMD (reported)",
+        "architecture": platform.machine(),
+        "cpus": cpus,
+        "memoryGiB": round(mem_total_kib / (1024 * 1024), 1) if mem_total_kib else None,
+        "os": pretty or f"{platform.system()} {platform.release()}",
         "python": platform.python_version(),
+        "note": (
+            "Times measure wall clock for a short allowlisted Hello World on this shared "
+            "host - not microbenchmarks. Other services run on the same machine."
+        ),
     }
 
 
-def run_language(lang: str) -> dict:
+def _host() -> dict:
+    hw = hardware_info()
+    return {
+        "machine": hw["architecture"],
+        "system": platform.system(),
+        "python": hw["python"],
+        "cpus": hw["cpus"],
+        "model": hw["model"],
+        "memoryGiB": hw["memoryGiB"],
+    }
+
+
+def _stats(samples_ms: list[float]) -> dict:
+    n = len(samples_ms)
+    if n == 0:
+        return {"samples": 0, "avgMs": None, "minMs": None, "maxMs": None, "stdevMs": None}
+    avg = sum(samples_ms) / n
+    mn = min(samples_ms)
+    mx = max(samples_ms)
+    if n > 1:
+        var = sum((x - avg) ** 2 for x in samples_ms) / (n - 1)
+        stdev = var**0.5
+    else:
+        stdev = 0.0
+    return {
+        "samples": n,
+        "avgMs": round(avg, 3),
+        "minMs": round(mn, 3),
+        "maxMs": round(mx, 3),
+        "stdevMs": round(stdev, 3),
+    }
+
+
+def run_language_once(lang: str) -> dict:
+    """Single execution (build if needed). Used by /run and multi-sample benches."""
+    return run_language(lang)
+
+
+def run_language_samples(lang: str, samples: int) -> dict:
+    """Run allowlisted program `samples` times after one build; return avg stats."""
+    if lang not in LANGS:
+        raise KeyError(lang)
+    samples = max(BENCH_SAMPLES_MIN, min(BENCH_SAMPLES_MAX, int(samples)))
+
+    # Build once (untimed), then time execute-only samples.
+    build_lang = {
+        "machine": "assembly",
+        "handcode": "handcode",
+        "binary": "binary",
+    }.get(lang, lang)
+    meta = LANGS[lang]
+    if meta.get("build"):
+        ensure_built(build_lang)
+
+    times: list[float] = []
+    last: dict | None = None
+    stdout_set: set[str] = set()
+    exit_codes: set[int] = set()
+    for i in range(samples):
+        # Full detail only on the last sample (objdump / ELF view once).
+        last = run_language(lang, detail=(i == samples - 1))
+        times.append(float(last.get("wallMs") or 0.0))
+        stdout_set.add((last.get("displayStdout") or last.get("stdout") or "").strip())
+        exit_codes.add(int(last.get("exitCode") or 0))
+
+    assert last is not None
+    stats = _stats(times)
+    last["samples"] = stats["samples"]
+    last["avgMs"] = stats["avgMs"]
+    last["minMs"] = stats["minMs"]
+    last["maxMs"] = stats["maxMs"]
+    last["stdevMs"] = stats["stdevMs"]
+    last["sampleMs"] = [round(t, 3) for t in times]
+    last["wallMs"] = stats["avgMs"]  # primary displayed timing is the average
+    last["stdoutConsistent"] = len(stdout_set) == 1
+    last["exitCodes"] = sorted(exit_codes)
+    last["stdoutVariants"] = sorted(stdout_set)
+    last["host"] = _host()
+    if samples > 1:
+        last["note"] = (
+            (last.get("note") + " " if last.get("note") else "")
+            + f"Timing is mean of {samples} server-side runs "
+            f"(min {stats['minMs']} ms, max {stats['maxMs']} ms, stdev {stats['stdevMs']} ms)."
+        )
+    return last
+
+
+class BenchmarkRequest(BaseModel):
+    samples: int = Field(default=10, ge=BENCH_SAMPLES_MIN, le=BENCH_SAMPLES_MAX)
+    languages: list[str] | None = None
+
+
+def run_language(lang: str, *, detail: bool = True) -> dict:
     if lang not in LANGS:
         raise KeyError(lang)
     meta = LANGS[lang]
     started = time.perf_counter()
+    band_level = next(b["level"] for b in BANDS if b["id"] == meta["band"])
 
     if meta["kind"] == "ai-standin":
-        prompt = (PROGRAMS / "ai-prompt.txt").read_text(encoding="utf-8")
         wall_ms = (time.perf_counter() - started) * 1000
-        return {
+        payload = {
             "language": lang,
             "title": meta["title"],
             "year": meta.get("year"),
-            "level": next(b["level"] for b in BANDS if b["id"] == meta["band"]),
+            "level": band_level,
             "stdout": "Hello, World!\n",
             "stderr": "",
             "exitCode": 0,
             "wallMs": round(wall_ms, 3),
-            "host": _host(),
+            "host": _host() if detail else {},
             "sourceFile": meta["source_file"],
             "highlight": meta.get("highlight", "plaintext"),
+            "displayStdout": "Hello, World!",
             "note": (
                 "Deterministic stand-in for an LLM: the server does not call a model. "
                 "It returns the exact one-line output the engineered prompt asks for."
             ),
-            "prompt": prompt,
         }
+        if detail:
+            payload["prompt"] = (PROGRAMS / "ai-prompt.txt").read_text(encoding="utf-8")
+        return payload
 
     if meta["kind"] == "vibe-standin":
         result = _run_cmd(meta["run"], RUN_TIMEOUT_SECONDS)
         wall_ms = (time.perf_counter() - started) * 1000
-        session = (PROGRAMS / meta["source_file"]).read_text(encoding="utf-8")
-        return {
+        stdout = (result.stdout or "").replace("\r\n", "\n")
+        payload = {
             "language": lang,
             "title": meta["title"],
             "year": meta.get("year"),
-            "level": next(b["level"] for b in BANDS if b["id"] == meta["band"]),
-            "stdout": result.stdout,
+            "level": band_level,
+            "stdout": stdout,
             "stderr": result.stderr,
             "exitCode": result.returncode,
             "wallMs": round(wall_ms, 3),
-            "host": _host(),
+            "host": _host() if detail else {},
             "sourceFile": meta["source_file"],
             "highlight": meta.get("highlight", "markdown"),
             "command": meta["run"],
-            "session": session,
+            "displayStdout": stdout.strip() or "(empty stdout)",
             "note": (
                 "Vibe coding stand-in: chat transcript is the process; "
                 "Run executes programs/vibe-hello.py. No live model."
             ),
         }
+        if detail:
+            payload["session"] = (PROGRAMS / meta["source_file"]).read_text(encoding="utf-8")
+        return payload
 
     build_lang = {
         "machine": "assembly",
@@ -561,11 +755,11 @@ def run_language(lang: str) -> dict:
         "binary": "binary",
     }.get(lang, lang)
     ensure_built(build_lang)
+    # Time only the execute step after build is warm.
+    started = time.perf_counter()
     result = _run_cmd(meta["run"], RUN_TIMEOUT_SECONDS)
     wall_ms = (time.perf_counter() - started) * 1000
 
-    band_level = next(b["level"] for b in BANDS if b["id"] == meta["band"])
-    # Normalize stdout so UI banners are easy to spot (strip Fortran-style padding).
     stdout = (result.stdout or "").replace("\r\n", "\n")
     payload: dict = {
         "language": lang,
@@ -576,12 +770,14 @@ def run_language(lang: str) -> dict:
         "stderr": result.stderr,
         "exitCode": result.returncode,
         "wallMs": round(wall_ms, 3),
-        "host": _host(),
+        "host": _host() if detail else {},
         "sourceFile": meta["source_file"],
         "highlight": meta.get("highlight", "plaintext"),
         "command": meta["run"],
         "displayStdout": stdout.strip() or "(empty stdout)",
     }
+    if not detail:
+        return payload
     if lang == "machine":
         payload["machineView"] = machine_hex_snippet()
         payload["note"] = (
@@ -630,6 +826,7 @@ def warm_builds() -> None:
     for lang in (
         "binary",
         "assembly",
+        "pascal",
         "c",
         "cpp",
         "fortran",
@@ -655,6 +852,7 @@ def health() -> dict:
         "gfortran": shutil.which("gfortran", path=PATH_PREFIX),
         "cobc": shutil.which("cobc", path=PATH_PREFIX),
         "sbcl": shutil.which("sbcl", path=PATH_PREFIX),
+        "fpc": shutil.which("fpc", path=PATH_PREFIX),
         "rustc": shutil.which("rustc", path=PATH_PREFIX),
         "go": shutil.which("go", path=PATH_PREFIX),
         "mcs": shutil.which("mcs", path=PATH_PREFIX),
@@ -673,6 +871,8 @@ def health() -> dict:
         "system": platform.system(),
         "languages": list(LANGS.keys()),
         "bands": len(BANDS),
+        "hardware": hardware_info(),
+        "defaultSamples": 10,
         "tools": tools,
         "buildErrors": {
             k: v.get("_build_error") for k, v in LANGS.items() if v.get("_build_error")
@@ -723,14 +923,22 @@ def levels() -> list[dict]:
 
 
 @app.post("/run/{language}")
-async def run_endpoint(language: str, request: Request, response: Response) -> dict:
+async def run_endpoint(
+    language: str,
+    request: Request,
+    response: Response,
+    samples: int = 10,
+) -> dict:
+    """Run an allowlisted program. Default samples=10 (mean wall time)."""
     enforce_rate_limit(request)
     if language not in LANGS:
         raise HTTPException(status_code=404, detail=f"Unknown language: {language}")
+    samples = max(BENCH_SAMPLES_MIN, min(BENCH_SAMPLES_MAX, int(samples)))
+    timeout = BUILD_TIMEOUT_SECONDS + (RUN_TIMEOUT_SECONDS + 1) * samples + 5
     try:
         result = await asyncio.wait_for(
-            asyncio.to_thread(run_language, language),
-            timeout=BUILD_TIMEOUT_SECONDS + RUN_TIMEOUT_SECONDS + 2,
+            asyncio.to_thread(run_language_samples, language, samples),
+            timeout=timeout,
         )
     except TimeoutError as exc:
         raise HTTPException(status_code=504, detail="Run exceeded its time limit.") from exc
@@ -742,3 +950,90 @@ async def run_endpoint(language: str, request: Request, response: Response) -> d
     response.headers["Cache-Control"] = "no-store"
     response.headers["X-Content-Type-Options"] = "nosniff"
     return result
+
+
+@app.post("/benchmark")
+async def benchmark_endpoint(
+    payload: BenchmarkRequest,
+    request: Request,
+    response: Response,
+) -> dict:
+    """Run every (or selected) language N times server-side; return a comparison table."""
+    enforce_bench_rate_limit(request)
+    samples = payload.samples
+    if payload.languages:
+        langs = [x for x in payload.languages if x in LANGS]
+        unknown = [x for x in payload.languages if x not in LANGS]
+        if unknown:
+            raise HTTPException(status_code=400, detail=f"Unknown languages: {unknown}")
+    else:
+        # Prefer one representative per band for speed, plus all unique langs.
+        # Full matrix is intentional for the comparison table.
+        langs = list(LANGS.keys())
+
+    def _bench_all() -> list[dict]:
+        rows: list[dict] = []
+        for lang in langs:
+            try:
+                result = run_language_samples(lang, samples)
+                rows.append(
+                    {
+                        "id": lang,
+                        "title": result.get("title"),
+                        "year": result.get("year"),
+                        "level": result.get("level"),
+                        "avgMs": result.get("avgMs"),
+                        "minMs": result.get("minMs"),
+                        "maxMs": result.get("maxMs"),
+                        "stdevMs": result.get("stdevMs"),
+                        "samples": result.get("samples"),
+                        "stdout": (result.get("displayStdout") or result.get("stdout") or "").strip(),
+                        "stdoutConsistent": result.get("stdoutConsistent"),
+                        "exitCodes": result.get("exitCodes"),
+                        "ok": result.get("exitCode") == 0,
+                        "error": None,
+                    }
+                )
+            except Exception as exc:  # noqa: BLE001
+                rows.append(
+                    {
+                        "id": lang,
+                        "title": LANGS[lang]["title"],
+                        "year": LANGS[lang].get("year"),
+                        "level": next(
+                            b["level"] for b in BANDS if b["id"] == LANGS[lang]["band"]
+                        ),
+                        "avgMs": None,
+                        "minMs": None,
+                        "maxMs": None,
+                        "stdevMs": None,
+                        "samples": samples,
+                        "stdout": "",
+                        "stdoutConsistent": False,
+                        "exitCodes": [],
+                        "ok": False,
+                        "error": str(exc),
+                    }
+                )
+        rows.sort(key=lambda r: (r["avgMs"] is None, r["avgMs"] if r["avgMs"] is not None else 0))
+        return rows
+
+    try:
+        rows = await asyncio.wait_for(
+            asyncio.to_thread(_bench_all),
+            timeout=BENCH_TOTAL_TIMEOUT_SECONDS,
+        )
+    except TimeoutError as exc:
+        raise HTTPException(
+            status_code=504,
+            detail="Benchmark exceeded the global time limit.",
+        ) from exc
+
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    return {
+        "samples": samples,
+        "hardware": hardware_info(),
+        "count": len(rows),
+        "rows": rows,
+    }

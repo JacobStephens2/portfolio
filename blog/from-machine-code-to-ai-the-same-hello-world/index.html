@@ -158,6 +158,66 @@
             background: var(--soft); padding: 0; cursor: pointer;
         }
         .carousel-dot[aria-current="true"] { background: var(--brand); border-color: var(--brand); }
+
+        .carousel-viewport {
+            overflow: hidden; width: 100%; position: relative;
+            border: 1px solid var(--rule); border-radius: 6px; background: var(--code-bg);
+        }
+        .carousel-track {
+            display: flex; width: 100%;
+            transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+        }
+        .carousel-slide {
+            flex: 0 0 100%; width: 100%; min-width: 100%;
+            box-sizing: border-box; padding: 0;
+        }
+        .carousel-slide pre {
+            margin: 0; border: none; border-radius: 0; max-height: 28rem;
+        }
+        .carousel-nav .carousel-btn:active { transform: scale(0.96); }
+        .bench-panel {
+            margin: 1.4rem 0 1.6rem; border: 1px solid var(--rule); border-radius: 8px;
+            background: var(--surface); overflow: hidden;
+        }
+        .bench-panel .bench-head {
+            display: flex; flex-wrap: wrap; gap: 0.65rem 1rem; align-items: center;
+            justify-content: space-between; padding: 0.75rem 0.95rem;
+            background: var(--soft); border-bottom: 1px solid var(--rule);
+        }
+        .bench-panel .bench-title {
+            font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--brand);
+        }
+        .bench-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+        .bench-actions label { font-size: 0.88rem; color: var(--muted); }
+        .bench-actions select {
+            font: inherit; border: 1px solid var(--rule); border-radius: 6px;
+            padding: 0.35rem 0.5rem; background: var(--surface); color: var(--ink);
+        }
+        .bench-body { padding: 0.9rem; overflow-x: auto; }
+        .bench-hw {
+            font-size: 0.88rem; color: var(--muted); margin-bottom: 0.75rem; line-height: 1.5;
+        }
+        .bench-hw strong { color: var(--ink); }
+        .bench-table {
+            width: 100%; border-collapse: collapse; font-size: 0.86rem;
+            font-variant-numeric: tabular-nums;
+        }
+        .bench-table th, .bench-table td {
+            text-align: left; padding: 0.45rem 0.55rem; border-bottom: 1px solid var(--rule);
+        }
+        .bench-table th {
+            font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted);
+        }
+        .bench-table tr:hover td { background: var(--soft); }
+        .bench-table .num { text-align: right; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; }
+        .bench-table .stdout-cell {
+            font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.8rem; color: var(--ok);
+        }
+        .bench-status { font-size: 0.88rem; color: var(--muted); min-height: 1.3em; margin-top: 0.5rem; }
+        .bench-status.busy { color: var(--brand); font-weight: 600; }
+
         .variant-year {
             font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
             font-size: 0.75rem; color: var(--muted); margin-left: 0.35rem;
@@ -289,7 +349,7 @@
                 <li><strong>Machine code</strong> (c. 1940s) - instruction encodings. Carousel includes <em>Hand-entered hex</em>: the short opcode list people would have keyed before assemblers.</li>
                 <li><strong>Assembly</strong> (c. 1949) - mnemonics for those encodings.</li>
                 <li><strong>Early high-level</strong> (1957–1959) - FORTRAN, Lisp, COBOL: formulas, lists, business data.</li>
-                <li><strong>Systems</strong> (1972–1985) - C, C++.</li>
+                <li><strong>Systems</strong> (1970–1985) - Pascal, C, C++ (PascalCase comes from Pascal).</li>
                 <li><strong>Managed / safe systems</strong> (1995–2015) - Java, C#, Go, Rust.</li>
                 <li><strong>Scripting / dynamic</strong> (1987–1995) - Bash, Perl, Python, PHP, JavaScript.</li>
                 <li><strong>AI engineering</strong> (c. 2022) - precise natural-language contracts.</li>
@@ -299,7 +359,27 @@
             <p>Before FORTRAN and COBOL, people still wrote real programs - just not in those languages. ENIAC-era work used plugboards and absolute machine words; later machines took hex or octal on a front panel, paper tape, or punched cards. The jobs were numerical tables, ballistics, census-style tabulation, payroll, and short loops (load / add / store / branch), not "Hello, World!" as a cultural phrase (that demo is much later). We cannot put a 1949 console in your browser, but the Machine code band's <strong>Hand-entered hex</strong> sheet is the real opcode stream for this page's <code>main</code>, presented the way a human would have written bytes down. Run still executes the linked ELF - we do not make you toggle twenty-three switches.</p>
 
             <h2>Fig. 1 · Nine bands, carousel variants, real execution</h2>
-            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}</code> with only an allowlisted language key. Multi-language bands use Prev/Next to rotate the active Hello World; Run always executes the variant currently shown. After each successful run, a sticky <strong>Run times</strong> panel (bottom-right) records wall-clock milliseconds so you can compare layers. Binary vs machine: one is the shipped file format; the other is the short instruction stream people once entered by hand.</p>
+            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}?samples=10</code> by default: the server runs the allowlisted program <strong>ten times</strong> and returns the <em>mean</em> wall time (plus min/max/stdev) so a single noisy sample does not mislead. Multi-language bands use animated Prev/Next carousels (manual only). A sticky <strong>Run times</strong> tally keeps the averages you have collected this session.</p>
+            <p id="hardware-line" class="bench-hw">Loading host hardware…</p>
+
+            <div class="bench-panel" id="bench-panel">
+                <div class="bench-head">
+                    <span class="bench-title">Fig. 1b · Full ladder benchmark</span>
+                    <div class="bench-actions">
+                        <label for="bench-samples">Samples per language</label>
+                        <select id="bench-samples" aria-label="Samples per language">
+                            <option value="10" selected>10</option>
+                            <option value="100">100</option>
+                        </select>
+                        <button type="button" class="run-btn" id="bench-all-btn">Benchmark all</button>
+                    </div>
+                </div>
+                <div class="bench-body">
+                    <p class="bench-hw">Runs every language N times on this host, then builds a table of average runtimes and stdout. Use 10 for a quick compare; 100 is slower (interpreters and JVMs pay cold-start costs on each process spawn). These are wall-clock times on a shared droplet - not microbenchmarks in a quiet lab.</p>
+                    <div id="bench-status" class="bench-status" aria-live="polite"></div>
+                    <div id="bench-table-wrap"></div>
+                </div>
+            </div>
 
             <div class="ladder" id="ladder" aria-live="polite"></div>
 
@@ -352,6 +432,7 @@
                     <li><span class="cite-title">Brian Kernighan &amp; Dennis Ritchie, The C Programming Language</span> (1978 / 2nd ed. 1988) - the cultural home of the Hello World demo in systems programming.</li>
                     <li><span class="cite-title">John Backus et al., FORTRAN</span> (1957) - early high-level formula translation. Overview: <a href="https://en.wikipedia.org/wiki/Fortran" rel="noopener">Wikipedia: Fortran</a>.</li>
                     <li><span class="cite-title">John McCarthy, Lisp</span> (1958) - list processing / symbolic computation. <a href="https://en.wikipedia.org/wiki/Lisp_(programming_language)" rel="noopener">Wikipedia: Lisp</a>.</li>
+                    <li><span class="cite-title">Niklaus Wirth, Pascal</span> (1970) - structured programming; namesake of PascalCase. <a href="https://en.wikipedia.org/wiki/Pascal_(programming_language)" rel="noopener">Wikipedia: Pascal</a>.</li>
                     <li><span class="cite-title">CODASYL, COBOL</span> (1959) - business-oriented high-level language. <a href="https://en.wikipedia.org/wiki/COBOL" rel="noopener">Wikipedia: COBOL</a>.</li>
                     <li><span class="cite-title">ENIAC / stored-program transition</span> - plugboards and absolute machine programming before symbolic assemblers. <a href="https://en.wikipedia.org/wiki/ENIAC" rel="noopener">Wikipedia: ENIAC</a>, <a href="https://en.wikipedia.org/wiki/Stored-program_computer" rel="noopener">Stored-program computer</a>.</li>
                     <li><span class="cite-title">EDSAC and early assembly</span> - symbolic instruction entry in the late 1940s. <a href="https://en.wikipedia.org/wiki/EDSAC" rel="noopener">Wikipedia: EDSAC</a>, <a href="https://en.wikipedia.org/wiki/Assembly_language" rel="noopener">Assembly language</a>.</li>
@@ -386,7 +467,7 @@
 
     <details class="timing-tally" id="timing-tally" open>
         <summary>Run times</summary>
-        <div class="tally-sub">Wall-clock ms from this browser session (sticky). Sorted fastest first.</div>
+        <div class="tally-sub">Mean wall-clock ms (server, default n=10). Sticky; sorted fastest first.</div>
         <ol id="tally-list"><li class="tally-empty">Run a program to start the tally.</li></ol>
     </details>
 
@@ -435,10 +516,11 @@
       ]
     },
     {
-      id: 'systems', level: 4, title: 'Systems languages', era: '1972–1985',
+      id: 'systems', level: 4, title: 'Systems languages', era: '1970–1985',
       hides: 'Hides instruction selection; still close to the machine.',
       blurb: 'C and C++.',
       variants: [
+        { id: 'pascal', title: 'Pascal', year: '1970', sourceFile: 'hello.pas', highlight: 'plaintext', source: '' },
         { id: 'c', title: 'C', year: '1972', sourceFile: 'hello.c', highlight: 'c', source: '' },
         { id: 'cpp', title: 'C++', year: '1985', sourceFile: 'hello.cpp', highlight: 'cpp', source: '' }
       ]
@@ -559,21 +641,76 @@
     return band.variants[idx];
   }
 
-  function setCarousel(bandId, idx, levels) {
+  var DEFAULT_SAMPLES = 10;
+  var levelsCache = null;
+
+  function setCarousel(bandId, idx, levels, animate) {
     var band = levels.find(function (b) { return b.id === bandId; });
     if (!band) return;
     var n = band.variants.length;
     if (!n) return;
-    carouselIndex[bandId] = ((idx % n) + n) % n;
-    renderLevels(levels);
+    var next = ((idx % n) + n) % n;
+    var prev = carouselIndex[bandId] || 0;
+    carouselIndex[bandId] = next;
+    var article = document.getElementById('band-' + bandId);
+    if (!article) {
+      renderLevels(levels);
+      return;
+    }
+    applyCarouselState(article, band, next, animate !== false && prev !== next);
+  }
+
+  function applyCarouselState(article, band, idx, animate) {
+    var n = band.variants.length;
+    var v = band.variants[idx];
+    var track = article.querySelector('.carousel-track');
+    var runBtn = article.querySelector('.run-btn');
+    var meta = article.querySelector('.carousel-meta');
+    var idLine = article.querySelector('.rung-id');
+    if (track) {
+      if (!animate) track.style.transition = 'none';
+      else track.style.transition = '';
+      track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+      if (!animate) {
+        // force reflow then restore transition for future moves
+        void track.offsetWidth;
+        track.style.transition = '';
+      }
+    }
+    if (runBtn) runBtn.setAttribute('data-lang', v.id);
+    if (meta) {
+      meta.innerHTML = '<strong>' + esc(v.title) + '</strong>' +
+        '<span class="variant-year">' + esc(v.year || '') + '</span>' +
+        (v.yearNote ? ' · ' + esc(v.yearNote) : '');
+    }
+    if (idLine) {
+      idLine.textContent = 'Level ' + band.level + ' · ' + band.id +
+        (n > 1 ? ' · ' + (idx + 1) + ' / ' + n : '');
+    }
+    article.querySelectorAll('.carousel-dot').forEach(function (dot) {
+      var i = parseInt(dot.getAttribute('data-idx'), 10);
+      dot.setAttribute('aria-current', i === idx ? 'true' : 'false');
+    });
+    // clear prior result when changing language
+    var rr = article.querySelector('.run-result');
+    if (rr) { rr.className = 'run-result'; rr.replaceChildren(); }
+    var out = article.querySelector('.out');
+    if (out) {
+      clearTerm(out);
+      termLine(out, 'dim', 'Click Run Program - mean of ' + DEFAULT_SAMPLES + ' server runs.');
+    }
   }
 
   function renderLevels(levels) {
+    levelsCache = levels;
     ladderEl.innerHTML = '';
     levels.forEach(function (band) {
-      var v = activeVariant(band);
-      var multi = band.variants.length > 1;
+      if (carouselIndex[band.id] == null) carouselIndex[band.id] = 0;
       var idx = carouselIndex[band.id] || 0;
+      if (idx >= band.variants.length) idx = 0;
+      carouselIndex[band.id] = idx;
+      var v = band.variants[idx];
+      var multi = band.variants.length > 1;
       var article = document.createElement('article');
       article.className = 'rung';
       article.id = 'band-' + band.id;
@@ -588,7 +725,7 @@
             '<div class="rung-era">Introduced · ' + esc(band.era) + '</div>' +
             '<div class="rung-hides">' + esc(band.hides || band.blurb || '') + '</div>' +
           '</div>' +
-          '<button type="button" class="run-btn" data-lang="' + esc(v.id) + '">Run Program</button>' +
+          '<button type="button" class="run-btn" data-lang="' + esc(v.id) + '">Run Program (×' + DEFAULT_SAMPLES + ')</button>' +
         '</div>';
 
       var nav = '';
@@ -621,27 +758,42 @@
       }
 
       var outFirst = (band.id === 'binary' || band.id === 'machine') ? ' out-first' : '';
+      var slides = band.variants.map(function (vv) {
+        var label = vv.id === 'binary' ? ' (ELF bytes)' : (vv.id === 'handcode' ? ' (hand-entry sheet)' : '');
+        return '<div class="carousel-slide" data-lang="' + esc(vv.id) + '">' +
+          '<div class="panel-label" style="padding:0.55rem 0.75rem 0">Source' + label +
+          ' · ' + esc(vv.sourceFile || '') + '</div>' +
+          '<pre><code class="src language-' + esc(vv.highlight || 'plaintext') +
+          '" data-hl="' + esc(vv.highlight || 'plaintext') + '"></code></pre></div>';
+      }).join('');
+
       var body =
         '<div class="run-result" aria-live="polite"></div>' +
         '<div class="rung-body two' + outFirst + '">' +
           '<div class="panel-out">' +
-            '<div class="panel-label">Output (from server)</div>' +
-            '<div class="term out"><span class="line dim">Click Run Program - stdout appears here and in the RESULT strip above.</span></div>' +
+            '<div class="panel-label">Output (mean of ' + DEFAULT_SAMPLES + ' server runs)</div>' +
+            '<div class="term out"><span class="line dim">Click Run Program - stdout + average ms appear here.</span></div>' +
           '</div>' +
           '<div class="panel-src">' +
-            '<div class="panel-label">Source' +
-              (v.id === 'binary' ? ' (ELF bytes)' : (v.id === 'handcode' ? ' (hand-entry sheet)' : '')) +
-              ' · ' + esc(v.sourceFile || '') +
-            '</div>' +
-            '<pre><code class="src language-' + esc(v.highlight || 'plaintext') +
-              '" data-hl="' + esc(v.highlight || 'plaintext') + '"></code></pre>' +
+            '<div class="carousel-viewport"><div class="carousel-track">' + slides + '</div></div>' +
           '</div>' +
         '</div>';
 
       article.innerHTML = head + nav + body;
-      var codeEl = article.querySelector('.src');
-      codeEl.textContent = v.source || '(source loads from API)';
-      highlightBlock(codeEl, v.highlight || 'plaintext');
+      // fill sources for every slide
+      band.variants.forEach(function (vv, i) {
+        var codeEl = article.querySelectorAll('.carousel-slide .src')[i];
+        if (!codeEl) return;
+        codeEl.textContent = vv.source || '(source loads from API)';
+        highlightBlock(codeEl, vv.highlight || 'plaintext');
+      });
+      var track = article.querySelector('.carousel-track');
+      if (track) {
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+        void track.offsetWidth;
+        track.style.transition = '';
+      }
       ladderEl.appendChild(article);
     });
 
@@ -655,12 +807,12 @@
         var bandId = btn.getAttribute('data-band');
         var dir = parseInt(btn.getAttribute('data-dir'), 10) || 0;
         var cur = carouselIndex[bandId] || 0;
-        setCarousel(bandId, cur + dir, levels);
+        setCarousel(bandId, cur + dir, levelsCache || levels, true);
       });
     });
     ladderEl.querySelectorAll('.carousel-dot').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        setCarousel(btn.getAttribute('data-band'), parseInt(btn.getAttribute('data-idx'), 10) || 0, levels);
+        setCarousel(btn.getAttribute('data-band'), parseInt(btn.getAttribute('data-idx'), 10) || 0, levelsCache || levels, true);
       });
     });
   }
@@ -696,13 +848,14 @@
     list.innerHTML = rows.map(function (r) {
       return '<li><span class="tally-name" title="' + esc(r.title) + '">' + esc(r.title) +
         (r.year ? ' <span class="variant-year">' + esc(r.year) + '</span>' : '') +
+        (r.samples > 1 ? ' <span class="variant-year">n=' + r.samples + '</span>' : '') +
         '</span><span class="tally-ms">' + r.ms.toFixed(2) + ' ms</span></li>';
     }).join('');
   }
 
-  function recordTime(id, title, year, ms) {
+  function recordTime(id, title, year, ms, samples) {
     if (typeof ms !== 'number' || !isFinite(ms)) return;
-    runTimes[id] = { id: id, title: title || id, year: year || '', ms: ms };
+    runTimes[id] = { id: id, title: title || id, year: year || '', ms: ms, samples: samples || 1 };
     renderTally();
   }
 
@@ -738,7 +891,7 @@
     termLine(out, 'dim', 'Running…');
     var rr = rung.querySelector('.run-result');
     if (rr) { rr.className = 'run-result'; rr.replaceChildren(); }
-    fetch(API + '/run/' + encodeURIComponent(id), { method: 'POST', headers: { 'Accept': 'application/json' } })
+    fetch(API + '/run/' + encodeURIComponent(id) + '?samples=' + DEFAULT_SAMPLES, { method: 'POST', headers: { 'Accept': 'application/json' } })
       .then(function (res) {
         return res.json().then(function (body) {
           return { ok: res.ok, status: res.status, body: body };
@@ -768,8 +921,15 @@
           termLine(out, 'dim', '(empty stdout)');
         }
         if (b.stderr) termLine(out, 'bad', String(b.stderr));
-        var meta = 'exit ' + b.exitCode + ' · ' + b.wallMs + ' ms · ' +
-          ((b.host && b.host.machine) || '?') + ' ' + ((b.host && b.host.system) || '');
+        var meta;
+        if (b.samples && b.samples > 1) {
+          meta = 'exit ' + b.exitCode + ' · avg ' + b.avgMs + ' ms over ' + b.samples +
+            ' runs (min ' + b.minMs + ', max ' + b.maxMs + ', σ ' + b.stdevMs + ')' +
+            ' · ' + ((b.host && b.host.model) || (b.host && b.host.machine) || '?');
+        } else {
+          meta = 'exit ' + b.exitCode + ' · ' + b.wallMs + ' ms · ' +
+            ((b.host && b.host.machine) || '?') + ' ' + ((b.host && b.host.system) || '');
+        }
         termLine(out, 'dim', meta);
         if (b.note) termLine(out, 'dim', String(b.note));
         if (b.machineView) {
@@ -786,7 +946,7 @@
         }
         if (b.session) termLine(out, 'dim', 'Vibe session transcript is in the Source panel.');
         setRunResult(rung, true, display || '(empty)', meta);
-        recordTime(id, b.title || id, b.year || '', Number(b.wallMs));
+        recordTime(id, b.title || id, b.year || '', Number(b.avgMs != null ? b.avgMs : b.wallMs), b.samples || 1);
         try { out.scrollTop = 0; } catch (e2) { /* ignore */ }
       })
       .catch(function (err) {
@@ -798,6 +958,89 @@
       .finally(function () {
         btn.disabled = false;
       });
+  }
+
+
+  function renderBenchTable(payload) {
+    var wrap = document.getElementById('bench-table-wrap');
+    if (!wrap) return;
+    var hw = payload.hardware || {};
+    var rows = payload.rows || [];
+    var html = '<p class="bench-hw"><strong>Benchmark host:</strong> ' +
+      esc(hw.model || '') + ' · ' + esc(String(hw.cpus || '?')) + ' vCPU · ' +
+      (hw.memoryGiB != null ? esc(String(hw.memoryGiB)) + ' GiB · ' : '') +
+      esc(hw.os || '') + ' · samples=' + esc(String(payload.samples)) + '</p>';
+    html += '<table class="bench-table"><thead><tr>' +
+      '<th>Language</th><th>Year</th><th class="num">Avg ms</th><th class="num">Min</th><th class="num">Max</th><th class="num">σ</th><th>Stdout</th><th>OK</th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(function (r) {
+      html += '<tr>' +
+        '<td>' + esc(r.title || r.id) + '</td>' +
+        '<td>' + esc(r.year || '') + '</td>' +
+        '<td class="num">' + (r.avgMs != null ? Number(r.avgMs).toFixed(2) : '-') + '</td>' +
+        '<td class="num">' + (r.minMs != null ? Number(r.minMs).toFixed(2) : '-') + '</td>' +
+        '<td class="num">' + (r.maxMs != null ? Number(r.maxMs).toFixed(2) : '-') + '</td>' +
+        '<td class="num">' + (r.stdevMs != null ? Number(r.stdevMs).toFixed(2) : '-') + '</td>' +
+        '<td class="stdout-cell">' + esc(r.stdout || r.error || '') + '</td>' +
+        '<td>' + (r.ok ? 'yes' : 'no') + '</td>' +
+        '</tr>';
+      if (r.ok && r.avgMs != null) {
+        recordTime(r.id, r.title || r.id, r.year || '', Number(r.avgMs), payload.samples || 1);
+      }
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+  }
+
+  function wireBenchmark() {
+    var btn = document.getElementById('bench-all-btn');
+    var sel = document.getElementById('bench-samples');
+    var status = document.getElementById('bench-status');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var samples = sel ? parseInt(sel.value, 10) : 10;
+      if (samples !== 10 && samples !== 100) samples = 10;
+      btn.disabled = true;
+      if (status) {
+        status.className = 'bench-status busy';
+        status.textContent = 'Running full benchmark (' + samples + ' samples × each language) on the server…';
+      }
+      fetch(API + '/benchmark', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ samples: samples })
+      })
+        .then(function (res) {
+          return res.json().then(function (body) {
+            return { ok: res.ok, status: res.status, body: body };
+          });
+        })
+        .then(function (result) {
+          if (!result.ok) {
+            var err = detailText(result.body && (result.body.detail || result.body.message)) || ('HTTP ' + result.status);
+            if (status) {
+              status.className = 'bench-status';
+              status.textContent = 'Benchmark failed: ' + err;
+            }
+            return;
+          }
+          renderBenchTable(result.body);
+          if (status) {
+            status.className = 'bench-status';
+            status.textContent = 'Done. ' + (result.body.count || 0) + ' languages · ' +
+              result.body.samples + ' samples each · sorted by average ms.';
+          }
+        })
+        .catch(function (err) {
+          if (status) {
+            status.className = 'bench-status';
+            status.textContent = 'Network error: ' + (err && err.message ? err.message : String(err));
+          }
+        })
+        .finally(function () {
+          btn.disabled = false;
+        });
+    });
   }
 
   function initQuiz() {
@@ -836,6 +1079,19 @@
         var nBand = h.bands != null ? h.bands : '?';
         setStatus(true, 'Runner online · ' + (h.machine || '?') + ' ' + (h.system || '') +
           ' · ' + nBand + ' bands · ' + nLang + ' languages' + hlNote);
+        if (h.defaultSamples) DEFAULT_SAMPLES = h.defaultSamples;
+        var hw = h.hardware || {};
+        var hwEl = document.getElementById('hardware-line');
+        if (hwEl) {
+          hwEl.innerHTML = '<strong>Host hardware:</strong> ' +
+            esc(hw.model || 'unknown CPU') +
+            ' · ' + esc(String(hw.cpus || '?')) + ' vCPU' +
+            (hw.memoryGiB != null ? ' · ' + esc(String(hw.memoryGiB)) + ' GiB RAM' : '') +
+            ' · ' + esc(hw.architecture || '') +
+            ' · ' + esc(hw.os || '') +
+            ' · ' + esc(hw.provider || '') +
+            '. <em>' + esc(hw.note || '') + '</em>';
+        }
         return fetch(API + '/levels').then(function (r) {
           if (!r.ok) throw new Error('levels ' + r.status);
           return r.json();
@@ -857,6 +1113,7 @@
   });
 
   initQuiz();
+  wireBenchmark();
 })();
     </script>
     <script src="/blog/newsletter-widget.js" defer></script>
