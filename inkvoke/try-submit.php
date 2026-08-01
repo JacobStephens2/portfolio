@@ -420,7 +420,7 @@ function write_spend(float $totalUsd, int $imageCount): array {
         'image_count' => max(0, $imageCount),
         'updated_at' => time(),
         'currency' => 'USD',
-        'note' => 'Estimated live-try OpenAI image spend (gpt-image-2 rates). Running tally; not pruned with gallery.',
+        'note' => 'Estimated live-try OpenAI image spend (gpt-image-2 rates). Running tally for public gallery items; hidden images are excluded (dashboard hide subtracts their cost).',
     ];
     $json = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     if ($json === false) {
@@ -470,7 +470,7 @@ function record_spend(?float $costUsd): array {
             'image_count' => max(0, $count),
             'updated_at' => time(),
             'currency' => 'USD',
-            'note' => 'Estimated live-try OpenAI image spend (gpt-image-2 rates). Running tally; not pruned with gallery.',
+            'note' => 'Estimated live-try OpenAI image spend (gpt-image-2 rates). Running tally for public gallery items; hidden images are excluded (dashboard hide subtracts their cost).',
         ];
         $json = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         if ($json !== false) {
@@ -731,7 +731,7 @@ function notify_admin_new_image(array $env, array $info): void {
         return;
     }
     $fromEmail = (string) ($env['CONTACT_FROM_EMAIL'] ?? 'jacob@stephens.page');
-    $fromName  = (string) ($env['CONTACT_FROM_NAME'] ?? 'gpt-image live try');
+    $fromName  = (string) ($env['CONTACT_FROM_NAME'] ?? 'inkvoke live try');
     $toEmail   = (string) ($env['GPT_IMAGE_NOTIFY_TO'] ?? $env['CONTACT_TO_EMAIL'] ?? 'jacob@stephens.page');
     if (!filter_var($toEmail, FILTER_VALIDATE_EMAIL)) {
         $toEmail = 'jacob@stephens.page';
@@ -747,15 +747,26 @@ function notify_admin_new_image(array $env, array $info): void {
     $spend     = is_array($info['spend'] ?? null) ? $info['spend'] : null;
     $b64       = (string) ($info['b64'] ?? '');
     $inviteTag = !empty($info['invite']) ? ' · invite' : '';
+    $publicBase = rtrim((string) ($env['INKVOKE_PUBLIC_BASE'] ?? 'https://stephens.page/inkvoke'), '/');
+    $dashboardUrl = 'https://dashboard.stephens.page/';
 
     $galleryUrl = '';
+    $galleryId = '';
     if ($gallery && !empty($gallery['url']) && is_string($gallery['url'])) {
-        $galleryUrl = 'https://stephens.page/gpt-image/' . ltrim($gallery['url'], '/');
+        $galleryUrl = $publicBase . '/' . ltrim($gallery['url'], '/');
+    }
+    if ($gallery && !empty($gallery['id']) && is_string($gallery['id'])) {
+        $galleryId = $gallery['id'];
     }
     $galleryHtml = $galleryUrl !== ''
-        ? '<p style="margin:0 0 8px"><strong>Gallery:</strong> <a href="' . htmlspecialchars($galleryUrl, ENT_QUOTES, 'UTF-8') . '">'
+        ? '<p style="margin:0 0 8px"><strong>Gallery image:</strong> <a href="' . htmlspecialchars($galleryUrl, ENT_QUOTES, 'UTF-8') . '">'
             . htmlspecialchars($galleryUrl, ENT_QUOTES, 'UTF-8') . '</a></p>'
         : '';
+    if ($galleryId !== '') {
+        $galleryHtml .= '<p style="margin:0 0 8px"><strong>Gallery id:</strong> '
+            . htmlspecialchars($galleryId, ENT_QUOTES, 'UTF-8')
+            . ' (toggle visibility on the dashboard inkvoke tab)</p>';
+    }
 
     $spendHtml = '';
     if ($spend && isset($spend['total_usd'])) {
@@ -769,7 +780,7 @@ function notify_admin_new_image(array $env, array $info): void {
         : '<p style="margin:0 0 8px"><strong>User email:</strong> ' . $userEmail . '</p>';
 
     $html = '<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#181512">'
-        . '<h2 style="color:#0e0f12;margin:0 0 12px">New gpt-image live try' . htmlspecialchars($inviteTag, ENT_QUOTES, 'UTF-8') . '</h2>'
+        . '<h2 style="color:#0e0f12;margin:0 0 12px">New inkvoke live try' . htmlspecialchars($inviteTag, ENT_QUOTES, 'UTF-8') . '</h2>'
         . '<p style="margin:0 0 8px"><strong>Display name:</strong> ' . $byName . '</p>'
         . $emailHtml
         . '<p style="margin:0 0 8px"><strong>Prompt:</strong></p>'
@@ -778,22 +789,25 @@ function notify_admin_new_image(array $env, array $info): void {
         . '<p style="margin:0 0 8px"><strong>Latency:</strong> ' . $latency . ' ms</p>'
         . $spendHtml
         . $galleryHtml
-        . '<p style="margin:12px 0 0"><a href="https://stephens.page/gpt-image/#gallery">Open community gallery</a>'
-        . ' · <a href="https://stephens.page/gpt-image/#try">Live try</a></p>'
+        . '<p style="margin:12px 0 0"><a href="' . htmlspecialchars($dashboardUrl, ENT_QUOTES, 'UTF-8') . '">Manage on dashboard</a>'
+        . ' · <a href="' . htmlspecialchars($publicBase, ENT_QUOTES, 'UTF-8') . '/#gallery">Community gallery</a>'
+        . ' · <a href="' . htmlspecialchars($publicBase, ENT_QUOTES, 'UTF-8') . '/#try">Live try</a></p>'
         . '</div>';
 
-    $text = "New gpt-image live try{$inviteTag}\n"
+    $text = "New inkvoke live try{$inviteTag}\n"
         . "By: " . ($info['by'] ?? 'anonymous') . "\n"
         . "User: " . ($rawEmail !== '' ? $rawEmail : '(invite · no email)') . "\n"
         . "Prompt: " . ($info['prompt'] ?? '') . "\n"
         . "Cost: " . ($info['cost_line'] ?? '') . "\n"
         . ($galleryUrl !== '' ? "Gallery: {$galleryUrl}\n" : '')
-        . "https://stephens.page/gpt-image/#gallery\n";
+        . ($galleryId !== '' ? "Gallery id: {$galleryId}\n" : '')
+        . "Dashboard: {$dashboardUrl}\n"
+        . "{$publicBase}/#gallery\n";
 
     $payload = [
         'from'     => $fromName . ' <' . $fromEmail . '>',
         'to'       => [$toEmail],
-        'subject'  => 'gpt-image try' . $inviteTag . ': ' . mb_substr((string) ($info['prompt'] ?? 'new image'), 0, 60),
+        'subject'  => 'inkvoke try' . $inviteTag . ': ' . mb_substr((string) ($info['prompt'] ?? 'new image'), 0, 60),
         'html'     => $html,
         'text'     => $text,
     ];
