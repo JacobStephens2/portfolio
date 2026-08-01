@@ -17,7 +17,7 @@ const projects = [
     { url: 'https://wadadli.stephens.page', filename: 'wadadli.stephens.page.png' },
     { url: 'https://chestercounty-life.com/', filename: 'chestercounty-life.com.png' },
     { url: 'https://artifact.stewardgoods.com/', filename: 'artifact.stewardgoods.com.png' },
-    { url: 'https://zero.stephens.page/game?slide=13', filename: 'channelzeronews.stephens.page.png' },
+    { url: 'https://channelzeronews.app/game?slide=13', filename: 'channelzeronews.stephens.page.png' },
 ];
 
 async function captureScreenshots() {
