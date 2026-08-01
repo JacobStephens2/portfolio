@@ -14,9 +14,11 @@ RewriteEngine On
     </FilesMatch>
 </IfModule>
 
-# Vanity link -> HiHello digital business card. 302 (not 301) so it stays
-# repointable if the card URL ever changes, without browsers caching it forever.
-RewriteRule ^card/?$ https://hihello.com/p/451555c1-09ba-4900-a216-492f18f60866 [R=302,L]
+# Digital business card lives at /card. Old paths 301 so shared/QR links keep working.
+# Leave connect/share alone so the ProxyPass API endpoint is not redirected.
+RewriteRule ^connect/share/?$ - [L]
+RewriteRule ^connect(?:/(.*))?$ /card/$1 [R=301,L]
+RewriteRule ^scan(?:/.*)?$ /card/ [R=301,L]
 
 # Longer product name -> short install/product page.
 RewriteRule ^vaulted-agent-launcher/?$ /vaulted-agent/ [R=301,L]
