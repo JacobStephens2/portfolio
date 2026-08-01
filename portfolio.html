@@ -13,9 +13,9 @@
     <link rel="icon" type="image/png" href="/bee-favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio | Jacob Stephens</title>
-    <meta name="description" content="Selected systems by Jacob Stephens, platform and infrastructure engineer specializing in safe AI automation for revenue-critical legacy systems - reservations, payments, ACH, a Linux fleet, and agent-sandbox infrastructure in production.">
+    <meta name="description" content="Selected systems by Jacob Stephens, platform and infrastructure engineer specializing in safe AI automation for revenue-critical legacy systems - reservations, payments, ACH, a Linux fleet, manager agent sandboxes, and a software factory with a human merge gate.">
     <meta property="og:title" content="Portfolio | Jacob Stephens">
-    <meta property="og:description" content="Platform and infrastructure engineer specializing in safe AI automation for revenue-critical legacy systems - reservations, payments, ACH, and agent-sandbox infrastructure in production.">
+    <meta property="og:description" content="Platform and infrastructure engineer specializing in safe AI automation for revenue-critical legacy systems - reservations, payments, ACH, agent sandboxes, and a human-gated software factory.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://stephens.page/portfolio.html">
     <meta name="twitter:card" content="summary_large_image">
@@ -512,7 +512,7 @@
                 <div class="hero-card">
                     <div class="eyebrow">Portfolio</div>
                     <h1>Real systems, real results.</h1>
-                    <p class="hero-copy">Platform and infrastructure engineer specializing in safe AI automation for revenue-critical legacy systems. The reservations platform, payment and ACH rails, Linux fleet, and agent-sandbox infrastructure a multi-million-dollar travel business runs on - and the architecture decisions behind them.</p>
+                    <p class="hero-copy">Platform and infrastructure engineer specializing in safe AI automation for revenue-critical legacy systems. The reservations platform, payment and ACH rails, Linux fleet, manager agent sandboxes, and human-gated software factory a multi-million-dollar travel business runs on - and the architecture decisions behind them.</p>
                 </div>
                 <aside class="hero-notes">
                     <ul>
@@ -597,7 +597,7 @@
                             </div>
                             <div class="portfolio-block">
                                 <strong>What I Built</strong>
-                                <span>A multi-tenant infrastructure where each manager gets an isolated Tourbot instance - its own Docker container fronted by Traefik - with a dedicated Claude-powered OpenClaw agent. Agents query a replica of the production database synced every few hours, run analysis, generate reports, and even modify PHP code, all sandboxed per-manager: allowlist-controlled command execution, dedicated least-privilege database users, and a git-based review gate so nothing reaches production unreviewed. Each container is provisioned from a shared compose definition, so standing up a new manager sandbox is a one-command operation.</span>
+                                <span>A multi-tenant infrastructure where each manager gets an isolated Tourbot instance - its own Docker container fronted by Traefik - with a dedicated Claude-powered OpenClaw agent. Agents query a replica of the production database refreshed once daily, run analysis, generate reports, and even modify PHP code, all sandboxed per-manager: allowlist-controlled command execution, dedicated least-privilege database users, and a git-based review gate so nothing reaches production unreviewed. Each container is provisioned from a shared compose definition, so standing up a new manager sandbox is a one-command operation.</span>
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
@@ -670,7 +670,7 @@
                             </div>
                             <div class="portfolio-block">
                                 <strong>Result</strong>
-                                <span>Staff requests become draft PRs with patches, rationale, and verification evidence - review is the only human cost, and nothing auto-merges or deploys. The same trust model is written up interactively in two public posts: the factory's process as a canonical model with live diagrams, and multi-engine discrete-event animation of that model.</span>
+                                <span>Phase 1 runs on live hosts: control plane, secret-free Firecracker worker, draft-only publisher, and evidence path are real infrastructure - not a design deck - with the constitution and merge gate enforced in code. The intended loop is staff request &rarr; evidenced draft PR; review is the only human cost, and nothing auto-merges or deploys. End-to-end staff adoption is still the build's target, not a claimed steady-state metric. The trust model is written up interactively in public posts on the factory as a canonical model and as multi-engine discrete-event animation.</span>
                             </div>
                             <div class="portfolio-tags">
                                 <span class="portfolio-tag">Rust</span>
@@ -683,6 +683,7 @@
                                 <span class="portfolio-tag">Human-in-the-loop</span>
                             </div>
                             <div class="portfolio-links">
+                                <a href="/blog/human-in-the-loop-ai-agents-for-legacy-business-systems/" class="portfolio-link">Seven-boundary agent-safety pattern &rarr;</a>
                                 <a href="/blog/the-diagram-is-not-the-model/" class="portfolio-link">The diagram is not the model &rarr;</a>
                                 <a href="/blog/the-animation-is-a-replay/" class="portfolio-link">The animation is a replay &rarr;</a>
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
@@ -719,73 +720,6 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://guides.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="portfolio-item" id="parent-engagement">
-                        <button class="image-button" type="button" data-image="screenshots/parent-engagement.svg" data-title="Parent Engagement funnel architecture">
-                            <img src="screenshots/parent-engagement.svg" alt="Diagram of the Parent Engagement funnel: teacher invite, RSVP drip, attendance, registration into Tourbot" class="portfolio-image">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">Parent Engagement</h3>
-                            <p class="portfolio-summary">A FastAPI service that helps ETA trip-leader teachers recruit parents for a group tour - info-night invites, RSVPs, drip emails, attendance, and a registration funnel - on its own host, with a read-only live path into Tourbot.</p>
-                            <div class="portfolio-block">
-                                <strong>Problem</strong>
-                                <span>Group trips fill when teachers can run parent recruitment themselves. The company needed a focused tool for invites, RSVPs, and follow-up without bolting a second product onto the main ERP or giving teachers write access to production Tourbot data.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What I Built</strong>
-                                <span>A Python 3.12 / FastAPI / HTMX app on a dedicated Rocky 9 droplet (Caddy, Postgres 16, systemd web + scheduler + nightly backup, SELinux enforcing). Teachers see live registration counts from Tourbot via read-only views; Mandrill engagement webhooks are HMAC-verified with the same webhook-verify primitive used elsewhere on the platform; email delivery is flag-gated so pilot runs cannot spam by accident. Split out of the orchestration monorepo into its own deployable service with a documented hybrid cutover plan.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>Result</strong>
-                                <span>A live pre-pilot at parents.etadventures.com with architecture locked, Tourbot live-reads on, and a path to production that keeps write authority out of the engagement app until the pilot is ready.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">Python</span>
-                                <span class="portfolio-tag">FastAPI</span>
-                                <span class="portfolio-tag">PostgreSQL</span>
-                                <span class="portfolio-tag">HTMX</span>
-                                <span class="portfolio-tag">Caddy</span>
-                                <span class="portfolio-tag">Mandrill</span>
-                            </div>
-                            <div class="portfolio-links">
-                                <a href="https://parents.etadventures.com" class="portfolio-link" target="_blank" rel="noreferrer">Visit Site</a>
-                                <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="portfolio-item" id="prospectforge">
-                        <button class="image-button" type="button" data-image="screenshots/prospectforge.png" data-title="ProspectForge review UI">
-                            <img src="screenshots/prospectforge.png" alt="ProspectForge contact-sourcing and review interface" class="portfolio-image">
-                        </button>
-                        <div class="portfolio-content">
-                            <h3 class="portfolio-title">ProspectForge</h3>
-                            <p class="portfolio-summary">ETA's internal contact-sourcing tool - paste a URL, crawl and qualify educational-travel leads, review enrichments, and export into the sales pipeline - built in-house after rejecting general-purpose list tools that could not fit the market.</p>
-                            <div class="portfolio-block">
-                                <strong>Problem</strong>
-                                <span>Buying or composing leads in generic tools (e.g. Clay) meant too many knobs and no "paste a school or association URL and get ETA-shaped contacts." Sales needed a pre-configured source that understands educational travel segments - band, theater, choir, districts - not another enrichment workbench.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>What I Built</strong>
-                                <span>A FastAPI + SQLAlchemy 2.0 backend with Alembic migrations and RQ workers, Postgres 16 + Redis, and a Next.js 15 review UI. Crawl tiers discover and scrub page content, enrichment batches can be applied or held one click at a time, and the deploy story is single-host Docker Compose with systemd/Caddy infra for production. Designed around ETA's industry instead of exposing every dial.</span>
-                            </div>
-                            <div class="portfolio-block">
-                                <strong>Result</strong>
-                                <span>An in-house prospecting lane the sales team can run without composing a third-party workflow graph - URL in, qualified contacts out, review in the middle.</span>
-                            </div>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">Python</span>
-                                <span class="portfolio-tag">FastAPI</span>
-                                <span class="portfolio-tag">SQLAlchemy</span>
-                                <span class="portfolio-tag">Next.js</span>
-                                <span class="portfolio-tag">Redis</span>
-                                <span class="portfolio-tag">PostgreSQL</span>
-                            </div>
-                            <div class="portfolio-links">
                                 <a href="https://github.com/Educational-Travel-Adventures" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Organization</a>
                             </div>
                         </div>
@@ -1134,8 +1068,8 @@
                 </div>
                 <div class="portfolio-grid">
                     <article class="portfolio-item" id="vaulted-agent">
-                        <button class="image-button" type="button" data-image="screenshots/vaulted-agent.png" data-title="vaulted-agent product illustration">
-                            <img src="screenshots/vaulted-agent.png" alt="vaulted-agent: terminal launching va claude with vault-resolved secrets" class="portfolio-image">
+                        <button class="image-button" type="button" data-image="screenshots/vaulted-agent.jpg" data-title="vaulted-agent product illustration">
+                            <img src="screenshots/vaulted-agent.jpg" alt="vaulted-agent: terminal launching va claude with vault-resolved secrets" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">vaulted-agent</h3>
@@ -1164,8 +1098,8 @@
                     </article>
 
                     <article class="portfolio-item" id="inkvoke">
-                        <button class="image-button" type="button" data-image="screenshots/inkvoke.png" data-title="inkvoke product illustration">
-                            <img src="screenshots/inkvoke.png" alt="inkvoke: agent-friendly image generation CLI" class="portfolio-image">
+                        <button class="image-button" type="button" data-image="screenshots/inkvoke.jpg" data-title="inkvoke product illustration">
+                            <img src="screenshots/inkvoke.jpg" alt="inkvoke: agent-friendly image generation CLI" class="portfolio-image">
                         </button>
                         <div class="portfolio-content">
                             <h3 class="portfolio-title">inkvoke</h3>
@@ -1187,7 +1121,6 @@
                             </div>
                             <div class="portfolio-links">
                                 <a href="https://inkvoke.dev" class="portfolio-link" target="_blank" rel="noreferrer">Product site</a>
-                                <a href="/inkvoke/" class="portfolio-link">On stephens.page</a>
                                 <a href="https://github.com/JacobStephens2/inkvoke" class="portfolio-link" target="_blank" rel="noreferrer"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="vertical-align:-2px;margin-right:0.3em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
                             </div>
                         </div>

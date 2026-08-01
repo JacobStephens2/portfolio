@@ -2,7 +2,7 @@ Portfolio
 
 # Real systems, real results.
 
-Platform and infrastructure engineer specializing in safe AI automation for revenue-critical legacy systems. The reservations platform, payment and ACH rails, Linux fleet, and agent-sandbox infrastructure a multi-million-dollar travel business runs on - and the architecture decisions behind them.
+Platform and infrastructure engineer specializing in safe AI automation for revenue-critical legacy systems. The reservations platform, payment and ACH rails, Linux fleet, manager agent sandboxes, and human-gated software factory a multi-million-dollar travel business runs on - and the architecture decisions behind them.
 
 * **Professional**
   Production systems built over years at Educational Travel Adventures.
@@ -67,7 +67,7 @@ An AI-powered chat system built with OpenClaw and Claude, giving managers at Edu
 Managers needed to answer complex business questions - revenue breakdowns, booking trends, vendor performance - without waiting on developer time. They also wanted to experiment with reports and workflows on their own terms, without risking the production system.
 
 **What I Built**
-A multi-tenant infrastructure where each manager gets an isolated Tourbot instance - its own Docker container fronted by Traefik - with a dedicated Claude-powered OpenClaw agent. Agents query a replica of the production database synced every few hours, run analysis, generate reports, and even modify PHP code, all sandboxed per-manager: allowlist-controlled command execution, dedicated least-privilege database users, and a git-based review gate so nothing reaches production unreviewed. Each container is provisioned from a shared compose definition, so standing up a new manager sandbox is a one-command operation.
+A multi-tenant infrastructure where each manager gets an isolated Tourbot instance - its own Docker container fronted by Traefik - with a dedicated Claude-powered OpenClaw agent. Agents query a replica of the production database refreshed once daily, run analysis, generate reports, and even modify PHP code, all sandboxed per-manager: allowlist-controlled command execution, dedicated least-privilege database users, and a git-based review gate so nothing reaches production unreviewed. Each container is provisioned from a shared compose definition, so standing up a new manager sandbox is a one-command operation.
 
 **Result**
 Non-technical managers independently explore business data, generate custom reports, and prototype workflow changes through plain conversation - 14 manager-prototyped features have shipped to production through the human merge gate, across all four roles (sales, marketing, GM, IT), with zero agent-caused incidents - while the system enforces per-manager isolation, read-only data access, and code-review boundaries that keep the production platform safe from accidental or unreviewed change.
@@ -117,7 +117,7 @@ Useful Tourbot changes die in inboxes because every request needs engineer time 
 A Rust control plane (Axum supervisor, dashboard, `factoryctl`) on a dedicated host with socket-only PostgreSQL, an append-only ledger, and a draft-only publisher under a GitHub App machine identity. A separate secret-free worker droplet - OpenTofu + Ansible desired state, clean-room replaceable - runs implement and verify work inside Firecracker microVMs with no vault, fleet SSH, or Tourbot database access and only spend-capped model egress. Evidence capture, adversarial cross-family review, and a constitution (`AGENTS.md`) SHA-pinned in CI keep every run attributable. Phase 1 sessions covering isolation, verifier, publisher, dashboard, and the evidence lifecycle are merged on live infrastructure at `factory.etadventures.com`.
 
 **Result**
-Staff requests become draft PRs with patches, rationale, and verification evidence - review is the only human cost, and nothing auto-merges or deploys. The same trust model is written up interactively in two public posts: the factory's process as a canonical model with live diagrams, and multi-engine discrete-event animation of that model.
+Phase 1 runs on live hosts: control plane, secret-free Firecracker worker, draft-only publisher, and evidence path are real infrastructure - not a design deck - with the constitution and merge gate enforced in code. The intended loop is staff request → evidenced draft PR; review is the only human cost, and nothing auto-merges or deploys. End-to-end staff adoption is still the build's target, not a claimed steady-state metric. The trust model is written up interactively in public posts on the factory as a canonical model and as multi-engine discrete-event animation.
 
 Rust
 Axum
@@ -128,6 +128,7 @@ Ansible
 AI Agents
 Human-in-the-loop
 
+[Seven-boundary agent-safety pattern →](/blog/human-in-the-loop-ai-agents-for-legacy-business-systems/)
 [The diagram is not the model →](/blog/the-diagram-is-not-the-model/)
 [The animation is a replay →](/blog/the-animation-is-a-replay/)
 [Organization](https://github.com/Educational-Travel-Adventures)
@@ -153,51 +154,6 @@ Service Workers
 PWA
 
 [Visit Site](https://guides.etadventures.com)
-[Organization](https://github.com/Educational-Travel-Adventures)
-
-### Parent Engagement
-
-A FastAPI service that helps ETA trip-leader teachers recruit parents for a group tour - info-night invites, RSVPs, drip emails, attendance, and a registration funnel - on its own host, with a read-only live path into Tourbot.
-
-**Problem**
-Group trips fill when teachers can run parent recruitment themselves. The company needed a focused tool for invites, RSVPs, and follow-up without bolting a second product onto the main ERP or giving teachers write access to production Tourbot data.
-
-**What I Built**
-A Python 3.12 / FastAPI / HTMX app on a dedicated Rocky 9 droplet (Caddy, Postgres 16, systemd web + scheduler + nightly backup, SELinux enforcing). Teachers see live registration counts from Tourbot via read-only views; Mandrill engagement webhooks are HMAC-verified with the same webhook-verify primitive used elsewhere on the platform; email delivery is flag-gated so pilot runs cannot spam by accident. Split out of the orchestration monorepo into its own deployable service with a documented hybrid cutover plan.
-
-**Result**
-A live pre-pilot at parents.etadventures.com with architecture locked, Tourbot live-reads on, and a path to production that keeps write authority out of the engagement app until the pilot is ready.
-
-Python
-FastAPI
-PostgreSQL
-HTMX
-Caddy
-Mandrill
-
-[Visit Site](https://parents.etadventures.com)
-[Organization](https://github.com/Educational-Travel-Adventures)
-
-### ProspectForge
-
-ETA's internal contact-sourcing tool - paste a URL, crawl and qualify educational-travel leads, review enrichments, and export into the sales pipeline - built in-house after rejecting general-purpose list tools that could not fit the market.
-
-**Problem**
-Buying or composing leads in generic tools (e.g. Clay) meant too many knobs and no "paste a school or association URL and get ETA-shaped contacts." Sales needed a pre-configured source that understands educational travel segments - band, theater, choir, districts - not another enrichment workbench.
-
-**What I Built**
-A FastAPI + SQLAlchemy 2.0 backend with Alembic migrations and RQ workers, Postgres 16 + Redis, and a Next.js 15 review UI. Crawl tiers discover and scrub page content, enrichment batches can be applied or held one click at a time, and the deploy story is single-host Docker Compose with systemd/Caddy infra for production. Designed around ETA's industry instead of exposing every dial.
-
-**Result**
-An in-house prospecting lane the sales team can run without composing a third-party workflow graph - URL in, qualified contacts out, review in the middle.
-
-Python
-FastAPI
-SQLAlchemy
-Next.js
-Redis
-PostgreSQL
-
 [Organization](https://github.com/Educational-Travel-Adventures)
 
 ### ETA Orchestration & Status
@@ -462,7 +418,6 @@ AI Agents
 gpt-image-2
 
 [Product site](https://inkvoke.dev)
-[On stephens.page](/inkvoke/)
 [GitHub](https://github.com/JacobStephens2/inkvoke)
 
 ### muxboard
