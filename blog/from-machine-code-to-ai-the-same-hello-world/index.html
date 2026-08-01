@@ -130,14 +130,38 @@
             font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
         }
         .rung-title { font-family: 'Source Serif 4', Georgia, serif; font-weight: 700; font-size: 1.15rem; color: var(--ink); }
-        .rung-hides { font-size: 0.88rem; color: var(--muted); margin-top: 0.15rem; max-width: 36rem; }
-        .run-btn {
+        .rung-hides { font-size: 0.88rem; color: var(--muted); margin-top: 0.15rem; max-width: 42rem; }
+        .rung-era {
+            display: inline-block; margin-top: 0.35rem; font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+            font-size: 0.78rem; font-weight: 700; color: var(--brand); letter-spacing: 0.02em;
+        }
+        .run-btn, .carousel-btn {
             appearance: none; border: 1px solid var(--brand); background: var(--brand); color: var(--brand-ink);
             font: inherit; font-weight: 700; font-size: 0.88rem; padding: 0.45rem 0.9rem; border-radius: 6px;
             cursor: pointer;
         }
-        .run-btn:hover { filter: brightness(1.05); }
+        .run-btn:hover, .carousel-btn:hover { filter: brightness(1.05); }
         .run-btn:disabled { opacity: 0.55; cursor: wait; }
+        .carousel-btn {
+            background: var(--surface); color: var(--brand); padding: 0.35rem 0.65rem; min-width: 2.4rem;
+        }
+        .carousel-btn:disabled { opacity: 0.35; cursor: default; filter: none; }
+        .carousel-nav {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem;
+            padding: 0.55rem 0.95rem; border-bottom: 1px solid var(--rule); background: var(--surface);
+        }
+        .carousel-meta { font-size: 0.88rem; color: var(--muted); flex: 1 1 auto; }
+        .carousel-meta strong { color: var(--ink); }
+        .carousel-dots { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .carousel-dot {
+            width: 0.55rem; height: 0.55rem; border-radius: 50%; border: 1px solid var(--rule);
+            background: var(--soft); padding: 0; cursor: pointer;
+        }
+        .carousel-dot[aria-current="true"] { background: var(--brand); border-color: var(--brand); }
+        .variant-year {
+            font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+            font-size: 0.75rem; color: var(--muted); margin-left: 0.35rem;
+        }
         .rung-body { display: grid; gap: 0.75rem; padding: 0.85rem; }
         @media (min-width: 900px) {
             .rung-body.two { grid-template-columns: 1.25fr 1fr; align-items: stretch; }
@@ -192,30 +216,31 @@
         <article class="note">
             <div class="eyebrow">Notes · Languages · Interactive</div>
             <h1 class="title">From Machine Code to AI: the Same Hello World</h1>
-            <p class="meta"><strong>August 1, 2026</strong> · ~1,200 words · 12 live Run Program rungs · reading this as an AI agent? <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a> is for you</p>
+            <p class="meta"><strong>August 1, 2026</strong> · ~1,350 words · 9 abstraction bands · 20 runnable variants · reading this as an AI agent? <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a> is for you</p>
 
-            <p>Every layer of the stack can print <code>Hello, World!</code>. The point of this page is not the string - it is what each layer <em>hides</em>, and that the buttons below really run allowlisted programs on this host (Linux x86_64), not a fake terminal. Source panels are syntax-highlighted in the browser with <a href="https://highlightjs.org/" rel="noopener">highlight.js 11.11.1</a> (same library family as <a href="/blog/the-animation-is-a-replay/">The Animation Is a Replay</a>), themed with this site's CSS tokens so light/dark still match.</p>
+            <p>Every layer of the stack can print <code>Hello, World!</code>. The point of this page is not the string - it is what each layer <em>hides</em>, <strong>when that layer roughly arrived</strong>, and that the buttons below really run allowlisted programs on this host (Linux x86_64), not a fake terminal. Source panels use <a href="https://highlightjs.org/" rel="noopener">highlight.js 11.11.1</a> (same family as <a href="/blog/the-animation-is-a-replay/">The Animation Is a Replay</a>).</p>
 
-            <p>I have been learning ARM64 Assembly on an Apple Silicon Mac in a private teach-skill workspace. Side by side with that practice, I wanted a public ladder: the same program from an opaque ELF binary up through prompts and vibe coding, including C++ and C#, with a server that compiles and executes what you see. The Assembly here is <strong>x86_64 Linux GAS</strong> - the dialect this machine runs - not the macOS ARM64 sources from the private course. Naming that gap is part of the lesson.</p>
+            <p>I have been learning ARM64 Assembly on an Apple Silicon Mac in a private teach-skill workspace. Side by side, this public ladder runs the same idea from an opaque ELF binary through early high-level languages (FORTRAN, Lisp, COBOL), systems and managed languages, scripting, AI engineering, and vibe coding. Where several languages share a band, use the <strong>Prev / Next</strong> controls - manual carousel only, no autoplay. Assembly here is <strong>x86_64 Linux GAS</strong>, not the macOS ARM64 dialect from the private course.</p>
 
             <p id="api-status" class="status-pill"><span class="status-dot" aria-hidden="true"></span><span class="status-text">Checking runner…</span></p>
 
-            <h2>What each level hides</h2>
-            <p>Robert C. Martin has spent decades arguing that software history is a climb through successive languages and abstractions - and that craft still matters at every step. One framing of that arc shows up in his conversation with <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">Kent Dodds</a>. This ladder is abstraction order (how much of the machine you still name), not a pure release-year timeline. Lisp is older than C; Java sits between C and Go; "vibe coding" is newer than either.</p>
+            <h2>What each level hides (and when it showed up)</h2>
+            <p>Robert C. Martin has spent decades arguing that software history is a climb through successive languages and abstractions - and that craft still matters at every step. One framing of that arc shows up in his conversation with <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">Kent Dodds</a>. Bands are ordered by abstraction, not pure release-year purity (Lisp is older than C; Java sits between C and Go). Years on each variant are introduction years, not "first Hello World ever printed."</p>
 
             <ul class="timeline">
-                <li><strong>Binary program</strong> - the ELF you ship. Opaque file bytes; no source language on this rung.</li>
-                <li><strong>Machine code</strong> - decoded instructions in <code>main</code> (what the CPU executes).</li>
-                <li><strong>Assembly</strong> - human names for those encodings and registers.</li>
-                <li><strong>C / C++</strong> - portable systems languages; compilers choose instructions.</li>
-                <li><strong>Rust / Go / C#</strong> - more runtime or safety machinery (ownership, GC, CLR/Mono).</li>
-                <li><strong>Python / JavaScript</strong> - VMs and JITs; you almost never name registers.</li>
-                <li><strong>AI engineering</strong> - precise intent in natural language; still bottoms out below.</li>
-                <li><strong>Vibe coding</strong> - the chat <em>is</em> the process; accept whatever the agent dropped and run it.</li>
+                <li><strong>Binary program</strong> (c. 1945) - the file you ship; stored-program era.</li>
+                <li><strong>Machine code</strong> (c. 1940s) - instruction encodings the CPU runs.</li>
+                <li><strong>Assembly</strong> (c. 1949) - mnemonics for those encodings.</li>
+                <li><strong>Early high-level</strong> (1957–1959) - FORTRAN, Lisp, COBOL: formulas, lists, business data.</li>
+                <li><strong>Systems</strong> (1972–1985) - C, C++.</li>
+                <li><strong>Managed / safe systems</strong> (1995–2015) - Java, C#, Go, Rust.</li>
+                <li><strong>Scripting / dynamic</strong> (1987–1995) - Bash, Perl, Python, PHP, JavaScript.</li>
+                <li><strong>AI engineering</strong> (c. 2022) - precise natural-language contracts.</li>
+                <li><strong>Vibe coding</strong> (2025) - chat as the process; accept and run.</li>
             </ul>
 
-            <h2>Fig. 1 · Twelve rungs, real execution</h2>
-            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}</code>. The body carries only the language key. Source is fixed under <code>programs/</code> on the server. There is no arbitrary remote code execution - only an allowlist of Hello Worlds. Binary vs machine code is intentional: one shows the shipped file, the other shows instruction encodings inside it.</p>
+            <h2>Fig. 1 · Nine bands, carousel variants, real execution</h2>
+            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}</code> with only an allowlisted language key. Multi-language bands use Prev/Next to rotate the active Hello World; Run always executes the variant currently shown. Binary vs machine code is intentional: one is the shipped file, the other is decoded instructions inside it.</p>
 
             <div class="ladder" id="ladder" aria-live="polite"></div>
 
@@ -237,11 +262,11 @@
 
             <h2>What you should notice when you mash Run</h2>
             <ul>
-                <li><strong>stdout converges</strong> - almost every rung prints the same line. The interesting delta is wall time, toolchains, the ELF hex dump, and the objdump of <code>main</code>.</li>
-                <li><strong>Binary ≠ machine code view</strong> - binary is "here is the file"; machine code is "here are the instructions that ran."</li>
+                <li><strong>stdout converges</strong> - almost every variant prints the same line. Deltas are wall time, toolchains, years, and dumps (ELF / objdump).</li>
+                <li><strong>Carousel bands</strong> - Early high-level, systems, managed, and scripting pack peers on one rung; years label each language.</li>
+                <li><strong>1950s high-level is not "toy"</strong> - FORTRAN, Lisp, and COBOL still compile and run here via gfortran, SBCL, and GnuCOBOL.</li>
                 <li><strong>C is a hinge</strong> - short source, native binary, still close enough that compiler output looks like Assembly.</li>
-                <li><strong>Managed runtimes show up as process shape</strong> - Mono for C#, Node for JS, CPython for Python - not as different letters on the screen.</li>
-                <li><strong>AI engineering vs vibe coding</strong> - both stand-ins avoid calling a live model on this host. Engineering shows a tight prompt contract; vibe shows a chat transcript whose frozen artifact is <code>vibe-hello.py</code>. Same stdout, different discipline.</li>
+                <li><strong>AI engineering vs vibe coding</strong> - both stand-ins avoid a live model. Engineering: tight prompt. Vibe: chat transcript + frozen <code>vibe-hello.py</code>.</li>
             </ul>
 
             <h2>Quiz · don't leave until one answer sticks</h2>
@@ -269,15 +294,15 @@
                 </ul>
                 <h3>Tools demonstrated or referenced</h3>
                 <ul>
-                    <li><span class="cite-title">gcc / g++ / rustc / go / mcs+mono / CPython / Node</span> - toolchains on the stephens.page host for each native or interpreted rung.</li>
+                    <li><span class="cite-title">gcc / g++ / gfortran / cobc / sbcl / javac / rustc / go / mcs+mono / bash / perl / php / CPython / Node</span> - toolchains on the stephens.page host for allowlisted Hello Worlds.</li>
                     <li><span class="cite-title">highlight.js 11.11.1</span> - browser syntax highlighting for ladder source panels (esm.sh modular load). <a href="https://highlightjs.org/" rel="noopener">highlightjs.org</a></li>
-                    <li><span class="cite-title">FastAPI + uvicorn</span> - loopback runner at port 3521, proxied under this post's <code>/api/</code>.</li>
+                    <li><span class="cite-title">FastAPI + uvicorn</span> - loopback runner at port 3521; <code>GET /levels</code> groups variants for carousels.</li>
                     <li><span class="cite-title">Private teach workspace</span> - ARM64 Assembly practice that motivated the public ladder (not the same ISA as this page).</li>
                 </ul>
             </div>
 
             <div class="ai-note">
-                Drafted from the private <code>learn-assembly</code> teach-skill workspace and this site's existing interactive-post pattern (<code>the-animation-is-a-replay</code> server, Apache proxy, and highlight.js usage). Every Run Program button hits a real allowlisted build/execute path on Linux x86_64 except the AI and vibe rungs, which are honest deterministic stand-ins (no live LLM). The decisions, the hosting, and the words are mine; the technical collaborator for scaffolding was Grok.
+                Drafted from the private <code>learn-assembly</code> teach-skill workspace (including its early high-level timeline note) and this site's interactive-post pattern (<code>the-animation-is-a-replay</code> server, Apache proxy, highlight.js). Run Program hits allowlisted builds on Linux x86_64 for metal through scripting; AI and vibe are deterministic stand-ins (no live LLM). Multi-language bands use click-only carousels. The decisions, the hosting, and the words are mine; the technical collaborator for scaffolding was Grok.
             </div>
 
             <p><strong>For AI agents:</strong> the machine-oriented version is at <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a>, with directives, the allowlist contract, verified endpoints, an operational checklist, and a self-test.</p>
@@ -297,36 +322,83 @@
 
   var API = '/blog/from-machine-code-to-ai-the-same-hello-world/api';
   var hljsApi = null;
+  // bandId -> active variant index (carousel state; never auto-advances)
+  var carouselIndex = {};
 
-  var FALLBACK = [
-    { id: 'binary', title: 'Binary program (ELF)', level: 0, sourceFile: 'binary-readme.txt', highlight: 'plaintext', source: '# ELF executable (hex dump loads from API when online)' },
-    { id: 'machine', title: 'Machine code', level: 1, sourceFile: 'hello.s', highlight: 'x86asm', source: '' },
-    { id: 'assembly', title: 'Assembly (x86_64 Linux)', level: 2, sourceFile: 'hello.s', highlight: 'x86asm', source: '' },
-    { id: 'c', title: 'C', level: 3, sourceFile: 'hello.c', highlight: 'c', source: '' },
-    { id: 'cpp', title: 'C++', level: 4, sourceFile: 'hello.cpp', highlight: 'cpp', source: '' },
-    { id: 'rust', title: 'Rust', level: 5, sourceFile: 'hello.rs', highlight: 'rust', source: '' },
-    { id: 'go', title: 'Go', level: 6, sourceFile: 'hello.go', highlight: 'go', source: '' },
-    { id: 'csharp', title: 'C#', level: 7, sourceFile: 'hello.cs', highlight: 'csharp', source: '' },
-    { id: 'python', title: 'Python', level: 8, sourceFile: 'hello.py', highlight: 'python', source: '' },
-    { id: 'javascript', title: 'JavaScript', level: 9, sourceFile: 'hello.js', highlight: 'javascript', source: '' },
-    { id: 'ai', title: 'AI engineering', level: 10, sourceFile: 'ai-prompt.txt', highlight: 'plaintext', source: '' },
-    { id: 'vibe', title: 'Vibe coding', level: 11, sourceFile: 'vibe-session.md', highlight: 'markdown', source: '' }
+  var FALLBACK_LEVELS = [
+    {
+      id: 'binary', level: 0, title: 'Binary program', era: 'c. 1945',
+      hides: 'Hides all source. The program is an executable file.',
+      blurb: 'Stored-program computers and the opaque binary you ship.',
+      variants: [{ id: 'binary', title: 'ELF binary', year: 'c. 1945', yearNote: '', sourceFile: 'binary-readme.txt', highlight: 'plaintext', source: '# ELF dump loads from API when online' }]
+    },
+    {
+      id: 'machine', level: 1, title: 'Machine code', era: 'c. 1940s',
+      hides: 'Hides almost nothing: instruction encodings the CPU runs.',
+      blurb: 'Raw opcodes.',
+      variants: [{ id: 'machine', title: 'Machine code', year: 'c. 1940s', sourceFile: 'hello.s', highlight: 'x86asm', source: '' }]
+    },
+    {
+      id: 'assembly', level: 2, title: 'Assembly', era: 'c. 1949',
+      hides: 'Hides bit encodings; still names registers and calls.',
+      blurb: 'Symbolic mnemonics.',
+      variants: [{ id: 'assembly', title: 'Assembly (x86_64 Linux)', year: 'c. 1949', sourceFile: 'hello.s', highlight: 'x86asm', source: '' }]
+    },
+    {
+      id: 'early-hl', level: 3, title: 'Early high-level', era: '1957–1959',
+      hides: 'Hides registers; formulas, business data, or lists.',
+      blurb: 'FORTRAN, Lisp, COBOL.',
+      variants: [
+        { id: 'fortran', title: 'FORTRAN', year: '1957', sourceFile: 'hello.f90', highlight: 'fortran', source: '' },
+        { id: 'lisp', title: 'Lisp', year: '1958', sourceFile: 'hello.lisp', highlight: 'lisp', source: '' },
+        { id: 'cobol', title: 'COBOL', year: '1959', sourceFile: 'hello.cob', highlight: 'plaintext', source: '' }
+      ]
+    },
+    {
+      id: 'systems', level: 4, title: 'Systems languages', era: '1972–1985',
+      hides: 'Hides instruction selection; still close to the machine.',
+      blurb: 'C and C++.',
+      variants: [
+        { id: 'c', title: 'C', year: '1972', sourceFile: 'hello.c', highlight: 'c', source: '' },
+        { id: 'cpp', title: 'C++', year: '1985', sourceFile: 'hello.cpp', highlight: 'cpp', source: '' }
+      ]
+    },
+    {
+      id: 'managed', level: 5, title: 'Managed / safe systems', era: '1995–2015',
+      hides: 'Hides more memory/safety details behind a runtime or type system.',
+      blurb: 'Java, C#, Go, Rust.',
+      variants: [
+        { id: 'java', title: 'Java', year: '1995', sourceFile: 'Hello.java', highlight: 'java', source: '' },
+        { id: 'csharp', title: 'C#', year: '2000', sourceFile: 'hello.cs', highlight: 'csharp', source: '' },
+        { id: 'go', title: 'Go', year: '2009', sourceFile: 'hello.go', highlight: 'go', source: '' },
+        { id: 'rust', title: 'Rust', year: '2015', sourceFile: 'hello.rs', highlight: 'rust', source: '' }
+      ]
+    },
+    {
+      id: 'scripting', level: 6, title: 'Scripting / dynamic', era: '1987–1995',
+      hides: 'Almost the entire machine; interpreters and VMs.',
+      blurb: 'Bash, Perl, Python, PHP, JavaScript.',
+      variants: [
+        { id: 'perl', title: 'Perl', year: '1987', sourceFile: 'hello.pl', highlight: 'perl', source: '' },
+        { id: 'bash', title: 'Bash', year: '1989', sourceFile: 'hello.sh', highlight: 'bash', source: '' },
+        { id: 'python', title: 'Python', year: '1991', sourceFile: 'hello.py', highlight: 'python', source: '' },
+        { id: 'php', title: 'PHP', year: '1995', sourceFile: 'hello.php', highlight: 'php', source: '' },
+        { id: 'javascript', title: 'JavaScript', year: '1995', sourceFile: 'hello.js', highlight: 'javascript', source: '' }
+      ]
+    },
+    {
+      id: 'ai', level: 7, title: 'AI engineering', era: 'c. 2022',
+      hides: 'Code behind a precise natural-language contract.',
+      blurb: 'Intent as the interface.',
+      variants: [{ id: 'ai', title: 'AI engineering', year: 'c. 2022', sourceFile: 'ai-prompt.txt', highlight: 'plaintext', source: '' }]
+    },
+    {
+      id: 'vibe', level: 8, title: 'Vibe coding', era: '2025',
+      hides: 'Even the contract - chat is the process.',
+      blurb: 'Casual agent chat as the workflow.',
+      variants: [{ id: 'vibe', title: 'Vibe coding', year: '2025', sourceFile: 'vibe-session.md', highlight: 'markdown', source: '' }]
+    }
   ];
-
-  var HIDES = {
-    binary: 'Hides all source. The program is an ELF file you can execute.',
-    machine: 'Hides almost nothing: instruction encodings the CPU runs.',
-    assembly: 'Hides bit encodings; still names registers and calls.',
-    c: 'Hides registers and instruction selection.',
-    cpp: 'Hides more library/runtime than C; still native.',
-    rust: 'Ownership/type safety as compile-time machinery.',
-    go: 'GC and a larger runtime than C.',
-    csharp: 'CLR/Mono runtime and a managed object model.',
-    python: 'Almost the entire machine; bytecode + VM.',
-    javascript: 'The machine behind engines and JITs.',
-    ai: 'Code behind a precise natural-language contract.',
-    vibe: 'Even the contract - chat is the process; accept and run.'
-  };
 
   var statusEl = document.getElementById('api-status');
   var ladderEl = document.getElementById('ladder');
@@ -354,12 +426,21 @@
       import('https://esm.sh/highlight.js@11.11.1/lib/languages/csharp'),
       import('https://esm.sh/highlight.js@11.11.1/lib/languages/python'),
       import('https://esm.sh/highlight.js@11.11.1/lib/languages/javascript'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/java'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/bash'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/perl'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/php'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/fortran'),
+      import('https://esm.sh/highlight.js@11.11.1/lib/languages/lisp'),
       import('https://esm.sh/highlight.js@11.11.1/lib/languages/x86asm'),
       import('https://esm.sh/highlight.js@11.11.1/lib/languages/markdown'),
       import('https://esm.sh/highlight.js@11.11.1/lib/languages/plaintext')
     ]).then(function (mods) {
       var hljs = mods[0].default;
-      var names = ['c', 'cpp', 'rust', 'go', 'csharp', 'python', 'javascript', 'x86asm', 'markdown', 'plaintext'];
+      var names = [
+        'c', 'cpp', 'rust', 'go', 'csharp', 'python', 'javascript', 'java',
+        'bash', 'perl', 'php', 'fortran', 'lisp', 'x86asm', 'markdown', 'plaintext'
+      ];
       names.forEach(function (name, i) {
         hljs.registerLanguage(name, mods[i + 1].default);
       });
@@ -390,35 +471,96 @@
     }
   }
 
-  function renderRungs(langs) {
+  function activeVariant(band) {
+    var idx = carouselIndex[band.id] || 0;
+    if (idx < 0) idx = 0;
+    if (idx >= band.variants.length) idx = band.variants.length - 1;
+    carouselIndex[band.id] = idx;
+    return band.variants[idx];
+  }
+
+  function setCarousel(bandId, idx, levels) {
+    var band = levels.find(function (b) { return b.id === bandId; });
+    if (!band) return;
+    var n = band.variants.length;
+    if (!n) return;
+    carouselIndex[bandId] = ((idx % n) + n) % n;
+    renderLevels(levels);
+  }
+
+  function renderLevels(levels) {
     ladderEl.innerHTML = '';
-    langs.forEach(function (lang) {
-      var hl = lang.highlight || 'plaintext';
+    levels.forEach(function (band) {
+      var v = activeVariant(band);
+      var multi = band.variants.length > 1;
+      var idx = carouselIndex[band.id] || 0;
       var article = document.createElement('article');
       article.className = 'rung';
-      article.id = 'rung-' + lang.id;
-      article.innerHTML =
+      article.id = 'band-' + band.id;
+      article.dataset.band = band.id;
+
+      var head =
         '<div class="rung-head">' +
           '<div>' +
-            '<div class="rung-id">Level ' + esc(lang.level) + ' · ' + esc(lang.sourceFile || '') + '</div>' +
-            '<div class="rung-title">' + esc(lang.title) + '</div>' +
-            '<div class="rung-hides">' + esc(HIDES[lang.id] || '') + '</div>' +
+            '<div class="rung-id">Level ' + esc(band.level) + ' · ' + esc(band.id) +
+              (multi ? ' · ' + (idx + 1) + ' / ' + band.variants.length : '') + '</div>' +
+            '<div class="rung-title">' + esc(band.title) + '</div>' +
+            '<div class="rung-era">Introduced · ' + esc(band.era) + '</div>' +
+            '<div class="rung-hides">' + esc(band.hides || band.blurb || '') + '</div>' +
           '</div>' +
-          '<button type="button" class="run-btn" data-lang="' + esc(lang.id) + '">Run Program</button>' +
-        '</div>' +
+          '<button type="button" class="run-btn" data-lang="' + esc(v.id) + '">Run Program</button>' +
+        '</div>';
+
+      var nav = '';
+      if (multi) {
+        var dots = band.variants.map(function (vv, i) {
+          return '<button type="button" class="carousel-dot" data-band="' + esc(band.id) +
+            '" data-idx="' + i + '" aria-label="' + esc(vv.title) + '" aria-current="' +
+            (i === idx ? 'true' : 'false') + '"></button>';
+        }).join('');
+        nav =
+          '<div class="carousel-nav">' +
+            '<button type="button" class="carousel-btn" data-band="' + esc(band.id) +
+              '" data-dir="-1" aria-label="Previous language">‹</button>' +
+            '<div class="carousel-meta"><strong>' + esc(v.title) + '</strong>' +
+              '<span class="variant-year">' + esc(v.year || '') + '</span>' +
+              (v.yearNote ? ' · ' + esc(v.yearNote) : '') +
+            '</div>' +
+            '<div class="carousel-dots">' + dots + '</div>' +
+            '<button type="button" class="carousel-btn" data-band="' + esc(band.id) +
+              '" data-dir="1" aria-label="Next language">›</button>' +
+          '</div>';
+      } else {
+        nav =
+          '<div class="carousel-nav">' +
+            '<div class="carousel-meta"><strong>' + esc(v.title) + '</strong>' +
+              '<span class="variant-year">' + esc(v.year || band.era || '') + '</span>' +
+              (v.yearNote ? ' · ' + esc(v.yearNote) : '') +
+            '</div>' +
+          '</div>';
+      }
+
+      var body =
         '<div class="rung-body two">' +
           '<div>' +
-            '<div class="panel-label">Source' + (lang.id === 'binary' ? ' (ELF bytes)' : '') + '</div>' +
-            '<pre><code class="src language-' + esc(hl) + '" data-hl="' + esc(hl) + '"></code></pre>' +
+            '<div class="panel-label">Source' +
+              (v.id === 'binary' ? ' (ELF bytes)' : '') +
+              ' · ' + esc(v.sourceFile || '') +
+            '</div>' +
+            '<pre><code class="src language-' + esc(v.highlight || 'plaintext') +
+              '" data-hl="' + esc(v.highlight || 'plaintext') + '"></code></pre>' +
           '</div>' +
           '<div>' +
             '<div class="panel-label">Output (from server)</div>' +
-            '<div class="term out"><span class="dim">Click Run Program to execute this allowlisted Hello World on stephens.page.</span></div>' +
+            '<div class="term out"><span class="line dim">Click Run Program to execute ' +
+              esc(v.title) + ' on stephens.page.</span></div>' +
           '</div>' +
         '</div>';
+
+      article.innerHTML = head + nav + body;
       var codeEl = article.querySelector('.src');
-      codeEl.textContent = lang.source || '(source loads from API)';
-      highlightBlock(codeEl, hl);
+      codeEl.textContent = v.source || '(source loads from API)';
+      highlightBlock(codeEl, v.highlight || 'plaintext');
       ladderEl.appendChild(article);
     });
 
@@ -427,9 +569,21 @@
         runLang(btn.getAttribute('data-lang'), btn);
       });
     });
+    ladderEl.querySelectorAll('.carousel-btn[data-dir]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var bandId = btn.getAttribute('data-band');
+        var dir = parseInt(btn.getAttribute('data-dir'), 10) || 0;
+        var cur = carouselIndex[bandId] || 0;
+        setCarousel(bandId, cur + dir, levels);
+      });
+    });
+    ladderEl.querySelectorAll('.carousel-dot').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setCarousel(btn.getAttribute('data-band'), parseInt(btn.getAttribute('data-idx'), 10) || 0, levels);
+      });
+    });
   }
 
-  /** Append a styled line to the terminal using DOM APIs only (never innerHTML with server text). */
   function termLine(out, cls, text) {
     var line = document.createElement('span');
     line.className = 'line' + (cls ? ' ' + cls : '');
@@ -448,7 +602,7 @@
   }
 
   function runLang(id, btn) {
-    var rung = document.getElementById('rung-' + id);
+    var rung = btn.closest('.rung');
     if (!rung || !btn) return;
     var out = rung.querySelector('.out');
     if (!out) return;
@@ -471,27 +625,18 @@
         }
         var b = result.body || {};
         termLine(out, 'dim', '$ POST /run/' + id);
-        if (b.command) {
-          termLine(out, 'dim', '# ' + JSON.stringify(b.command));
-        }
-        if (b.stdout) {
-          termLine(out, 'ok', String(b.stdout).replace(/\n$/, ''));
-        } else {
-          termLine(out, 'dim', '(empty stdout)');
-        }
-        if (b.stderr) {
-          termLine(out, 'bad', String(b.stderr));
-        }
+        if (b.year) termLine(out, 'dim', '# introduced ' + b.year);
+        if (b.command) termLine(out, 'dim', '# ' + JSON.stringify(b.command));
+        if (b.stdout) termLine(out, 'ok', String(b.stdout).replace(/\n$/, ''));
+        else termLine(out, 'dim', '(empty stdout)');
+        if (b.stderr) termLine(out, 'bad', String(b.stderr));
         termLine(
           out,
           'dim',
           'exit ' + b.exitCode + ' · ' + b.wallMs + ' ms · ' +
             ((b.host && b.host.machine) || '?') + ' ' + ((b.host && b.host.system) || '')
         );
-        if (b.note) {
-          termLine(out, 'dim', String(b.note));
-        }
-        // Dumps live in the Source panel already; keep the terminal short so layout stays stable.
+        if (b.note) termLine(out, 'dim', String(b.note));
         if (b.machineView) {
           termLine(out, 'dim', '--- objdump <main> (truncated) ---');
           String(b.machineView).split('\n').slice(0, 12).forEach(function (ln) {
@@ -499,18 +644,12 @@
           });
           termLine(out, 'dim', '…');
         }
-        if (b.binaryView) {
-          termLine(out, 'dim', 'ELF hex dump is in the Source panel (left).');
-        }
+        if (b.binaryView) termLine(out, 'dim', 'ELF hex dump is in the Source panel (left).');
         if (b.prompt) {
           termLine(out, 'dim', '--- prompt ---');
-          String(b.prompt).split('\n').forEach(function (ln) {
-            termLine(out, 'dim', ln);
-          });
+          String(b.prompt).split('\n').forEach(function (ln) { termLine(out, 'dim', ln); });
         }
-        if (b.session) {
-          termLine(out, 'dim', 'Vibe session transcript is in the Source panel.');
-        }
+        if (b.session) termLine(out, 'dim', 'Vibe session transcript is in the Source panel.');
       })
       .catch(function (err) {
         clearTerm(out);
@@ -553,15 +692,27 @@
       .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('health ' + r.status)); })
       .then(function (h) {
         var hlNote = hljsApi ? ' · highlight.js on' : ' · plain source (CDN unavailable)';
-        setStatus(true, 'Runner online · ' + (h.machine || '?') + ' ' + (h.system || '') + ' · ' + (h.languages ? h.languages.length : '?') + ' languages' + hlNote);
-        return fetch(API + '/languages').then(function (r) { return r.json(); });
+        var nLang = h.languages ? h.languages.length : '?';
+        var nBand = h.bands != null ? h.bands : '?';
+        setStatus(true, 'Runner online · ' + (h.machine || '?') + ' ' + (h.system || '') +
+          ' · ' + nBand + ' bands · ' + nLang + ' languages' + hlNote);
+        return fetch(API + '/levels').then(function (r) {
+          if (!r.ok) throw new Error('levels ' + r.status);
+          return r.json();
+        });
       })
-      .then(function (langs) {
-        renderRungs(langs);
+      .then(function (levels) {
+        levels.forEach(function (b) {
+          if (carouselIndex[b.id] == null) carouselIndex[b.id] = 0;
+        });
+        renderLevels(levels);
       })
       .catch(function () {
         setStatus(false, 'Runner offline - showing fallback cards (Run may fail until API is up)');
-        renderRungs(FALLBACK);
+        FALLBACK_LEVELS.forEach(function (b) {
+          if (carouselIndex[b.id] == null) carouselIndex[b.id] = 0;
+        });
+        renderLevels(FALLBACK_LEVELS);
       });
   });
 
