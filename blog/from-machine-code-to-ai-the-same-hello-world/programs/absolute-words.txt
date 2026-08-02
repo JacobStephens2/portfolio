@@ -1,31 +1,10 @@
-# Absolute machine program (what people actually cared about)
-# ==========================================================
-# You would not "write an ELF." On early stored-program machines you
-# entered *instruction words* and *data words* - via switches, paper
-# tape, absolute hex/octal loaders, or (later) punched absolute decks.
-#
-# Below is the live _start instruction stream from this page's minimal
-# Linux x86_64 program (sys_write + sys_exit only - no C library).
-# Relocated addresses differ per link; the *shape* is: load regs, trap
-# to the OS, exit.
-#
-# Hex bytes for _start (from objdump on the host):
-#
-#   48 c7 c0 01 00 00 00    mov  $1, %rax      ; write
-#   48 c7 c7 01 00 00 00    mov  $1, %rdi      ; stdout
-#   48 8d 35 .. .. .. ..    lea  msg(%rip), %rsi
-#   48 c7 c2 0e 00 00 00    mov  $14, %rdx     ; len
-#   0f 05                   syscall
-#   48 c7 c0 3c 00 00 00    mov  $60, %rax     ; exit
-#   48 31 ff                xor  %rdi, %rdi
-#   0f 05                   syscall
-#
-# Character payload (ASCII, not "ELF magic"):
-#
-#   48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21 0a
-#   H  e  l  l  o  ,     W  o  r  l  d  !  \n
-#
-# Same idea on a 1950s machine: a few dozen absolute words + a trap or
-# I/O instruction. The OS packaging around the file (ELF headers, PT_LOAD,
-# dynamic linker) is a *modern* container - see carousel "Modern ELF note"
-# if you care about that packaging. Run Program executes this minimal job.
+48 c7 c0 01 00 00 00
+48 c7 c7 01 00 00 00
+48 8d 35 .. .. .. ..
+48 c7 c2 0e 00 00 00
+0f 05
+48 c7 c0 3c 00 00 00
+48 31 ff
+0f 05
+
+48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21 0a

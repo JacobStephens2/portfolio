@@ -1,13 +1,2 @@
-# Modern ELF packaging (not what operators keyed in 1945)
-# ========================================================
-# A Linux "binary file" today is usually an ELF container: magic bytes
-# 7f 45 4c 46 ("\\x7fELF"), program headers, section headers, maybe a
-# dynamic linker path. That is the OS's *file format* for loading a
-# process - analogous to a shipping crate, not the handwritten invoice.
-#
-# Run Program on this carousel slide still runs the same minimal
-# absolute job (sys_write Hello World). The dump below is only to show
-# what `file`/`xxd` see when you look at the on-disk container.
-#
-# Prefer the "Absolute machine words" slide for what a person would
-# have written or loaded as the program itself.
+7f 45 4c 46
+(ELF magic - full xxd from API when runner is online)

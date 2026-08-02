@@ -15,8 +15,9 @@ license: MIT
 5. **Bands** group peer languages; UI carousels are **manual only** (no autoplay).
 6. **Years** are introduction years for the language/band, not first Hello World publication.
 7. **Capability vs convention:** stored-program machines could print character strings by the late 1940s; the "Hello, World" *convention* is later (BCPL ~1967, Kernighan B tutorial 1972, popularized by K&R C 1978). Absolute band therefore pairs a continuity Hello with a period-honest `SUM=55` job - the sum is not filler.
+7b. **First recognizable code (Martin / Turing):** Robert C. Martin (*The Future of Programming*, 2016) names Alan Turing's ACE work as early code a modern programmer would still recognize. Anchor: Turing's 1945/46 NPL *Proposed Electronic Calculator* (subroutines, abbreviated instructions, sample sequences); Pilot ACE first program 10 May 1950. Do not overclaim exclusive priority vs ENIAC/EDVAC/Baby - cite the form of the artifact.
 8. **Source comparison is primary** on the human page (Fig. 1 grid + Fig. 2 pair compare). Each ladder rung (Fig. 3) includes a short origin/transition narrative (pain of prior level → invention → period-honest hello). Run is host verification. Full historical dossier: `research/Programming-Eras-Narrative-Research.md`.
-9. **AI Engineering** (band id `ai`, level 7) holds both `ai` (tight contract) and `vibe` (`make a hello world`) as carousel peers - same abstraction, different discipline. Live model path unless a budgeted stand-in is designed.
+9. **AI Engineering** (band id `ai`, level 7) holds both `ai` (tight contract) and `vibe` (`say hello world`) as carousel peers - same abstraction, different discipline. Live model path unless a budgeted stand-in is designed.
 10. ISA: Linux x86_64 here; Apple Silicon ARM64 Assembly is a different dialect.
 
 # Canonical human post

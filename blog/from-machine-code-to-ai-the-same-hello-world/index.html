@@ -236,19 +236,26 @@
         .carousel-viewport {
             overflow: hidden; width: 100%; max-width: 100%; position: relative;
             border: 1px solid var(--rule); border-radius: 6px; background: var(--code-bg);
+            /* Height is set to the active slide so short sources (e.g. absolute words)
+               do not inherit empty space from taller peers (ELF dump, long objdump). */
+            transition: height 0.28s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .carousel-track {
             display: flex; width: 100%;
+            align-items: flex-start;
             transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: transform;
         }
         .carousel-slide {
             flex: 0 0 100%; width: 100%; min-width: 100%; max-width: 100%;
             box-sizing: border-box; padding: 0;
+            height: fit-content;
         }
         .carousel-slide pre {
             margin: 0; border: none; border-radius: 0; max-height: 28rem;
             overflow-x: auto; max-width: 100%;
+            /* Shrink-wrap content; do not fill a stretched carousel cell */
+            height: auto;
         }
         .gh-link {
             font-weight: 600; font-size: 0.78rem; letter-spacing: 0.02em;
@@ -531,6 +538,22 @@
             justify-content: space-between; padding: 0.75rem 0.95rem;
             background: var(--soft); border-bottom: 1px solid var(--rule);
         }
+        .bench-panel .bench-head-toggle {
+            flex: 1 1 auto; display: flex; align-items: center; gap: 0.5rem;
+            margin: 0; padding: 0; border: 0; background: transparent; cursor: pointer;
+            text-align: left; font: inherit; color: inherit; min-width: 0;
+        }
+        .bench-panel .bench-head-toggle:hover .bench-title { text-decoration: underline; }
+        .bench-panel .bench-head-toggle:focus-visible {
+            outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 4px;
+        }
+        .bench-panel .bench-chevron {
+            font-size: 0.75rem; color: var(--muted); transition: transform 0.15s ease;
+            flex: 0 0 auto;
+        }
+        .bench-panel.is-collapsed .bench-chevron { transform: rotate(-90deg); }
+        .bench-panel.is-collapsed .bench-head { border-bottom: 0; }
+        .bench-panel.is-collapsed .bench-body { display: none; }
         .bench-panel .bench-title {
             font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em;
             text-transform: uppercase; color: var(--brand);
@@ -542,6 +565,14 @@
             padding: 0.35rem 0.5rem; background: var(--surface); color: var(--ink);
         }
         .bench-body { padding: 0.9rem; overflow-x: auto; }
+        .bench-table th.sortable {
+            cursor: pointer; user-select: none; white-space: nowrap;
+        }
+        .bench-table th.sortable:hover { color: var(--brand); }
+        .bench-table th.sortable .sort-ind {
+            font-size: 0.7em; opacity: 0.45; margin-left: 0.2rem;
+        }
+        .bench-table th.sortable.is-sorted .sort-ind { opacity: 1; color: var(--brand); }
         .bench-hw {
             font-size: 0.88rem; color: var(--muted); margin-bottom: 0.75rem; line-height: 1.5;
         }
@@ -689,8 +720,10 @@
             <h2>What each level hides - and what pain forced it into existence</h2>
             <p>Robert C. Martin (Uncle Bob) has long treated programming history as a climb through successive languages and tools - machine code, assembly, high-level languages, and whatever comes next - and has argued in parallel that craft still matters no matter how high the stack gets. That ladder is the spine of his 2016 talk <a href="https://www.youtube.com/watch?v=ecIWPzGEbFc" rel="noopener"><em>The Future of Programming</em></a>; the craft claim is the throughline of <em>The Clean Coder</em> (2011). A more recent framing is his conversation with <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">Kent Dodds</a> (2025). Paraphrase, not a slogan he trademarked. Bands here are ordered by <em>abstraction</em>, not pure release-year purity (Lisp is older than C; scripting largely overlaps managed systems chronologically - a parallel branch, not a strict sequel). Years on each variant are introduction years.</p>
 
+            <p>Martin also puts a name on the first thing we would still recognize as <em>code</em>: Alan Turing on the Automatic Computing Engine. In the same talk he says you would recognize the ACE programs - you would not like them, but you would recognize them. The archival anchor is Turing's 1945/46 NPL report <em>Proposed Electronic Calculator</em> (ACE), which already spells out stored-program design, subroutine call/return (BURY/UNBURY and friends), floating-point ideas, and sample instruction sequences - software abstractions written while the full machine was still paper. A cut-down Pilot ACE ran its first program on 10 May 1950. Historians debate priority with other early stored-program work; what matters for this page is that by the mid-1940s the artifact is already instruction-and-data words a modern programmer can read as a program, not a plugboard recipe.</p>
+
             <ul class="timeline">
-                <li><strong>Absolute machine program</strong> (c. 1945) - ENIAC: plugboards, ~6,000 switches, no stored program. Pain before: forty-hour hand trajectories and differential analyzers that were a nightmare to reconfigure. Pivot: stop rewiring the machine; put the program in memory (von Neumann's EDVAC draft, June 1945).</li>
+                <li><strong>Absolute machine program</strong> (c. 1945) - ENIAC: plugboards, ~6,000 switches, no stored program. Same season: Turing's ACE design and program library at NPL; von Neumann's EDVAC draft (June 1945). Pain before: forty-hour hand trajectories and differential analyzers that were a nightmare to reconfigure. Pivot: stop rewiring the machine; put the program in memory.</li>
                 <li><strong>Machine code</strong> (c. late 1940s) - instruction words as data: Manchester Baby (21 June 1948), paper tape, punched cards, hand assembly sheets. Pain of plugboards: no portable program, days of physical setup. Pivot: let the machine translate names into those numbers.</li>
                 <li><strong>Assembly</strong> (c. 1949) - EDSAC (6 May 1949) and its &quot;initial orders&quot;; Wilkes/Wheeler/Gill's 1951 textbook; subroutines as social technology. First jobs: tables of squares and primes, not greetings.</li>
                 <li><strong>Early high-level</strong> (1957–1959) - FORTRAN (Backus: &quot;hand-to-hand combat with the machine&quot;), Lisp (McCarthy), COBOL (Hopper/CODASYL). Pain: scarce people who could win that combat; science needed formulas, business needed English-like records.</li>
@@ -772,7 +805,10 @@
 
             <div class="bench-panel" id="bench-panel">
                 <div class="bench-head">
-                    <span class="bench-title">Fig. 3b · Historical run times (all visitors)</span>
+                    <button type="button" class="bench-head-toggle" id="bench-toggle" aria-expanded="true" aria-controls="bench-body" title="Click to collapse or expand">
+                        <span class="bench-chevron" aria-hidden="true">▼</span>
+                        <span class="bench-title">Fig. 3b · Historical run times (all visitors)</span>
+                    </button>
                     <div class="bench-actions">
                         <button type="button" class="run-btn run-once" id="stats-refresh-btn">Refresh stats</button>
                         <label for="bench-samples">Samples per language</label>
@@ -783,8 +819,8 @@
                         <button type="button" class="run-btn" id="bench-all-btn">Benchmark all</button>
                     </div>
                 </div>
-                <div class="bench-body">
-                    <p class="bench-hw">Table loads from durable server history: every Run once / Run Program / Benchmark on this host, from every visitor, is stored and aggregated (language, timing, ok/fail, last stdout). No IPs or personal data. <strong>Benchmark all</strong> adds a fresh batch of samples into that same history. Shared droplet wall-clock - not lab microbenchmarks.</p>
+                <div class="bench-body" id="bench-body">
+                    <p class="bench-hw">Table loads from durable server history: every Run once / Run Program / Benchmark on this host, from every visitor, is stored and aggregated (language, timing, ok/fail, last stdout). No IPs or personal data. <strong>Benchmark all</strong> adds a fresh batch of samples into that same history. Shared droplet wall-clock - not lab microbenchmarks. Click a column header to sort.</p>
                     <div id="bench-status" class="bench-status" aria-live="polite">Loading historical stats…</div>
                     <div id="bench-table-wrap"></div>
                 </div>
@@ -816,7 +852,7 @@
                 <li><strong>Capability vs convention</strong> - machines could print characters decades before Kernighan made &quot;hello, world&quot; the ritual (B tutorial 1972; K&amp;R 1978).</li>
                 <li><strong>C freezes the greeting</strong> - systems band is where the demo program stabilizes for half a century; earlier bands should not pretend 1945 had teletype Hello World culture.</li>
                 <li><strong>Scripting is a parallel branch</strong> - 1987–1995 glue/web culture, not a strict sequel after Rust.</li>
-                <li><strong>AI Engineering is one layer, two styles</strong> - tight contract vs <code>make a hello world</code> on the same L7 path (live GPT-5.6 Luna). Cost appears in the Output panel.</li>
+                <li><strong>AI Engineering is one layer, two styles</strong> - tight contract vs <code>say hello world</code> on the same L7 path (live GPT-5.6 Luna). Cost appears in the Output panel.</li>
             </ul>
 
             <h2>What stays constant</h2>
@@ -841,7 +877,8 @@
             <div class="sources">
                 <h3>Ideas and authorities</h3>
                 <ul>
-                    <li><span class="cite-title">Robert C. Martin, The Future of Programming</span> (talk, 2016) - walks programming history as successive languages/tools from machine code upward and asks what the next layer will be. Recording commonly cited: <a href="https://www.youtube.com/watch?v=ecIWPzGEbFc" rel="noopener">youtube.com/watch?v=ecIWPzGEbFc</a>.</li>
+                    <li><span class="cite-title">Robert C. Martin, The Future of Programming</span> (talk, 2016) - walks programming history as successive languages/tools from machine code upward and asks what the next layer will be; names Alan Turing / ACE as early code a modern programmer would still recognize. Recording commonly cited: <a href="https://www.youtube.com/watch?v=ecIWPzGEbFc" rel="noopener">youtube.com/watch?v=ecIWPzGEbFc</a>.</li>
+                    <li><span class="cite-title">A. M. Turing, Proposed Electronic Calculator</span> (ACE report, National Physical Laboratory, late 1945; presented 1946) - stored-program design with subroutines, abbreviated instructions, and sample program sequences for the Automatic Computing Engine. Overview: <a href="https://en.wikipedia.org/wiki/Automatic_Computing_Engine" rel="noopener">Wikipedia: Automatic Computing Engine</a>; collected as <em>A. M. Turing's ACE Report of 1946 and Other Papers</em> (MIT Press, 1986). Pilot ACE first ran 10 May 1950.</li>
                     <li><span class="cite-title">Robert C. Martin, The Clean Coder: A Code of Conduct for Professional Programmers</span> (Prentice Hall, 2011) - craft and professional discipline as independent of language fashion; the &quot;craft still matters at every step&quot; half of the paraphrase in the timeline section.</li>
                     <li><span class="cite-title">Robert C. Martin with Kent Dodds, Architecture, AI agents, and product empathy</span> (YouTube, 2025) - recent long-form conversation that revisits architecture, agents, and long-view software practice. <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">youtube.com/watch?v=RxxxGkFIUJ0</a>.</li>
                     <li><span class="cite-title">Andrej Karpathy on "vibe coding"</span> (2025) - the casual chat-driven coding style contrasted here with tighter AI engineering prompts. <a href="https://x.com/karpathy/status/1886192184808149383" rel="noopener">x.com/karpathy</a></li>
@@ -892,7 +929,7 @@
         </footer>
     </div>
 
-    <details class="timing-tally" id="timing-tally" open>
+    <details class="timing-tally" id="timing-tally">
         <summary>Run times</summary>
         <div class="tally-sub">Mean wall-clock ms (server, default n=10). Sticky; sorted fastest first.</div>
         <ol id="tally-list"><li class="tally-empty">Run a program to start the tally.</li></ol>
@@ -924,9 +961,9 @@
       hides: 'No symbolic source - instruction and data words only (ENIAC-era plugboards/switches).',
       blurb: 'What people entered: absolute words. Hello is ladder continuity; SUM=55 is the period-honest job. ELF is packaging only.',
       variants: [
-        { id: 'absolute', title: 'Absolute machine words', year: 'c. 1945', yearNote: 'instruction + data words; Hello via syscalls', sourceFile: 'absolute-words.txt', highlight: 'plaintext', source: '# Absolute words load from API when online' },
-        { id: 'tabulate', title: 'Numerical job (sum 1..10)', year: 'c. 1950', yearNote: 'tables and totals', sourceFile: 'tabulate-words.txt', highlight: 'plaintext', source: '' },
-        { id: 'elf', title: 'Modern ELF packaging', year: 'c. 1985', yearNote: 'OS crate, not handwritten program', sourceFile: 'elf-note.txt', highlight: 'plaintext', source: '' }
+        { id: 'absolute', title: 'Absolute machine words', year: 'c. 1945', yearNote: 'instruction + data words; live objdump when online', sourceFile: 'absolute-words.txt', highlight: 'plaintext', source: '' },
+        { id: 'tabulate', title: 'Numerical job (sum 1..10)', year: 'c. 1950', yearNote: 'tables and totals; live objdump when online', sourceFile: 'tabulate-words.txt', highlight: 'plaintext', source: '' },
+        { id: 'elf', title: 'Modern ELF packaging', year: 'c. 1985', yearNote: 'OS crate; xxd when online', sourceFile: 'elf-note.txt', highlight: 'plaintext', source: '' }
       ]
     },
     {
@@ -999,7 +1036,7 @@
       blurb: 'Same machinery, two disciplines: tight contract vs casual vibe prompt.',
       variants: [
         { id: 'ai', title: 'Tight contract', year: '2022', sourceFile: 'ai-prompt.txt', highlight: 'plaintext', source: 'Print one line: Hello, World!\n' },
-        { id: 'vibe', title: 'Vibe coding', year: '2025', sourceFile: 'vibe-session.md', highlight: 'plaintext', source: 'make a hello world\n' }
+        { id: 'vibe', title: 'Vibe coding', year: '2025', sourceFile: 'vibe-session.md', highlight: 'plaintext', source: 'say hello world\n' }
       ]
     }
   ];
@@ -1118,6 +1155,25 @@
     applyCarouselState(article, band, next, animate !== false && prev !== next);
   }
 
+  function fitCarouselViewport(article, idx) {
+    if (!article) return;
+    var viewport = article.querySelector('.carousel-viewport');
+    var track = article.querySelector('.carousel-track');
+    if (!viewport || !track) return;
+    var slides = track.querySelectorAll('.carousel-slide');
+    if (!slides.length) return;
+    if (idx == null) {
+      var bandId = article.dataset.band;
+      idx = carouselIndex[bandId] || 0;
+    }
+    if (idx < 0) idx = 0;
+    if (idx >= slides.length) idx = slides.length - 1;
+    var slide = slides[idx];
+    // Measure content height of the active slide only (track is as tall as tallest peer).
+    var h = slide ? slide.scrollHeight : 0;
+    if (h > 0) viewport.style.height = h + 'px';
+  }
+
   function applyCarouselState(article, band, idx, animate) {
     var n = band.variants.length;
     var v = band.variants[idx];
@@ -1133,6 +1189,10 @@
         track.style.transition = '';
       }
     }
+    // Size the code viewport to this peer so short sources don't leave empty code-bg.
+    requestAnimationFrame(function () {
+      fitCarouselViewport(article, idx);
+    });
     article.querySelectorAll('.run-btn').forEach(function (btn) {
       btn.setAttribute('data-lang', v.id);
     });
@@ -1282,8 +1342,8 @@
   var ERA_NARRATIVE = {
     binary: {
       lead: 'Before source code, there was a room of cables, switches, and six mathematicians who had to become the program.',
-      body: 'ENIAC (first classified run 10 Dec 1945; public demo Feb 1946) was not a stored-program machine. Programming meant routing plugboards, setting ~6,000 switches, and coordinating ~18,000 tubes. The original programmers - Kay McNulty, Jean Bartik, Betty Holberton, Marlyn Meltzer, Fran Spence, Ruth Teitelbaum - had been hired as human computers for ballistic tables. Period-honest first jobs were Los Alamos math and trajectory tables, not teletype greetings. Carousel: modern Hello via syscalls for ladder continuity; sum 1..10 for period honesty; ELF as packaging note only.',
-      pivot: 'Rewiring a thirty-ton machine for every problem could not scale. The next move: stop changing the wires and start changing the numbers in memory (von Neumann\'s EDVAC draft, June 1945).'
+      body: 'ENIAC (first classified run 10 Dec 1945; public demo Feb 1946) was not a stored-program machine. Programming meant routing plugboards, setting ~6,000 switches, and coordinating ~18,000 tubes. The original programmers - Kay McNulty, Jean Bartik, Betty Holberton, Marlyn Meltzer, Fran Spence, Ruth Teitelbaum - had been hired as human computers for ballistic tables. In the same season, Alan Turing\'s ACE report at NPL already described instruction sequences, subroutines, and a program library for a machine that was still paper - what Robert C. Martin later called the first code a modern programmer would still recognize. Period-honest first jobs were Los Alamos math and trajectory tables, not teletype greetings. Carousel: modern Hello via syscalls for ladder continuity; sum 1..10 for period honesty; ELF as packaging note only.',
+      pivot: 'Rewiring a thirty-ton machine for every problem could not scale. The next move: stop changing the wires and start changing the numbers in memory (von Neumann\'s EDVAC draft, June 1945; Turing\'s ACE design the same years).'
     },
     machine: {
       lead: 'The breakthrough was not a faster tube - it was the idea that the program itself could be data.',
@@ -1317,7 +1377,7 @@
     },
     ai: {
       lead: 'For seventy-five years the contract was: you specify the steps. After November 2022, a surprising amount of the time the contract became: you specify the outcome.',
-      body: 'ChatGPT launched 30 Nov 2022 and made instruction-following models a default interface. In June 2023 Shawn Wang (swyx) named "the AI Engineer" - software people who ship on the other side of foundation-model APIs rather than training models from scratch. Programming became prompt contracts, tools, RAG, harnesses, and evals. Pain: either specify every edge case in code, or staff a research team. Carousel peers: tight contract ("Print one line: Hello, World!") vs vibe ("make a hello world") - same capability surface, different discipline.',
+      body: 'ChatGPT launched 30 Nov 2022 and made instruction-following models a default interface. In June 2023 Shawn Wang (swyx) named "the AI Engineer" - software people who ship on the other side of foundation-model APIs rather than training models from scratch. Programming became prompt contracts, tools, RAG, harnesses, and evals. Pain: either specify every edge case in code, or staff a research team. Carousel peers: tight contract ("Print one line: Hello, World!") vs vibe ("say hello world") - same capability surface, different discipline.',
       pivot: 'From plugboards to prompts, each layer still bottoms out in machine state changes. The job keeps migrating toward intent and invariants - and away from manually placing every bit.'
     }
   };
@@ -1676,6 +1736,7 @@
             if (!codeEl.isConnected) return;
             codeEl.textContent = text || '(empty source)';
             highlightBlock(codeEl, vv.highlight || 'plaintext');
+            fitCarouselViewport(article, carouselIndex[band.id] || 0);
           });
         }
       });
@@ -1686,6 +1747,9 @@
         void track.offsetWidth;
         track.style.transition = '';
       }
+      requestAnimationFrame(function () {
+        fitCarouselViewport(article, idx);
+      });
       article.addEventListener('focus', function () { focusBand(band.id); });
       article.addEventListener('click', function () { focusBand(band.id); });
       ladderEl.appendChild(article);
@@ -1896,9 +1960,77 @@
     }
   }
 
+  var historyTableState = {
+    payload: null,
+    sortKey: 'avgMs',
+    sortDir: 'asc'
+  };
+
+  var HISTORY_COLS = [
+    { key: 'title', label: 'Language', num: false },
+    { key: 'year', label: 'Year', num: false },
+    { key: 'runs', label: 'Runs', num: true },
+    { key: 'okRuns', label: 'OK', num: true },
+    { key: 'avgMs', label: 'Hist. avg ms', num: true },
+    { key: 'minMs', label: 'Min', num: true },
+    { key: 'maxMs', label: 'Max', num: true },
+    { key: 'stdevMs', label: 'σ', num: true },
+    { key: 'lastAvgMs', label: 'Last ms', num: true },
+    { key: 'lastStdout', label: 'Last stdout', num: false },
+    { key: 'lastOk', label: 'Last OK', num: false }
+  ];
+
+  function historyCellValue(r, key) {
+    if (key === 'title') return r.title || r.id || '';
+    if (key === 'lastStdout') return r.lastStdout || r.stdout || r.error || '';
+    if (key === 'lastOk') {
+      if (r.lastOk === true || r.ok === true) return 'yes';
+      if (r.lastOk === false || r.ok === false) return 'no';
+      return '';
+    }
+    if (key === 'okRuns') return r.okRuns != null ? r.okRuns : 0;
+    if (key === 'runs') return r.runs != null ? r.runs : 0;
+    return r[key];
+  }
+
+  function sortHistoryRows(rows, key, dir) {
+    var col = HISTORY_COLS.find(function (c) { return c.key === key; }) || HISTORY_COLS[0];
+    var mult = dir === 'desc' ? -1 : 1;
+    return rows.slice().sort(function (a, b) {
+      var av = historyCellValue(a, key);
+      var bv = historyCellValue(b, key);
+      if (col.num) {
+        var an = av == null || av === '' ? Number.POSITIVE_INFINITY : Number(av);
+        var bn = bv == null || bv === '' ? Number.POSITIVE_INFINITY : Number(bv);
+        if (isNaN(an)) an = Number.POSITIVE_INFINITY;
+        if (isNaN(bn)) bn = Number.POSITIVE_INFINITY;
+        if (an < bn) return -1 * mult;
+        if (an > bn) return 1 * mult;
+        return 0;
+      }
+      var as = String(av == null ? '' : av).toLowerCase();
+      var bs = String(bv == null ? '' : bv).toLowerCase();
+      if (as < bs) return -1 * mult;
+      if (as > bs) return 1 * mult;
+      return 0;
+    });
+  }
+
+  function thSortable(key, label, num) {
+    var active = historyTableState.sortKey === key;
+    var arrow = active ? (historyTableState.sortDir === 'asc' ? '▲' : '▼') : '↕';
+    return '<th class="sortable' + (num ? ' num' : '') + (active ? ' is-sorted' : '') +
+      '" data-sort-key="' + esc(key) + '" scope="col" role="columnheader" ' +
+      'aria-sort="' + (active ? (historyTableState.sortDir === 'asc' ? 'ascending' : 'descending') : 'none') + '">' +
+      esc(label) + '<span class="sort-ind" aria-hidden="true">' + arrow + '</span></th>';
+  }
+
   function renderHistoryTable(payload) {
     var wrap = document.getElementById('bench-table-wrap');
     if (!wrap) return;
+    if (payload) historyTableState.payload = payload;
+    payload = historyTableState.payload;
+    if (!payload) return;
     var hw = payload.hardware || {};
     var rows = payload.rows || [];
     var total = payload.totalRuns != null ? payload.totalRuns : 0;
@@ -1914,12 +2046,13 @@
       wrap.innerHTML = html;
       return;
     }
-    html += '<table class="bench-table"><thead><tr>' +
-      '<th>Language</th><th>Year</th><th class="num">Runs</th><th class="num">OK</th>' +
-      '<th class="num">Hist. avg ms</th><th class="num">Min</th><th class="num">Max</th><th class="num">σ</th>' +
-      '<th class="num">Last ms</th><th>Last stdout</th><th>Last OK</th>' +
-      '</tr></thead><tbody>';
-    rows.forEach(function (r) {
+    var sorted = sortHistoryRows(rows, historyTableState.sortKey, historyTableState.sortDir);
+    html += '<table class="bench-table"><thead><tr>';
+    HISTORY_COLS.forEach(function (c) {
+      html += thSortable(c.key, c.label, c.num);
+    });
+    html += '</tr></thead><tbody>';
+    sorted.forEach(function (r) {
       html += '<tr>' +
         '<td>' + esc(r.title || r.id) + '</td>' +
         '<td>' + esc(r.year || '') + '</td>' +
@@ -1939,6 +2072,19 @@
     });
     html += '</tbody></table>';
     wrap.innerHTML = html;
+    wrap.querySelectorAll('th.sortable').forEach(function (th) {
+      th.addEventListener('click', function () {
+        var key = th.getAttribute('data-sort-key');
+        if (!key) return;
+        if (historyTableState.sortKey === key) {
+          historyTableState.sortDir = historyTableState.sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          historyTableState.sortKey = key;
+          historyTableState.sortDir = 'asc';
+        }
+        renderHistoryTable(null);
+      });
+    });
   }
 
   /** Legacy single-batch benchmark shape (session-only rows). */
@@ -1978,6 +2124,17 @@
     loadHistoricalStats();
   }
 
+  function wireBenchPanelToggle() {
+    var panel = document.getElementById('bench-panel');
+    var toggle = document.getElementById('bench-toggle');
+    if (!panel || !toggle || wireBenchPanelToggle._bound) return;
+    wireBenchPanelToggle._bound = true;
+    toggle.addEventListener('click', function () {
+      var collapsed = panel.classList.toggle('is-collapsed');
+      toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    });
+  }
+
   function loadHistoricalStats() {
     var status = document.getElementById('bench-status');
     return fetch(API + '/stats', { headers: { 'Accept': 'application/json' } })
@@ -2001,7 +2158,7 @@
           status.className = 'bench-status';
           status.textContent = 'All-visitor history · ' +
             (body.totalRuns || 0) + ' runs · ' +
-            (body.languageCount || 0) + ' languages · sorted by historical average ms.';
+            (body.languageCount || 0) + ' languages · click column headers to sort.';
         }
       })
       .catch(function (err) {
@@ -2152,6 +2309,7 @@
   });
 
   initQuiz();
+  wireBenchPanelToggle();
   wireBenchmark();
   loadHistoricalStats();
 })();

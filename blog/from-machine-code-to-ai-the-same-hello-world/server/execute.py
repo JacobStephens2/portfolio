@@ -133,7 +133,7 @@ LANGS: dict[str, dict] = {
     "absolute": {
         "title": "Absolute machine words",
         "year": "c. 1945",
-        "year_note": "instruction + data words people entered; Hello via syscalls, not ELF headers",
+        "year_note": "instruction + data words people entered; live objdump of _start (sys_write + sys_exit, no libc) - not ELF headers",
         "band": "binary",
         "source_file": "absolute-words.txt",
         "kind": "absolute",
@@ -146,7 +146,7 @@ LANGS: dict[str, dict] = {
     "tabulate": {
         "title": "Numerical job (sum 1..10)",
         "year": "c. 1950",
-        "year_note": "tables and totals were typical early work - not greetings",
+        "year_note": "tables and totals were typical early work - not greetings; live objdump of sum 1..10 → SUM=55",
         "band": "binary",
         "source_file": "tabulate-words.txt",
         "kind": "tabulate",
@@ -159,7 +159,7 @@ LANGS: dict[str, dict] = {
     "elf": {
         "title": "Modern ELF packaging",
         "year": "c. 1985",
-        "year_note": "OS file format around the program - not what operators keyed in 1945",
+        "year_note": "OS file format (ELF) around the absolute program - shipping crate, not handwritten invoice; xxd of first 256 bytes",
         "band": "binary",
         "source_file": "elf-note.txt",
         "kind": "elf",
@@ -172,7 +172,7 @@ LANGS: dict[str, dict] = {
     "machine": {
         "title": "Machine code (objdump)",
         "year": "c. 1940s",
-        "year_note": "plugboards and binary programs predate assemblers",
+        "year_note": "live objdump of <main> opcodes; plugboards and binary programs predate assemblers",
         "band": "machine",
         "source_file": "hello.s",
         "kind": "machine",
@@ -184,7 +184,7 @@ LANGS: dict[str, dict] = {
     "handcode": {
         "title": "Hand-entered hex",
         "year": "c. 1940s–50s",
-        "year_note": "front panels, paper tape, absolute hex before assemblers",
+        "year_note": "front panels / paper tape / absolute hex before assemblers; teaching re-enactment of form, not a 1949 ISA",
         "band": "machine",
         "source_file": "hand-entry.txt",
         "kind": "handcode",
@@ -197,7 +197,7 @@ LANGS: dict[str, dict] = {
     "punchcard": {
         "title": "Punch cards (sim)",
         "year": "c. 1890–1970s",
-        "year_note": "Hollerith → unit record → source/data decks; often numeric/tabular output",
+        "year_note": "Hollerith → unit record → source/data decks; 80-col teaching stand-in (not a live card reader)",
         "band": "machine",
         "source_file": "punch-card.txt",
         "kind": "punchcard-sim",
@@ -208,7 +208,7 @@ LANGS: dict[str, dict] = {
     "assembly": {
         "title": "Assembly (x86_64 Linux)",
         "year": "c. 1949",
-        "year_note": "symbolic assembly (e.g. EDSAC era); dialect here is modern GAS",
+        "year_note": "symbolic assembly (e.g. EDSAC era); dialect here is modern GAS on Linux x86_64 via libc puts (amd64 host, not Apple Silicon ARM64)",
         "band": "assembly",
         "source_file": "hello.s",
         "kind": "native",
@@ -220,7 +220,7 @@ LANGS: dict[str, dict] = {
     "fortran": {
         "title": "FORTRAN",
         "year": "1957",
-        "year_note": "John Backus / IBM; source is free-form Fortran 90+",
+        "year_note": "John Backus / IBM; free-form Fortran 90+; explicit (A) format (list-directed write inserts a leading space)",
         "band": "early-hl",
         "source_file": "hello.f90",
         "kind": "native",
@@ -243,7 +243,7 @@ LANGS: dict[str, dict] = {
     "cobol": {
         "title": "COBOL",
         "year": "1959",
-        "year_note": "CODASYL; business data processing",
+        "year_note": "CODASYL; free-format source; business data processing",
         "band": "early-hl",
         "source_file": "hello.cob",
         "kind": "native",
@@ -305,7 +305,7 @@ LANGS: dict[str, dict] = {
     "objc": {
         "title": "Objective-C",
         "year": "1984",
-        "year_note": "Brad Cox / Stepstone; NeXT and Apple later; GNU runtime on this host",
+        "year_note": "Brad Cox / Stepstone; NeXT and Apple later; GNU runtime without Cocoa/GNUstep Foundation on this host",
         "band": "systems",
         "source_file": "hello.m",
         "kind": "native",
@@ -338,7 +338,7 @@ LANGS: dict[str, dict] = {
     "kotlin": {
         "title": "Kotlin",
         "year": "2011",
-        "year_note": "JetBrains; 1.0 in 2016; JVM bytecode on this host",
+        "year_note": "JetBrains; 1.0 in 2016; JVM-first with null-safety; bytecode via kotlinc on this host",
         "band": "managed",
         "source_file": "hello.kt",
         "kind": "kotlin",
@@ -356,7 +356,7 @@ LANGS: dict[str, dict] = {
     "dart": {
         "title": "Dart",
         "year": "2011",
-        "year_note": "Google; 1.0 in 2013; dart compile exe on this host",
+        "year_note": "Google; 1.0 in 2013; client-first (web/Flutter); AOT via dart compile exe on this host",
         "band": "managed",
         "source_file": "hello.dart",
         "kind": "native",
@@ -411,7 +411,7 @@ LANGS: dict[str, dict] = {
     "swift": {
         "title": "Swift",
         "year": "2014",
-        "year_note": "Apple; open source 2015; swiftc on this host (Linux toolchain)",
+        "year_note": "Apple; open source 2015; systems/app language with C interop; swiftc Linux toolchain on this host",
         "band": "managed",
         "source_file": "hello.swift",
         "kind": "native",
@@ -429,7 +429,7 @@ LANGS: dict[str, dict] = {
     "lean": {
         "title": "Lean",
         "year": "2013",
-        "year_note": "Leonardo de Moura / Microsoft Research; Lean 4 on this host (lean-lang.org)",
+        "year_note": "Leonardo de Moura / Microsoft Research; Lean 4 on this host (lean-lang.org) - theorem prover and general-purpose language with dependent types",
         "band": "managed",
         "source_file": "hello.lean",
         "kind": "interp",
@@ -590,46 +590,31 @@ def _objdump_symbol(binary: Path, symbol: str, max_lines: int = 20) -> str:
 
 
 def absolute_source_view() -> str:
-    """Instruction/data words people would have cared about + live _start dump."""
+    """Live _start dump + ASCII payload hex (no narrative comments in the panel)."""
     ensure_built("absolute")
     path = CACHE / "hello-raw"
-    readme = (PROGRAMS / "absolute-words.txt").read_text(encoding="utf-8").strip()
     dump = _objdump_symbol(path, "_start", max_lines=16)
-    size = path.stat().st_size if path.exists() else 0
-    return (
-        f"{readme}\n\n"
-        f"# Live objdump of _start (cache/hello-raw, {size} bytes)\n"
-        f"{dump}\n"
-    )
+    # "Hello, World!\n" as absolute data words - shape people entered, not ELF magic
+    payload = "48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21 0a"
+    return f"{dump}\n\n{payload}\n"
 
 
 def tabulate_source_view() -> str:
+    """Live _start dump for the sum 1..10 job (no narrative comments)."""
     ensure_built("tabulate")
     path = CACHE / "hello-sum"
-    readme = (PROGRAMS / "tabulate-words.txt").read_text(encoding="utf-8").strip()
-    dump = _objdump_symbol(path, "_start", max_lines=24)
-    size = path.stat().st_size if path.exists() else 0
-    return (
-        f"{readme}\n\n"
-        f"# Live objdump of _start (cache/hello-sum, {size} bytes)\n"
-        f"{dump}\n"
-    )
+    return _objdump_symbol(path, "_start", max_lines=28) + "\n"
 
 
 def elf_source_view() -> str:
-    """Modern packaging dump - crate around the absolute program, not the handwritten words."""
+    """Modern packaging dump only - xxd of on-disk container, no prose comments."""
     ensure_built("elf")
     path = CACHE / "hello-raw"
     file_out = _run_cmd(["file", "-b", str(path)], timeout=5)
     size = path.stat().st_size if path.exists() else 0
     xxd = _run_cmd(["xxd", "-g", "1", "-l", "256", str(path)], timeout=5)
-    readme = (PROGRAMS / "elf-note.txt").read_text(encoding="utf-8").strip()
-    return (
-        f"{readme}\n\n"
-        f"# file: cache/hello-raw ({size} bytes) - minimal no-libc absolute program\n"
-        f"# {file_out.stdout.strip()}\n\n"
-        f"{xxd.stdout or '(xxd unavailable)'}"
-    )
+    header = f"cache/hello-raw  {size} bytes\n{file_out.stdout.strip()}\n\n"
+    return header + (xxd.stdout or "(xxd unavailable)")
 
 
 def binary_source_view() -> str:
@@ -862,7 +847,7 @@ def _run_llm_rung(lang: str, meta: dict, band_level: int, *, detail: bool) -> di
             "You are a casual coding agent in a vibe-coding chat. "
             "Be brief. Prefer a single working line of output the user can run or see."
         )
-        user = source_text.strip() or "make a hello world"
+        user = source_text.strip() or "say hello world"
         mode = "vibe-coding"
 
     started = time.perf_counter()
@@ -1069,6 +1054,8 @@ def _variant_payload(key: str) -> dict:
             source = tabulate_source_view()
         elif key == "elf":
             source = elf_source_view()
+        elif key == "machine":
+            source = machine_hex_snippet()
         else:
             source_path = PROGRAMS / meta["source_file"]
             source = source_path.read_text(encoding="utf-8") if source_path.exists() else ""

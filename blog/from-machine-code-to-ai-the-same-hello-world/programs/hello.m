@@ -1,7 +1,3 @@
-/* Objective-C (Brad Cox / Stepstone 1984; NeXT/Apple lineage).
- * Compiled here with GCC's GNU Objective-C runtime (no Cocoa/GNUstep Foundation).
- * Shows message-send syntax for the same Hello World job as C.
- */
 #import <stdio.h>
 #import <objc/runtime.h>
 #include <stdlib.h>

@@ -1,33 +1,5 @@
-# 80-column punch card re-enactment (teaching sheet)
-# ==================================================
-# Real 1950s–70s jobs often used decks of cards for *source* or *data*,
-# not an interactive terminal. Output went to a line printer, more cards,
-# or a tabulating machine - frequently numbers and fixed-width fields.
-#
-# "Hello, World!" as a cultural demo is later (C / K&R era). A period-correct
-# first program was more often: load numbers, add, store, print a table.
-#
-# What punched:
-#   - Program source (FORTRAN, COBOL, assembly) - one statement per card
-#   - Data cards (payroll, census, inventory)
-#   - Occasionally absolute machine words / binary images (site-specific)
-#
-# What did *not* usually happen:
-#   - An engineer typing into a glowing glass TTY and watching stdout scroll
-#   - Punching a full modern Linux ELF (that is the Binary rung - packaging)
-#
-# Simulated 80-col FORTRAN-style source card for a print statement:
-#
-# col: 1........10........20........30........40........50........60........70........80
-#      |    PRINT *, 'HELLO, WORLD!'
-#
-# EBCDIC / Hollerith encoding would turn each character into hole patterns in
-# the card stock. Readers sensed holes electrically or optically.
-#
-# This rung's Run Program does *not* drive a card reader. It prints a short
-# message acknowledging the deck - a teaching stand-in. For real machine
-# bytes, use Machine code → Hand-entered hex. For a modern executable file,
-# use Binary program.
+col: 1........10........20........30........40........50........60........70........80
+     |    PRINT *, 'HELLO, WORLD!'
 
 DECK: HELLO01  PRINT *, 'HELLO, WORLD!'
 STATUS: CARDS READ OK (SIMULATED)
