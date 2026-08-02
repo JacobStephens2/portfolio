@@ -42,9 +42,10 @@ BENCH_SAMPLES_MAX = 100
 DEFAULT_SAMPLES = 10
 BENCH_TOTAL_TIMEOUT_SECONDS = 420
 
+# Include Swift (/opt/swift), Dart SDK (/opt/dart-sdk), and standard tool locations.
 PATH_PREFIX = os.environ.get(
     "HELLO_LADDER_PATH",
-    "/home/jacob/.elan/bin:/home/jacob/.cargo/bin:/usr/local/go/bin:/usr/bin:/bin",
+    "/opt/dart-sdk/bin:/opt/swift/usr/bin:/home/jacob/.elan/bin:/home/jacob/.cargo/bin:/usr/local/go/bin:/usr/bin:/bin",
 )
 
 # Abstraction bands (ordered). Each band may hold multiple language variants.
@@ -87,7 +88,7 @@ BANDS: list[dict] = [
         "title": "Systems languages",
         "era": "1970–1985",
         "hides": "Hides instruction selection; still close to the machine model.",
-        "blurb": "Pascal, C, and C++ - structured systems programming with a thin runtime.",
+        "blurb": "Pascal, C, Objective-C, and C++ - structured systems programming with a thin runtime.",
     },
     {
         "id": "managed",
@@ -95,7 +96,7 @@ BANDS: list[dict] = [
         "title": "Managed / safe systems",
         "era": "1995–2015",
         "hides": "Hides more memory/safety details behind a runtime or type system.",
-        "blurb": "Java, C#, Go, Rust, Lean - GC, VMs, ownership, or dependent types as machinery.",
+        "blurb": "Java, C#, Kotlin, Dart, Go, Swift, Rust, Lean - GC, VMs, ownership, or dependent types as machinery.",
     },
     {
         "id": "scripting",
@@ -108,18 +109,10 @@ BANDS: list[dict] = [
     {
         "id": "ai",
         "level": 7,
-        "title": "AI engineering",
-        "era": "c. 2022",
-        "hides": "Code behind a precise natural-language contract.",
-        "blurb": "Intent as the interface - still bottoms out in lower layers.",
-    },
-    {
-        "id": "vibe",
-        "level": 8,
-        "title": "Vibe coding",
-        "era": "2025",
-        "hides": "Even the contract - chat is the process; accept and run.",
-        "blurb": "Casual agent chat as the workflow (Karpathy's coinage), not a tight prompt spec.",
+        "title": "AI Engineering",
+        "era": "c. 2022–2025",
+        "hides": "Code behind a natural-language interface to a model.",
+        "blurb": "Same machinery, two disciplines: a tight prompt contract vs a casual vibe one-liner (Karpathy).",
     },
 ]
 
@@ -309,6 +302,27 @@ LANGS: dict[str, dict] = {
         "build": ["g++", "-O0", "-o", str(CACHE / "hello-cpp"), str(PROGRAMS / "hello.cpp")],
         "run": [str(CACHE / "hello-cpp")],
     },
+    "objc": {
+        "title": "Objective-C",
+        "year": "1984",
+        "year_note": "Brad Cox / Stepstone; NeXT and Apple later; GNU runtime on this host",
+        "band": "systems",
+        "source_file": "hello.m",
+        "kind": "native",
+        "highlight": "objectivec",
+        "binary": "hello-objc",
+        "build": [
+            "gcc",
+            "-x",
+            "objective-c",
+            "-O0",
+            "-o",
+            str(CACHE / "hello-objc"),
+            str(PROGRAMS / "hello.m"),
+            "-lobjc",
+        ],
+        "run": [str(CACHE / "hello-objc")],
+    },
     "java": {
         "title": "Java",
         "year": "1995",
@@ -320,6 +334,43 @@ LANGS: dict[str, dict] = {
         "binary": "Hello.class",
         "build": ["javac", "-d", str(CACHE), str(PROGRAMS / "Hello.java")],
         "run": ["java", "-cp", str(CACHE), "Hello"],
+    },
+    "kotlin": {
+        "title": "Kotlin",
+        "year": "2011",
+        "year_note": "JetBrains; 1.0 in 2016; JVM bytecode on this host",
+        "band": "managed",
+        "source_file": "hello.kt",
+        "kind": "kotlin",
+        "highlight": "kotlin",
+        "binary": "hello-kotlin.jar",
+        "build": [
+            "kotlinc",
+            str(PROGRAMS / "hello.kt"),
+            "-include-runtime",
+            "-d",
+            str(CACHE / "hello-kotlin.jar"),
+        ],
+        "run": ["java", "-jar", str(CACHE / "hello-kotlin.jar")],
+    },
+    "dart": {
+        "title": "Dart",
+        "year": "2011",
+        "year_note": "Google; 1.0 in 2013; dart compile exe on this host",
+        "band": "managed",
+        "source_file": "hello.dart",
+        "kind": "native",
+        "highlight": "dart",
+        "binary": "hello-dart",
+        "build": [
+            "dart",
+            "compile",
+            "exe",
+            "-o",
+            str(CACHE / "hello-dart"),
+            str(PROGRAMS / "hello.dart"),
+        ],
+        "run": [str(CACHE / "hello-dart")],
     },
     "csharp": {
         "title": "C#",
@@ -356,6 +407,24 @@ LANGS: dict[str, dict] = {
         "binary": "hello-rust",
         "build": ["rustc", "-O", "-o", str(CACHE / "hello-rust"), str(PROGRAMS / "hello.rs")],
         "run": [str(CACHE / "hello-rust")],
+    },
+    "swift": {
+        "title": "Swift",
+        "year": "2014",
+        "year_note": "Apple; open source 2015; swiftc on this host (Linux toolchain)",
+        "band": "managed",
+        "source_file": "hello.swift",
+        "kind": "native",
+        "highlight": "swift",
+        "binary": "hello-swift",
+        "build": [
+            "swiftc",
+            "-O",
+            "-o",
+            str(CACHE / "hello-swift"),
+            str(PROGRAMS / "hello.swift"),
+        ],
+        "run": [str(CACHE / "hello-swift")],
     },
     "lean": {
         "title": "Lean",
@@ -424,8 +493,8 @@ LANGS: dict[str, dict] = {
         "run": ["node", str(PROGRAMS / "hello.js")],
     },
     "ai": {
-        "title": "AI engineering",
-        "year": "c. 2022",
+        "title": "Tight contract",
+        "year": "2022",
         "year_note": "LLM-as-interface; live GPT-5.6 Luna (reasoning low) on this host",
         "band": "ai",
         "source_file": "ai-prompt.txt",
@@ -438,11 +507,11 @@ LANGS: dict[str, dict] = {
     "vibe": {
         "title": "Vibe coding",
         "year": "2025",
-        "year_note": "Karpathy coinage; live GPT-5.6 Luna (reasoning low) on this host",
-        "band": "vibe",
+        "year_note": "Karpathy coinage; same LLM band as AI engineering, casual one-line prompt",
+        "band": "ai",
         "source_file": "vibe-session.md",
         "kind": "vibe-llm",
-        "highlight": "markdown",
+        "highlight": "plaintext",
         "build": None,
         "run": None,
         "llm_mode": "vibe-coding",
@@ -693,7 +762,13 @@ def _stats(samples_ms: list[float]) -> dict:
         "stdevMs": round(stdev, 3),
     }
 
-def run_samples(language: str, samples: int = 10, *, detail: bool = True) -> dict:
+def run_samples(
+    language: str,
+    samples: int = 10,
+    *,
+    detail: bool = True,
+    history_source: str = "run",
+) -> dict:
     """Run allowlisted program `samples` times after one build; return avg stats."""
     if language not in LANGS:
         raise UnknownLanguage(language)
@@ -742,6 +817,29 @@ def run_samples(language: str, samples: int = 10, *, detail: bool = True) -> dic
             + f"Timing is mean of {samples} server-side runs "
             f"(min {stats['minMs']} ms, max {stats['maxMs']} ms, stdev {stats['stdevMs']} ms)."
         )
+
+    # Durable all-visitor aggregate (no PII)
+    try:
+        import run_history
+
+        ok = int(last.get("exitCode") or 0) == 0
+        run_history.record_run(
+            language=language,
+            title=str(last.get("title") or meta.get("title") or language),
+            year=str(last.get("year") or meta.get("year") or ""),
+            avg_ms=stats.get("avgMs"),
+            min_ms=stats.get("minMs"),
+            max_ms=stats.get("maxMs"),
+            stdev_ms=stats.get("stdevMs"),
+            samples=samples,
+            exit_code=int(last.get("exitCode") or 0),
+            ok=ok,
+            stdout=str(last.get("displayStdout") or last.get("stdout") or ""),
+            source=history_source if history_source in ("run", "benchmark") else "run",
+        )
+    except Exception:  # noqa: BLE001 - never fail a visitor run for stats I/O
+        pass
+
     return last
 
 def _run_llm_rung(lang: str, meta: dict, band_level: int, *, detail: bool) -> dict:
@@ -757,20 +855,14 @@ def _run_llm_rung(lang: str, meta: dict, band_level: int, *, detail: bool) -> di
             "You are a precise program. Follow the user's specification exactly. "
             "Output only what is required - no markdown fences unless asked."
         )
-        user = source_text.strip() or (
-            "Print exactly one line to stdout:\nHello, World!\n"
-            "No quotes, no extra whitespace, no explanation."
-        )
+        user = source_text.strip() or "Print one line: Hello, World!"
         mode = "ai-engineering"
     else:
         system = (
             "You are a casual coding agent in a vibe-coding chat. "
             "Be brief. Prefer a single working line of output the user can run or see."
         )
-        user = (
-            "hey can you make a hello world for me real quick - just print Hello, World! "
-            "as the only line of your reply"
-        )
+        user = source_text.strip() or "make a hello world"
         mode = "vibe-coding"
 
     started = time.perf_counter()
@@ -1005,12 +1097,16 @@ def warm_builds() -> dict[str, str]:
         "assembly",
         "pascal",
         "c",
+        "objc",
         "cpp",
         "fortran",
         "cobol",
         "java",
+        "kotlin",
+        "dart",
         "rust",
         "go",
+        "swift",
         "csharp",
     ):
         if lang not in LANGS:
@@ -1034,6 +1130,9 @@ def tools_present() -> dict[str, str | None]:
         "lean": shutil.which("lean", path=PATH_PREFIX),
         "gcc": shutil.which("gcc", path=PATH_PREFIX),
         "g++": shutil.which("g++", path=PATH_PREFIX),
+        "swiftc": shutil.which("swiftc", path=PATH_PREFIX),
+        "kotlinc": shutil.which("kotlinc", path=PATH_PREFIX),
+        "dart": shutil.which("dart", path=PATH_PREFIX),
         "gfortran": shutil.which("gfortran", path=PATH_PREFIX),
         "cobc": shutil.which("cobc", path=PATH_PREFIX),
         "sbcl": shutil.which("sbcl", path=PATH_PREFIX),
@@ -1108,7 +1207,7 @@ def benchmark(
     rows: list[dict] = []
     for lang in langs:
         try:
-            result = run_samples(lang, samples)
+            result = run_samples(lang, samples, history_source="benchmark")
             rows.append(
                 {
                     "id": lang,

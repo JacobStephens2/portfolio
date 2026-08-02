@@ -36,8 +36,9 @@ Callers never pass source code — only language ids from the allowlist.
 | GET | `/health` | tools + hardware + language list |
 | GET | `/levels` | `catalog_levels()` |
 | GET | `/languages` | `catalog_languages()` |
-| POST | `/run/{language}?samples=N` | `run_samples(language, N)` |
-| POST | `/benchmark` | `benchmark(samples, languages?)` |
+| POST | `/run/{language}?samples=N` | `run_samples(language, N)` · also appends to run history |
+| POST | `/benchmark` | `benchmark(samples, languages?)` · each language recorded |
+| GET | `/stats` | all-visitor aggregate timings (`run_history.public_stats`) |
 
 ## Deploy
 

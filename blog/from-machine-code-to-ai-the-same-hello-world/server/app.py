@@ -105,6 +105,13 @@ def health() -> dict:
         for k, v in core.LANGS.items()
         if v.get("_build_error")
     }
+    hist_total = 0
+    try:
+        import run_history
+
+        hist_total = int(run_history.read_stats().get("total_runs") or 0)
+    except Exception:  # noqa: BLE001
+        hist_total = 0
     return {
         "status": "ok",
         "machine": core.hardware_info().get("architecture"),
@@ -113,10 +120,12 @@ def health() -> dict:
         "bands": len(core.BANDS),
         "hardware": core.hardware_info(),
         "defaultSamples": 10,
+        "totalHistoricalRuns": hist_total,
         "tools": core.tools_present(),
         "buildErrors": errors,
         "api": {
             "execute": "execute.run_samples / execute.benchmark",
+            "stats": "GET /stats - all-visitor aggregate timings",
             "http": "thin FastAPI adapter over execute.py",
         },
     }
@@ -130,6 +139,17 @@ def languages() -> list[dict]:
 @app.get("/levels")
 def levels() -> list[dict]:
     return core.catalog_levels()
+
+
+@app.get("/stats")
+def stats(response: Response) -> dict:
+    """All-visitor aggregate run history for the public table."""
+    import run_history
+
+    _no_store(response)
+    payload = run_history.public_stats()
+    payload["hardware"] = core.hardware_info()
+    return payload
 
 
 @app.post("/run/{language}")
@@ -183,6 +203,17 @@ async def benchmark_endpoint(
             status_code=504,
             detail="Benchmark exceeded the global time limit.",
         ) from exc
+
+    # Tag events from full-ladder benchmarks (run_samples already recorded each)
+    # Re-fetch aggregate for the client table payload.
+    try:
+        import run_history
+
+        hist = run_history.public_stats()
+        result = dict(result)
+        result["history"] = hist
+    except Exception:  # noqa: BLE001
+        pass
 
     _no_store(response)
     return result

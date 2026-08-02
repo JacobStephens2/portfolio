@@ -1,2 +1,2 @@
-# "Whatever the chat produced" - the artifact of a vibe coding session.
+# Artifact of: make a hello world
 print("Hello, World!")
