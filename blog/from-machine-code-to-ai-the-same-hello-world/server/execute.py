@@ -44,7 +44,7 @@ BENCH_TOTAL_TIMEOUT_SECONDS = 420
 
 PATH_PREFIX = os.environ.get(
     "HELLO_LADDER_PATH",
-    "/home/jacob/.cargo/bin:/usr/local/go/bin:/usr/bin:/bin",
+    "/home/jacob/.elan/bin:/home/jacob/.cargo/bin:/usr/local/go/bin:/usr/bin:/bin",
 )
 
 # Abstraction bands (ordered). Each band may hold multiple language variants.
@@ -52,10 +52,10 @@ BANDS: list[dict] = [
     {
         "id": "binary",
         "level": 0,
-        "title": "Binary program",
+        "title": "Absolute machine program",
         "era": "c. 1945",
-        "hides": "Hides all source. The program is an executable file.",
-        "blurb": "Stored-program computers and the opaque binary you ship.",
+        "hides": "No symbolic source - instruction and data words only.",
+        "blurb": "What people actually entered: absolute words (hex/octal), not a modern ELF shipping crate.",
     },
     {
         "id": "machine",
@@ -95,7 +95,7 @@ BANDS: list[dict] = [
         "title": "Managed / safe systems",
         "era": "1995–2015",
         "hides": "Hides more memory/safety details behind a runtime or type system.",
-        "blurb": "Java, C#, Go, Rust - GC, VMs, or ownership as compile-time machinery.",
+        "blurb": "Java, C#, Go, Rust, Lean - GC, VMs, ownership, or dependent types as machinery.",
     },
     {
         "id": "scripting",
@@ -123,20 +123,58 @@ BANDS: list[dict] = [
     },
 ]
 
+def _as_ld_build(stem: str, source_s: str) -> list[str]:
+    """Assemble + link a no-libc absolute program (as + ld)."""
+    obj = CACHE / f"{stem}.o"
+    out = CACHE / stem
+    src = PROGRAMS / source_s
+    return [
+        "sh",
+        "-c",
+        f"as -o {obj} {src} && ld -o {out} {obj}",
+    ]
+
+
 # language_id -> runnable variant metadata
 LANGS: dict[str, dict] = {
-    "binary": {
-        "title": "ELF binary",
+    "absolute": {
+        "title": "Absolute machine words",
         "year": "c. 1945",
-        "year_note": "stored-program era; this file is a modern Linux ELF",
+        "year_note": "instruction + data words people entered; Hello via syscalls, not ELF headers",
         "band": "binary",
-        "source_file": "binary-readme.txt",
-        "kind": "binary",
+        "source_file": "absolute-words.txt",
+        "kind": "absolute",
         "highlight": "plaintext",
-        "binary": "hello-binary",
-        "build": ["gcc", "-O0", "-o", str(CACHE / "hello-binary"), str(PROGRAMS / "hello.c")],
-        "run": [str(CACHE / "hello-binary")],
-        "build_source": "hello.c",
+        "binary": "hello-raw",
+        "build": _as_ld_build("hello-raw", "hello_raw.s"),
+        "run": [str(CACHE / "hello-raw")],
+        "build_source": "hello_raw.s",
+    },
+    "tabulate": {
+        "title": "Numerical job (sum 1..10)",
+        "year": "c. 1950",
+        "year_note": "tables and totals were typical early work - not greetings",
+        "band": "binary",
+        "source_file": "tabulate-words.txt",
+        "kind": "tabulate",
+        "highlight": "plaintext",
+        "binary": "hello-sum",
+        "build": _as_ld_build("hello-sum", "hello_sum.s"),
+        "run": [str(CACHE / "hello-sum")],
+        "build_source": "hello_sum.s",
+    },
+    "elf": {
+        "title": "Modern ELF packaging",
+        "year": "c. 1985",
+        "year_note": "OS file format around the program - not what operators keyed in 1945",
+        "band": "binary",
+        "source_file": "elf-note.txt",
+        "kind": "elf",
+        "highlight": "plaintext",
+        "binary": "hello-raw",
+        "build": _as_ld_build("hello-raw", "hello_raw.s"),
+        "run": [str(CACHE / "hello-raw")],
+        "build_source": "hello_raw.s",
     },
     "machine": {
         "title": "Machine code (objdump)",
@@ -319,6 +357,17 @@ LANGS: dict[str, dict] = {
         "build": ["rustc", "-O", "-o", str(CACHE / "hello-rust"), str(PROGRAMS / "hello.rs")],
         "run": [str(CACHE / "hello-rust")],
     },
+    "lean": {
+        "title": "Lean",
+        "year": "2013",
+        "year_note": "Leonardo de Moura / Microsoft Research; Lean 4 on this host (lean-lang.org)",
+        "band": "managed",
+        "source_file": "hello.lean",
+        "kind": "interp",
+        "highlight": "plaintext",
+        "build": None,
+        "run": ["lean", "--run", str(PROGRAMS / "hello.lean")],
+    },
     "bash": {
         "title": "Bash",
         "year": "1989",
@@ -446,19 +495,77 @@ def ensure_built(lang: str) -> None:
             f"build failed for {lang}: {result.stderr.strip() or result.stdout.strip()}"
         )
 
-def binary_source_view() -> str:
-    ensure_built("binary")
-    path = CACHE / "hello-binary"
+def _objdump_symbol(binary: Path, symbol: str, max_lines: int = 20) -> str:
+    raw = _run_cmd(["objdump", "-d", str(binary)], timeout=5)
+    if raw.returncode != 0:
+        return raw.stderr.strip() or "(objdump unavailable)"
+    lines = raw.stdout.splitlines()
+    out: list[str] = []
+    capture = False
+    pat = re.compile(rf"<{re.escape(symbol)}>:")
+    for line in lines:
+        if pat.search(line):
+            capture = True
+            out.append(line)
+            continue
+        if capture:
+            if line.startswith(" ") or line.startswith("\t") or re.match(r"^[0-9a-f]+:", line):
+                out.append(line)
+                if len(out) >= max_lines:
+                    break
+            elif out and not line.strip():
+                break
+            elif out and re.search(r"<.+>:", line):
+                break
+    return "\n".join(out) if out else "(symbol not found in objdump)"
+
+
+def absolute_source_view() -> str:
+    """Instruction/data words people would have cared about + live _start dump."""
+    ensure_built("absolute")
+    path = CACHE / "hello-raw"
+    readme = (PROGRAMS / "absolute-words.txt").read_text(encoding="utf-8").strip()
+    dump = _objdump_symbol(path, "_start", max_lines=16)
+    size = path.stat().st_size if path.exists() else 0
+    return (
+        f"{readme}\n\n"
+        f"# Live objdump of _start (cache/hello-raw, {size} bytes)\n"
+        f"{dump}\n"
+    )
+
+
+def tabulate_source_view() -> str:
+    ensure_built("tabulate")
+    path = CACHE / "hello-sum"
+    readme = (PROGRAMS / "tabulate-words.txt").read_text(encoding="utf-8").strip()
+    dump = _objdump_symbol(path, "_start", max_lines=24)
+    size = path.stat().st_size if path.exists() else 0
+    return (
+        f"{readme}\n\n"
+        f"# Live objdump of _start (cache/hello-sum, {size} bytes)\n"
+        f"{dump}\n"
+    )
+
+
+def elf_source_view() -> str:
+    """Modern packaging dump - crate around the absolute program, not the handwritten words."""
+    ensure_built("elf")
+    path = CACHE / "hello-raw"
     file_out = _run_cmd(["file", "-b", str(path)], timeout=5)
     size = path.stat().st_size if path.exists() else 0
     xxd = _run_cmd(["xxd", "-g", "1", "-l", "256", str(path)], timeout=5)
-    readme = (PROGRAMS / "binary-readme.txt").read_text(encoding="utf-8").strip()
+    readme = (PROGRAMS / "elf-note.txt").read_text(encoding="utf-8").strip()
     return (
         f"{readme}\n\n"
-        f"# file: cache/hello-binary ({size} bytes)\n"
+        f"# file: cache/hello-raw ({size} bytes) - minimal no-libc absolute program\n"
         f"# {file_out.stdout.strip()}\n\n"
         f"{xxd.stdout or '(xxd unavailable)'}"
     )
+
+
+def binary_source_view() -> str:
+    """Back-compat alias used by older notes; prefer absolute/elf views."""
+    return elf_source_view()
 
 def machine_hex_snippet() -> str:
     ensure_built("assembly")
@@ -600,7 +707,7 @@ def run_samples(language: str, samples: int = 10, *, detail: bool = True) -> dic
     build_lang = {
         "machine": "assembly",
         "handcode": "handcode",
-        "binary": "binary",
+        "elf": "absolute",
     }.get(language, language)
     if meta.get("build"):
         ensure_built(build_lang)
@@ -804,7 +911,7 @@ def run_language(lang: str, *, detail: bool = True) -> dict:
     build_lang = {
         "machine": "assembly",
         "handcode": "handcode",
-        "binary": "binary",
+        "elf": "absolute",
     }.get(lang, lang)
     ensure_built(build_lang)
     # Time only the execute step after build is warm.
@@ -841,24 +948,40 @@ def run_language(lang: str, *, detail: bool = True) -> dict:
             "Executed the same ELF as Assembly/Machine. The source sheet is a teaching "
             "re-enactment of absolute hex entry (front panel / paper tape style) - not a 1949 ISA."
         )
-    if lang == "binary":
-        payload["binaryView"] = binary_source_view()
+    if lang == "absolute":
+        payload["binaryView"] = absolute_source_view()
         payload["note"] = (
-            "Executed a real ELF (chmod +x style program). "
-            "Stdout is the program output; the source dump is the file format, not what you type by hand."
+            "Executed a minimal absolute program (sys_write + sys_exit, no libc). "
+            "Source shows instruction/data words + live objdump of _start - not ELF headers."
+        )
+    if lang == "tabulate":
+        payload["binaryView"] = tabulate_source_view()
+        payload["note"] = (
+            "Period-flavored numerical job: sum 1..10, print SUM=55. "
+            "Early machines spent more time on tables and totals than greetings."
+        )
+    if lang == "elf":
+        payload["binaryView"] = elf_source_view()
+        payload["note"] = (
+            "Same Hello World job as Absolute machine words. "
+            "Source dump is modern ELF packaging (crate), not what operators keyed in 1945."
         )
     return payload
 
 def _variant_payload(key: str) -> dict:
     meta = LANGS[key]
-    if key == "binary":
-        try:
-            source = binary_source_view()
-        except Exception as exc:  # noqa: BLE001
-            source = f"(binary view unavailable: {exc})"
-    else:
-        source_path = PROGRAMS / meta["source_file"]
-        source = source_path.read_text(encoding="utf-8") if source_path.exists() else ""
+    try:
+        if key == "absolute":
+            source = absolute_source_view()
+        elif key == "tabulate":
+            source = tabulate_source_view()
+        elif key == "elf":
+            source = elf_source_view()
+        else:
+            source_path = PROGRAMS / meta["source_file"]
+            source = source_path.read_text(encoding="utf-8") if source_path.exists() else ""
+    except Exception as exc:  # noqa: BLE001
+        source = f"(source view unavailable: {exc})"
     src_name = meta["source_file"]
     return {
         "id": key,
@@ -877,7 +1000,8 @@ def warm_builds() -> dict[str, str]:
     CACHE.mkdir(parents=True, exist_ok=True)
     errors: dict[str, str] = {}
     for lang in (
-        "binary",
+        "absolute",
+        "tabulate",
         "assembly",
         "pascal",
         "c",
@@ -905,6 +1029,9 @@ def known_languages() -> list[str]:
 
 def tools_present() -> dict[str, str | None]:
     return {
+        "as": shutil.which("as", path=PATH_PREFIX),
+        "ld": shutil.which("ld", path=PATH_PREFIX),
+        "lean": shutil.which("lean", path=PATH_PREFIX),
         "gcc": shutil.which("gcc", path=PATH_PREFIX),
         "g++": shutil.which("g++", path=PATH_PREFIX),
         "gfortran": shutil.which("gfortran", path=PATH_PREFIX),

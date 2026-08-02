@@ -1,0 +1,31 @@
+# Period-typical numerical job (not a greeting)
+# =============================================
+# Early stored-program work was usually *tables and totals*: ballistics,
+# census-style counts, payroll accumulators, short loops of load / add /
+# store / branch. "Hello, World!" as a cultural demo arrives much later.
+#
+# This carousel runs a tiny absolute program that does what people actually
+# did: sum integers 1 through 10 and print the total.
+#
+#   sum = 0
+#   for i = 1 .. 10: sum += i
+#   print "SUM=55"
+#
+# Instruction shape (Linux x86_64 stand-in of the same idea):
+#
+#   xor  sum, sum
+#   mov  i, 1
+# loop:
+#   add  i into sum
+#   inc  i
+#   cmp  i, 11
+#   jne  loop
+#   format digits into a buffer
+#   write buffer to stdout
+#   exit
+#
+# Run Program executes that job. Expected stdout: SUM=55
+#
+# The Absolute machine words slide next door shows a character-output job
+# (Hello World) built the same way - minimal syscalls, no libc. Modern
+# ELF packaging is a separate carousel note, not the handwritten program.

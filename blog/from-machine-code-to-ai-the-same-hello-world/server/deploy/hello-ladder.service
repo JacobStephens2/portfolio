@@ -11,7 +11,7 @@ WorkingDirectory=/var/www/stephens.page/blog/from-machine-code-to-ai-the-same-he
 EnvironmentFile=-/var/www/stephens.page/private/.env
 Environment=PYTHONUNBUFFERED=1
 Environment=PYTHONDONTWRITEBYTECODE=1
-Environment=HELLO_LADDER_PATH=/home/jacob/.cargo/bin:/usr/local/go/bin:/usr/bin:/bin
+Environment=HELLO_LADDER_PATH=/home/jacob/.elan/bin:/home/jacob/.cargo/bin:/usr/local/go/bin:/usr/bin:/bin
 Environment=HELLO_LADDER_SPEND_DIR=/var/lib/hello-ladder
 Environment=HELLO_LADDER_LLM_MODEL=gpt-5.6-luna
 Environment=HELLO_LADDER_LLM_REASONING=low

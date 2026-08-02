@@ -98,6 +98,11 @@
         .fig-head { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; justify-content: space-between; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--rule); background: var(--soft); }
         .fig-title { font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); }
         .fig-body { padding: 0.9rem; }
+        .fig-body.fig-photo { padding: 0; background: #1a1814; }
+        .fig-body.fig-photo img {
+            display: block; width: 100%; height: auto; max-height: 22rem; object-fit: contain;
+            margin: 0 auto; background: #1a1814;
+        }
         .fig-caption { padding: 0.65rem 0.9rem 0.75rem; color: var(--muted); font-size: 0.88rem; border-top: 1px dashed var(--rule); line-height: 1.55; }
         .sources { margin-top: 1rem; font-size: 0.9rem; }
         .sources h3 { font-family: 'Source Sans 3', Arial, sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 1rem 0 0.5rem; }
@@ -135,10 +140,14 @@
             display: inline-block; margin-top: 0.35rem; font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
             font-size: 0.78rem; font-weight: 700; color: var(--brand); letter-spacing: 0.02em;
         }
+        .run-btns { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; justify-content: flex-end; }
         .run-btn, .carousel-btn {
             appearance: none; border: 1px solid var(--brand); background: var(--brand); color: var(--brand-ink);
             font: inherit; font-weight: 700; font-size: 0.88rem; padding: 0.45rem 0.9rem; border-radius: 6px;
             cursor: pointer;
+        }
+        .run-btn.run-once {
+            background: var(--surface); color: var(--brand);
         }
         .run-btn:hover, .carousel-btn:hover { filter: brightness(1.05); }
         .run-btn:disabled { opacity: 0.55; cursor: wait; }
@@ -150,9 +159,13 @@
             display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem;
             padding: 0.55rem 0.95rem; border-bottom: 1px solid var(--rule); background: var(--surface);
         }
-        .carousel-meta { font-size: 0.88rem; color: var(--muted); flex: 1 1 auto; }
+        .carousel-meta { font-size: 0.88rem; color: var(--muted); flex: 1 1 auto; min-width: 0; }
         .carousel-meta strong { color: var(--ink); }
         .carousel-dots { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .carousel-arrows {
+            display: flex; flex-wrap: nowrap; align-items: center; gap: 0.35rem;
+            margin-left: auto;
+        }
         .carousel-dot {
             width: 0.55rem; height: 0.55rem; border-radius: 50%; border: 1px solid var(--rule);
             background: var(--soft); padding: 0; cursor: pointer;
@@ -247,20 +260,7 @@
             font-size: 1.15rem; font-weight: 700; color: #c8f0a0;
             border: 1px solid #4a6b3a; border-radius: 6px; background: #24301c;
         }
-        .run-result {
-            display: none; margin: 0; padding: 0.75rem 0.95rem;
-            border-bottom: 1px solid var(--rule); background: #1e2a18; color: #d8f5b0;
-            font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
-        }
-        .run-result.is-visible { display: block; }
-        .run-result.is-error { background: #2a1818; color: #f0b0b0; }
-        .run-result .rr-label {
-            font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
-            text-transform: uppercase; opacity: 0.85; margin-bottom: 0.25rem;
-        }
-        .run-result .rr-stdout { font-size: 1.35rem; font-weight: 700; line-height: 1.3; }
-        .run-result .rr-meta { font-size: 0.8rem; opacity: 0.8; margin-top: 0.25rem; }
-        /* Mobile: output above source so RESULT isn't lost under hex dumps */
+        /* Mobile: output above source so stdout isn't lost under hex dumps */
         .rung-body.two .panel-out { order: -1; }
         @media (min-width: 900px) {
             /* Default: source | output with healthy output width */
@@ -347,11 +347,11 @@
         <article class="note">
             <div class="eyebrow">Notes · Languages · Interactive</div>
             <h1 class="title">From Machine Code to AI: the Same Hello World</h1>
-            <p class="meta"><strong>August 1, 2026</strong> · ~1,450 words · 9 abstraction bands · 21 runnable variants · reading this as an AI agent? <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a> is for you</p>
+            <p class="meta"><strong>August 1, 2026</strong> · ~1,450 words · 9 abstraction bands · 24 runnable variants · reading this as an AI agent? <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a> is for you</p>
 
-            <p>Every layer of the stack can print <code>Hello, World!</code>. The point of this page is not the string - it is what each layer <em>hides</em>, <strong>when that layer roughly arrived</strong>, and that the buttons below really run allowlisted programs on this host (Linux x86_64), not a fake terminal. Source panels use <a href="https://highlightjs.org/" rel="noopener">highlight.js 11.11.1</a> (same family as <a href="/blog/the-animation-is-a-replay/">The Animation Is a Replay</a>).</p>
+            <p>Every layer of the stack can print <code>Hello, World!</code> (or, for the earliest band, a numerical total people actually computed). The point of this page is not the string - it is what each layer <em>hides</em>, <strong>when that layer roughly arrived</strong>, and that the buttons below really run allowlisted programs on this host (Linux x86_64), not a fake terminal. Source panels use <a href="https://highlightjs.org/" rel="noopener">highlight.js 11.11.1</a> (same family as <a href="/blog/the-animation-is-a-replay/">The Animation Is a Replay</a>).</p>
 
-            <p>I have been learning ARM64 Assembly on an Apple Silicon Mac in a private teach-skill workspace. Side by side, this public ladder runs the same idea from an opaque ELF binary through early high-level languages (FORTRAN, Lisp, COBOL), systems and managed languages, scripting, AI engineering, and vibe coding. Where several languages share a band, use the <strong>Prev / Next</strong> controls - manual carousel only, no autoplay. Assembly here is <strong>x86_64 Linux GAS</strong>, not the macOS ARM64 dialect from the private course.</p>
+            <p>I have been learning ARM64 Assembly on an Apple Silicon Mac in a private teach-skill workspace. Side by side, this public ladder runs the same idea from absolute machine words (and a period-style sum job) through early high-level languages (FORTRAN, Lisp, COBOL), systems and managed languages, scripting, AI engineering, and vibe coding. Where several languages share a band, use the <strong>Prev / Next</strong> controls - manual carousel only, no autoplay. Assembly here is <strong>x86_64 Linux GAS</strong>, not the macOS ARM64 dialect from the private course.</p>
 
             <p id="api-status" class="status-pill"><span class="status-dot" aria-hidden="true"></span><span class="status-text">Checking runner…</span></p>
 
@@ -359,21 +359,41 @@
             <p>Robert C. Martin has spent decades arguing that software history is a climb through successive languages and abstractions - and that craft still matters at every step. One framing of that arc shows up in his conversation with <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">Kent Dodds</a>. Bands are ordered by abstraction, not pure release-year purity (Lisp is older than C; Java sits between C and Go). Years on each variant are introduction years, not "first Hello World ever printed."</p>
 
             <ul class="timeline">
-                <li><strong>Binary program</strong> (c. 1945) - the ELF you ship. After Run, look for a green <em>RESULT</em> strip under the header (not only the hex dump).</li>
+                <li><strong>Absolute machine program</strong> (c. 1945) - instruction and data words people entered. Carousel: Hello World via syscalls, a sum 1..10 numerical job, and (later) a modern ELF packaging note.</li>
                 <li><strong>Machine code</strong> (c. 1940s) - instruction encodings. Carousel includes <em>Hand-entered hex</em> (front-panel opcodes) and <em>Punch cards (sim)</em> (80-col deck teaching sheet - not a live reader).</li>
                 <li><strong>Assembly</strong> (c. 1949) - mnemonics for those encodings.</li>
                 <li><strong>Early high-level</strong> (1957–1959) - FORTRAN, Lisp, COBOL: formulas, lists, business data.</li>
                 <li><strong>Systems</strong> (1970–1985) - Pascal, C, C++ (PascalCase comes from Pascal).</li>
-                <li><strong>Managed / safe systems</strong> (1995–2015) - Java, C#, Go, Rust.</li>
+                <li><strong>Managed / safe systems</strong> (1995–2015) - Java, C#, Go, Rust, Lean.</li>
                 <li><strong>Scripting / dynamic</strong> (1987–1995) - Bash, Perl, Python, PHP, JavaScript.</li>
                 <li><strong>AI engineering</strong> (c. 2022) - precise natural-language contracts.</li>
                 <li><strong>Vibe coding</strong> (2025) - chat as the process; accept and run.</li>
             </ul>
 
-            <p>Before FORTRAN and COBOL, people still wrote real programs - just not in those languages. ENIAC-era work used plugboards and absolute machine words; later machines took hex or octal on a front panel, paper tape, or punched cards. The jobs were numerical tables, ballistics, census-style tabulation, payroll, and short loops (load / add / store / branch), not "Hello, World!" as a cultural phrase (that demo is much later). We cannot put a 1949 console in your browser, but the Machine code band's <strong>Hand-entered hex</strong> sheet is the real opcode stream for this page's <code>main</code>, presented the way a human would have written bytes down. Run still executes the linked ELF - we do not make you toggle twenty-three switches.</p>
+            <p>Before FORTRAN and COBOL, people still wrote real programs - just not in those languages, and not by authoring an ELF file. ENIAC-era work used plugboards and absolute machine words; later machines took hex or octal on a front panel, paper tape, or punched cards. The jobs were numerical tables, ballistics, census-style tabulation, payroll, and short loops (load / add / store / branch). "Hello, World!" as a cultural phrase is much later (Kernighan &amp; Ritchie era). This page still offers a minimal Hello via raw syscalls in the first carousel slide - and a more honest period job next to it: sum 1..10 and print <code>SUM=55</code>. ELF is only a packaging footnote: the OS shipping crate, not the handwritten invoice. We cannot put a 1949 console in your browser; Run still executes a real Linux binary - we do not make you toggle twenty-three switches.</p>
+
+            <div class="fig" id="fig-punch-card">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 0 · IBM-style punch card (80 columns)</span>
+                </div>
+                <div class="fig-body fig-photo">
+                    <img
+                        src="/blog/from-machine-code-to-ai-the-same-hello-world/images/ibm-punch-card.jpg"
+                        alt="Blue IBM-style 80-column punch card with rectangular holes and printed characters along the top edge"
+                        width="1400"
+                        height="629"
+                        loading="lazy"
+                        decoding="async">
+                </div>
+                <div class="fig-caption">
+                    A classic blue 80-column punch card - source and data decks lived on paper like this, one character per column, holes for the encoding. The Machine code band's <strong>Punch cards (sim)</strong> slide is a teaching sheet for that form, not a live card reader.
+                    Photo: public domain (Wikimedia Commons; original by Gwern, horizontal crop by ArnoldReinhold).
+                    <a href="https://commons.wikimedia.org/wiki/File:Blue-punch-card-front-horiz.png" rel="noopener">Source on Wikimedia Commons</a>.
+                </div>
+            </div>
 
             <h2>Fig. 1 · Nine bands, carousel variants, real execution</h2>
-            <p>Each <strong>Run Program</strong> posts to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}?samples=10</code> by default: the server runs the allowlisted program <strong>ten times</strong> and returns the <em>mean</em> wall time (plus min/max/stdev) so a single noisy sample does not mislead. Multi-language bands use animated Prev/Next carousels (manual only). A sticky <strong>Run times</strong> tally keeps the averages you have collected this session. Full sources: <a href="https://github.com/JacobStephens2/stephens.page/tree/main/blog/from-machine-code-to-ai-the-same-hello-world/programs" rel="noopener" target="_blank"><code>programs/</code></a> · runner <a href="https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/server/app.py" rel="noopener" target="_blank"><code>server/app.py</code></a> · page <a href="https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/index.html" rel="noopener" target="_blank"><code>index.html</code></a>. Each Source panel also has <em>View on GitHub</em>.</p>
+            <p>Each band has <strong>Run once (×1)</strong> for a single execution and <strong>Run Program (×10)</strong> for a mean wall time (min/max/stdev) so one noisy sample does not mislead. Both post to <code>/blog/from-machine-code-to-ai-the-same-hello-world/api/run/{language}?samples=N</code>. Multi-language bands use animated Prev/Next carousels (manual only). A sticky <strong>Run times</strong> tally keeps the times you have collected this session. Full sources: <a href="https://github.com/JacobStephens2/stephens.page/tree/main/blog/from-machine-code-to-ai-the-same-hello-world/programs" rel="noopener" target="_blank"><code>programs/</code></a> · runner <a href="https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/server/app.py" rel="noopener" target="_blank"><code>server/app.py</code></a> · page <a href="https://github.com/JacobStephens2/stephens.page/blob/main/blog/from-machine-code-to-ai-the-same-hello-world/index.html" rel="noopener" target="_blank"><code>index.html</code></a>. Each Source panel also has <em>View on GitHub</em>.</p>
             <p id="hardware-line" class="bench-hw">Loading host hardware…</p>
 
             <div class="bench-panel" id="bench-panel">
@@ -419,7 +439,7 @@
                 <li><strong>Carousel bands</strong> - Early high-level, systems, managed, and scripting pack peers on one rung; years label each language.</li>
                 <li><strong>1950s high-level is not "toy"</strong> - FORTRAN, Lisp, and COBOL still compile and run here via gfortran, SBCL, and GnuCOBOL.</li>
                 <li><strong>C is a hinge</strong> - short source, native binary, still close enough that compiler output looks like Assembly.</li>
-                <li><strong>AI engineering vs vibe coding</strong> - both call live GPT-5.6 Luna (effort low). Engineering uses a tight prompt; vibe uses a casual chat-style prompt. Cost appears on the RESULT strip and on the dashboard.</li>
+                <li><strong>AI engineering vs vibe coding</strong> - both call live GPT-5.6 Luna (effort low). Engineering uses a tight prompt; vibe uses a casual chat-style prompt. Cost appears in the Output panel and on the dashboard.</li>
             </ul>
 
             <h2>Quiz · don't leave until one answer sticks</h2>
@@ -449,13 +469,15 @@
                     <li><span class="cite-title">Niklaus Wirth, Pascal</span> (1970) - structured programming; namesake of PascalCase. <a href="https://en.wikipedia.org/wiki/Pascal_(programming_language)" rel="noopener">Wikipedia: Pascal</a>.</li>
                     <li><span class="cite-title">CODASYL, COBOL</span> (1959) - business-oriented high-level language. <a href="https://en.wikipedia.org/wiki/COBOL" rel="noopener">Wikipedia: COBOL</a>.</li>
                     <li><span class="cite-title">ENIAC / stored-program transition</span> - plugboards and absolute machine programming before symbolic assemblers. <a href="https://en.wikipedia.org/wiki/ENIAC" rel="noopener">Wikipedia: ENIAC</a>, <a href="https://en.wikipedia.org/wiki/Stored-program_computer" rel="noopener">Stored-program computer</a>.</li>
+                    <li><span class="cite-title">IBM-style punched card (Fig. 0)</span> - public-domain photo of an 80-column card (EBCDIC character set punched). <a href="https://commons.wikimedia.org/wiki/File:Blue-punch-card-front-horiz.png" rel="noopener">Wikimedia Commons: Blue-punch-card-front-horiz.png</a> · <a href="https://en.wikipedia.org/wiki/Punched_card" rel="noopener">Wikipedia: Punched card</a>.</li>
                     <li><span class="cite-title">EDSAC and early assembly</span> - symbolic instruction entry in the late 1940s. <a href="https://en.wikipedia.org/wiki/EDSAC" rel="noopener">Wikipedia: EDSAC</a>, <a href="https://en.wikipedia.org/wiki/Assembly_language" rel="noopener">Assembly language</a>.</li>
                     <li><span class="cite-title">Arm Architecture Reference Manual (A-profile)</span> - instruction encodings (this page's live dumps are Linux amd64 via <code>objdump</code>). <a href="https://developer.arm.com/documentation/ddi0487/latest/" rel="noopener">developer.arm.com</a></li>
                     <li><span class="cite-title">Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</span> - calling conventions for AArch64 (relevant to the private Apple Silicon track). <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" rel="noopener">github.com/ARM-software/abi-aa</a></li>
                 </ul>
                 <h3>Tools demonstrated or referenced</h3>
                 <ul>
-                    <li><span class="cite-title">gcc / g++ / gfortran / cobc / sbcl / javac / rustc / go / mcs+mono / bash / perl / php / CPython / Node</span> - toolchains on the stephens.page host for allowlisted Hello Worlds.</li>
+                    <li><span class="cite-title">gcc / g++ / gfortran / cobc / sbcl / javac / rustc / go / lean / mcs+mono / bash / perl / php / CPython / Node</span> - toolchains on the stephens.page host for allowlisted Hello Worlds.</li>
+                    <li><span class="cite-title">Lean</span> - theorem prover and functional language (Lean 4 on this host). <a href="https://lean-lang.org/" rel="noopener">lean-lang.org</a></li>
                     <li><span class="cite-title">GnuCOBOL</span> - free COBOL compiler used for the COBOL variant. <a href="https://gnucobol.sourceforge.io/" rel="noopener">gnucobol.sourceforge.io</a></li>
                     <li><span class="cite-title">SBCL</span> - Steel Bank Common Lisp for the Lisp variant. <a href="https://www.sbcl.org/" rel="noopener">sbcl.org</a></li>
                     <li><span class="cite-title">HelloSilicon</span> - Apple Silicon assembly examples (contrast with this page's Linux x86_64 GAS). <a href="https://github.com/below/HelloSilicon" rel="noopener">github.com/below/HelloSilicon</a></li>
@@ -502,10 +524,14 @@
 
   var FALLBACK_LEVELS = [
     {
-      id: 'binary', level: 0, title: 'Binary program', era: 'c. 1945',
-      hides: 'Hides all source. The program is an executable file.',
-      blurb: 'Stored-program computers and the opaque binary you ship.',
-      variants: [{ id: 'binary', title: 'ELF binary', year: 'c. 1945', yearNote: '', sourceFile: 'binary-readme.txt', highlight: 'plaintext', source: '# ELF dump loads from API when online' }]
+      id: 'binary', level: 0, title: 'Absolute machine program', era: 'c. 1945',
+      hides: 'No symbolic source - instruction and data words only.',
+      blurb: 'What people actually entered: absolute words (hex/octal), not a modern ELF shipping crate.',
+      variants: [
+        { id: 'absolute', title: 'Absolute machine words', year: 'c. 1945', yearNote: 'instruction + data words; Hello via syscalls', sourceFile: 'absolute-words.txt', highlight: 'plaintext', source: '# Absolute words load from API when online' },
+        { id: 'tabulate', title: 'Numerical job (sum 1..10)', year: 'c. 1950', yearNote: 'tables and totals', sourceFile: 'tabulate-words.txt', highlight: 'plaintext', source: '' },
+        { id: 'elf', title: 'Modern ELF packaging', year: 'c. 1985', yearNote: 'OS crate, not handwritten program', sourceFile: 'elf-note.txt', highlight: 'plaintext', source: '' }
+      ]
     },
     {
       id: 'machine', level: 1, title: 'Machine code', era: 'c. 1940s',
@@ -546,11 +572,12 @@
     {
       id: 'managed', level: 5, title: 'Managed / safe systems', era: '1995–2015',
       hides: 'Hides more memory/safety details behind a runtime or type system.',
-      blurb: 'Java, C#, Go, Rust.',
+      blurb: 'Java, C#, Go, Rust, Lean.',
       variants: [
         { id: 'java', title: 'Java', year: '1995', sourceFile: 'Hello.java', highlight: 'java', source: '' },
         { id: 'csharp', title: 'C#', year: '2000', sourceFile: 'hello.cs', highlight: 'csharp', source: '' },
         { id: 'go', title: 'Go', year: '2009', sourceFile: 'hello.go', highlight: 'go', source: '' },
+        { id: 'lean', title: 'Lean', year: '2013', sourceFile: 'hello.lean', highlight: 'plaintext', source: '' },
         { id: 'rust', title: 'Rust', year: '2015', sourceFile: 'hello.rs', highlight: 'rust', source: '' }
       ]
     },
@@ -694,7 +721,6 @@
     var n = band.variants.length;
     var v = band.variants[idx];
     var track = article.querySelector('.carousel-track');
-    var runBtn = article.querySelector('.run-btn');
     var meta = article.querySelector('.carousel-meta');
     var idLine = article.querySelector('.rung-id');
     if (track) {
@@ -707,7 +733,9 @@
         track.style.transition = '';
       }
     }
-    if (runBtn) runBtn.setAttribute('data-lang', v.id);
+    article.querySelectorAll('.run-btn').forEach(function (btn) {
+      btn.setAttribute('data-lang', v.id);
+    });
     if (meta) {
       meta.innerHTML = '<strong>' + esc(v.title) + '</strong>' +
         '<span class="variant-year">' + esc(v.year || '') + '</span>' +
@@ -722,14 +750,14 @@
       var i = parseInt(dot.getAttribute('data-idx'), 10);
       dot.setAttribute('aria-current', i === idx ? 'true' : 'false');
     });
-    // clear prior result when changing language
-    var rr = article.querySelector('.run-result');
-    if (rr) { rr.className = 'run-result'; rr.replaceChildren(); }
+    // clear prior output when changing language
     var out = article.querySelector('.out');
+    var outLabel = article.querySelector('.panel-out .panel-label');
     if (out) {
       clearTerm(out);
-      termLine(out, 'dim', 'Click Run Program - mean of ' + DEFAULT_SAMPLES + ' server runs.');
+      termLine(out, 'dim', 'Click Run once (×1) or Run Program (×' + DEFAULT_SAMPLES + ').');
     }
+    if (outLabel) outLabel.textContent = 'Output (×1 or mean of ×' + DEFAULT_SAMPLES + ')';
   }
 
   function renderLevels(levels) {
@@ -756,7 +784,10 @@
             '<div class="rung-era">Introduced · ' + esc(band.era) + '</div>' +
             '<div class="rung-hides">' + esc(band.hides || band.blurb || '') + '</div>' +
           '</div>' +
-          '<button type="button" class="run-btn" data-lang="' + esc(v.id) + '">Run Program (×' + DEFAULT_SAMPLES + ')</button>' +
+          '<div class="run-btns">' +
+            '<button type="button" class="run-btn run-once" data-lang="' + esc(v.id) + '" data-samples="1">Run once (×1)</button>' +
+            '<button type="button" class="run-btn" data-lang="' + esc(v.id) + '" data-samples="' + DEFAULT_SAMPLES + '">Run Program (×' + DEFAULT_SAMPLES + ')</button>' +
+          '</div>' +
         '</div>';
 
       var nav = '';
@@ -768,16 +799,18 @@
         }).join('');
         nav =
           '<div class="carousel-nav">' +
-            '<button type="button" class="carousel-btn" data-band="' + esc(band.id) +
-              '" data-dir="-1" aria-label="Previous language">‹</button>' +
             '<div class="carousel-meta"><strong>' + esc(v.title) + '</strong>' +
               '<span class="variant-year">' + esc(v.year || '') + '</span>' +
               (v.yearNote ? ' · ' + esc(v.yearNote) : '') +
               (v.sourceFile ? ' · ' + fileLink(v.sourceFile, v.sourceFile) : '') +
             '</div>' +
             '<div class="carousel-dots">' + dots + '</div>' +
-            '<button type="button" class="carousel-btn" data-band="' + esc(band.id) +
-              '" data-dir="1" aria-label="Next language">›</button>' +
+            '<div class="carousel-arrows">' +
+              '<button type="button" class="carousel-btn" data-band="' + esc(band.id) +
+                '" data-dir="-1" aria-label="Previous language">‹</button>' +
+              '<button type="button" class="carousel-btn" data-band="' + esc(band.id) +
+                '" data-dir="1" aria-label="Next language">›</button>' +
+            '</div>' +
           '</div>';
       } else {
         nav =
@@ -792,7 +825,10 @@
 
       var outFirst = (band.id === 'binary' || band.id === 'machine') ? ' out-first' : '';
       var slides = band.variants.map(function (vv) {
-        var label = vv.id === 'binary' ? ' (ELF bytes)' : (vv.id === 'handcode' ? ' (hand-entry sheet)' : '');
+        var label = vv.id === 'absolute' ? ' (absolute words)'
+          : (vv.id === 'tabulate' ? ' (numerical job)'
+          : (vv.id === 'elf' ? ' (ELF packaging)'
+          : (vv.id === 'handcode' ? ' (hand-entry sheet)' : '')));
         var ghref = vv.githubUrl || ghUrl(vv.sourceFile);
         return '<div class="carousel-slide" data-lang="' + esc(vv.id) + '">' +
           '<div class="panel-label" style="padding:0.55rem 0.75rem 0">Source' + label +
@@ -803,11 +839,10 @@
       }).join('');
 
       var body =
-        '<div class="run-result" aria-live="polite"></div>' +
         '<div class="rung-body two' + outFirst + '">' +
           '<div class="panel-out">' +
-            '<div class="panel-label">Output (mean of ' + DEFAULT_SAMPLES + ' server runs)</div>' +
-            '<div class="term out"><span class="line dim">Click Run Program - stdout + average ms appear here.</span></div>' +
+            '<div class="panel-label">Output (×1 or mean of ×' + DEFAULT_SAMPLES + ')</div>' +
+            '<div class="term out"><span class="line dim">Click Run once (×1) or Run Program (×' + DEFAULT_SAMPLES + ') - stdout + timing appear here.</span></div>' +
           '</div>' +
           '<div class="panel-src">' +
             '<div class="carousel-viewport"><div class="carousel-track">' + slides + '</div></div>' +
@@ -834,7 +869,8 @@
 
     ladderEl.querySelectorAll('.run-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        runLang(btn.getAttribute('data-lang'), btn);
+        var samples = parseInt(btn.getAttribute('data-samples'), 10) || DEFAULT_SAMPLES;
+        runLang(btn.getAttribute('data-lang'), btn, samples);
       });
     });
     ladderEl.querySelectorAll('.carousel-btn[data-dir]').forEach(function (btn) {
@@ -894,45 +930,17 @@
     renderTally();
   }
 
-  function setRunResult(rung, ok, stdout, meta, costLine) {
-    var el = rung.querySelector('.run-result');
-    if (!el) return;
-    el.className = 'run-result is-visible' + (ok ? '' : ' is-error');
-    el.replaceChildren();
-    var lab = document.createElement('div');
-    lab.className = 'rr-label';
-    lab.textContent = ok ? 'Result (stdout)' : 'Result (error)';
-    var out = document.createElement('div');
-    out.className = 'rr-stdout';
-    out.textContent = stdout == null || stdout === '' ? '(empty)' : String(stdout);
-    el.appendChild(lab);
-    el.appendChild(out);
-    if (meta) {
-      var m = document.createElement('div');
-      m.className = 'rr-meta';
-      m.textContent = meta;
-      el.appendChild(m);
-    }
-    if (costLine) {
-      var c = document.createElement('div');
-      c.className = 'rr-meta';
-      c.textContent = costLine;
-      el.appendChild(c);
-    }
-    try { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { /* ignore */ }
-  }
-
-  function runLang(id, btn) {
+  function runLang(id, btn, samples) {
     var rung = btn.closest('.rung');
     if (!rung || !btn) return;
     var out = rung.querySelector('.out');
     if (!out) return;
-    btn.disabled = true;
+    samples = Math.max(1, parseInt(samples, 10) || DEFAULT_SAMPLES);
+    var runBtns = rung.querySelectorAll('.run-btn');
+    runBtns.forEach(function (b) { b.disabled = true; });
     clearTerm(out);
-    termLine(out, 'dim', 'Running…');
-    var rr = rung.querySelector('.run-result');
-    if (rr) { rr.className = 'run-result'; rr.replaceChildren(); }
-    fetch(API + '/run/' + encodeURIComponent(id) + '?samples=' + DEFAULT_SAMPLES, { method: 'POST', headers: { 'Accept': 'application/json' } })
+    termLine(out, 'dim', samples === 1 ? 'Running once…' : 'Running ' + samples + ' times…');
+    fetch(API + '/run/' + encodeURIComponent(id) + '?samples=' + samples, { method: 'POST', headers: { 'Accept': 'application/json' } })
       .then(function (res) {
         return res.json().then(function (body) {
           return { ok: res.ok, status: res.status, body: body };
@@ -945,12 +953,11 @@
         if (!result.ok) {
           var err = detailText(result.body && (result.body.detail || result.body.message)) || ('HTTP ' + result.status);
           termLine(out, 'bad', 'Error: ' + err);
-          setRunResult(rung, false, err, '');
           return;
         }
         var b = result.body || {};
         var display = (b.displayStdout != null ? b.displayStdout : (b.stdout || '')).toString().replace(/\n$/, '');
-        termLine(out, 'dim', '$ POST /run/' + id);
+        termLine(out, 'dim', '$ POST /run/' + id + '?samples=' + samples);
         if (b.year) termLine(out, 'dim', '# introduced ' + b.year);
         if (b.command) termLine(out, 'dim', '# ' + JSON.stringify(b.command));
         if (display) {
@@ -980,22 +987,27 @@
           });
           termLine(out, 'dim', '…');
         }
-        if (b.binaryView) termLine(out, 'dim', 'ELF packaging dump is in the Source panel - stdout is above.');
+        if (b.binaryView) {
+          var viewHint = id === 'elf'
+            ? 'ELF packaging dump is in the Source panel - stdout is the program output above.'
+            : (id === 'tabulate'
+              ? 'Numerical job sheet + objdump are in the Source panel - stdout is above.'
+              : 'Absolute words + objdump are in the Source panel - stdout is above.');
+          termLine(out, 'dim', viewHint);
+        }
         if (b.prompt) {
           termLine(out, 'dim', '--- prompt ---');
           String(b.prompt).split('\n').forEach(function (ln) { termLine(out, 'dim', ln); });
         }
         if (b.session) termLine(out, 'dim', 'Vibe session transcript is in the Source panel.');
-        var costLine = '';
         if (b.costUsd != null) {
-          costLine = 'This request ~$' + Number(b.costUsd).toFixed(6);
+          var costLine = 'This request ~$' + Number(b.costUsd).toFixed(6);
           if (b.spendTotalUsd != null) {
             costLine += ' · ladder LLM total $' + Number(b.spendTotalUsd).toFixed(4);
           }
           if (b.model) costLine += ' · ' + b.model + (b.reasoningEffort ? ' (effort=' + b.reasoningEffort + ')' : '');
           termLine(out, 'dim', costLine);
         }
-        setRunResult(rung, true, display || '(empty)', meta, costLine);
         recordTime(id, b.title || id, b.year || '', Number(b.avgMs != null ? b.avgMs : b.wallMs), b.samples || 1);
         try { out.scrollTop = 0; } catch (e2) { /* ignore */ }
       })
@@ -1003,10 +1015,9 @@
         clearTerm(out);
         var msg = 'Network error: ' + (err && err.message ? err.message : String(err));
         termLine(out, 'bad', msg);
-        setRunResult(rung, false, msg, '');
       })
       .finally(function () {
-        btn.disabled = false;
+        runBtns.forEach(function (b) { b.disabled = false; });
       });
   }
 
