@@ -518,11 +518,22 @@
             color: var(--brand-ink);
         }
         .panel-run .term { min-height: 5rem; max-height: 16rem; }
+        /* Room for stacked LLM runs (non-determinism history) */
+        .rung[data-band="ai"] .panel-run .term { max-height: min(36rem, 70vh); }
+        .term .stdout-big.llm-run-out {
+            font-size: 0.95rem; font-weight: 600; margin: 0.2rem 0 0.65rem;
+            white-space: pre-wrap; overflow-wrap: anywhere;
+        }
         .panel-run .run-result {
             border: 1px solid var(--rule);
             border-radius: 6px;
             margin: 0 0 0.5rem;
         }
+        .panel-run .run-result .rr-stdout + .rr-stdout {
+            margin-top: 0.55rem; padding-top: 0.55rem;
+            border-top: 1px dashed var(--rule);
+        }
+        .panel-run .run-result .rr-stdout.is-error { color: var(--bad); }
         .rung-body.source-primary {
             display: grid;
             gap: 0.65rem;
@@ -676,6 +687,7 @@
         .timeline { border-left: 2px solid var(--rule); margin: 0.5rem 0 1rem 0.35rem; padding-left: 1rem; }
         .timeline li { margin-bottom: 0.55rem; }
         .quiz { border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; margin: 1rem 0; background: var(--soft); }
+        .quiz + .quiz { margin-top: 0.85rem; }
         .quiz-q { font-weight: 700; margin-bottom: 0.6rem; }
         .quiz-options { display: grid; gap: 0.45rem; }
         .quiz button {
@@ -755,8 +767,8 @@
             <ul class="timeline">
                 <li><strong>Absolute machine program</strong> (c. 1945) - ENIAC: plugboards, ~6,000 switches, no stored program. Same season: Turing's ACE design and program library at NPL; von Neumann's EDVAC draft (June 1945). Pain before: forty-hour hand trajectories and differential analyzers that were a nightmare to reconfigure. Pivot: stop rewiring the machine; put the program in memory.</li>
                 <li><strong>Machine code</strong> (c. late 1940s) - instruction words as data: Manchester Baby (21 June 1948), paper tape, punched cards, hand assembly sheets. Pain of plugboards: no portable program, days of physical setup. Pivot: let the machine translate names into those numbers.</li>
-                <li><strong>Assembly</strong> (c. 1949) - EDSAC (6 May 1949) and its &quot;initial orders&quot;; Wilkes/Wheeler/Gill's 1951 textbook; subroutines as social technology. First jobs: tables of squares and primes, not greetings.</li>
-                <li><strong>Early high-level</strong> (1957–1959) - FORTRAN (Backus: &quot;hand-to-hand combat with the machine&quot;), Lisp (McCarthy), COBOL (Hopper/CODASYL). Pain: scarce people who could win that combat; science needed formulas, business needed English-like records.</li>
+                <li><strong>Assembly</strong> (c. 1949) - EDSAC (6 May 1949) and its &quot;initial orders&quot;; Wilkes/Wheeler/Gill's 1951 textbook; subroutines as social technology. Mnemonics for opcodes, but <strong>registers and calls still named in the source</strong>. First jobs: tables of squares and primes, not greetings.</li>
+                <li><strong>Early high-level</strong> (1957–1959) - FORTRAN (Backus: &quot;hand-to-hand combat with the machine&quot;), Lisp (McCarthy), COBOL (Hopper/CODASYL). Pain: scarce people who could win that combat; science needed formulas, business needed English-like records. <strong>Registers disappear from the source</strong> - the compiler places values in them.</li>
                 <li><strong>Systems</strong> (1970–1985) - Pascal (Wirth), C (Ritchie/Thompson after Multics), Objective-C (Cox/Stepstone 1984; NeXT/Apple), C++ (Stroustrup). Pain: high-level languages that could not build kernels; assembly that did not scale. <strong>Here the greeting freezes</strong> - Kernighan B 1972 / C 1974 / K&amp;R 1978.</li>
                 <li><strong>Managed / safe systems</strong> (1995–2015) - Java, C#, Kotlin, Dart, Go, Swift, Rust, Lean. Pain: portable buffer overflows and use-after-free. Thesis: make the language refuse whole classes of disaster (GC, ownership, proofs).</li>
                 <li><strong>Scripting / dynamic</strong> (1987–1995) - Bash, Perl, Python, PHP, JavaScript. Parallel branch: glue, the web, programmer time over peak performance. (Overlaps managed systems on the calendar.)</li>
@@ -768,6 +780,11 @@
                 <li><strong>Capability</strong> - a stored-program machine with character or teletype output (EDSAC-class, late 1940s onward) could already print any string if someone encoded it. Nobody treated that as the first-program ritual yet.</li>
                 <li><strong>Convention</strong> - Kernighan's 1972 B tutorial is the oldest surviving well-dated written <code>hello, world</code>; K&amp;R 1978 made it universal. The earliest carousel therefore pairs a modern Hello via syscalls (ladder continuity, labeled as such) with a period-honest sum 1..10 job that prints <code>SUM=55</code>. ELF is packaging - the OS shipping crate, not the handwritten invoice.</li>
             </ul>
+
+            <h3>Registers - named workspaces inside the CPU</h3>
+            <p>A <strong>register</strong> is a tiny, named storage slot <em>inside the processor</em>, not in main memory. The CPU can only do arithmetic, compare, or jump using values it can reach quickly - almost always values sitting in registers (or immediate constants wired into the instruction). RAM holds the bulk of the program and data; registers are the handful of working hands. On this page's Assembly rung (Linux x86_64) you see names like <code>%rax</code>, <code>%rdi</code>, <code>%rsi</code>, <code>%rdx</code>: load a number into a register, then ask the chip to treat that register as &quot;which system call,&quot; &quot;which file descriptor,&quot; &quot;where the string lives,&quot; or &quot;how many bytes.&quot; Machine code is the same plan as opaque bit patterns; assembly is the same plan with human names for those slots and ops.</p>
+            <p><strong>Not hiding registers</strong> means your source still forces you to pick those slots - which register holds the pointer, which holds the length, which calling convention the next instruction expects. You are writing against a specific ISA's register file. That is why Assembly and hand-entered hex feel verbose next to Python: the work of placing values is still in the text.</p>
+            <p><strong>Hiding registers</strong> means the language you write no longer mentions them. FORTRAN's <code>write</code>, C's <code>puts</code>, and Python's <code>print</code> still <em>use</em> registers when the machine actually runs - a compiler or interpreter assigns them - but the source no longer names <code>%rax</code>. You trade visibility and fine control for fewer decisions and text that is not tied to one chip's register set. C sits in the middle of that trade: you rarely name registers, yet you still think in addresses, stack frames, and calling conventions - the register story with the labels sanded off. Each higher rung on this ladder hides more of that story (memory layout, then runtime safety, then almost the entire machine behind a prompt).</p>
 
             <div class="fig" id="fig-punch-card">
                 <div class="fig-head">
@@ -877,25 +894,36 @@
             <h2>What you should notice when you read the sources</h2>
             <ul>
                 <li><strong>Each rung answers the prior pain</strong> - the story block on the ladder is not decoration; it is why that source shape exists.</li>
+                <li><strong>Registers mark a hinge</strong> - Assembly still names the CPU's working slots (<code>%rax</code> and friends on this host). High-level rungs hide that bookkeeping; the machine still uses registers, but your file does not.</li>
                 <li><strong>Source shape first</strong> - Fig. 1 is the museum wall; Fig. 2 is the loupe; Fig. 3 is the full label next to the artifact.</li>
                 <li><strong>stdout mostly converges</strong> - later variants print the greeting; the absolute sum slide prints <code>SUM=55</code> on purpose (period honesty).</li>
                 <li><strong>Capability vs convention</strong> - machines could print characters decades before Kernighan made &quot;hello, world&quot; the ritual (B tutorial 1972; K&amp;R 1978).</li>
                 <li><strong>C freezes the greeting</strong> - systems band is where the demo program stabilizes for half a century; earlier bands should not pretend 1945 had teletype Hello World culture.</li>
                 <li><strong>Scripting is a parallel branch</strong> - 1987–1995 glue/web culture, not a strict sequel after Rust.</li>
-                <li><strong>AI Engineering is one layer, two styles</strong> - tight contract vs <code>say hello world</code> on the same L7 path (live GPT-5.6 Luna). Cost appears in the Output panel.</li>
+                <li><strong>AI Engineering is one layer, two styles</strong> - tight contract vs <code>say hello world</code> on the same L7 path (live GPT-5.6 Luna). Click <strong>Run once</strong> several times: this session keeps every reply so you can see non-determinism. Cost appears in the Output panel.</li>
             </ul>
 
             <h2>What stays constant</h2>
             <p>What stays constant is not syntax, media, or even the definition of a &quot;program.&quot; It is the desire to make a machine do our bidding with less friction and more leverage - and the recurring discovery that yesterday's leverage is today's bottleneck. ENIAC's programmers fought cables; Backus fought opcodes; Ritchie fought non-portable assembly; Gosling fought undefined behavior; Eich fought a static web; AI engineers fight non-determinism and evals. An AI agent's tool call may generate Python that sits on a C runtime that emits machine code that a loader maps into the same kind of memory the Manchester Baby first proved in 1948. &quot;Hello world&quot; changes costume - trajectory table, squares tape, Fortran tables, K&amp;R <code>printf</code>, <code>println!</code>, <code>echo</code>, system prompt - but it is always the smallest complete proof that the current layer of the stack is alive and listening.</p>
 
-            <h2>Quiz · don't leave until one answer sticks</h2>
-            <div class="quiz" data-answer="2" data-explain="Correct - the browser only sends a language key; full sources are the allowlisted files under programs/ on GitHub and the server.">
-                <p class="quiz-q">When you click Run Program, what does the browser send to the server?</p>
+            <h2>Quiz · what changed, and what did not</h2>
+            <div class="quiz" data-answer="2" data-explain="Correct - the ladder is a climb of abstraction: each layer hides more of the machine (plugboards → opcodes → mnemonics → compilers → runtimes → prompts) because the prior level's pain became unbearable. Syntax fashion and brand names are symptoms of that climb, not the point.">
+                <p class="quiz-q">1. What has mainly changed about programming over time, on this page's account?</p>
                 <div class="quiz-options">
-                    <button type="button" data-choice="0">The full source code of that rung</button>
-                    <button type="button" data-choice="1">A shell command you typed</button>
-                    <button type="button" data-choice="2">Only an allowlisted language identifier</button>
-                    <button type="button" data-choice="3">Your GitHub token for CI builds</button>
+                    <button type="button" data-choice="0">The physics of the silicon: CPUs no longer change bits in memory</button>
+                    <button type="button" data-choice="1">Programmers stopped caring whether the program actually runs</button>
+                    <button type="button" data-choice="2">How much of the machine is hidden, and at which layer people write</button>
+                    <button type="button" data-choice="3">The idea that a first program should prove the current layer works</button>
+                </div>
+                <p class="quiz-feedback" aria-live="polite"></p>
+            </div>
+            <div class="quiz" data-answer="1" data-explain="Correct - costumes change (tables of squares, K&amp;R printf, vibe prompts), but the job is still to bend a machine with less friction than the level below, and each new leverage eventually becomes the next bottleneck. Everything still bottoms out in addressable machine state.">
+                <p class="quiz-q">2. What has mainly <em>not</em> changed about programming over time, on this page's account?</p>
+                <div class="quiz-options">
+                    <button type="button" data-choice="0">Which exact Hello World string is considered correct</button>
+                    <button type="button" data-choice="1">The drive for leverage over the machine - and that yesterday's leverage becomes today's bottleneck</button>
+                    <button type="button" data-choice="2">That every first program has always been a natural-language prompt to a model</button>
+                    <button type="button" data-choice="3">That programmers never needed libraries, subroutines, or shared craft</button>
                 </div>
                 <p class="quiz-feedback" aria-live="polite"></p>
             </div>
@@ -1009,13 +1037,13 @@
     },
     {
       id: 'assembly', level: 2, title: 'Assembly', era: 'c. 1949',
-      hides: 'Hides bit encodings; still names registers and calls (EDSAC initial orders, 1949).',
+      hides: 'Hides bit encodings; still names registers (CPU working slots) and calls - EDSAC initial orders, 1949.',
       blurb: 'Symbolic mnemonics. Host dialect: x86_64 Linux GAS (not 1949 EDSAC ISA).',
       variants: [{ id: 'assembly', title: 'Assembly (x86_64 Linux)', year: 'c. 1949', sourceFile: 'hello.s', highlight: 'x86asm', source: '' }]
     },
     {
       id: 'early-hl', level: 3, title: 'Early high-level', era: '1957–1959',
-      hides: 'Hides registers; formulas, business data, or lists.',
+      hides: 'Hides registers - you write formulas, business data, or lists; the compiler places values in CPU slots.',
       blurb: 'FORTRAN, Lisp, COBOL.',
       variants: [
         { id: 'fortran', title: 'FORTRAN', year: '1957', sourceFile: 'hello.f90', highlight: 'fortran', source: '' },
@@ -1066,7 +1094,7 @@
       hides: 'Code behind a natural-language interface to a model.',
       blurb: 'Same machinery, two disciplines: tight contract vs casual vibe prompt.',
       variants: [
-        { id: 'ai', title: 'Tight contract', year: '2022', sourceFile: 'ai-prompt.txt', highlight: 'plaintext', source: 'Print one line: Hello, World!\n' },
+        { id: 'ai', title: 'Tight contract', year: '2022', sourceFile: 'ai-prompt.txt', highlight: 'plaintext', source: 'Create a program that prints one line, "Hello, World!", and tell me what language you used to do so, as well as the reason for picking that language\n' },
         { id: 'vibe', title: 'Vibe coding', year: '2025', sourceFile: 'vibe-session.md', highlight: 'plaintext', source: 'say hello world\n' }
       ]
     }
@@ -1246,7 +1274,14 @@
     var out = article.querySelector('.out');
     if (out) {
       clearTerm(out);
-      termLine(out, 'dim', 'Optional: Run once (×1) or Run Program (×' + DEFAULT_SAMPLES + ') to verify on this host.');
+      if (typeof isLlmLang === 'function' && isLlmLang(v.id) &&
+          llmRunHistory[v.id] && llmRunHistory[v.id].length) {
+        renderLlmHistory(out, rr, v.id);
+      } else {
+        termLine(out, 'dim', isLlmLang(v.id)
+          ? 'Optional: Run once several times - this session keeps each LLM reply so you can compare non-determinism.'
+          : 'Optional: Run once (×1) or Run Program (×' + DEFAULT_SAMPLES + ') to verify on this host.');
+      }
     }
   }
 
@@ -1383,12 +1418,12 @@
     },
     assembly: {
       lead: 'Cambridge did not invent the stored program - but it invented programming as a craft you could teach from a book.',
-      body: 'EDSAC (Maurice Wilkes) ran its first program on 6 May 1949 - a table of squares - with "initial orders" that turned symbolic paper tape into binary words. Wilkes, Wheeler, and Gill\'s 1951 textbook made subroutines and libraries a social technology (the Wheeler jump for returns). Period-honest output: squares and primes, not greetings.',
-      pivot: 'Assembly made machine code human-editable - but scientists still wanted formulas, and business wanted English. The 1950s answered both.'
+      body: 'EDSAC (Maurice Wilkes) ran its first program on 6 May 1949 - a table of squares - with "initial orders" that turned symbolic paper tape into binary words. Assembly hides the bit patterns of each opcode but still names the machine\'s registers - the small named workspaces inside the CPU where values must sit for the next instruction. On this host that looks like %rax / %rdi / lea / call. Wilkes, Wheeler, and Gill\'s 1951 textbook made subroutines and libraries a social technology (the Wheeler jump for returns). Period-honest output: squares and primes, not greetings.',
+      pivot: 'Assembly made machine code human-editable - but scientists still wanted formulas without picking registers by hand, and business wanted English. The 1950s answered both by hiding the register file behind a compiler.'
     },
     'early-hl': {
       lead: 'By the mid-1950s the bottleneck was no longer the machine - it was the cost of people who could win hand-to-hand combat with it.',
-      body: 'John Backus\'s FORTRAN (IBM 704, 1957) turned "hand-to-hand combat with the machine" into formula translation - skeptics said it could never match hand assembly; the first optimizing compiler made adoption political as well as technical. McCarthy\'s Lisp (1958–) brought lists, recursion, and garbage collection for symbolic AI. COBOL (CODASYL 1959, Hopper\'s FLOW-MATIC line) aimed English-like business records at people who were not mathematicians. Period-honest demos: numeric tables, S-expressions, reports - the greeting ritual had not frozen yet.',
+      body: 'John Backus\'s FORTRAN (IBM 704, 1957) turned "hand-to-hand combat with the machine" into formula translation - you no longer name registers in the source; the compiler allocates them. Skeptics said it could never match hand assembly; the first optimizing compiler made adoption political as well as technical. McCarthy\'s Lisp (1958–) brought lists, recursion, and garbage collection for symbolic AI. COBOL (CODASYL 1959, Hopper\'s FLOW-MATIC line) aimed English-like business records at people who were not mathematicians. Period-honest demos: numeric tables, S-expressions, reports - the greeting ritual had not frozen yet.',
       pivot: 'High-level languages won the lab and the payroll office - but kernels still needed something close enough to the metal to replace assembly without becoming unmaintainable.'
     },
     systems: {
@@ -1408,7 +1443,7 @@
     },
     ai: {
       lead: 'For seventy-five years the contract was: you specify the steps. After November 2022, a surprising amount of the time the contract became: you specify the outcome.',
-      body: 'ChatGPT launched 30 Nov 2022 and made instruction-following models a default interface. In June 2023 Shawn Wang (swyx) named "the AI Engineer" - software people who ship on the other side of foundation-model APIs rather than training models from scratch. Programming became prompt contracts, tools, RAG, harnesses, and evals. Pain: either specify every edge case in code, or staff a research team. Carousel peers: tight contract ("Print one line: Hello, World!") vs vibe ("say hello world") - same capability surface, different discipline.',
+      body: 'ChatGPT launched 30 Nov 2022 and made instruction-following models a default interface. In June 2023 Shawn Wang (swyx) named "the AI Engineer" - software people who ship on the other side of foundation-model APIs rather than training models from scratch. Programming became prompt contracts, tools, RAG, harnesses, and evals. Pain: either specify every edge case in code, or staff a research team. Carousel peers: tight contract (create a program that prints one line, "Hello, World!", name the language, and say why) vs vibe ("say hello world") - same capability surface, different discipline.',
       pivot: 'From plugboards to prompts, each layer still bottoms out in machine state changes. The job keeps migrating toward intent and invariants - and away from manually placing every bit.'
     }
   };
@@ -1811,6 +1846,20 @@
         setCarousel(bandId, parseInt(btn.getAttribute('data-idx'), 10) || 0, levelsCache || levels, true);
       });
     });
+
+    // Restore AI Engineering / vibe LLM run history for the active peer
+    levels.forEach(function (band) {
+      if (band.id !== 'ai') return;
+      var article = document.getElementById('band-ai');
+      if (!article) return;
+      var v = activeVariant(band);
+      if (!isLlmLang(v.id) || !llmRunHistory[v.id] || !llmRunHistory[v.id].length) return;
+      renderLlmHistory(
+        article.querySelector('.out'),
+        article.querySelector('.run-result'),
+        v.id
+      );
+    });
   }
 
   function termLine(out, cls, text) {
@@ -1831,6 +1880,113 @@
   }
 
   var runTimes = {}; // languageId -> { title, ms, year }
+
+  // AI Engineering / vibe: keep successive LLM replies this session (non-determinism).
+  var LLM_LANG_IDS = { ai: true, vibe: true };
+  var LLM_HISTORY_KEY = 'hello-ladder-llm-runs-v1';
+  var LLM_HISTORY_MAX = 20;
+  var llmRunHistory = {};
+
+  function isLlmLang(id) {
+    return !!(id && LLM_LANG_IDS[id]);
+  }
+
+  function loadLlmHistory() {
+    try {
+      var raw = sessionStorage.getItem(LLM_HISTORY_KEY);
+      if (!raw) return;
+      var parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') llmRunHistory = parsed;
+    } catch (e) { /* ignore */ }
+  }
+
+  function saveLlmHistory() {
+    try {
+      sessionStorage.setItem(LLM_HISTORY_KEY, JSON.stringify(llmRunHistory));
+    } catch (e) { /* ignore quota */ }
+  }
+
+  function pushLlmRun(id, entry) {
+    if (!llmRunHistory[id]) llmRunHistory[id] = [];
+    llmRunHistory[id].push(entry);
+    if (llmRunHistory[id].length > LLM_HISTORY_MAX) {
+      llmRunHistory[id] = llmRunHistory[id].slice(-LLM_HISTORY_MAX);
+    }
+    saveLlmHistory();
+  }
+
+  function renderLlmHistory(out, rr, id) {
+    var runs = llmRunHistory[id] || [];
+    if (out) {
+      clearTerm(out);
+      if (!runs.length) {
+        termLine(out, 'dim', 'Run once several times - each reply is kept so you can compare non-determinism.');
+        return;
+      }
+      termLine(out, 'dim', 'LLM run history · ' + id + ' · ' + runs.length +
+        ' run' + (runs.length === 1 ? '' : 's') + ' this session (same prompt, successive calls)');
+      runs.forEach(function (r, i) {
+        var head = '─── run ' + (i + 1);
+        if (r.wallMs != null) head += ' · ' + r.wallMs + ' ms';
+        if (r.costUsd != null) head += ' · $' + Number(r.costUsd).toFixed(6);
+        if (r.model) head += ' · ' + r.model;
+        head += ' ───';
+        termLine(out, 'dim', head);
+        if (r.ok === false) {
+          termLine(out, 'bad', r.display || r.error || '(error)');
+        } else {
+          var big = document.createElement('span');
+          big.className = 'line stdout-big llm-run-out';
+          big.textContent = r.display || '(empty)';
+          out.appendChild(big);
+        }
+      });
+      var texts = runs.filter(function (r) { return r.ok !== false; })
+        .map(function (r) { return String(r.display || ''); });
+      var uniq = {};
+      texts.forEach(function (t) { uniq[t] = true; });
+      var nUniq = Object.keys(uniq).length;
+      if (texts.length > 1) {
+        termLine(out, 'dim', nUniq === 1
+          ? 'All ' + texts.length + ' successful runs produced the same text.'
+          : nUniq + ' distinct outputs across ' + texts.length +
+            ' successful runs (non-determinism visible).');
+      }
+      try { out.scrollTop = out.scrollHeight; } catch (e) { /* ignore */ }
+    }
+    if (rr) {
+      if (!runs.length) {
+        rr.className = 'run-result';
+        rr.replaceChildren();
+        return;
+      }
+      rr.className = 'run-result is-visible';
+      rr.replaceChildren();
+      var lab = document.createElement('div');
+      lab.className = 'rr-label';
+      lab.textContent = 'LLM results this session (' + runs.length + ')';
+      rr.appendChild(lab);
+      runs.forEach(function (r, i) {
+        var block = document.createElement('div');
+        block.className = 'rr-stdout' + (r.ok === false ? ' is-error' : '');
+        block.style.whiteSpace = 'pre-wrap';
+        block.textContent = 'Run ' + (i + 1) + ':\n' + (r.display || '(empty)');
+        rr.appendChild(block);
+      });
+      if (runs.length) {
+        var last = runs[runs.length - 1];
+        if (last.meta || last.costLine) {
+          var m = document.createElement('div');
+          m.className = 'rr-meta';
+          m.textContent = [last.meta, last.costLine].filter(Boolean).join(' · ');
+          rr.appendChild(m);
+        }
+      }
+      try { rr.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e2) { /* ignore */ }
+    }
+  }
+
+  loadLlmHistory();
 
   function renderTally() {
     var list = document.getElementById('tally-list');
@@ -1891,10 +2047,19 @@
     samples = Math.max(1, parseInt(samples, 10) || DEFAULT_SAMPLES);
     var runBtns = rung.querySelectorAll('.run-btn');
     runBtns.forEach(function (b) { b.disabled = true; });
-    clearTerm(out);
-    termLine(out, 'dim', samples === 1 ? 'Running once…' : 'Running ' + samples + ' times…');
     var rr = rung.querySelector('.run-result');
-    if (rr) { rr.className = 'run-result'; rr.replaceChildren(); }
+    var llmMode = isLlmLang(id);
+    if (llmMode) {
+      // Keep prior replies visible; show history + pending line
+      renderLlmHistory(out, null, id);
+      termLine(out, 'dim', 'Running… (will be run ' +
+        ((llmRunHistory[id] && llmRunHistory[id].length || 0) + 1) + ')');
+      try { out.scrollTop = out.scrollHeight; } catch (e0) { /* ignore */ }
+    } else {
+      clearTerm(out);
+      termLine(out, 'dim', samples === 1 ? 'Running once…' : 'Running ' + samples + ' times…');
+      if (rr) { rr.className = 'run-result'; rr.replaceChildren(); }
+    }
     fetch(API + '/run/' + encodeURIComponent(id) + '?samples=' + samples, { method: 'POST', headers: { 'Accept': 'application/json' } })
       .then(function (res) {
         return res.json().then(function (body) {
@@ -1904,6 +2069,55 @@
         });
       })
       .then(function (result) {
+        if (llmMode) {
+          if (!result.ok) {
+            var errL = detailText(result.body && (result.body.detail || result.body.message)) ||
+              ('HTTP ' + result.status);
+            pushLlmRun(id, {
+              ok: false,
+              display: errL,
+              error: errL,
+              wallMs: null,
+              costUsd: null,
+              model: null,
+              at: Date.now()
+            });
+            renderLlmHistory(out, rr, id);
+            return;
+          }
+          var bl = result.body || {};
+          var dispL = (bl.displayStdout != null ? bl.displayStdout : (bl.stdout || ''))
+            .toString().replace(/\n$/, '');
+          var metaL = 'exit ' + bl.exitCode + ' · ' + bl.wallMs + ' ms';
+          var costL = '';
+          if (bl.costUsd != null) {
+            costL = 'This request ~$' + Number(bl.costUsd).toFixed(6);
+            if (bl.spendTotalUsd != null) {
+              costL += ' · ladder LLM total $' + Number(bl.spendTotalUsd).toFixed(4);
+            }
+            if (bl.model) {
+              costL += ' · ' + bl.model +
+                (bl.reasoningEffort ? ' (effort=' + bl.reasoningEffort + ')' : '');
+            }
+          }
+          pushLlmRun(id, {
+            ok: true,
+            display: dispL || '(empty)',
+            wallMs: bl.wallMs != null ? bl.wallMs : bl.avgMs,
+            costUsd: bl.costUsd,
+            model: bl.model || null,
+            meta: metaL,
+            costLine: costL,
+            at: Date.now()
+          });
+          renderLlmHistory(out, rr, id);
+          if (bl.note) termLine(out, 'dim', String(bl.note));
+          recordTime(id, bl.title || id, bl.year || '',
+            Number(bl.avgMs != null ? bl.avgMs : bl.wallMs), bl.samples || 1);
+          if (typeof loadHistoricalStats === 'function') loadHistoricalStats();
+          return;
+        }
+
         clearTerm(out);
         if (!result.ok) {
           var err = detailText(result.body && (result.body.detail || result.body.message)) || ('HTTP ' + result.status);
@@ -1972,6 +2186,20 @@
         if (typeof loadHistoricalStats === 'function') loadHistoricalStats();
       })
       .catch(function (err) {
+        if (llmMode) {
+          var msgN = 'Network error: ' + (err && err.message ? err.message : String(err));
+          pushLlmRun(id, {
+            ok: false,
+            display: msgN,
+            error: msgN,
+            wallMs: null,
+            costUsd: null,
+            model: null,
+            at: Date.now()
+          });
+          renderLlmHistory(out, rr, id);
+          return;
+        }
         clearTerm(out);
         var msg = 'Network error: ' + (err && err.message ? err.message : String(err));
         termLine(out, 'bad', msg);

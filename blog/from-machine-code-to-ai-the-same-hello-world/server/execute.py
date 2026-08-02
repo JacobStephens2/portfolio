@@ -71,7 +71,7 @@ BANDS: list[dict] = [
         "level": 2,
         "title": "Assembly",
         "era": "c. 1949",
-        "hides": "Hides bit encodings; still names registers and calls.",
+        "hides": "Hides bit encodings; still names registers (CPU working slots) and calls.",
         "blurb": "Symbolic mnemonics for machine instructions (this host: x86_64 Linux GAS).",
     },
     {
@@ -79,7 +79,7 @@ BANDS: list[dict] = [
         "level": 3,
         "title": "Early high-level",
         "era": "1957–1959",
-        "hides": "Hides registers; you write formulas, business data, or lists.",
+        "hides": "Hides registers - you write formulas, business data, or lists; the compiler places values in CPU slots.",
         "blurb": "FORTRAN (science), Lisp (lists/AI), COBOL (business) - the first mass high-level languages.",
     },
     {
@@ -854,7 +854,11 @@ def _run_llm_rung(lang: str, meta: dict, band_level: int, *, detail: bool) -> di
             "You are a precise program. Follow the user's specification exactly. "
             "Output only what is required - no markdown fences unless asked."
         )
-        user = source_text.strip() or "Print one line: Hello, World!"
+        user = source_text.strip() or (
+            'Create a program that prints one line, "Hello, World!", '
+            "and tell me what language you used to do so, "
+            "as well as the reason for picking that language"
+        )
         mode = "ai-engineering"
     else:
         system = (
