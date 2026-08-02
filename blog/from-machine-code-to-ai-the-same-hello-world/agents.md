@@ -17,7 +17,7 @@ license: MIT
 7. **Capability vs convention:** stored-program machines could print character strings by the late 1940s; the "Hello, World" *convention* is later (BCPL ~1967, Kernighan B tutorial 1972, popularized by K&R C 1978). Absolute band therefore pairs a continuity Hello with a period-honest `SUM=55` job - the sum is not filler.
 7b. **First recognizable code (Martin / Turing):** Robert C. Martin (*The Future of Programming*, 2016) names Alan Turing's ACE work as early code a modern programmer would still recognize. Anchor: Turing's 1945/46 NPL *Proposed Electronic Calculator* (subroutines, abbreviated instructions, sample sequences); Pilot ACE first program 10 May 1950. Exhibit: band `binary` variant `ace` / `programs/turing-ace-indexin.txt` (INDEXIN + CALPOL popular forms from ch. 13; Wikisource). Kind `ace-exhibit` is paper code - not an ACE emulator. Do not overclaim exclusive priority vs ENIAC/EDVAC/Baby - cite the form of the artifact.
 8. **Source comparison is primary** on the human page (Fig. 1 grid + Fig. 2 pair compare). Each ladder rung (Fig. 3) includes a short origin/transition narrative (pain of prior level → invention → period-honest hello). Run is host verification. Full historical dossier: `research/Programming-Eras-Narrative-Research.md`.
-8b. **Registers:** named storage slots inside the CPU (not RAM). Assembly still names them in source; high-level languages hide them (compiler/interpreter assigns them). Hiding ≠ unused - the machine still uses registers; the human text stops mentioning them.
+8b. **Registers:** named storage slots inside the CPU (not RAM). Assembly still names them in source; high-level languages hide them (compiler/interpreter assigns them). Hiding ≠ unused - the machine still uses registers; the human text stops mentioning them. **Registers ≠ variables:** a register is a fixed chip slot; a variable (FORTRAN-era) is a named value whose storage the implementation chooses. Assembly memory labels are named addresses, not modern variables. Primer asides: before `assembly` (registers), before `early-hl` (variables).
 9. **AI Engineering** (band id `ai`, level 7) holds both `ai` (tight contract) and `vibe` (`say hello world`) as carousel peers - same abstraction, different discipline. Live model path unless a budgeted stand-in is designed.
 10. ISA: Linux x86_64 here; Apple Silicon ARM64 Assembly is a different dialect.
 
@@ -51,13 +51,14 @@ Deep execute module: `server/execute.py` (allowlist, build, timing, catalog). HT
 | 2 | assembly | c. 1949 | assembly |
 | 3 | early-hl | 1957–1959 | fortran, lisp, cobol |
 | 4 | systems | 1970–1985 | pascal, c, objc, cpp |
-| 5 | managed | 1995–2015 | java, csharp, kotlin, dart, go, swift, lean, rust |
-| 6 | scripting | 1987–1995 | perl, bash, python, php, javascript |
+| 5 | managed | 1995–2015 | java, csharp, vb, kotlin, dart, go, swift, lean, rust |
+| 6 | scripting | 1987–1995 | perl, bash, python, r, php, javascript, ruby, sql |
 | 7 | ai | c. 2022–2025 | ai, vibe |
 
 # Operational checklist
 
-- [ ] Toolchains present: gfortran, cobc, sbcl, javac, gcc, g++, gobjc, swiftc, kotlinc, dart (/opt/dart-sdk), rustc, go, lean, mcs/mono, bash, perl, php, python3, node
+- [ ] Toolchains present: gfortran, cobc, sbcl, javac, gcc, g++, gobjc, swiftc, kotlinc, dart (/opt/dart-sdk), rustc, go, lean, mcs/mono, dotnet (VB), Rscript, sqlite3, bash, perl, php, python3, node, ruby
+- [ ] TIOBE top 10 covered: Python, C, C++, Java, C#, JavaScript, Visual Basic, SQL, R, Rust
 - [ ] `hello-ladder.service` active
 - [ ] Apache ProxyPass for `/api/`
 - [ ] `GET /levels` returns 8 bands

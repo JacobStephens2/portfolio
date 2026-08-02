@@ -79,7 +79,7 @@ BANDS: list[dict] = [
         "level": 3,
         "title": "Early high-level",
         "era": "1957–1959",
-        "hides": "Hides registers - you write formulas, business data, or lists; the compiler places values in CPU slots.",
+        "hides": "Hides registers; introduces named variables (formulas, business data, lists) - compiler maps names to storage.",
         "blurb": "FORTRAN (science), Lisp (lists/AI), COBOL (business) - the first mass high-level languages.",
     },
     {
@@ -96,7 +96,7 @@ BANDS: list[dict] = [
         "title": "Managed / safe systems",
         "era": "1995–2015",
         "hides": "Hides more memory/safety details behind a runtime or type system.",
-        "blurb": "Java, C#, Kotlin, Dart, Go, Swift, Rust, Lean - GC, VMs, ownership, or dependent types as machinery.",
+        "blurb": "Java, C#, Visual Basic, Kotlin, Dart, Go, Swift, Rust, Lean - GC, VMs, ownership, or dependent types as machinery.",
     },
     {
         "id": "scripting",
@@ -104,7 +104,7 @@ BANDS: list[dict] = [
         "title": "Scripting / dynamic",
         "era": "1987–1995",
         "hides": "Almost the entire machine; interpreters, VMs, and huge libraries.",
-        "blurb": "Bash, Perl, Python, PHP, JavaScript - glue, web, and everyday automation.",
+        "blurb": "Bash, Perl, Python, PHP, JavaScript, Ruby, R, SQL - glue, web, stats, and queries.",
     },
     {
         "id": "ai",
@@ -398,6 +398,26 @@ LANGS: dict[str, dict] = {
         "build": ["mcs", "-out:" + str(CACHE / "hello-cs.exe"), str(PROGRAMS / "hello.cs")],
         "run": ["mono", str(CACHE / "hello-cs.exe")],
     },
+    "vb": {
+        "title": "Visual Basic",
+        "year": "2002",
+        "year_note": "VB.NET (.NET); classic VB 1.0 was 1991; TIOBE top 10; dotnet SDK on this host",
+        "band": "managed",
+        "source_file": "hello.vb",
+        "kind": "vbnet",
+        "highlight": "vbnet",
+        "binary": "vb-out/HelloVb.dll",
+        "build": [
+            "dotnet",
+            "build",
+            str(CACHE / "HelloVb.vbproj"),
+            "-c",
+            "Release",
+            "-o",
+            str(CACHE / "vb-out"),
+        ],
+        "run": ["dotnet", str(CACHE / "vb-out" / "HelloVb.dll")],
+    },
     "go": {
         "title": "Go",
         "year": "2009",
@@ -484,6 +504,17 @@ LANGS: dict[str, dict] = {
         "build": None,
         "run": ["python3", str(PROGRAMS / "hello.py")],
     },
+    "ruby": {
+        "title": "Ruby",
+        "year": "1995",
+        "year_note": "Yukihiro Matsumoto (Matz); MRI on this host",
+        "band": "scripting",
+        "source_file": "hello.rb",
+        "kind": "interp",
+        "highlight": "ruby",
+        "build": None,
+        "run": ["ruby", str(PROGRAMS / "hello.rb")],
+    },
     "php": {
         "title": "PHP",
         "year": "1995",
@@ -505,6 +536,28 @@ LANGS: dict[str, dict] = {
         "highlight": "javascript",
         "build": None,
         "run": ["node", str(PROGRAMS / "hello.js")],
+    },
+    "r": {
+        "title": "R",
+        "year": "1993",
+        "year_note": "Ihaka / Gentleman; statistical computing; Rscript on this host",
+        "band": "scripting",
+        "source_file": "hello.R",
+        "kind": "interp",
+        "highlight": "r",
+        "build": None,
+        "run": ["Rscript", str(PROGRAMS / "hello.R")],
+    },
+    "sql": {
+        "title": "SQL",
+        "year": "1986",
+        "year_note": "SEQUEL/SQL lineage; ISO SQL-86; sqlite3 :memory: on this host (query language, not a general-purpose app language)",
+        "band": "scripting",
+        "source_file": "hello.sql",
+        "kind": "interp",
+        "highlight": "sql",
+        "build": None,
+        "run": ["/usr/bin/sqlite3", ":memory:", "SELECT 'Hello, World!';"],
     },
     "ai": {
         "title": "Tight contract",
@@ -548,6 +601,11 @@ def _env() -> dict[str, str]:
     env["GOTMPDIR"] = str(cache_tmp)
     env.setdefault("GO111MODULE", "off")
     env.setdefault("GOTOOLCHAIN", "local")
+    # .NET (Visual Basic) CLI home + quiet telemetry under systemd
+    env["DOTNET_CLI_HOME"] = str(CACHE / "dotnet-home")
+    env["DOTNET_NOLOGO"] = "1"
+    env["DOTNET_CLI_TELEMETRY_OPTOUT"] = "1"
+    env["DOTNET_SKIP_FIRST_TIME_EXPERIENCE"] = "1"
     return env
 
 def _run_cmd(cmd: list[str], timeout: float) -> subprocess.CompletedProcess[str]:
@@ -561,11 +619,36 @@ def _run_cmd(cmd: list[str], timeout: float) -> subprocess.CompletedProcess[str]
         check=False,
     )
 
+def _write_vb_project() -> None:
+    """Emit a tiny VB.NET project under cache/ that compiles programs/hello.vb."""
+    CACHE.mkdir(parents=True, exist_ok=True)
+    (CACHE / "dotnet-home").mkdir(parents=True, exist_ok=True)
+    src = PROGRAMS / "hello.vb"
+    proj = CACHE / "HelloVb.vbproj"
+    # Absolute Compile path so the project can live entirely in cache/
+    content = f"""<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>HelloVb</RootNamespace>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="{src}" />
+  </ItemGroup>
+</Project>
+"""
+    if not proj.exists() or proj.read_text(encoding="utf-8") != content:
+        proj.write_text(content, encoding="utf-8")
+
+
 def ensure_built(lang: str) -> None:
     meta = LANGS[lang]
     build = meta.get("build")
     if not build:
         return
+    if meta.get("kind") == "vbnet":
+        _write_vb_project()
     binary = CACHE / meta["binary"]
     src_name = meta.get("build_source") or meta["source_file"]
     source = PROGRAMS / src_name
@@ -855,8 +938,8 @@ def _run_llm_rung(lang: str, meta: dict, band_level: int, *, detail: bool) -> di
             "Output only what is required - no markdown fences unless asked."
         )
         user = source_text.strip() or (
-            'Create a program that prints one line, "Hello, World!", '
-            "and tell me what language you used to do so, "
+            'Create a program that prints one line, "Hello, World!",\n'
+            "and tell me what language you used to do so,\n"
             "as well as the reason for picking that language"
         )
         mode = "ai-engineering"
@@ -1095,6 +1178,45 @@ def run_language(lang: str, *, detail: bool = True) -> dict:
         )
     return payload
 
+# Teaching shell one-liners for programs/ (not cache/ paths). None = not a CLI program.
+CLI_SHELL: dict[str, str | None] = {
+    "absolute": "as -o hello_raw.o hello_raw.s && ld -o hello-raw hello_raw.o && ./hello-raw",
+    "ace": None,  # paper exhibit
+    "tabulate": "as -o hello_sum.o hello_sum.s && ld -o hello-sum hello_sum.o && ./hello-sum",
+    "elf": "./hello-raw",  # same absolute binary; packaging only
+    "machine": "gcc -O0 -o hello hello.s && ./hello",
+    "handcode": "gcc -O0 -o hello hello.s && ./hello",  # hex sheet; run is the linked ELF
+    "punchcard": None,  # deck sim, not a shell program
+    "assembly": "gcc -O0 -o hello hello.s && ./hello",
+    "fortran": "gfortran -O0 -o hello hello.f90 && ./hello",
+    "lisp": "sbcl --script hello.lisp",
+    "cobol": "cobc -x -free -o hello hello.cob && ./hello",
+    "pascal": "fpc -O1 -ohello hello.pas && ./hello",
+    "c": "gcc -O0 -o hello hello.c && ./hello",
+    "cpp": "g++ -O0 -o hello hello.cpp && ./hello",
+    "objc": "gcc -x objective-c -O0 -o hello hello.m -lobjc && ./hello",
+    "java": "javac Hello.java && java Hello",
+    "kotlin": "kotlinc hello.kt -include-runtime -d hello.jar && java -jar hello.jar",
+    "dart": "dart compile exe -o hello hello.dart && ./hello",
+    "csharp": "mcs -out:hello.exe hello.cs && mono hello.exe",
+    "vb": "dotnet build HelloVb.vbproj -c Release -o out && dotnet out/HelloVb.dll",
+    "go": "go build -o hello hello.go && ./hello",
+    "rust": "rustc -O -o hello hello.rs && ./hello",
+    "swift": "swiftc -O -o hello hello.swift && ./hello",
+    "lean": "lean --run hello.lean",
+    "bash": "bash hello.sh",
+    "perl": "perl hello.pl",
+    "python": "python3 hello.py",
+    "ruby": "ruby hello.rb",
+    "php": "php hello.php",
+    "javascript": "node hello.js",
+    "r": "Rscript hello.R",
+    "sql": "sqlite3 :memory: \"SELECT 'Hello, World!';\"",
+    "ai": None,  # LLM prompt via host API
+    "vibe": None,
+}
+
+
 def _variant_payload(key: str) -> dict:
     meta = LANGS[key]
     try:
@@ -1112,7 +1234,7 @@ def _variant_payload(key: str) -> dict:
     except Exception as exc:  # noqa: BLE001
         source = f"(source view unavailable: {exc})"
     src_name = meta["source_file"]
-    return {
+    payload = {
         "id": key,
         "title": meta["title"],
         "year": meta.get("year"),
@@ -1123,6 +1245,10 @@ def _variant_payload(key: str) -> dict:
         "runnable": True,
         "githubUrl": f"{GITHUB_BLOB_PROGRAMS}/{src_name}",
     }
+    cli = CLI_SHELL.get(key)
+    if cli:
+        payload["cli"] = cli
+    return payload
 
 def warm_builds() -> dict[str, str]:
     """Prebuild native binaries. Returns map of lang -> error string (empty = ok)."""
@@ -1145,6 +1271,7 @@ def warm_builds() -> dict[str, str]:
         "go",
         "swift",
         "csharp",
+        "vb",
     ):
         if lang not in LANGS:
             continue
@@ -1170,6 +1297,11 @@ def tools_present() -> dict[str, str | None]:
         "swiftc": shutil.which("swiftc", path=PATH_PREFIX),
         "kotlinc": shutil.which("kotlinc", path=PATH_PREFIX),
         "dart": shutil.which("dart", path=PATH_PREFIX),
+        "dotnet": shutil.which("dotnet", path=PATH_PREFIX),
+        "Rscript": shutil.which("Rscript", path=PATH_PREFIX),
+        "sqlite3": shutil.which("sqlite3", path=PATH_PREFIX) or shutil.which(
+            "sqlite3", path="/usr/bin:/bin"
+        ),
         "gfortran": shutil.which("gfortran", path=PATH_PREFIX),
         "cobc": shutil.which("cobc", path=PATH_PREFIX),
         "sbcl": shutil.which("sbcl", path=PATH_PREFIX),
@@ -1181,6 +1313,7 @@ def tools_present() -> dict[str, str | None]:
         "javac": shutil.which("javac", path=PATH_PREFIX),
         "java": shutil.which("java", path=PATH_PREFIX),
         "python3": shutil.which("python3", path=PATH_PREFIX),
+        "ruby": shutil.which("ruby", path=PATH_PREFIX),
         "node": shutil.which("node", path=PATH_PREFIX),
         "bash": shutil.which("bash", path=PATH_PREFIX),
         "perl": shutil.which("perl", path=PATH_PREFIX),
