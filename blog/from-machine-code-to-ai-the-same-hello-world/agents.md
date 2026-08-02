@@ -14,8 +14,10 @@ license: MIT
 4. **Absolute machine program** (band id `binary`) is instruction/data words people entered (`absolute`, `tabulate`) plus optional modern `elf` packaging - not "author an ELF." **Machine** is decoded instructions. Do not collapse them.
 5. **Bands** group peer languages; UI carousels are **manual only** (no autoplay).
 6. **Years** are introduction years for the language/band, not first Hello World publication.
-7. AI and vibe rungs are deterministic stand-ins unless a budgeted model path is designed.
-8. ISA: Linux x86_64 here; Apple Silicon ARM64 Assembly is a different dialect.
+7. **Capability vs convention:** stored-program machines could print character strings by the late 1940s; the "Hello, World" *convention* is later (BCPL ~1967, Kernighan B tutorial 1972, popularized by K&R C 1978). Absolute band therefore pairs a continuity Hello with a period-honest `SUM=55` job - the sum is not filler.
+8. **Source comparison is primary** on the human page (Fig. 1 side-by-side); Run is optional host verification.
+9. AI and vibe rungs are deterministic stand-ins unless a budgeted model path is designed.
+10. ISA: Linux x86_64 here; Apple Silicon ARM64 Assembly is a different dialect.
 
 # Canonical human post
 
@@ -70,4 +72,7 @@ Deep execute module: `server/execute.py` (allowlist, build, timing, catalog). HT
 **A2.** They share an abstraction band (formulas / lists / business data, late 1950s); years distinguish them.
 
 **Q3.** Absolute machine program vs machine?  
-**A3.** Absolute band = words people would enter (Hello via syscalls, or a sum job); `elf` is modern packaging only. Machine = decoded instructions / hand-entry hex sheet.
+**A3.** Absolute band = words people would enter (Hello via syscalls for ladder continuity, or a sum job for period honesty); `elf` is modern packaging only. Machine = decoded instructions / hand-entry hex sheet.
+
+**Q4.** Why not a pure 1945 "Hello, World"?  
+**A4.** The greeting *convention* postdates the early bands; capability to print text is not the same as the cultural first-program ritual.
