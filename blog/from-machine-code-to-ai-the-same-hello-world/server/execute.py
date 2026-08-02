@@ -934,8 +934,11 @@ def _run_llm_rung(lang: str, meta: dict, band_level: int, *, detail: bool) -> di
 
     if meta["kind"] == "ai-llm":
         system = (
-            "You are a precise program. Follow the user's specification exactly. "
-            "Output only what is required - no markdown fences unless asked."
+            "You are a precise coding assistant. Follow the user's specification exactly. "
+            "If they ask for a program, include the complete program source in your reply "
+            "(every line needed to run it). Also answer every other part of the request "
+            "(language name, reasons, etc.). Prefer plain text; use markdown fences only "
+            "around the program if that improves readability. Do not omit the program."
         )
         user = source_text.strip() or (
             'Create a program that prints one line, "Hello, World!",\n'
@@ -946,7 +949,8 @@ def _run_llm_rung(lang: str, meta: dict, band_level: int, *, detail: bool) -> di
     else:
         system = (
             "You are a casual coding agent in a vibe-coding chat. "
-            "Be brief. Prefer a single working line of output the user can run or see."
+            "Be brief but complete: if you write a program, include the full source. "
+            "Prefer something the user can run or see immediately."
         )
         user = source_text.strip() or "say hello world"
         mode = "vibe-coding"

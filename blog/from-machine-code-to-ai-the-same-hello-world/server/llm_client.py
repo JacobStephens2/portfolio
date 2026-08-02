@@ -15,7 +15,8 @@ MODEL = os.environ.get("HELLO_LADDER_LLM_MODEL", "gpt-5.6-luna")
 REASONING_EFFORT = os.environ.get("HELLO_LADDER_LLM_REASONING", "low")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 OPENAI_BASE = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
-MAX_OUTPUT_TOKENS = int(os.environ.get("HELLO_LADDER_LLM_MAX_OUTPUT", "256"))
+# Room for a short program + language + reason (tight contract is multi-part).
+MAX_OUTPUT_TOKENS = int(os.environ.get("HELLO_LADDER_LLM_MAX_OUTPUT", "768"))
 TIMEOUT_S = float(os.environ.get("HELLO_LADDER_LLM_TIMEOUT", "45"))
 
 
@@ -108,8 +109,8 @@ def complete(
     if not text:
         raise LLMRequestError("OpenAI returned empty output_text")
 
-    # Prefer first non-empty line for Hello World display.
-    first_line = next((ln.strip() for ln in text.splitlines() if ln.strip()), text)
+    # Full model reply (tight contract asks for program + language + reason).
+    display = text.strip()
     inp, out, cached = _usage_tokens(payload.get("usage") if isinstance(payload.get("usage"), dict) else {})
     cost = estimate_cost_usd(inp, out, cached)
     spend = record_spend(
@@ -123,9 +124,9 @@ def complete(
     )
 
     return {
-        "text": text,
-        "displayStdout": first_line,
-        "stdout": first_line + ("\n" if not first_line.endswith("\n") else ""),
+        "text": display,
+        "displayStdout": display,
+        "stdout": display + ("" if display.endswith("\n") else "\n"),
         "model": MODEL,
         "reasoningEffort": REASONING_EFFORT,
         "inputTokens": inp,
