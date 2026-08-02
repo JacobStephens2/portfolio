@@ -56,7 +56,7 @@ BANDS: list[dict] = [
         "title": "Absolute machine program",
         "era": "c. 1945",
         "hides": "No symbolic source - instruction and data words only.",
-        "blurb": "What people actually entered: absolute words (hex/octal), not a modern ELF shipping crate.",
+        "blurb": "What people actually entered: absolute words (hex/octal); Turing's 1945 ACE tables as paper code; not a modern ELF shipping crate.",
     },
     {
         "id": "machine",
@@ -142,6 +142,20 @@ LANGS: dict[str, dict] = {
         "build": _as_ld_build("hello-raw", "hello_raw.s"),
         "run": [str(CACHE / "hello-raw")],
         "build_source": "hello_raw.s",
+    },
+    "ace": {
+        "title": "Turing ACE (INDEXIN)",
+        "year": "1945",
+        "year_note": (
+            "A. M. Turing, Proposed Electronic Calculator (NPL ACE report, 1945/46), "
+            "ch. 13 popular forms - paper code, not a live ACE emulator on this host"
+        ),
+        "band": "binary",
+        "source_file": "turing-ace-indexin.txt",
+        "kind": "ace-exhibit",
+        "highlight": "plaintext",
+        "build": None,
+        "run": None,
     },
     "tabulate": {
         "title": "Numerical job (sum 1..10)",
@@ -760,7 +774,7 @@ def run_samples(
     samples = max(BENCH_SAMPLES_MIN, min(BENCH_SAMPLES_MAX, int(samples)))
     meta = LANGS[language]
     # Live LLM / punch sim: single shot (don't multiply API spend or fake multi-runs).
-    if meta.get("kind") in ("ai-llm", "vibe-llm", "punchcard-sim"):
+    if meta.get("kind") in ("ai-llm", "vibe-llm", "punchcard-sim", "ace-exhibit"):
         samples = 1
 
     # Build once (untimed), then time execute-only samples.
@@ -957,6 +971,38 @@ def run_language(lang: str, *, detail: bool = True) -> dict:
                 "Simulated card-deck job: period systems often printed fixed-width "
                 "lines or punched result cards - not a modern interactive terminal. "
                 "See source sheet for history. Not a live card reader."
+            ),
+            "samples": 1,
+            "avgMs": round(wall_ms, 3),
+            "minMs": round(wall_ms, 3),
+            "maxMs": round(wall_ms, 3),
+            "stdevMs": 0.0,
+        }
+
+    if meta["kind"] == "ace-exhibit":
+        wall_ms = (time.perf_counter() - started) * 1000
+        out = (
+            "(ACE paper exhibit - not executed on this host)\n"
+            "INDEXIN / CALPOL popular forms from Turing 1945 ACE report, ch. 13.\n"
+        )
+        return {
+            "language": lang,
+            "title": meta["title"],
+            "year": meta.get("year"),
+            "level": band_level,
+            "stdout": out,
+            "stderr": "",
+            "exitCode": 0,
+            "wallMs": round(wall_ms, 3),
+            "host": _host() if detail else {},
+            "sourceFile": meta["source_file"],
+            "highlight": "plaintext",
+            "displayStdout": "(ACE paper exhibit - not executed on this host)",
+            "costUsd": 0.0,
+            "note": (
+                "Authentic instruction tables from A. M. Turing, Proposed Electronic "
+                "Calculator (NPL, 1945/46), chapter 13 - INDEXIN and CALPOL in popular "
+                "form. Public domain (UK Crown). Not a live ACE or Pilot ACE emulator."
             ),
             "samples": 1,
             "avgMs": round(wall_ms, 3),

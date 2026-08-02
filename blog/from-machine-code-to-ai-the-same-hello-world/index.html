@@ -86,6 +86,10 @@
         code { background: var(--code-bg); padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.92em; }
         pre { background: var(--code-bg); padding: 1rem 1.1rem; border-radius: 6px; overflow-x: auto; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.8rem; line-height: 1.5; margin-bottom: 0; max-height: 28rem; }
         pre code { background: none; padding: 0; color: inherit; font-size: inherit; display: block; }
+        pre.ace-excerpt {
+            max-height: none; margin: 0; border: 1px solid var(--rule);
+            font-size: 0.78rem; line-height: 1.45;
+        }
         /* highlight.js token colors (theme tokens; same approach as the-animation-is-a-replay) */
         .ladder code.hljs,
         .compare-fig code.hljs,
@@ -705,7 +709,7 @@
         <article class="note">
             <div class="eyebrow">Notes · Languages · Interactive</div>
             <h1 class="title">From Machine Code to AI: the Same Hello World</h1>
-            <p class="meta"><strong>August 1, 2026</strong> · Jacob Stephens · ~2,400 words · 8 abstraction bands · 27 runnable variants · reading this as an AI agent? <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a> is for you</p>
+            <p class="meta"><strong>August 1, 2026</strong> · Jacob Stephens · ~2,400 words · 8 abstraction bands · 28 variants · reading this as an AI agent? <a href="/blog/from-machine-code-to-ai-the-same-hello-world/agents.md">agents.md</a> is for you</p>
 
             <p>Every major level of programming is a response to the pain of the level beneath it. Plugboards made stored programs necessary; numeric opcodes made mnemonics necessary; hand assembly made formula translation necessary; high-level languages that could not build kernels made systems languages necessary; unchecked memory made managed runtimes and ownership types necessary; ceremony made scripting necessary; writing every line by hand made model interfaces necessary. Abstractions accumulate rather than replace - ELF still packages machine words; C still underpins kernels; a prompt still bottoms out (through generated code and tool calls) in the same kind of addressable memory the Manchester Baby first proved would work in June 1948.</p>
 
@@ -721,6 +725,32 @@
             <p>Robert C. Martin (Uncle Bob) has long treated programming history as a climb through successive languages and tools - machine code, assembly, high-level languages, and whatever comes next - and has argued in parallel that craft still matters no matter how high the stack gets. That ladder is the spine of his 2016 talk <a href="https://www.youtube.com/watch?v=ecIWPzGEbFc" rel="noopener"><em>The Future of Programming</em></a>; the craft claim is the throughline of <em>The Clean Coder</em> (2011). A more recent framing is his conversation with <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">Kent Dodds</a> (2025). Paraphrase, not a slogan he trademarked. Bands here are ordered by <em>abstraction</em>, not pure release-year purity (Lisp is older than C; scripting largely overlaps managed systems chronologically - a parallel branch, not a strict sequel). Years on each variant are introduction years.</p>
 
             <p>Martin also puts a name on the first thing we would still recognize as <em>code</em>: Alan Turing on the Automatic Computing Engine. In the same talk he says you would recognize the ACE programs - you would not like them, but you would recognize them. The archival anchor is Turing's 1945/46 NPL report <em>Proposed Electronic Calculator</em> (ACE), which already spells out stored-program design, subroutine call/return (BURY/UNBURY and friends), floating-point ideas, and sample instruction sequences - software abstractions written while the full machine was still paper. A cut-down Pilot ACE ran its first program on 10 May 1950. Historians debate priority with other early stored-program work; what matters for this page is that by the mid-1940s the artifact is already instruction-and-data words a modern programmer can read as a program, not a plugboard recipe.</p>
+
+            <div class="fig" id="fig-turing-ace">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. · Turing ACE · INDEXIN (popular form, 1945)</span>
+                </div>
+                <div class="fig-body">
+                    <pre class="ace-excerpt" id="turing-ace-excerpt"><code class="language-plaintext">INDEXIN
+
+ 1     Q, 0000,0100,0000,0000     2
+ 2           TS 6 - TS 2          3
+ 3           ADD 'A'              4
+ 4           ROTATE 16            5
+ 5           TS 4 - TS 6          6
+ 6           TS 6 - TS 9          7
+ 7           TS 27 - TS 6         8
+ 8           TS 6 - TS 10         9
+ 9                OR             10
+10           TS 8 - TS 6         11
+11           B,1, INDEXIN 11
+12           TS 6 - TS 28        13
+13           B, BURY</code></pre>
+                </div>
+                <div class="fig-caption">
+                    Authentic &quot;popular form&quot; instruction table from A. M. Turing, <em>Proposed Electronic Calculator</em> (NPL ACE report, late 1945; presented 1946), chapter 13 - &quot;Examples of Instruction Tables.&quot; Columns: instruction name, abbreviated CA operation or type-B jump, next instruction. <code>TS</code> = temporary storage; <code>B, BURY</code> starts a subsidiary (subroutine return stack). Not Hello World - INDEXIN fetches a minor cycle by address written in TS 27. Full INDEXIN + abbreviated CALPOL (polynomial evaluation with BURY/UNBURY) also live as the <strong>Turing ACE</strong> peer under Absolute machine program in the ladder. Public domain (UK Crown). Text: <a href="https://en.wikisource.org/wiki/Proposed_Electronic_Calculator/Chapter_13" rel="noopener">Wikisource ch. 13</a>; NPL scan: <a href="https://www.npl.co.uk/getmedia/dda98194-32a1-424c-ad09-33081b4afc1d/turing-proposal-Alan-LR.pdf" rel="noopener">turing-proposal PDF</a>.
+                </div>
+            </div>
 
             <ul class="timeline">
                 <li><strong>Absolute machine program</strong> (c. 1945) - ENIAC: plugboards, ~6,000 switches, no stored program. Same season: Turing's ACE design and program library at NPL; von Neumann's EDVAC draft (June 1945). Pain before: forty-hour hand trajectories and differential analyzers that were a nightmare to reconfigure. Pivot: stop rewiring the machine; put the program in memory.</li>
@@ -878,7 +908,7 @@
                 <h3>Ideas and authorities</h3>
                 <ul>
                     <li><span class="cite-title">Robert C. Martin, The Future of Programming</span> (talk, 2016) - walks programming history as successive languages/tools from machine code upward and asks what the next layer will be; names Alan Turing / ACE as early code a modern programmer would still recognize. Recording commonly cited: <a href="https://www.youtube.com/watch?v=ecIWPzGEbFc" rel="noopener">youtube.com/watch?v=ecIWPzGEbFc</a>.</li>
-                    <li><span class="cite-title">A. M. Turing, Proposed Electronic Calculator</span> (ACE report, National Physical Laboratory, late 1945; presented 1946) - stored-program design with subroutines, abbreviated instructions, and sample program sequences for the Automatic Computing Engine. Overview: <a href="https://en.wikipedia.org/wiki/Automatic_Computing_Engine" rel="noopener">Wikipedia: Automatic Computing Engine</a>; collected as <em>A. M. Turing's ACE Report of 1946 and Other Papers</em> (MIT Press, 1986). Pilot ACE first ran 10 May 1950.</li>
+                    <li><span class="cite-title">A. M. Turing, Proposed Electronic Calculator</span> (ACE report, National Physical Laboratory, late 1945; presented 1946) - stored-program design with subroutines, abbreviated instructions, and sample program sequences for the Automatic Computing Engine. Chapter 13 (&quot;Examples of Instruction Tables&quot;) is the source of INDEXIN and CALPOL shown on this page: <a href="https://en.wikisource.org/wiki/Proposed_Electronic_Calculator/Chapter_13" rel="noopener">Wikisource ch. 13</a>; NPL PDF: <a href="https://www.npl.co.uk/getmedia/dda98194-32a1-424c-ad09-33081b4afc1d/turing-proposal-Alan-LR.pdf" rel="noopener">turing-proposal-Alan-LR.pdf</a>. Overview: <a href="https://en.wikipedia.org/wiki/Automatic_Computing_Engine" rel="noopener">Wikipedia: ACE</a>; collected as <em>A. M. Turing's ACE Report of 1946 and Other Papers</em> (MIT Press, 1986). Pilot ACE first ran 10 May 1950. UK Crown work published before 1976 - public domain.</li>
                     <li><span class="cite-title">Robert C. Martin, The Clean Coder: A Code of Conduct for Professional Programmers</span> (Prentice Hall, 2011) - craft and professional discipline as independent of language fashion; the &quot;craft still matters at every step&quot; half of the paraphrase in the timeline section.</li>
                     <li><span class="cite-title">Robert C. Martin with Kent Dodds, Architecture, AI agents, and product empathy</span> (YouTube, 2025) - recent long-form conversation that revisits architecture, agents, and long-view software practice. <a href="https://www.youtube.com/watch?v=RxxxGkFIUJ0" rel="noopener">youtube.com/watch?v=RxxxGkFIUJ0</a>.</li>
                     <li><span class="cite-title">Andrej Karpathy on "vibe coding"</span> (2025) - the casual chat-driven coding style contrasted here with tighter AI engineering prompts. <a href="https://x.com/karpathy/status/1886192184808149383" rel="noopener">x.com/karpathy</a></li>
@@ -962,6 +992,7 @@
       blurb: 'What people entered: absolute words. Hello is ladder continuity; SUM=55 is the period-honest job. ELF is packaging only.',
       variants: [
         { id: 'absolute', title: 'Absolute machine words', year: 'c. 1945', yearNote: 'instruction + data words; live objdump when online', sourceFile: 'absolute-words.txt', highlight: 'plaintext', source: '' },
+        { id: 'ace', title: 'Turing ACE (INDEXIN)', year: '1945', yearNote: 'Proposed Electronic Calculator ch. 13 popular form; paper exhibit', sourceFile: 'turing-ace-indexin.txt', highlight: 'plaintext', source: '' },
         { id: 'tabulate', title: 'Numerical job (sum 1..10)', year: 'c. 1950', yearNote: 'tables and totals; live objdump when online', sourceFile: 'tabulate-words.txt', highlight: 'plaintext', source: '' },
         { id: 'elf', title: 'Modern ELF packaging', year: 'c. 1985', yearNote: 'OS crate; xxd when online', sourceFile: 'elf-note.txt', highlight: 'plaintext', source: '' }
       ]
@@ -1342,7 +1373,7 @@
   var ERA_NARRATIVE = {
     binary: {
       lead: 'Before source code, there was a room of cables, switches, and six mathematicians who had to become the program.',
-      body: 'ENIAC (first classified run 10 Dec 1945; public demo Feb 1946) was not a stored-program machine. Programming meant routing plugboards, setting ~6,000 switches, and coordinating ~18,000 tubes. The original programmers - Kay McNulty, Jean Bartik, Betty Holberton, Marlyn Meltzer, Fran Spence, Ruth Teitelbaum - had been hired as human computers for ballistic tables. In the same season, Alan Turing\'s ACE report at NPL already described instruction sequences, subroutines, and a program library for a machine that was still paper - what Robert C. Martin later called the first code a modern programmer would still recognize. Period-honest first jobs were Los Alamos math and trajectory tables, not teletype greetings. Carousel: modern Hello via syscalls for ladder continuity; sum 1..10 for period honesty; ELF as packaging note only.',
+      body: 'ENIAC (first classified run 10 Dec 1945; public demo Feb 1946) was not a stored-program machine. Programming meant routing plugboards, setting ~6,000 switches, and coordinating ~18,000 tubes. The original programmers - Kay McNulty, Jean Bartik, Betty Holberton, Marlyn Meltzer, Fran Spence, Ruth Teitelbaum - had been hired as human computers for ballistic tables. In the same season, Alan Turing\'s ACE report at NPL already described instruction sequences, subroutines, and a program library for a machine that was still paper - what Robert C. Martin later called the first code a modern programmer would still recognize. Carousel peer Turing ACE shows INDEXIN and CALPOL from the report\'s chapter 13 (popular form - transfers, BURY/UNBURY). Period-honest first jobs were Los Alamos math and trajectory tables, not teletype greetings. Also: modern Hello via syscalls for ladder continuity; sum 1..10 for period honesty; ELF as packaging note only.',
       pivot: 'Rewiring a thirty-ton machine for every problem could not scale. The next move: stop changing the wires and start changing the numbers in memory (von Neumann\'s EDVAC draft, June 1945; Turing\'s ACE design the same years).'
     },
     machine: {
@@ -1692,9 +1723,10 @@
 
       var slides = band.variants.map(function (vv) {
         var label = vv.id === 'absolute' ? ' (absolute words)'
+          : (vv.id === 'ace' ? ' (Turing ACE 1945)'
           : (vv.id === 'tabulate' ? ' (numerical job)'
           : (vv.id === 'elf' ? ' (ELF packaging)'
-          : (vv.id === 'handcode' ? ' (hand-entry sheet)' : '')));
+          : (vv.id === 'handcode' ? ' (hand-entry sheet)' : ''))));
         var ghref = vv.githubUrl || ghUrl(vv.sourceFile);
         return '<div class="carousel-slide" data-lang="' + esc(vv.id) + '">' +
           '<div class="panel-label" style="padding:0.55rem 0.75rem 0">Source' + label +
