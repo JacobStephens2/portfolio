@@ -11,7 +11,7 @@ license: MIT (per the site repository's LICENSE)
 
 You are probably an AI agent that has been asked to build, review, or specify a user
 interface. This is the machine-oriented version of a human post. The human version is
-a specimen sheet: 103 live, labeled UI elements you can click. You do not need to
+a specimen sheet: 104 live, labeled UI elements you can click. You do not need to
 click anything; you need the names, the disambiguation rules, and the
 native-versus-library decision. All of it is inline below. Nothing here requires a
 browser.
@@ -151,7 +151,7 @@ note at the top); the bins are the author's.
 | Toolbar | action bar, control bar | |
 | Table of contents | in-page navigation, on this page, jump list | built from anchor links; pair with a current-section indicator |
 
-### 3.2 Input (26)
+### 3.2 Input (27)
 
 | Name | Also called | Native element |
 |---|---|---|
@@ -172,7 +172,8 @@ note at the top); the bins are the author's.
 | Knob | virtual knob, dial | none |
 | Date picker | date input | `<input type=date>`; NN/g lists Calendar Picker separately |
 | Wheel picker | spinner picker, drum picker | platform-dependent |
-| File upload | file input, dropzone | `<input type=file>` |
+| File upload | file input | `<input type=file>` |
+| Multi-file upload | multiple file input, dropzone | `<input type=file multiple>`; re-selecting **replaces** the list. To append, rebuild a `DataTransfer` and assign `input.files` |
 | Color picker | colour input, swatch picker | `<input type=color>` |
 | Transfer list | dual listbox, shuttle, pick list | none |
 | Multiselect | tag input, token field | none |

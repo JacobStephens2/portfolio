@@ -45,7 +45,10 @@
             html:not([data-theme="light"]):not([data-theme="dark"]) { --yes: #7fbf95; --no: #d99a7a; --tint: rgba(212, 160, 122, 0.10); }
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Source Sans 3', Arial, Helvetica, sans-serif; background: var(--surface); color: var(--ink); line-height: 1.7; min-height: 100vh; }
+        body { font-family: 'Source Sans 3', Arial, Helvetica, sans-serif; background: var(--surface); color: var(--ink); line-height: 1.7; min-height: 100vh;
+            /* clip, not hidden: hidden would make body a scroll container and break
+               position:sticky on the switchboard. */
+            overflow-x: clip; }
         .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
         .topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
         .back-link, .contact-link { color: var(--muted); text-decoration: none; font-size: 0.92rem; }
@@ -129,7 +132,9 @@
         .toc li.fam a .t::before { content: ""; display: inline-block; width: 0.42rem; height: 0.42rem; border-radius: 2px; background: var(--brand); margin-right: 0.42rem; vertical-align: 0.06em; }
 
         /* ---------- Switchboard ---------- */
-        .switchboard { position: sticky; top: 0; z-index: 30; margin: 1.4rem 0 1.6rem; padding: 0.6rem 0.8rem; background: var(--soft); border: 1px solid var(--rule); border-radius: 8px; display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; font-size: 0.86rem; }
+        /* Full-bleed sticky bar: escape the 720px column with symmetric negative margins,
+           then pad the content back to the column edge so the controls stay aligned. */
+        .switchboard { position: sticky; top: 0; z-index: 30; width: calc(100vw - var(--sbw, 0px)); margin: 1.4rem calc(50% - 50vw + var(--sbw, 0px) / 2) 1.6rem; padding: 0.6rem max(1.25rem, calc((100vw - var(--sbw, 0px)) / 2 - 340px)); background: var(--soft); border: 1px solid var(--rule); border-left: 0; border-right: 0; border-radius: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; font-size: 0.86rem; }
         .switchboard .sb-count { color: var(--muted); margin-left: auto; font-variant-numeric: tabular-nums; }
         .sb-search { display: inline-flex; align-items: center; gap: 0.35rem; }
         .sb-search input { font: inherit; font-size: 0.85rem; padding: 0.22rem 0.5rem; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); color: var(--ink); width: 10.5rem; }
@@ -138,6 +143,20 @@
         .chip { font: inherit; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.05em; padding: 0.15rem 0.6rem; border: 1px solid var(--rule); background: var(--surface); color: var(--muted); border-radius: 999px; cursor: pointer; }
         .chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
         .chip:hover, .chip:focus-visible { border-color: var(--brand); }
+
+        /* Measured: the five controls need 979 px on one line. Above that, stop
+           wrapping and clamp the left pad so the content keeps its room, which
+           holds the column alignment on wide screens and gives it up gracefully. */
+        @media (min-width: 1080px) {
+            .switchboard {
+                flex-wrap: nowrap;
+                padding-left: max(1.25rem, min(calc((100vw - var(--sbw, 0px)) / 2 - 340px), calc(100vw - var(--sbw, 0px) - 1034px)));
+                padding-right: 1.5rem;
+            }
+            .switchboard .spec-tag { flex: none; margin-bottom: 0; }
+            .switchboard .chip-row { flex-wrap: nowrap; }
+            .switchboard .sb-count { white-space: nowrap; }
+        }
 
         /* ---------- Page chrome specimens ---------- */
         .promo-bar { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; justify-content: center; padding: 0.4rem 0.9rem; background: var(--brand); color: var(--brand-ink); font-size: 0.85rem; }
@@ -176,6 +195,13 @@
         label { font-size: 0.84rem; }
         fieldset { border: 1px solid var(--rule); border-radius: 6px; padding: 0.5rem 0.6rem; }
         legend { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 0 0.3rem; }
+
+        .dropzone { margin-top: 0.4rem; padding: 0.55rem 0.6rem; border: 1px dashed var(--rule); border-radius: 6px; text-align: center; font-size: 0.78rem; color: var(--muted); background: var(--soft); cursor: pointer; }
+        .dropzone.over { border-color: var(--brand); color: var(--brand); }
+        ul.filelist { list-style: none; padding: 0; margin: 0.4rem 0 0; font-size: 0.78rem; }
+        ul.filelist li { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.15rem 0; border-bottom: 1px solid var(--rule); }
+        ul.filelist li:last-child { border-bottom: 0; }
+        ul.filelist .sz { color: var(--muted); font-variant-numeric: tabular-nums; flex: none; }
 
         /* Navigation family */
         .navbar { display: flex; align-items: center; gap: 0.7rem; padding: 0.35rem 0.6rem; border: 1px solid var(--rule); border-radius: 6px; background: var(--soft); font-size: 0.82rem; }
@@ -247,6 +273,12 @@
         dialog .drow { display: flex; gap: 0.4rem; justify-content: flex-end; margin-top: 0.7rem; }
         dialog.sheet { position: fixed; inset: auto 0 0 0; max-width: none; width: 100%; border-radius: 12px 12px 0 0; margin: 0; }
         dialog.drawer { position: fixed; inset: 0 auto 0 0; height: 100%; max-height: 100%; width: min(19rem, 84vw); border-radius: 0 12px 12px 0; margin: 0; }
+        /* Slide it in with the native top-layer transition: allow-discrete lets
+           display and overlay animate, and @starting-style supplies the entry frame. */
+        dialog.drawer { transition: translate 0.26s ease, display 0.26s allow-discrete, overlay 0.26s allow-discrete; }
+        @starting-style { dialog.drawer[open] { translate: -100% 0; } }
+        dialog.drawer::backdrop { transition: opacity 0.26s ease, display 0.26s allow-discrete, overlay 0.26s allow-discrete; }
+        @starting-style { dialog.drawer[open]::backdrop { opacity: 0; } }
         dialog.lightbox { padding: 0.5rem; background: var(--ink); border-color: var(--ink); color: var(--surface); }
         dialog.lightbox svg { display: block; max-width: min(34rem, 88vw); height: auto; border-radius: 6px; }
         .lb-bar { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; justify-content: space-between; padding: 0.5rem 0.15rem 0.1rem; font-size: 0.82rem; }
@@ -443,12 +475,13 @@
         .sources .cite-title { color: var(--ink); font-weight: 600; }
         .ai-note { margin-top: 2rem; padding: 1rem 1.2rem; background: var(--soft); border-left: 3px solid var(--brand); border-radius: 0 6px 6px 0; color: var(--muted); font-size: 0.9rem; }
         .footer { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); text-align: center; color: var(--muted); font-size: 0.85rem; }
-        @media (max-width: 640px) { .container { padding: 1.25rem 1rem 2.5rem; } .topbar { flex-direction: column; align-items: flex-start; } .switchboard { position: static; } }
+        @media (max-width: 640px) { .container { padding: 1.25rem 1rem 2.5rem; } .topbar { flex-direction: column; align-items: flex-start; } .switchboard { padding-left: 1rem; padding-right: 1rem; } }
         @media (prefers-reduced-motion: reduce) {
             .spinner { animation-duration: 3s; }
             .skel i, .bar-track.indet .fill { animation: none; }
             input[role="switch"], input[role="switch"]::after { transition: none; }
             .toast.show { animation: none; }
+            dialog.drawer, dialog.drawer::backdrop { transition: none; }
             .carousel .track { scroll-behavior: auto; }
             * { scroll-behavior: auto !important; }
         }
@@ -487,17 +520,17 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Interface Vocabulary</div>
             <h1 class="title">The Element Has a Name</h1>
-            <p class="meta"><strong>August 5, 2026</strong> &middot; ~4,400 words of prose (~5,800 including the specimen labels and captions) &middot; 10 live figures, a recall drill, and a quiz &middot; reading this as an AI agent? <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> is for you</p>
+            <p class="meta"><strong>August 5, 2026</strong> &middot; ~5,200 words of prose (~6,900 including the specimen labels) &middot; 10 live figures, a recall drill, and a quiz &middot; reading this as an AI agent? <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> is for you</p>
 
             <p>The fastest way to get the wrong control built is to call it a "dropdown." That one word covers at least five different components with five different behaviors, and the agent writing my markup has to guess which one I meant. Last month I asked for "a dropdown to filter the chart" on the <a href="/blog/">server dashboard</a> and got a <code>&lt;select&gt;</code> element. I wanted a menu of actions. The word was the whole spec, and the word was wrong.</p>
 
             <p>Two references get you most of the way out. In February 2025 Raluca Budiu and Kara Rivenbark of Nielsen Norman Group published a glossary that names <strong>61 interface elements</strong> with their alternate names and one-line definitions. The Component Gallery does the cross-referencing job from the other end - <strong>60 components as they appear across 95 real design systems</strong>, so you can see what Ant Design, Polaris, and the BBC's Global Experience Language each call the same thing.</p>
 
-            <p>A caveat I have to put up front, because the rest of this page depends on it. <strong>NN/g is not a standards body.</strong> Its glossary has no authority over Apple, Material, HTML, or ARIA, and the 95 design systems in the Component Gallery still disagree with it and with each other. So when I write that an element has a name, I mean one of three much smaller things, and I try to say which: an <strong>NN/g term</strong> within the scope of that glossary, a <strong>common convention</strong> observed across design systems, or a <strong>house term</strong> I picked where the sources conflict. "Canonical" would be the wrong word for any of them.</p>
+            <p>One caveat first, because everything below rests on it. <strong>NN/g is not a standards body</strong>, and those 95 design systems still disagree with it and with each other. So "the name" always means one of three smaller things, and I say which: an <strong>NN/g term</strong>, a <strong>common convention</strong> across design systems, or a <strong>house term</strong> I picked where the sources conflict. None of them is canonical.</p>
 
-            <p>So this post is not an article about UI elements. It is a <strong>specimen sheet</strong>: 103 live elements, each labeled with its primary name, the family it belongs to, and the synonym most likely to get you the wrong thing. Nothing here is a screenshot. Every menu opens, every dialog is a real <code>&lt;dialog&gt;</code>, every popover uses the browser's top layer. Toggle the labels off and this is an ordinary page; toggle them on and it is a catalog of itself.</p>
+            <p>So this is not an article about UI elements. It is a <strong>specimen sheet</strong>: 104 live elements, each labeled with its name, its family, and the synonym most likely to get you the wrong thing. Nothing here is a screenshot. Every menu opens, every dialog is a real <code>&lt;dialog&gt;</code>. Toggle the labels off and it is an ordinary page; on, and it is a catalog of itself.</p>
 
-            <p>The teaching structure comes from Geoffrey Litt's talk "Understanding: the New Bottleneck," which I keep raiding for this: demonstration over description, and a quiz at the end because, as Andy Matuschak puts it in "Why Books Don't Work," reading hands you the feeling of understanding and almost none of the retention. You will not remember the difference between a kebab and a meatball menu because I told you. You might remember it because you clicked both.</p>
+            <p>The structure comes from Geoffrey Litt's talk "Understanding: the New Bottleneck": demonstration over description, and a quiz at the end, because as Andy Matuschak puts it in "Why Books Don't Work," reading hands you the feeling of understanding and almost none of the retention. You will not remember the difference between a kebab and a meatball menu because I told you. You might because you clicked both.</p>
 
             <nav class="toc spec" id="toc" data-el="Table of contents" data-fam="nav" data-also="in-page navigation, on this page, jump list" aria-labelledby="tocTitle">
                 <header>
@@ -823,6 +856,13 @@
                         <div class="spec spec-box" data-el="File upload" data-fam="input" data-also="file input, dropzone">
                             <label for="i-file">Attachment</label><br><input type="file" id="i-file" style="font-size:0.8rem;max-width:100%">
                         </div>
+                        <div class="spec spec-box" data-el="Multi-file upload" data-fam="input" data-also="multiple file input, dropzone">
+                            <label for="i-files">Attachments</label><br>
+                            <input type="file" id="i-files" multiple>
+                            <div id="dropZone" class="dropzone" tabindex="0" role="button" aria-label="Drop files here, or press Enter to browse">Drop files here</div>
+                            <ul class="filelist" id="fileList" aria-live="polite"></ul>
+                            <p class="demo-note">The <code>multiple</code> attribute is the whole difference from the file input beside it. Note the trap: choosing again <em>replaces</em> the selection. Appending means rebuilding a <code>DataTransfer</code>, which is what dropping onto the zone does here.</p>
+                        </div>
                         <div class="spec spec-box" data-el="Color picker" data-fam="input" data-also="colour input, swatch picker">
                             <label for="i-color">Brand</label> <input type="color" id="i-color" value="#9b4d24" style="width:2.4rem;height:1.7rem;padding:0;border:1px solid var(--rule);background:none">
                         </div>
@@ -956,26 +996,26 @@
 
             <h2 id="empty-state">"Empty state" is four different screens</h2>
 
-            <p>The empty state is the specimen I get wrong most often in my own work, because the label describes what the box <em>contains</em> - nothing - rather than why. Four unrelated situations produce an empty list, and each one needs different copy and a different action. Cycle the four chips in Fig. 4's empty-state specimen and watch what has to change.</p>
+            <p>This is the specimen I get wrong most often, because the label describes what the box <em>contains</em> - nothing - rather than why. Four unrelated situations produce an empty list, and each needs different copy and a different action. Cycle the chips in Fig. 4 and watch what changes.</p>
 
             <ol>
-                <li><strong>First run.</strong> The user has never created one. The job is to explain what would be here and offer the action that creates it. This is the only case where a big primary button belongs.</li>
-                <li><strong>No results.</strong> A search or filter excluded everything. The job is to say what was filtered out and offer the escape - "clear filters". Shipping the first-run copy here is the classic bug: "Create your first deploy!" is insulting to someone who has forty deploys and a typo in the search box.</li>
-                <li><strong>All done.</strong> The user emptied it themselves - inbox zero, queue cleared. The job is to confirm, briefly. There is nothing to create and prompting for it undoes the sense of completion.</li>
-                <li><strong>Failed.</strong> Nothing loaded because the request errored or permission was denied. <strong>This is not an empty state.</strong> It is an <em>error state</em>, and dressing it as an empty one hides an outage behind a friendly illustration - the user reads "you have no deploys" when the truth is "we could not reach the server."</li>
+                <li><strong>First run.</strong> Nothing has ever been created. Explain what would be here and offer the action that creates it. The only case where a primary button belongs.</li>
+                <li><strong>No results.</strong> A filter excluded everything. Say what was excluded and offer the escape. Shipping first-run copy here is the classic bug: "Create your first deploy!" insults someone with forty deploys and a typo in the search box.</li>
+                <li><strong>All done.</strong> The user emptied it themselves. Confirm, briefly. Prompting them to create something undoes the sense of completion.</li>
+                <li><strong>Failed.</strong> The request errored or was forbidden. <strong>This is not an empty state.</strong> It is an <em>error state</em>, and dressing it as an empty one hides an outage: the user reads "you have no deploys" when the truth is "we could not reach the server."</li>
             </ol>
 
-            <p>So the decision rule is a question about cause, not appearance: <strong>is it empty because nothing was created, because a filter excluded it, because the work is finished, or because something broke?</strong> Only the first three are empty states, and they do not share copy.</p>
+            <p>So the rule is about cause, not appearance: <strong>nothing created, filtered out, finished, or broken?</strong> Only the first three are empty states, and they do not share copy.</p>
 
-            <p>Two adjacent confusions are worth naming while we are here. An empty state is not a <strong>loading state</strong> - rendering "No deploys yet" while the fetch is still in flight is the most common version of this mistake, and the fix is the skeleton screen sitting two specimens away in Fig. 4. And "empty state" is not an NN/g term at all; it does not appear in the 61-entry glossary. It comes from design-system practice, where the Component Gallery does list it. By the scoping rule at the top of this page, that makes it a common convention rather than a glossary term - which is exactly why its meaning drifts.</p>
+            <p>None of them is a <strong>loading state</strong> either: rendering "No deploys yet" mid-fetch is the most common version of this mistake, and the fix is the skeleton screen two specimens over. And "empty state" is not an NN/g term at all. It comes from design-system practice, which by the scoping rule above makes it a common convention rather than a glossary term - exactly why it drifts.</p>
 
             <h2 id="lightbox">"Lightbox" and "modal" are not alternatives</h2>
 
-            <p>People argue about whether a thing is "a lightbox or a modal" and the argument never resolves, because the two words are answers to different questions. <strong>Modal is a mode</strong>: the element is in the top layer, the rest of the document is inert, and Escape closes it. <strong>Lightbox is a content pattern</strong>: one media item shown at its own size over a dimmed page, where looking at the thing <em>is</em> the task. Nearly every lightbox is modal, which is why they get welded together in conversation - but modality is a property you could switch off and still have a lightbox, and a confirmation dialog is fully modal while being nothing like one.</p>
+            <p>People argue about whether something is "a lightbox or a modal" and never resolve it, because the words answer different questions. <strong>Modal is a mode</strong>: top layer, rest of the document inert, Escape closes it. <strong>Lightbox is a content pattern</strong>: one media item at its own size over a dimmed page, where looking at it <em>is</em> the task. Nearly every lightbox is modal, which is why they get welded together - but you could switch modality off and still have a lightbox, and a confirmation dialog is fully modal while being nothing like one.</p>
 
-            <p>The name is literal, and knowing where it comes from fixes it in place. A lightbox was a backlit glass panel photographers used to view slides and negatives; Lokesh Dhakar's <span class="cite-title">Lightbox</span> script in 2005 borrowed the metaphor, and the dimmed backdrop every implementation still draws is imitating the darkened room around an illuminated pane. NN/g keeps it as its own entry - "non-fullscreen overlay, sometimes containing multimedia content" - separate from both Dialog and Overlay.</p>
+            <p>The name is literal. A lightbox was a backlit glass panel photographers used to view slides; Lokesh Dhakar's <span class="cite-title">Lightbox</span> script borrowed the metaphor in 2005, and the dimmed backdrop every implementation still draws is imitating the darkened room around an illuminated pane. NN/g keeps it as its own entry, "non-fullscreen overlay, sometimes containing multimedia content," separate from both Dialog and Overlay.</p>
 
-            <p>The practical consequence is a different behavioral contract, which is why Fig. 4's lightbox has controls the modal dialog beside it does not. A dialog is finished when the user decides something, so it owes you buttons that name the decision. A lightbox is finished when the user stops looking, so it owes you a way to move through the set: previous and next, a position counter so you know how far in you are, a caption, and arrow keys. Open it from any tile of the image list in Fig. 5 and it starts on the tile you clicked, because a viewer that always restarts at item one is a broken viewer.</p>
+            <p>The consequence is a different behavioral contract, which is why Fig. 4's lightbox has controls the modal dialog beside it does not. A dialog ends when the user decides, so it owes buttons that name the decision. A lightbox ends when the user stops looking, so it owes a way through the set: previous and next, a position counter, a caption, and arrow keys. Open it from any tile of the image list in Fig. 5 and it starts on the tile you clicked, because a viewer that restarts at item one is broken.</p>
 
             <div class="fig-scroll">
                 <table class="dis">
@@ -992,7 +1032,7 @@
                 </table>
             </div>
 
-            <p>So "make it a modal" and "make it a lightbox" are not competing instructions. The first sets the mode and says nothing about the content; the second describes the content and leaves the mode implied. A ticket that wants both should say both, and a ticket that says only "modal" has not told you what goes inside.</p>
+            <p>So the two are not competing instructions. "Modal" sets the mode and says nothing about content; "lightbox" describes the content and leaves the mode implied. A ticket saying only "modal" has not told you what goes inside.</p>
 
             <h2 id="display">Display and containers: the boxes everything else sits in</h2>
 
@@ -1136,9 +1176,7 @@
 
             <h2 id="native">How much of this does the browser expose already?</h2>
 
-            <p>Before you scroll into Fig. 7, make a prediction. Of the 18 interface capabilities listed there - dialogs, popovers, exclusive accordions, anchor positioning, customizable selects, scroll-driven animation, and so on - <strong>how many do you think your browser supports natively today?</strong> Write the number down. Most engineers I have asked guess somewhere between 6 and 10, and they are reliably low, because the mental model was set when jQuery plugins were how you got a modal.</p>
-
-            <p>Then press the button. The probe runs real feature detection in your browser - <code>CSS.supports()</code>, prototype checks, and element construction - and reports what is actually there.</p>
+            <p>Before you scroll, predict. Of the 18 capabilities in Fig. 7 - dialogs, popovers, exclusive accordions, anchor positioning, customizable selects, scroll-driven animation - <strong>how many does your browser support natively?</strong> Write the number down. Most engineers I ask guess 6 to 10, and they are reliably low, because the mental model was set when jQuery plugins were how you got a modal. Then press the button: the probe runs real feature detection and reports what is actually there.</p>
 
             <div class="fig" id="fig7">
                 <div class="fig-head">
@@ -1159,9 +1197,9 @@
 
             <p>The result I did not expect when I built this: on Chrome 142 the score is <strong>18 out of 18</strong>. That was not true in 2019, and my instincts had not caught up.</p>
 
-            <p>Now the correction, because the obvious inference from that number is wrong and I drew it in the first version of this page. <strong>Fig. 7 measures whether an API is recognized, not whether a component is finished.</strong> <code>CSS.supports('anchor-name: --a')</code> tells you the property parses. It does not tell you the tooltip positions correctly at a viewport edge, that <code>input type="date"</code> formats and localizes the way your product needs, or that <code>::scroll-button()</code> gives you a carousel. This very page proves the gap: my tooltip is positioned with <code>getBoundingClientRect()</code> rather than CSS anchor positioning, and my carousel uses JavaScript buttons rather than the scroll-button pseudo-elements - both of which the probe says are "supported."</p>
+            <p>Now the correction, because the obvious inference is wrong and I drew it in the first version of this page. <strong>Fig. 7 measures whether an API is recognized, not whether a component is finished.</strong> <code>CSS.supports('anchor-name: --a')</code> says the property parses. It does not say the tooltip survives a viewport edge, that <code>input type="date"</code> localizes the way your product needs, or that <code>::scroll-button()</code> gives you a carousel. This page proves the gap: my tooltip uses <code>getBoundingClientRect()</code> and my carousel uses JavaScript buttons, and the probe calls both of those "supported."</p>
 
-            <p>So "18 of 18" retires exactly one argument: you no longer need a dependency to obtain the <em>primitive</em>. What remains is the part that was always the expensive part. Four questions, in order:</p>
+            <p>So "18 of 18" retires exactly one argument: you no longer need a dependency to get the <em>primitive</em>. The expensive part remains. Four questions, in order:</p>
 
             <ol>
                 <li>Does your <strong>browser matrix</strong> expose the primitive, not just the newest Chrome?</li>
@@ -1170,7 +1208,7 @@
                 <li>Is that remainder smaller and safer than the component abstraction your project already has?</li>
             </ol>
 
-            <p>Keyboard behavior belongs in question 2, not in a footnote about edge cases. For a composite widget it is not polish, it is the definition: a thing with tabs that does not respond to arrow keys is not a tab bar, whatever the markup says.</p>
+            <p>Keyboard behavior belongs in question 2, not a footnote about edge cases. For a composite widget it is the definition, not polish: a thing with tabs that ignores arrow keys is not a tab bar, whatever the markup says.</p>
 
             <h2 id="shoelace">The same three controls, mine and a real design system's</h2>
 
@@ -1203,11 +1241,11 @@
 
             <h2 id="contract">A name is a behavioral contract, and I failed my own test</h2>
 
-            <p>I sent this page out for an adversarial review and got the criticism I deserved. The reviewer went through the specimens with a keyboard instead of a mouse, and several of them did not do what their labels promised. My tab bar handled clicks but ignored Left and Right arrows, so it was a row of buttons wearing tab roles. My action menus used the <code>popover</code> attribute and stopped there: no <code>role="menu"</code>, no focus moving into the menu on open, no arrow keys, and picking an item did nothing at all. My rating announced <code>role="radiogroup"</code> to a screen reader and then contained zero radios. My floating action button was a <code>&lt;span&gt;</code>. My autocomplete was a text input next to a string of matches you could not select. My context menu could only be opened by right-clicking a <code>&lt;div&gt;</code> nothing could focus.</p>
+            <p>I sent this page out for an adversarial review and got the criticism I deserved. The reviewer went through the specimens with a keyboard instead of a mouse, and several did not do what their labels promised. The tab bar ignored arrow keys, so it was a row of buttons wearing tab roles. The action menus used the <code>popover</code> attribute and stopped there: no <code>role="menu"</code>, no focus moving in, no arrow keys, and picking an item did nothing. The rating announced <code>role="radiogroup"</code> and contained zero radios. The floating action button was a <code>&lt;span&gt;</code>. The autocomplete was a text input beside matches you could not select. The context menu opened only by right-clicking a <code>&lt;div&gt;</code> nothing could focus.</p>
 
-            <p>That is worse than a bug on a page arguing that the noun determines the implementation, because it is <em>the same mistake</em> the post exists to warn about: I used the word and skipped the contract. Everything named in that paragraph is fixed above - the tabs take arrow keys with one tab stop, the menus carry menu roles and move focus and actually run their command, the rating is a real radio group, the FAB is a button, the autocomplete is the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" rel="noopener">combobox pattern</a> with a selectable listbox, and the context menu answers Enter and Shift+F10. Try any of them with the keyboard.</p>
+            <p>On a page arguing that the noun determines the implementation, that is <em>the same mistake</em> the post exists to warn about: I used the word and skipped the contract. All of it is fixed above - tabs take arrow keys with one tab stop, menus carry menu roles and move focus and run their command, the rating is a real radio group, the FAB is a button, the autocomplete is the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" rel="noopener">combobox pattern</a>, and the context menu answers Enter and Shift+F10. Try them with the keyboard.</p>
 
-            <p>Two I did not fix, and labeled instead: the data grid is a sortable table and the tree view is nested disclosures. Building the full APG grid and tree patterns would have doubled the page for no extra teaching, so each one now carries a caveat naming exactly what it is missing. That is the honest version of the lesson: <strong>a name is a promise about roles, state, focus, and keyboard behavior, and if you cannot keep the promise you owe the reader the gap in writing.</strong> "Add a data grid" and "add a sortable table" are different tickets, and the difference is a week.</p>
+            <p>Two I labeled instead of fixing: the data grid is a sortable table, the tree view is nested disclosures. Building the full APG patterns would have doubled the page for no extra teaching, so each carries a caveat naming what it is missing. That is the honest lesson: <strong>a name is a promise about roles, state, focus, and keyboard behavior, and if you cannot keep it you owe the reader the gap in writing.</strong> "Add a data grid" and "add a sortable table" are different tickets, and the difference is a week.</p>
 
             <h2 id="collisions">The names that collide</h2>
 
@@ -1233,13 +1271,11 @@
 
             <h2 id="recall">Recognition is not the skill you need</h2>
 
-            <p>I built the quiz below before I had thought hard enough about what it measures. It is multiple choice, so it tests <strong>recognition</strong>: shown four names, can you pick the right one. But the thing this post is supposed to buy you happens at a blank prompt box, where nobody offers you four options. That is <strong>recall</strong>, and the two are not the same skill. Robert and Elizabeth Bjork's New Theory of Disuse distinguishes <em>retrieval strength</em> (how easily something comes to mind right now) from <em>storage strength</em> (how durably it is learned), and the two come apart: something can be highly retrievable in the moment and barely stored. Recognizing a name you read ninety seconds ago scores well on retrieval strength and tells you very little about storage.</p>
+            <p>I built the quiz below before thinking hard enough about what it measures. Multiple choice tests <strong>recognition</strong>: shown four names, can you pick one. But this post is supposed to pay off at a blank prompt box, where nobody offers you four options. That is <strong>recall</strong>, a different skill. Robert and Elizabeth Bjork's New Theory of Disuse separates <em>retrieval strength</em> (how easily something comes to mind now) from <em>storage strength</em> (how durably it is learned), and the two come apart. Recognizing a name you read ninety seconds ago scores well on retrieval and says little about storage.</p>
 
-            <p>Their prescription is <strong>desirable difficulty</strong> - make the retrieval harder on purpose - and the nearest evidence is the testing effect Henry Roediger and Jeffrey Karpicke measured in 2006. Be precise about what they actually compared, because I was not at first: they tested repeated <em>studying</em> against repeated <em>free recall</em>, not multiple choice against typing. The result was time-dependent. Restudying won at a five-minute delay; the tested group won at two days and at one week, and the restudy group was more confident throughout. So the finding supports retrieval practice over rereading for durable retention. It does not prove that multiple choice is worthless, and I should not have implied it does.</p>
+            <p>Their prescription is <strong>desirable difficulty</strong>: make retrieval harder on purpose. The nearest evidence is the testing effect Henry Roediger and Jeffrey Karpicke measured in 2006, and it is worth being precise about what they compared, because I was not at first. They tested repeated <em>studying</em> against repeated <em>free recall</em>, not multiple choice against typing, and the result was time-dependent: restudying won at five minutes, the tested group won at two days and one week, and the restudy group felt more confident throughout. That supports retrieval practice over rereading for durable retention. It does not prove multiple choice is worthless, and I should not have implied it does.</p>
 
-            <p>What I can defend is narrower. Producing a term from nothing is a closer rehearsal of the thing you actually do at a prompt box than picking it from four options, and Matt Pocock's <a href="https://github.com/mattpocock/skills/tree/main/skills/productivity/teach" rel="noopener">teach skill</a> is built on that pair of ideas - effort and a tight feedback loop rather than a comprehension check at the end. So Fig. 9 is the harder version, offered as a plausible application of the research rather than a result the citations establish.</p>
-
-            <p>It shows you a specimen lifted live out of this page - the actual DOM node, cloned, with its label stripped - and asks you to type what it is called. No options. It accepts the primary name or any of the synonyms this page has taught you, which is the honest grading rule: "side sheet" and "flyout" are both correct for a drawer.</p>
+            <p>What I can defend is narrower: producing a term from nothing rehearses what you actually do at a prompt box. Matt Pocock's <a href="https://github.com/mattpocock/skills/tree/main/skills/productivity/teach" rel="noopener">teach skill</a> is built on the same pair of ideas, effort and a tight feedback loop rather than a comprehension check at the end. So Fig. 9 is the harder version, offered as a plausible application of the research rather than a result those citations establish. It clones a specimen out of this page, strips its label, and asks you to type what it is. No options. It accepts any synonym the page has taught you, which is the honest grading rule: "side sheet" and "flyout" are both correct for a drawer.</p>
 
             <div class="fig" id="fig9">
                 <div class="fig-head">
@@ -1358,11 +1394,11 @@
 
             <h2 id="still-open">What's still open</h2>
 
-            <p>The honest limit of this page is that a vocabulary does not settle an argument by existing. NN/g published 61 element names in February 2025 and the design systems in the Component Gallery still disagree with each other and with NN/g - 95 systems, and "stepper" still means two different things depending on which door you came in. I have not adopted a house glossary across my own repositories yet, and until I do, this post is a reference I wrote rather than a standard I follow. That is the next piece of work: a short names file in each project so the agent and I are reading from the same list, which is a smaller and more useful artifact than another design system.</p>
+            <p>A vocabulary does not settle an argument by existing. NN/g published 61 names in February 2025 and the Component Gallery's 95 design systems still disagree with each other and with NN/g; "stepper" still means two things depending which door you came in. I have not adopted a house glossary across my own repositories, so until I do this is a reference I wrote rather than a standard I follow. That is the next piece of work: a short names file per project, so the agent and I read from the same list. A smaller and more useful artifact than another design system.</p>
 
-            <p>The second thing I would change if I were starting over is the shape. This page is arguing three things at once - that precise component language pays, that here are 103 specimens, and that native primitives have caught up - and the adversarial review made a fair case that the breadth fights the teaching. A reader will not retain 103 names from one sitting, and six quiz questions barely sample them. The better structure is probably an essay about the five-way "dropdown" ambiguity and the expensive collisions, a separate reference atlas carrying per-item provenance and behavior contracts, and a separate browser lab. I have not split it, because the specimen sheet <em>is</em> the argument here - the labels only teach while you are standing in front of the live thing. But I am not confident that is right, and if a second post comes out of this it will be the atlas.</p>
+            <p>The second thing I would change is the shape. This page argues three things at once - that precise component language pays, that here are 103 specimens, and that native primitives have caught up - and the review made a fair case that the breadth fights the teaching. Nobody retains 103 names in one sitting, and eight quiz questions barely sample them. The better structure is probably an essay on the "dropdown" ambiguity and the expensive collisions, a separate atlas with per-item provenance and behavior contracts, and a separate browser lab. I have not split it, because the specimen sheet <em>is</em> the argument: the labels only teach while you are standing in front of the live thing. If a second post comes out of this, it will be the atlas.</p>
 
-            <p>The third open question is whether the labels helped. Litt's own caveat about interactive figures is that they can become a crutch - you push the buttons, feel competent, and retain nothing. Adding the recall drill sharpened that worry rather than settling it: I can now measure whether you produce the word, but only for the 24 specimens in the pool and only in the same session, which is precisely the fluency-strength reading the Bjorks warn is the misleading one. The honest experiment is a drill that comes back in a week, and a page cannot do that. My own answer is that building this taught me two things I did not know going in: that <code>&lt;details name&gt;</code> makes an exclusive accordion with no JavaScript, and that a "modal" was never a component in the first place. Whether reading it does the same for you is the test I still cannot run.</p>
+            <p>The third question is whether the labels helped. Litt's own caveat is that interactive figures become a crutch: you push the buttons, feel competent, retain nothing. The recall drill sharpened that worry rather than settling it. I can measure whether you produce the word, but only for the 28 specimens in the pool and only in the same session - which is exactly the retrieval-strength reading the Bjorks warn is misleading. The honest experiment is a drill that comes back in a week, and a page cannot do that. Building this taught me two things I did not know: <code>&lt;details name&gt;</code> makes an exclusive accordion with no JavaScript, and a "modal" was never a component. Whether reading it does the same for you is the test I still cannot run.</p>
 
             <h2 id="sources">Sources</h2>
 
@@ -1509,13 +1545,24 @@
            lands underneath. Measure it rather than hard-coding a rem value. */
         (function () {
             var sb = document.getElementById('switchboard');
+            /* 100vw includes the classic scrollbar, so a full-bleed bar overshoots by
+               its width. Publish the real gutter and let the CSS subtract it. */
+            function syncScrollbar() {
+                var w = window.innerWidth - document.documentElement.clientWidth;
+                document.documentElement.style.setProperty('--sbw', Math.max(0, w) + 'px');
+            }
             function syncAnchorOffset() {
                 var sticky = getComputedStyle(sb).position === 'sticky';
                 var off = sticky ? Math.ceil(sb.getBoundingClientRect().height) + 14 : 14;
                 document.documentElement.style.setProperty('--anchor-offset', off + 'px');
             }
-            syncAnchorOffset();
-            window.addEventListener('resize', syncAnchorOffset);
+            function sync() { syncScrollbar(); syncAnchorOffset(); }
+            sync();
+            window.addEventListener('resize', sync);
+            /* The bar's height changes when its controls wrap or when the webfont
+               lands, and a stale offset drops headings under it. Watch the element. */
+            if (window.ResizeObserver) new ResizeObserver(syncAnchorOffset).observe(sb);
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
         })();
 
         /* Scroll-spy: mark the section the reader is currently in. */
@@ -2051,6 +2098,57 @@
             knobTxt.textContent = String(knobVal);
             document.getElementById('knob').setAttribute('aria-label', 'Knob at ' + knobVal + ' percent');
         });
+
+        /* Multi-file upload: selecting replaces, dropping appends via DataTransfer. */
+        var fileInput = document.getElementById('i-files'),
+            fileList = document.getElementById('fileList'),
+            dropZone = document.getElementById('dropZone');
+        function fmtSize(b) {
+            return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(1) + ' MB';
+        }
+        function drawFiles() {
+            var fs = fileInput.files;
+            fileList.innerHTML = '';
+            if (!fs.length) { fileList.innerHTML = '<li><span>No files chosen</span></li>'; return; }
+            var total = 0;
+            Array.prototype.forEach.call(fs, function (f) {
+                total += f.size;
+                var li = document.createElement('li');
+                var n = document.createElement('span');
+                n.textContent = f.name;
+                var s = document.createElement('span');
+                s.className = 'sz';
+                s.textContent = fmtSize(f.size);
+                li.appendChild(n); li.appendChild(s);
+                fileList.appendChild(li);
+            });
+            var sum = document.createElement('li');
+            sum.innerHTML = '<strong>' + fs.length + ' file' + (fs.length === 1 ? '' : 's') +
+                '</strong><span class="sz"><strong>' + fmtSize(total) + '</strong></span>';
+            fileList.appendChild(sum);
+        }
+        function addFiles(incoming) {
+            var dt = new DataTransfer();
+            Array.prototype.forEach.call(fileInput.files, function (f) { dt.items.add(f); });
+            Array.prototype.forEach.call(incoming, function (f) { dt.items.add(f); });
+            fileInput.files = dt.files;
+            drawFiles();
+        }
+        fileInput.addEventListener('change', drawFiles);
+        dropZone.addEventListener('click', function () { fileInput.click(); });
+        dropZone.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+        });
+        ['dragenter', 'dragover'].forEach(function (ev) {
+            dropZone.addEventListener(ev, function (e) { e.preventDefault(); dropZone.classList.add('over'); });
+        });
+        ['dragleave', 'drop'].forEach(function (ev) {
+            dropZone.addEventListener(ev, function (e) { e.preventDefault(); dropZone.classList.remove('over'); });
+        });
+        dropZone.addEventListener('drop', function (e) {
+            if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+        });
+        drawFiles();
 
         /* Transfer list */
         function move(from, to) {
