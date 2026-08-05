@@ -117,7 +117,7 @@
         .toc-note { font-size: 0.76rem; color: var(--muted); }
         .toc ol { list-style: none; margin: 0; padding: 0.5rem 0.65rem 0.7rem; display: grid; gap: 0.05rem; }
         /* Column-major so the list reads 1-7 down the left, then 8-14 down the right. */
-        @media (min-width: 700px) { .toc ol { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(8, auto); grid-auto-flow: column; column-gap: 1.1rem; } }
+        @media (min-width: 700px) { .toc ol { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(9, auto); grid-auto-flow: column; column-gap: 1.1rem; } }
         .toc li { margin: 0; }
         .toc a { display: flex; align-items: baseline; gap: 0.5rem; padding: 0.24rem 0.35rem; border-radius: 5px; color: var(--ink); font-size: 0.87rem; line-height: 1.35; }
         .toc a:hover, .toc a:focus-visible { background: var(--soft); text-decoration: none; }
@@ -247,8 +247,14 @@
         dialog .drow { display: flex; gap: 0.4rem; justify-content: flex-end; margin-top: 0.7rem; }
         dialog.sheet { position: fixed; inset: auto 0 0 0; max-width: none; width: 100%; border-radius: 12px 12px 0 0; margin: 0; }
         dialog.drawer { position: fixed; inset: 0 auto 0 0; height: 100%; max-height: 100%; width: min(19rem, 84vw); border-radius: 0 12px 12px 0; margin: 0; }
-        dialog.lightbox { padding: 0.5rem; background: var(--ink); border-color: var(--ink); }
+        dialog.lightbox { padding: 0.5rem; background: var(--ink); border-color: var(--ink); color: var(--surface); }
         dialog.lightbox svg { display: block; max-width: min(34rem, 88vw); height: auto; border-radius: 6px; }
+        .lb-bar { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; justify-content: space-between; padding: 0.5rem 0.15rem 0.1rem; font-size: 0.82rem; }
+        .lb-cap { color: #c9bfb4; }
+        .lb-nav { display: flex; align-items: center; gap: 0.35rem; }
+        .lb-count { font-variant-numeric: tabular-nums; color: #c9bfb4; min-width: 3.4rem; text-align: center; }
+        dialog.lightbox .btn { background: transparent; color: #f0ebe4; border-color: #574d45; }
+        dialog.lightbox .btn:hover, dialog.lightbox .btn:focus-visible { border-color: #f0ebe4; }
         dialog.nonmodal { position: fixed; top: auto; bottom: 5.5rem; right: 1rem; left: auto; margin: 0; width: min(19rem, 88vw); }
         .toast { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); z-index: 70; display: none; align-items: center; gap: 0.8rem; padding: 0.55rem 0.9rem; font-size: 0.86rem; background: var(--ink); color: var(--surface); border: 0; border-radius: 8px; box-shadow: 0 8px 26px rgba(0,0,0,0.3); }
         .toast.show { display: flex; animation: toastIn 0.24s ease-out; }
@@ -260,6 +266,9 @@
         table.dis th { font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
         table.dis td, table.dis th { padding: 0.45rem 0.55rem 0.45rem 0; }
         table.dis td.y { color: var(--yes); font-weight: 700; }
+        /* Status colours are for the cell's own text; inside a code chip they land on
+           --code-bg and fail contrast. */
+        table.dis td.y code, table.dis td.n code { color: var(--ink); font-weight: 400; }
         table.dis td.n { color: var(--muted); }
 
         /* Status family */
@@ -282,6 +291,9 @@
         .alert.ok { border-left-color: var(--yes); }
         .empty { text-align: center; padding: 0.9rem 0.5rem; color: var(--muted); font-size: 0.82rem; }
         .empty .gl { font-size: 1.5rem; display: block; margin-bottom: 0.25rem; }
+        .empty strong { color: var(--ink); }
+        .empty.is-error { border-left: 3px solid var(--no); text-align: left; padding-left: 0.6rem; }
+        .empty.is-error .gl { color: var(--no); }
         .backdrop-demo { position: relative; height: 5.2rem; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; font-size: 0.78rem; padding: 0.4rem; color: var(--muted); }
         .backdrop-demo .scrim { position: absolute; inset: 0; background: rgba(24, 21, 18, 0.74); display: grid; place-items: center; color: #fff; }
         .field-err { color: var(--no); font-size: 0.76rem; }
@@ -498,16 +510,18 @@
                     <li class="fam"><a href="#navigation"><span class="n">3</span><span class="t">Navigation</span><span class="c" data-toc-fam="nav"></span></a></li>
                     <li class="fam"><a href="#input-controls"><span class="n">4</span><span class="t">Input controls</span><span class="c" data-toc-fam="input"></span></a></li>
                     <li class="fam"><a href="#feedback"><span class="n">5</span><span class="t">Feedback and status</span><span class="c" data-toc-fam="status"></span></a></li>
-                    <li class="fam"><a href="#display"><span class="n">6</span><span class="t">Display and containers</span><span class="c" data-toc-fam="display"></span></a></li>
-                    <li class="fam"><a href="#page-blocks"><span class="n">7</span><span class="t">Page-level blocks</span><span class="c" data-toc-fam="page"></span></a></li>
-                    <li><a href="#native"><span class="n">8</span><span class="t">What the browser exposes</span><span class="c">Fig. 7</span></a></li>
-                    <li><a href="#shoelace"><span class="n">9</span><span class="t">Hand-rolled vs. a design system</span><span class="c">Fig. 8</span></a></li>
-                    <li><a href="#contract"><span class="n">10</span><span class="t">A name is a behavioral contract</span></a></li>
-                    <li><a href="#collisions"><span class="n">11</span><span class="t">The names that collide</span></a></li>
-                    <li><a href="#recall"><span class="n">12</span><span class="t">Recognition is not the skill</span><span class="c">Fig. 9</span></a></li>
-                    <li><a href="#quiz-section"><span class="n">13</span><span class="t">The quiz at the door</span><span class="c">Fig. 10</span></a></li>
-                    <li><a href="#still-open"><span class="n">14</span><span class="t">What's still open</span></a></li>
-                    <li><a href="#sources"><span class="n">15</span><span class="t">Sources</span></a></li>
+                    <li><a href="#empty-state"><span class="n">6</span><span class="t">"Empty state" is four screens</span></a></li>
+                    <li><a href="#lightbox"><span class="n">7</span><span class="t">Lightbox vs. modal</span></a></li>
+                    <li class="fam"><a href="#display"><span class="n">8</span><span class="t">Display and containers</span><span class="c" data-toc-fam="display"></span></a></li>
+                    <li class="fam"><a href="#page-blocks"><span class="n">9</span><span class="t">Page-level blocks</span><span class="c" data-toc-fam="page"></span></a></li>
+                    <li><a href="#native"><span class="n">10</span><span class="t">What the browser exposes</span><span class="c">Fig. 7</span></a></li>
+                    <li><a href="#shoelace"><span class="n">11</span><span class="t">Hand-rolled vs. a design system</span><span class="c">Fig. 8</span></a></li>
+                    <li><a href="#contract"><span class="n">12</span><span class="t">A name is a behavioral contract</span></a></li>
+                    <li><a href="#collisions"><span class="n">13</span><span class="t">The names that collide</span></a></li>
+                    <li><a href="#recall"><span class="n">14</span><span class="t">Recognition is not the skill</span><span class="c">Fig. 9</span></a></li>
+                    <li><a href="#quiz-section"><span class="n">15</span><span class="t">The quiz at the door</span><span class="c">Fig. 10</span></a></li>
+                    <li><a href="#still-open"><span class="n">16</span><span class="t">What's still open</span></a></li>
+                    <li><a href="#sources"><span class="n">17</span><span class="t">Sources</span></a></li>
                 </ol>
             </nav>
 
@@ -865,16 +879,27 @@
                             <button type="button" class="btn" data-open="dlgSheet">Open bottom sheet</button>
                         </div>
                         <div class="spec spec-box" data-el="Lightbox" data-fam="status" data-also="image overlay">
-                            <button type="button" class="btn" data-open="dlgLightbox">Open lightbox</button>
+                            <button type="button" class="btn" data-open="dlgLightbox" data-lb="0">Open lightbox</button>
+                            <p class="demo-note">Modal is the <em>mode</em>; lightbox is the <em>content pattern</em>. Note what it has that the modal dialog above does not: next, previous, a position counter, a caption, and arrow keys.</p>
                         </div>
                         <div class="spec spec-box" data-el="Progress bar" data-fam="status" data-also="determinate progress">
-                            <label for="pb1" class="demo-note" style="margin:0">Backup 62%</label>
+                            <label for="pb1" class="demo-note" style="margin:0" id="pbLabel">Backup 62%</label>
                             <progress id="pb1" value="62" max="100">62%</progress>
-                            <p class="demo-note">The 3&nbsp;px bar at the very top of this page is the same element, tracking your scroll.</p>
+                            <div class="ctl-row" style="margin-top:0.4rem">
+                                <span class="ctl-slider">
+                                    <label for="pbRange" class="demo-note" style="margin:0">Drag</label>
+                                    <input type="range" id="pbRange" min="0" max="100" value="62" style="accent-color:var(--brand);width:100%;max-width:9rem">
+                                </span>
+                                <button type="button" class="btn sm" id="pbRun">Run</button>
+                            </div>
+                            <p class="demo-note" id="pbNote">Determinate: it knows the total, so it can promise an end.</p>
                         </div>
                         <div class="spec spec-box" data-el="Progress indicator" data-fam="status" data-also="indeterminate progress">
-                            <div class="bar-track indet"><span class="fill"></span></div>
-                            <p class="demo-note">Indeterminate: work is happening, duration unknown.</p>
+                            <progress id="pb2" max="100">Working</progress>
+                            <div class="ctl-row" style="margin-top:0.4rem">
+                                <label class="stackh"><input type="checkbox" role="switch" id="pbKnown"> Duration known</label>
+                            </div>
+                            <p class="demo-note">Same <code>&lt;progress&gt;</code> element. Remove the <code>value</code> attribute and the browser switches it to indeterminate by itself - flip the switch and watch.</p>
                         </div>
                         <div class="spec spec-box" data-el="Spinner" data-fam="status" data-also="loading spinner, activity indicator, wait animation">
                             <div class="spinner" role="status" aria-label="Loading"></div>
@@ -906,7 +931,14 @@
                             <p class="demo-note">Opens on hover intent, holds rich content, dismisses on leave.</p>
                         </div>
                         <div class="spec spec-box" data-el="Empty state" data-fam="status" data-also="blank slate, zero state">
-                            <div class="empty"><span class="gl">&#9634;</span>No deploys yet.<br><button type="button" class="btn sm" style="margin-top:0.3rem">Create one</button></div>
+                            <div class="chip-row" role="group" aria-label="Reason the list is empty" id="emptyPicker">
+                                <button type="button" class="chip" data-empty="first" aria-pressed="true">First run</button>
+                                <button type="button" class="chip" data-empty="none" aria-pressed="false">No results</button>
+                                <button type="button" class="chip" data-empty="done" aria-pressed="false">All done</button>
+                                <button type="button" class="chip" data-empty="error" aria-pressed="false">Failed</button>
+                            </div>
+                            <div class="empty" id="emptyBox" role="status"></div>
+                            <p class="demo-note">Four different situations, one label. The copy and the action have to change with the reason - and the last one is not an empty state at all.</p>
                         </div>
                         <div class="spec spec-box" data-el="Error state" data-fam="status" data-also="validation message, field error">
                             <label for="i-err">Port</label><br>
@@ -921,6 +953,46 @@
                 </div>
                 <div class="fig-caption">The five overlay specimens - modal, non-modal, confirmation, bottom sheet, and lightbox - are one <code>&lt;dialog&gt;</code> element each, differing only in CSS and in whether the script calls <code>showModal()</code> or <code>show()</code>. The tooltip and hover card use <code>popover="manual"</code> so hover intent controls them rather than a click.</div>
             </div>
+
+            <h2 id="empty-state">"Empty state" is four different screens</h2>
+
+            <p>The empty state is the specimen I get wrong most often in my own work, because the label describes what the box <em>contains</em> - nothing - rather than why. Four unrelated situations produce an empty list, and each one needs different copy and a different action. Cycle the four chips in Fig. 4's empty-state specimen and watch what has to change.</p>
+
+            <ol>
+                <li><strong>First run.</strong> The user has never created one. The job is to explain what would be here and offer the action that creates it. This is the only case where a big primary button belongs.</li>
+                <li><strong>No results.</strong> A search or filter excluded everything. The job is to say what was filtered out and offer the escape - "clear filters". Shipping the first-run copy here is the classic bug: "Create your first deploy!" is insulting to someone who has forty deploys and a typo in the search box.</li>
+                <li><strong>All done.</strong> The user emptied it themselves - inbox zero, queue cleared. The job is to confirm, briefly. There is nothing to create and prompting for it undoes the sense of completion.</li>
+                <li><strong>Failed.</strong> Nothing loaded because the request errored or permission was denied. <strong>This is not an empty state.</strong> It is an <em>error state</em>, and dressing it as an empty one hides an outage behind a friendly illustration - the user reads "you have no deploys" when the truth is "we could not reach the server."</li>
+            </ol>
+
+            <p>So the decision rule is a question about cause, not appearance: <strong>is it empty because nothing was created, because a filter excluded it, because the work is finished, or because something broke?</strong> Only the first three are empty states, and they do not share copy.</p>
+
+            <p>Two adjacent confusions are worth naming while we are here. An empty state is not a <strong>loading state</strong> - rendering "No deploys yet" while the fetch is still in flight is the most common version of this mistake, and the fix is the skeleton screen sitting two specimens away in Fig. 4. And "empty state" is not an NN/g term at all; it does not appear in the 61-entry glossary. It comes from design-system practice, where the Component Gallery does list it. By the scoping rule at the top of this page, that makes it a common convention rather than a glossary term - which is exactly why its meaning drifts.</p>
+
+            <h2 id="lightbox">"Lightbox" and "modal" are not alternatives</h2>
+
+            <p>People argue about whether a thing is "a lightbox or a modal" and the argument never resolves, because the two words are answers to different questions. <strong>Modal is a mode</strong>: the element is in the top layer, the rest of the document is inert, and Escape closes it. <strong>Lightbox is a content pattern</strong>: one media item shown at its own size over a dimmed page, where looking at the thing <em>is</em> the task. Nearly every lightbox is modal, which is why they get welded together in conversation - but modality is a property you could switch off and still have a lightbox, and a confirmation dialog is fully modal while being nothing like one.</p>
+
+            <p>The name is literal, and knowing where it comes from fixes it in place. A lightbox was a backlit glass panel photographers used to view slides and negatives; Lokesh Dhakar's <span class="cite-title">Lightbox</span> script in 2005 borrowed the metaphor, and the dimmed backdrop every implementation still draws is imitating the darkened room around an illuminated pane. NN/g keeps it as its own entry - "non-fullscreen overlay, sometimes containing multimedia content" - separate from both Dialog and Overlay.</p>
+
+            <p>The practical consequence is a different behavioral contract, which is why Fig. 4's lightbox has controls the modal dialog beside it does not. A dialog is finished when the user decides something, so it owes you buttons that name the decision. A lightbox is finished when the user stops looking, so it owes you a way to move through the set: previous and next, a position counter so you know how far in you are, a caption, and arrow keys. Open it from any tile of the image list in Fig. 5 and it starts on the tile you clicked, because a viewer that always restarts at item one is a broken viewer.</p>
+
+            <div class="fig-scroll">
+                <table class="dis">
+                    <thead><tr><th></th><th>Modal dialog</th><th>Lightbox</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>What the word tells you</strong></td><td>the interaction mode</td><td>the content pattern</td></tr>
+                        <tr><td><strong>Why it opened</strong></td><td>the system needs a decision or some input</td><td>you asked to see something larger</td></tr>
+                        <tr><td><strong>Main content</strong></td><td>copy and controls</td><td>one media item at its natural size</td></tr>
+                        <tr><td><strong>Expected actions</strong></td><td>confirm, cancel, submit</td><td>next, previous, close</td></tr>
+                        <tr><td><strong>Sized by</strong></td><td>its text, up to a max-width</td><td>the media's own dimensions</td></tr>
+                        <tr><td><strong>Can it be non-modal?</strong></td><td class="y">yes - that is <code>show()</code></td><td class="y">yes, though rare (inline expanders)</td></tr>
+                        <tr><td><strong>Finished when</strong></td><td>the user decides</td><td>the user stops looking</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>So "make it a modal" and "make it a lightbox" are not competing instructions. The first sets the mode and says nothing about the content; the second describes the content and leaves the mode implied. A ticket that wants both should say both, and a ticket that says only "modal" has not told you what goes inside.</p>
 
             <h2 id="display">Display and containers: the boxes everything else sits in</h2>
 
@@ -973,7 +1045,7 @@
                             </div>
                         </div>
                         <div class="spec spec-box" data-el="Image list" data-fam="display" data-also="gallery, image grid">
-                            <div class="gallery"><button type="button" data-open="dlgLightbox">&#9635;</button><button type="button" data-open="dlgLightbox">&#9636;</button><button type="button" data-open="dlgLightbox">&#9637;</button></div>
+                            <div class="gallery"><button type="button" data-open="dlgLightbox" data-lb="0" aria-label="Open Ridge at dawn">&#9635;</button><button type="button" data-open="dlgLightbox" data-lb="1" aria-label="Open Harbour, long exposure">&#9636;</button><button type="button" data-open="dlgLightbox" data-lb="2" aria-label="Open Studio wall">&#9637;</button></div>
                         </div>
                         <div class="spec spec-box" data-el="Chart" data-fam="display" data-also="graph, plot">
                             <div class="chart-wrap">
@@ -1148,6 +1220,8 @@
                         <tr><td>Stepper</td><td>The Component Gallery's "Stepper" is the multi-step wizard. NN/g's "Input Stepper" is the numeric increment/decrement control. Two unrelated components, one word. Say "wizard" or "number input" and the ambiguity disappears.</td></tr>
                         <tr><td>Badge</td><td>Bootstrap's badge is a small inline label - what Material calls a chip and Polaris calls a tag. Material's badge is the count bubble on an icon. NN/g follows Material: "notification indicator (dot) or item counter."</td></tr>
                         <tr><td>Modal</td><td>Not a component. It is a property of a dialog: <code>showModal()</code> versus <code>show()</code>. Ask for "a modal" and you have specified the mode but not the content pattern.</td></tr>
+                        <tr><td>Lightbox</td><td>Argued about as if it were an alternative to "modal," but they answer different questions: modal is the interaction mode, lightbox is the content pattern. Nearly every lightbox is modal; almost no modal is a lightbox. Saying only "modal" specifies the mode and nothing about what is inside.</td></tr>
+                        <tr><td>Empty state</td><td>Covers four unrelated screens - first run, no results, all done, and failed - which need different copy and different actions. The fourth is an error state and should not be dressed as an empty one. Not an NN/g term; it comes from design-system practice.</td></tr>
                         <tr><td>Snackbar / toast</td><td>Material says snackbar, everyone else says toast. NN/g lists it as "Snackbar (Toast)." Same element.</td></tr>
                         <tr><td>Drawer / side sheet / flyout</td><td>Three names, one element. NN/g's entry is "Side Sheet (Drawer, Flyout)"; it also lists "Drawer Menu" separately for the navigation-specific case.</td></tr>
                         <tr><td>Segmented control</td><td>Apple's name. Material 3 says segmented button; NN/g lists "Segmented Button (Segmented Control)." Bootstrap has no equivalent and you build it from a button group.</td></tr>
@@ -1190,7 +1264,7 @@
 
             <h2 id="quiz-section">The quiz at the door</h2>
 
-            <p>Litt's rule for his own agents is that a PR does not ship unless he could pass a quiz on it. Same rule here, and the same warning from Matuschak: if you scrolled and nodded, you kept almost none of it. Six questions - and having just done the recall drill, notice how much easier these feel. That gap is the point.</p>
+            <p>Litt's rule for his own agents is that a PR does not ship unless he could pass a quiz on it. Same rule here, and the same warning from Matuschak: if you scrolled and nodded, you kept almost none of it. Eight questions - and having just done the recall drill, notice how much easier these feel. That gap is the point.</p>
 
             <div class="fig" id="fig10">
                 <div class="fig-head">
@@ -1257,7 +1331,27 @@
                         </div>
                         <p class="expl"><code>popover</code> is a top-layer primitive with light-dismiss and focus management built in. The dropdown menus, tooltips, hover cards, and pie menu in this page are all built with it, and none of them <em>is</em> "a popover" as a component name.</p>
                     </div>
-                    <p id="qzTally">0 of 6 answered.</p>
+                    <div class="qz">
+                        <div class="q">7. A ticket says "put the photo in a modal." What has it not told you?</div>
+                        <div class="opts">
+                            <button type="button" class="opt">Nothing - modal fully specifies it</button>
+                            <button type="button" class="opt" data-c="1">Everything about the content pattern: whether it needs next/previous, a position counter, and a caption - that is, whether it is a lightbox</button>
+                            <button type="button" class="opt">Which animation to use</button>
+                            <button type="button" class="opt">Whether to use <code>&lt;dialog&gt;</code> or a <code>&lt;div&gt;</code></button>
+                        </div>
+                        <p class="expl">"Modal" sets the mode - top layer, backdrop, rest inert. It says nothing about what goes inside. A photo viewer is a lightbox, and a lightbox owes the user navigation through the set, which a plain modal dialog does not.</p>
+                    </div>
+                    <div class="qz">
+                        <div class="q">8. A filter returns nothing, and the screen says "Create your first deploy!" What went wrong?</div>
+                        <div class="opts">
+                            <button type="button" class="opt">Nothing - that is the standard empty state</button>
+                            <button type="button" class="opt">The button should be larger</button>
+                            <button type="button" class="opt" data-c="1">First-run copy was used for a no-results case; it should say what the filter excluded and offer to clear it</button>
+                            <button type="button" class="opt">It should show a spinner instead</button>
+                        </div>
+                        <p class="expl">Four situations share the label "empty state" - first run, no results, all done, and failed. Only the first wants a create action. Telling someone with forty deploys to create their first one is the giveaway.</p>
+                    </div>
+                    <p id="qzTally">0 of 8 answered.</p>
                 </div>
                 <div class="fig-caption">Answers are graded in the browser with no network call, and the explanation appears whichever option you pick.</div>
             </div>
@@ -1346,14 +1440,17 @@
         <div class="drow"><button type="button" class="btn" data-close>Close</button></div>
     </dialog>
 
-    <dialog id="dlgLightbox" class="lightbox">
-        <svg viewBox="0 0 480 260" width="480" height="260" role="img" aria-label="Placeholder image in a lightbox">
-            <rect width="480" height="260" fill="#2a2521"></rect>
-            <circle cx="150" cy="90" r="34" fill="#9b4d24"></circle>
-            <path d="M40 230 L180 120 L280 200 L360 150 L440 230 Z" fill="#4a4038"></path>
-            <text x="240" y="250" text-anchor="middle" fill="#c9bfb4" font-size="13">Lightbox: a non-fullscreen overlay, usually for media</text>
-        </svg>
-        <div class="drow"><button type="button" class="btn" data-close>Close</button></div>
+    <dialog id="dlgLightbox" class="lightbox" aria-label="Image viewer">
+        <div class="lb-stage" id="lbStage"></div>
+        <div class="lb-bar">
+            <span class="lb-cap" id="lbCap"></span>
+            <span class="lb-nav">
+                <button type="button" class="btn sm" id="lbPrev" aria-label="Previous image">&larr;</button>
+                <span class="lb-count" id="lbCount" role="status"></span>
+                <button type="button" class="btn sm" id="lbNext" aria-label="Next image">&rarr;</button>
+                <button type="button" class="btn sm" data-close>Close</button>
+            </span>
+        </div>
     </dialog>
 
     <script>
@@ -1363,6 +1460,7 @@
     (function () {
         'use strict';
 
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         var FAM = { nav: 'NAV', input: 'INPUT', status: 'STATUS', display: 'DISPLAY', page: 'PAGE' };
         var specs = Array.prototype.slice.call(document.querySelectorAll('.spec'));
         var body = document.body;
@@ -1694,6 +1792,8 @@
             btn.addEventListener('click', function () {
                 var d = document.getElementById(btn.getAttribute('data-open'));
                 if (!d) return;
+                var lb = btn.getAttribute('data-lb');
+                if (lb !== null) lbShow(parseInt(lb, 10));
                 if (btn.getAttribute('data-modal') === '0') d.show();
                 else d.showModal();
             });
@@ -1705,6 +1805,113 @@
                 btn.closest('dialog').close();
             });
         });
+
+        /* ---------- 4b. Lightbox: a viewer, not just a modal ----------
+           The behavioural difference from a plain modal dialog is the navigation:
+           previous/next, a position counter, a caption, and arrow keys. */
+        var LB = [
+            { cap: 'Ridge at dawn',
+              svg: '<rect width="480" height="260" fill="#2a2521"/><circle cx="150" cy="80" r="30" fill="#d99a7a"/><path d="M20 235 L150 120 L250 195 L340 140 L460 235 Z" fill="#4a4038"/><path d="M240 235 L330 175 L460 235 Z" fill="#5d5148"/>' },
+            { cap: 'Harbour, long exposure',
+              svg: '<rect width="480" height="260" fill="#1e2529"/><rect y="150" width="480" height="110" fill="#2c3a42"/><circle cx="380" cy="70" r="22" fill="#e8dcc8"/><rect x="60" y="90" width="16" height="60" fill="#485a63"/><rect x="110" y="60" width="16" height="90" fill="#485a63"/><rect x="160" y="105" width="16" height="45" fill="#485a63"/>' },
+            { cap: 'Studio wall',
+              svg: '<rect width="480" height="260" fill="#efe9df"/><rect x="60" y="40" width="150" height="180" fill="#9b4d24"/><rect x="240" y="40" width="180" height="85" fill="#625a52"/><rect x="240" y="140" width="180" height="80" fill="#c9bfb4"/>' }
+        ];
+        var lbIdx = 0,
+            lbStage = document.getElementById('lbStage'),
+            lbCap = document.getElementById('lbCap'),
+            lbCount = document.getElementById('lbCount'),
+            dlgLb = document.getElementById('dlgLightbox');
+
+        function lbShow(i) {
+            lbIdx = (i + LB.length) % LB.length;
+            var item = LB[lbIdx];
+            lbStage.innerHTML = '<svg viewBox="0 0 480 260" width="480" height="260" role="img" aria-label="' +
+                item.cap + ', image ' + (lbIdx + 1) + ' of ' + LB.length + '">' + item.svg + '</svg>';
+            lbCap.textContent = item.cap;
+            lbCount.textContent = (lbIdx + 1) + ' of ' + LB.length;
+        }
+        document.getElementById('lbPrev').addEventListener('click', function () { lbShow(lbIdx - 1); });
+        document.getElementById('lbNext').addEventListener('click', function () { lbShow(lbIdx + 1); });
+        dlgLb.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowLeft') { e.preventDefault(); lbShow(lbIdx - 1); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); lbShow(lbIdx + 1); }
+        });
+        lbShow(0);
+
+        /* ---------- 4d. Progress: drive the fill, and watch determinate vs not ---------- */
+        var pb1 = document.getElementById('pb1'),
+            pbRange = document.getElementById('pbRange'),
+            pbLabel = document.getElementById('pbLabel'),
+            pbNote = document.getElementById('pbNote'),
+            pbTimer = null;
+
+        function pbSet(v) {
+            v = Math.max(0, Math.min(100, Math.round(v)));
+            pb1.value = v;
+            pb1.textContent = v + '%';
+            pbRange.value = v;
+            pbLabel.textContent = 'Backup ' + v + '%';
+            pbNote.textContent = v === 0
+                ? 'At 0% a determinate bar looks identical to a stalled one. This is the case people forget.'
+                : v === 100
+                    ? 'At 100% it has said everything it can. Something else has to announce success - a toast, or the list simply filling in.'
+                    : 'Determinate: it knows the total, so it can promise an end.';
+        }
+        pbRange.addEventListener('input', function () { clearTimeout(pbTimer); pbSet(pbRange.value); });
+        document.getElementById('pbRun').addEventListener('click', function () {
+            clearTimeout(pbTimer);
+            pbSet(0);
+            (function tick() {
+                var v = Number(pb1.value);
+                if (v >= 100) return;
+                pbSet(v + 4);
+                pbTimer = setTimeout(tick, reduceMotion ? 220 : 90);
+            })();
+        });
+
+        /* The indeterminate case is the same element with no value attribute. */
+        var pb2 = document.getElementById('pb2'), pbKnown = document.getElementById('pbKnown'), pb2Timer = null;
+        function pb2Mode() {
+            clearTimeout(pb2Timer);
+            if (pbKnown.checked) {
+                var v = 0;
+                (function tick2() {
+                    v = (v + 5) % 105;
+                    pb2.value = Math.min(100, v);
+                    pb2Timer = setTimeout(tick2, reduceMotion ? 300 : 140);
+                })();
+            } else {
+                pb2.removeAttribute('value');
+            }
+        }
+        pbKnown.addEventListener('change', pb2Mode);
+        pb2Mode();
+
+        /* ---------- 4c. Empty state: four situations behind one label ---------- */
+        var EMPTY = {
+            first: { gl: '&#9634;', head: 'No deploys yet.', sub: 'Deploys will appear here once you ship.', act: 'Create your first deploy' },
+            none:  { gl: '&#9906;', head: 'No deploys match "canary".', sub: 'Three deploys are hidden by the current filter.', act: 'Clear filters' },
+            done:  { gl: '&#10003;', head: 'All deploys reviewed.', sub: 'Nothing left in the queue.', act: null },
+            error: { gl: '&#9888;', head: 'Could not load deploys.', sub: 'The API returned 503. This is an error state wearing an empty state’s clothes.', act: 'Retry' }
+        };
+        var emptyBox = document.getElementById('emptyBox');
+        function drawEmpty(kind) {
+            var e = EMPTY[kind];
+            emptyBox.innerHTML = '<span class="gl">' + e.gl + '</span>' +
+                '<strong>' + e.head + '</strong><br><span class="demo-note" style="margin:0">' + e.sub + '</span>' +
+                (e.act ? '<br><button type="button" class="btn sm" style="margin-top:0.4rem">' + e.act + '</button>' : '');
+            emptyBox.classList.toggle('is-error', kind === 'error');
+        }
+        Array.prototype.forEach.call(document.querySelectorAll('#emptyPicker .chip'), function (c) {
+            c.addEventListener('click', function () {
+                Array.prototype.forEach.call(document.querySelectorAll('#emptyPicker .chip'), function (o) {
+                    o.setAttribute('aria-pressed', String(o === c));
+                });
+                drawEmpty(c.getAttribute('data-empty'));
+            });
+        });
+        drawEmpty('first');
 
         /* ---------- 5. Toast ---------- */
         var toast = document.getElementById('toast'), toastTimer = null, toastBtn = document.getElementById('toastBtn');

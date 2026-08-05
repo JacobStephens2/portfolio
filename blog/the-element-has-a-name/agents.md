@@ -84,6 +84,39 @@ inert, focus return, and Escape handling worse than the browser does.
 **Directive:** never introduce a component named `Modal`. Name it `Dialog` and take
 modality as a prop.
 
+### 2b. "Lightbox" and "modal" answer different questions
+
+They are not alternatives and are not on the same axis. **Modal is the interaction
+mode** (top layer, backdrop, rest inert, Escape closes). **Lightbox is the content
+pattern**: one media item at its natural size over a dimmed page, where viewing is the
+task. Nearly every lightbox is modal; almost no modal is a lightbox.
+
+| | Modal dialog | Lightbox |
+|---|---|---|
+| The word specifies | interaction mode | content pattern |
+| Opened because | the system needs a decision or input | the user asked to see something larger |
+| Main content | copy and controls | one media item at its natural size |
+| Required actions | confirm / cancel / submit | **next, previous, close** |
+| Sized by | its text, up to a max-width | the media's own dimensions |
+| Finished when | the user decides | the user stops looking |
+
+**Directive:** if a request says "modal" and the payload is an image, video, or any set
+the user browses, it is a **lightbox** and it owes: previous/next, a position counter
+("3 of 12"), a caption, Left/Right arrow keys, and **opening on the item that was
+clicked** - not always the first. A viewer that resets to item one is broken. If the
+request says only "modal," the content pattern has not been specified; ask.
+
+### 2c. Progress: determinate and indeterminate are one element
+
+`<progress>` with a `value` is a **progress bar** (determinate); remove the `value`
+attribute and the same element becomes a **progress indicator** (indeterminate). Detect
+it with `el.position === -1`.
+
+**Directive:** use indeterminate only when the total is genuinely unknown. Do not fake a
+determinate bar with an invented percentage. Two states people forget to design: **0%**,
+which is visually identical to stalled, and **100%**, which cannot itself announce
+success - pair it with a toast or with the content simply appearing.
+
 ## 3. Names by family
 
 The five-family split is a working convention, not a standard. UXPin's guide uses four
@@ -160,8 +193,8 @@ submits later. If your UI has a Save button, use checkboxes.
 | Non-modal dialog | modeless dialog | `<dialog>.show()` |
 | Confirmation dialog | confirm | name the action in the button, never "OK" |
 | Bottom sheet | action sheet | `<dialog>` anchored to bottom edge |
-| Lightbox | image overlay | non-fullscreen media overlay |
-| Progress bar | determinate progress | `<progress value max>` |
+| Lightbox | image overlay | a **content pattern**, not a mode - see 2b; owes next/prev, a counter and a caption |
+| Progress bar | determinate progress | `<progress value max>`; drop `value` for indeterminate - see 2c |
 | Progress indicator | indeterminate progress | duration unknown |
 | Spinner | loading spinner, activity indicator, wait animation | |
 | Skeleton screen | content placeholder, shimmer | |
@@ -170,9 +203,29 @@ submits later. If your UI has a Save button, use checkboxes.
 | Tooltip | popup tip | **text only, never interactive content** |
 | Popover | popup | may contain links and focusable content |
 | Hover card | preview card | hover intent, rich content |
-| Empty state | blank slate, zero state | |
+| Empty state | blank slate, zero state | four causes, four screens - see the directive below |
 | Error state | validation message, field error | `aria-invalid` + `aria-describedby` |
 | Status indicator | health dot, presence dot | pair with text, never color alone |
+
+**Directive: "empty state" is four different screens.** Decide by *cause*, not by
+appearance. Ask why the list is empty:
+
+| Cause | Name it | Copy must say | Primary action |
+|---|---|---|---|
+| Nothing has ever been created | first-run / zero state | what will appear here | create the first one |
+| A filter or search excluded everything | no-results state | **what was excluded** | clear filters |
+| The user finished the work | all-done / cleared state | confirm completion | **none** - do not prompt to create |
+| The request failed or was forbidden | **error state, not empty** | the actual failure | retry |
+
+Emitting first-run copy for a no-results case ("Create your first project!") is the most
+common instance of this bug and reads as an insult to a user with 40 projects and a typo
+in the search box. Dressing a failure as an empty state hides an outage. And an empty
+state is **not a loading state**: render a skeleton while the fetch is in flight, never
+"No results".
+
+Note on scope: "empty state" is **not** an NN/g glossary term. It is design-system
+practice (The Component Gallery lists it), so by the scope rule at the top it is a common
+convention, not a glossary term.
 
 **Directive:** if the overlay needs a link or a button inside it, it is a popover, not a
 tooltip. Putting interactive content in a `role="tooltip"` element makes it unreachable
