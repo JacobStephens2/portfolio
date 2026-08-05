@@ -55,7 +55,7 @@
         h1.title { font-family: 'Source Serif 4', Georgia, serif; font-weight: 700; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.08; letter-spacing: -0.01em; margin-bottom: 1rem; }
         .meta { color: var(--muted); font-size: 0.92rem; margin-bottom: 1.6rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--rule); }
         .meta strong { color: var(--ink); font-weight: 700; }
-        h2 { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; color: var(--brand); margin-top: 2.2rem; margin-bottom: 0.8rem; scroll-margin-top: 4.6rem; }
+        h2 { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; color: var(--brand); margin-top: 2.2rem; margin-bottom: 0.8rem; scroll-margin-top: var(--anchor-offset, 4.6rem); }
         p { margin-bottom: 1rem; color: var(--ink); }
         ol, ul { margin-bottom: 1rem; padding-left: 1.4rem; }
         ol li, ul li { margin-bottom: 0.4rem; }
@@ -102,6 +102,24 @@
         .spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.75rem; align-items: start; }
         .spec-grid.narrow { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
         .spec-grid.roomy { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+
+        /* ---------- Table of contents ---------- */
+        .toc { margin: 1.5rem 0 1.1rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); overflow: hidden; }
+        .toc > header { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; align-items: baseline; justify-content: space-between; padding: 0.55rem 0.9rem; background: var(--soft); border-bottom: 1px solid var(--rule); }
+        .toc-title { font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); }
+        .toc-note { font-size: 0.76rem; color: var(--muted); }
+        .toc ol { list-style: none; margin: 0; padding: 0.5rem 0.65rem 0.7rem; display: grid; gap: 0.05rem; }
+        /* Column-major so the list reads 1-7 down the left, then 8-14 down the right. */
+        @media (min-width: 700px) { .toc ol { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(7, auto); grid-auto-flow: column; column-gap: 1.1rem; } }
+        .toc li { margin: 0; }
+        .toc a { display: flex; align-items: baseline; gap: 0.5rem; padding: 0.24rem 0.35rem; border-radius: 5px; color: var(--ink); font-size: 0.87rem; line-height: 1.35; }
+        .toc a:hover, .toc a:focus-visible { background: var(--soft); text-decoration: none; }
+        .toc a .n { flex: none; min-width: 1.25rem; font-size: 0.7rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+        .toc a .t { flex: 1 1 auto; }
+        .toc a .c { flex: none; font-size: 0.7rem; font-weight: 700; color: var(--brand); font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .toc a[aria-current="true"] { background: var(--tint); }
+        .toc a[aria-current="true"] .t { font-weight: 700; color: var(--brand); }
+        .toc li.fam a .t::before { content: ""; display: inline-block; width: 0.42rem; height: 0.42rem; border-radius: 2px; background: var(--brand); margin-right: 0.42rem; vertical-align: 0.06em; }
 
         /* ---------- Switchboard ---------- */
         .switchboard { position: sticky; top: 0; z-index: 30; margin: 1.4rem 0 1.6rem; padding: 0.6rem 0.8rem; background: var(--soft); border: 1px solid var(--rule); border-radius: 8px; display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; font-size: 0.86rem; }
@@ -448,9 +466,32 @@
 
             <p>Nielsen Norman Group solved the vocabulary problem in February 2025: Raluca Budiu and Kara Rivenbark published a glossary that names <strong>61 interface elements</strong> with their alternate names and one-line definitions. The Component Gallery does the cross-referencing job from the other end - <strong>60 components as they appear across 95 real design systems</strong>, so you can see what Ant Design, Polaris, and the BBC's Global Experience Language each call the same thing. Between them, almost every argument I have ever had about a control has a settled answer.</p>
 
-            <p>So this post is not an article about UI elements. It is a <strong>specimen sheet</strong>: 102 live elements, each one labeled with its canonical name, the family it belongs to, and the synonym most likely to get you the wrong thing. Nothing here is a screenshot. Every menu opens, every dialog is a real <code>&lt;dialog&gt;</code>, every popover uses the browser's top layer. Toggle the labels off and this is an ordinary page; toggle them on and it is a catalog of itself.</p>
+            <p>So this post is not an article about UI elements. It is a <strong>specimen sheet</strong>: 103 live elements, each one labeled with its canonical name, the family it belongs to, and the synonym most likely to get you the wrong thing. Nothing here is a screenshot. Every menu opens, every dialog is a real <code>&lt;dialog&gt;</code>, every popover uses the browser's top layer. Toggle the labels off and this is an ordinary page; toggle them on and it is a catalog of itself.</p>
 
             <p>The teaching structure comes from Geoffrey Litt's talk "Understanding: the New Bottleneck," which I keep raiding for this: demonstration over description, and a quiz at the end because, as Andy Matuschak puts it in "Why Books Don't Work," reading hands you the feeling of understanding and almost none of the retention. You will not remember the difference between a kebab and a meatball menu because I told you. You might remember it because you clicked both.</p>
+
+            <nav class="toc spec" id="toc" data-el="Table of contents" data-fam="nav" data-also="in-page navigation, on this page, jump list" aria-labelledby="tocTitle">
+                <header>
+                    <span class="toc-title" id="tocTitle">Contents</span>
+                    <span class="toc-note">Marked rows are the five element families. Counts are live, from the page itself.</span>
+                </header>
+                <ol>
+                    <li><a href="#five-controls"><span class="n">1</span><span class="t">Five controls, one word</span><span class="c">Fig. 1</span></a></li>
+                    <li><a href="#families"><span class="n">2</span><span class="t">Five families, and the disagreement</span></a></li>
+                    <li class="fam"><a href="#navigation"><span class="n">3</span><span class="t">Navigation</span><span class="c" data-toc-fam="nav"></span></a></li>
+                    <li class="fam"><a href="#input-controls"><span class="n">4</span><span class="t">Input controls</span><span class="c" data-toc-fam="input"></span></a></li>
+                    <li class="fam"><a href="#feedback"><span class="n">5</span><span class="t">Feedback and status</span><span class="c" data-toc-fam="status"></span></a></li>
+                    <li class="fam"><a href="#display"><span class="n">6</span><span class="t">Display and containers</span><span class="c" data-toc-fam="display"></span></a></li>
+                    <li class="fam"><a href="#page-blocks"><span class="n">7</span><span class="t">Page-level blocks</span><span class="c" data-toc-fam="page"></span></a></li>
+                    <li><a href="#native"><span class="n">8</span><span class="t">What the browser ships natively</span><span class="c">Fig. 7</span></a></li>
+                    <li><a href="#shoelace"><span class="n">9</span><span class="t">Hand-rolled vs. a design system</span><span class="c">Fig. 8</span></a></li>
+                    <li><a href="#collisions"><span class="n">10</span><span class="t">The names that collide</span></a></li>
+                    <li><a href="#recall"><span class="n">11</span><span class="t">Recognition is not the skill</span><span class="c">Fig. 9</span></a></li>
+                    <li><a href="#quiz-section"><span class="n">12</span><span class="t">The quiz at the door</span><span class="c">Fig. 10</span></a></li>
+                    <li><a href="#still-open"><span class="n">13</span><span class="t">What's still open</span></a></li>
+                    <li><a href="#sources"><span class="n">14</span><span class="t">Sources</span></a></li>
+                </ol>
+            </nav>
 
             <div class="switchboard spec" id="switchboard" data-el="Toolbar" data-fam="nav" data-also="action bar, control bar">
                 <button type="button" class="ctl-btn" id="labelToggle" aria-pressed="true">Labels on</button>
@@ -469,7 +510,7 @@
                 <span class="sb-count" id="sbCount" aria-live="polite"></span>
             </div>
 
-            <h2>Five controls, one word</h2>
+            <h2 id="five-controls">Five controls, one word</h2>
 
             <p>Start with the argument that started this. Below are the five things people mean by "dropdown," side by side and working. The differences are not cosmetic. Two of them run commands and three of them hold a value; two accept input that is not on the list; only one of the five is a single native HTML element.</p>
 
@@ -548,20 +589,20 @@
 
             <p>The obvious objection: does this level of pedantry pay for itself? It does now, and it did not five years ago. When I wrote the markup myself, a wrong word cost me the ten seconds it took to notice and fix. Now the word goes to an agent that produces 200 lines of confident, working, wrong component, and the cost is the review. Precision in the prompt is cheaper than precision in the diff.</p>
 
-            <h2>Five families, and the sources do not agree on how many</h2>
+            <h2 id="families">Five families, and the sources do not agree on how many</h2>
 
             <p>Elements group into functional families, and here I have to be honest about the taxonomy: nobody agrees on the count. UXPin's guide sorts everything into <strong>four</strong> top-level categories - input, output, navigational, and container. NN/g's glossary does not impose top-level families at all; it is 61 alphabetical entries. The five-family split I use below - navigation, input, feedback and status, display and containers, and page-level blocks - is a working convention, not a standard. What matters is that the <em>element</em> names are canonical. The bins are mine.</p>
 
             <p>The switchboard above filters by family and searches names plus synonyms, so if you only came for the input controls, click "Input" and the rest fade out.</p>
 
-            <h2>Navigation: how people move, and the four menu icons</h2>
+            <h2 id="navigation">Navigation: how people move, and the four menu icons</h2>
 
             <p>Navigation elements answer "where am I and where can I go." The four snack-food icons in the middle row are the ones I see mislabeled most. LogRocket's Rosie Allabarton gives the crisp version: the <strong>hamburger</strong> is three horizontal lines, the <strong>kebab</strong> is three dots arranged vertically, the <strong>meatball</strong> is three dots arranged horizontally, and the <strong>bento</strong> is a grid of squares. Click each one - the contents differ on purpose. Hamburger opens site navigation, kebab and meatball open item-scoped actions, bento switches between apps.</p>
 
             <div class="fig wide" id="fig2">
                 <div class="fig-head">
                     <span class="fig-title">Fig. 2 &middot; Navigation family</span>
-                    <span style="font-size:0.78rem;color:var(--muted)">18 specimens</span>
+                    <span class="fig-count" style="font-size:0.78rem;color:var(--muted)" data-figid="fig2" data-fam="nav"></span>
                 </div>
                 <div class="fig-body">
                     <div class="spec-grid">
@@ -650,14 +691,14 @@
                 <div class="fig-caption">Every menu here opens into the browser's <strong>top layer</strong> using the native <code>popover</code> attribute, positioned by a 17-line JavaScript helper against the trigger's bounding box. Nothing is a screenshot; the submenu really is a popover inside a popover.</div>
             </div>
 
-            <h2>Input controls: the ones with the most synonyms</h2>
+            <h2 id="input-controls">Input controls: the ones with the most synonyms</h2>
 
             <p>Input is where the naming gets sloppiest, because every design system renames the same six things. NN/g's canonical entries are Textbox (Text Field, Input Field), Toggle (Toggle Switch, Switch), Segmented Button (Segmented Control), Floating Button (FAB), Range Control (Continuous Control), and Input Stepper. If you say "switch" to a designer and "toggle" to an engineer you are naming the same element twice.</p>
 
             <div class="fig wide" id="fig3">
                 <div class="fig-head">
                     <span class="fig-title">Fig. 3 &middot; Input family</span>
-                    <span style="font-size:0.78rem;color:var(--muted)">22 specimens</span>
+                    <span class="fig-count" style="font-size:0.78rem;color:var(--muted)" data-figid="fig3" data-fam="input"></span>
                 </div>
                 <div class="fig-body">
                     <form onsubmit="return false" class="spec spec-box" data-el="Form" data-fam="input" data-also="fieldset group">
@@ -764,14 +805,14 @@
                 <div class="fig-caption">Most of these are native HTML form controls carrying no JavaScript at all. The seven that do need script are the split-button menu, the segmented control, the rating, the knob, the transfer list, the multiselect, and the password reveal - plus one line to put the second checkbox into its <code>indeterminate</code> state. The <code>&lt;input type="range"&gt;</code> and <code>type="color"</code> controls are styled with <code>accent-color</code> so they follow the site palette in both themes.</div>
             </div>
 
-            <h2>Feedback and status: modality is a property, not a component</h2>
+            <h2 id="feedback">Feedback and status: modality is a property, not a component</h2>
 
             <p>The distinction worth carrying out of this section: <strong>"modal" is not a component, it is a mode.</strong> A dialog is the component. Calling <code>showModal()</code> on a <code>&lt;dialog&gt;</code> puts it in the top layer, renders a <code>::backdrop</code>, and makes everything behind it inert. Calling <code>show()</code> on the same element gives you a non-modal dialog that leaves the page usable. Same element, same markup, different mode - and the bottom sheet, the drawer, and the lightbox in Fig. 4 are all that same <code>&lt;dialog&gt;</code> element with different CSS.</p>
 
             <div class="fig wide" id="fig4">
                 <div class="fig-head">
                     <span class="fig-title">Fig. 4 &middot; Feedback and status family</span>
-                    <span style="font-size:0.78rem;color:var(--muted)">19 specimens</span>
+                    <span class="fig-count" style="font-size:0.78rem;color:var(--muted)" data-figid="fig4" data-fam="status"></span>
                 </div>
                 <div class="fig-body">
                     <div class="spec-grid">
@@ -857,14 +898,14 @@
                 <div class="fig-caption">The five overlay specimens - modal, non-modal, confirmation, bottom sheet, and lightbox - are one <code>&lt;dialog&gt;</code> element each, differing only in CSS and in whether the script calls <code>showModal()</code> or <code>show()</code>. The tooltip and hover card use <code>popover="manual"</code> so hover intent controls them rather than a click.</div>
             </div>
 
-            <h2>Display and containers: the boxes everything else sits in</h2>
+            <h2 id="display">Display and containers: the boxes everything else sits in</h2>
 
             <p>Container names are the least standardized and the most consequential, because they set your layout vocabulary for the life of the codebase. MUI calls its elevated surface a Paper; Material 3 calls it a Surface; Bootstrap has no equivalent and you use a Card. The layout primitives at the end - Box, Stack, Grid, Container - come from MUI and have been widely copied; the Component Gallery lists Stack as a component in its own right.</p>
 
             <div class="fig wide" id="fig5">
                 <div class="fig-head">
                     <span class="fig-title">Fig. 5 &middot; Display and container family</span>
-                    <span style="font-size:0.78rem;color:var(--muted)">22 specimens</span>
+                    <span class="fig-count" style="font-size:0.78rem;color:var(--muted)" data-figid="fig5" data-fam="display"></span>
                 </div>
                 <div class="fig-body">
                     <div class="spec-grid">
@@ -965,14 +1006,14 @@
                 <div class="fig-caption">The accordion uses the native <code>&lt;details name&gt;</code> attribute for exclusivity, so opening one closes the other with no JavaScript. The two chart marks are hand-written inline SVG on one series each, colored with <code>--brand</code> and labeled in text tokens; a single-series chart needs no legend, and neither of these needs an axis.</div>
             </div>
 
-            <h2>Page-level blocks: the vocabulary marketing pages actually use</h2>
+            <h2 id="page-blocks">Page-level blocks: the vocabulary marketing pages actually use</h2>
 
             <p>Landing pages are not assembled from atomic controls; they are assembled from <em>blocks</em>, and the block names are their own vocabulary. Landingfolio's component library sorts its catalog into 37 categories, and the top of that list by count is Feature (995 examples), Hero (456), Footer (393), Header (390), Call To Action (297), and Testimonial (296). If you brief a designer or an agent in these words, you get a page back in one pass.</p>
 
             <div class="fig" id="fig6">
                 <div class="fig-head">
                     <span class="fig-title">Fig. 6 &middot; A landing page, block by block</span>
-                    <span style="font-size:0.78rem;color:var(--muted)">scroll inside the frame</span>
+                    <span class="fig-count" style="font-size:0.78rem;color:var(--muted)" data-figid="fig6" data-fam="page"></span>
                 </div>
                 <div class="fig-body">
                     <div class="frame">
@@ -997,7 +1038,7 @@
                 <div class="fig-caption">Thirteen page-level blocks in the order they usually appear, inside a scrollable frame. The product is fictional and the domain is <code>example.test</code>, which is reserved by RFC&nbsp;2606 and resolves nowhere. Turn the labels off in the switchboard and it reads as an ordinary marketing page - that is the point of the exercise.</div>
             </div>
 
-            <h2>How much of this does the browser ship already?</h2>
+            <h2 id="native">How much of this does the browser ship already?</h2>
 
             <p>Before you scroll into Fig. 7, make a prediction. Of the 18 interface capabilities listed there - dialogs, popovers, exclusive accordions, anchor positioning, customizable selects, scroll-driven animation, and so on - <strong>how many do you think your browser supports natively today?</strong> Write the number down. Most engineers I have asked guess somewhere between 6 and 10, and they are reliably low, because the mental model was set when jQuery plugins were how you got a modal.</p>
 
@@ -1022,7 +1063,7 @@
 
             <p>The result I did not expect when I built this: on Chrome 142 the score is <strong>18 out of 18</strong>. The modal dialog, the popover menu, the exclusive accordion, the anchor-positioned tooltip, the color picker, and even the carousel scroll buttons are native now. A component library still earns its place on theming, on keyboard behavior in the edge cases, and on consistency across a team - but no longer on making the browser do things it cannot do. That was not true in 2019, and my instincts had not caught up.</p>
 
-            <h2>The same three controls, mine and a real design system's</h2>
+            <h2 id="shoelace">The same three controls, mine and a real design system's</h2>
 
             <p>Every specimen above is hand-rolled from native HTML with 340 lines of CSS. That is a deliberate choice for a teaching page, not a recommendation. To show what you get for the extra weight, Fig. 8 loads <a href="https://shoelace.style/" rel="noopener">Shoelace 2.20.1</a> - a real, unmodified web-component library, straight from jsDelivr - and puts three of its components next to mine.</p>
 
@@ -1051,7 +1092,7 @@
                 <div class="fig-caption">Click-to-load, because the library is real and costs real bytes. The Shoelace column renders <code>&lt;sl-select&gt;</code>, <code>&lt;sl-switch&gt;</code>, and <code>&lt;sl-rating&gt;</code> as actual custom elements, themed to the site palette by mapping <code>--sl-color-primary-600</code> onto <code>--brand</code>, and it follows the light/dark toggle by swapping the <code>sl-theme-dark</code> class. If jsDelivr is unreachable the cell says so and the hand-rolled column is unaffected.</div>
             </div>
 
-            <h2>The names that collide</h2>
+            <h2 id="collisions">The names that collide</h2>
 
             <p>These are the collisions that have actually cost me time. Each one is a case where two sources use the same word for different components, or different words for the same component.</p>
 
@@ -1071,7 +1112,7 @@
                 </table>
             </div>
 
-            <h2>Recognition is not the skill you need</h2>
+            <h2 id="recall">Recognition is not the skill you need</h2>
 
             <p>I built the quiz below before I had thought hard enough about what it measures. It is multiple choice, so it tests <strong>recognition</strong>: shown four names, can you pick the right one. But the thing this post is supposed to buy you happens at a blank prompt box, where nobody offers you four options. That is <strong>recall</strong>, and the two are not the same skill. Robert and Elizabeth Bjork's distinction between <em>fluency strength</em> (how easily something comes to mind right now) and <em>storage strength</em> (how durably it is learned) is the reason multiple choice feels productive and mostly is not: recognizing a name you just read scores high on fluency and adds almost nothing to storage.</p>
 
@@ -1100,7 +1141,7 @@
                 <div class="fig-caption">Each round clones a real <code>.spec</code> node out of the page, removes its label and its explanatory note, strips the ids so nothing collides, and disables pointer events so you cannot poke the answer out of it. Grading normalizes case and punctuation and accepts every synonym in the specimen's own <code>data-also</code> attribute. 24 specimens are in the pool, drawn from all five families so the practice is interleaved rather than blocked.</div>
             </div>
 
-            <h2>The quiz at the door</h2>
+            <h2 id="quiz-section">The quiz at the door</h2>
 
             <p>Litt's rule for his own agents is that a PR does not ship unless he could pass a quiz on it. Same rule here, and the same warning from Matuschak: if you scrolled and nodded, you kept almost none of it. Six questions - and having just done the recall drill, notice how much easier these feel. That gap is the point.</p>
 
@@ -1174,13 +1215,13 @@
                 <div class="fig-caption">Answers are graded in the browser with no network call, and the explanation appears whichever option you pick.</div>
             </div>
 
-            <h2>What's still open</h2>
+            <h2 id="still-open">What's still open</h2>
 
             <p>The honest limit of this page is that a vocabulary does not settle an argument by existing. NN/g published 61 canonical names in February 2025 and the design systems in the Component Gallery still disagree with each other and with NN/g - 95 systems, and "stepper" still means two different things depending on which door you came in. I have not adopted a house glossary across my own repositories yet, and until I do, this post is a reference I wrote rather than a standard I follow. That is the next piece of work: a short names file in each project so the agent and I are reading from the same list, which is a smaller and more useful artifact than another design system.</p>
 
             <p>The second open question is whether the labels helped. Litt's own caveat about interactive figures is that they can become a crutch - you push the buttons, feel competent, and retain nothing. Adding the recall drill sharpened that worry rather than settling it: I can now measure whether you produce the word, but only for the 24 specimens in the pool and only in the same session, which is precisely the fluency-strength reading the Bjorks warn is the misleading one. The honest experiment is a drill that comes back in a week, and a page cannot do that. My own answer is that building this taught me two things I did not know going in: that <code>&lt;details name&gt;</code> makes an exclusive accordion with no JavaScript, and that a "modal" was never a component in the first place. Whether reading it does the same for you is the test I still cannot run.</p>
 
-            <h2>Sources</h2>
+            <h2 id="sources">Sources</h2>
 
             <div class="sources">
                 <h3>Ideas and authorities</h3>
@@ -1293,6 +1334,65 @@
             el.insertBefore(tag, el.firstChild);
             el.__hay = ((el.getAttribute('data-el') || '') + ' ' + (also || '')).toLowerCase();
         });
+
+        /* ---------- 1b. Live counts for the contents and the figure headers ---------- */
+        /* Derived from the DOM so the numbers cannot drift from the specimens. */
+        var FAM_LABEL = { nav: 'nav', input: 'input', status: 'status', display: 'display', page: 'page' };
+        function famTotal(f) { return document.querySelectorAll('.spec[data-fam="' + f + '"]').length; }
+
+        Array.prototype.forEach.call(document.querySelectorAll('[data-toc-fam]'), function (el) {
+            el.textContent = famTotal(el.getAttribute('data-toc-fam'));
+        });
+        Array.prototype.forEach.call(document.querySelectorAll('.fig-count'), function (el) {
+            var fam = el.getAttribute('data-fam');
+            var here = document.querySelectorAll('#' + el.getAttribute('data-figid') + ' .spec').length;
+            var all = famTotal(fam);
+            el.textContent = here === all
+                ? 'all ' + all + ' in the ' + FAM_LABEL[fam] + ' family'
+                : here + ' of ' + all + ' in the ' + FAM_LABEL[fam] + ' family';
+        });
+
+        /* The switchboard is sticky, so a jump link must clear it or the heading
+           lands underneath. Measure it rather than hard-coding a rem value. */
+        (function () {
+            var sb = document.getElementById('switchboard');
+            function syncAnchorOffset() {
+                var sticky = getComputedStyle(sb).position === 'sticky';
+                var off = sticky ? Math.ceil(sb.getBoundingClientRect().height) + 14 : 14;
+                document.documentElement.style.setProperty('--anchor-offset', off + 'px');
+            }
+            syncAnchorOffset();
+            window.addEventListener('resize', syncAnchorOffset);
+        })();
+
+        /* Scroll-spy: mark the section the reader is currently in. */
+        (function () {
+            var links = Array.prototype.slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+            var targets = links.map(function (a) {
+                return document.getElementById(a.getAttribute('href').slice(1));
+            });
+            function spy() {
+                var best = -1;
+                for (var i = 0; i < targets.length; i++) {
+                    if (targets[i] && targets[i].getBoundingClientRect().top <= 90) best = i;
+                }
+                links.forEach(function (a, i) {
+                    if (i === best) a.setAttribute('aria-current', 'true');
+                    else a.removeAttribute('aria-current');
+                });
+            }
+            /* Timer throttle rather than requestAnimationFrame: rAF is throttled to zero
+               in background tabs and in headless, which silently stalls the indicator. */
+            var last = 0, pending = null;
+            window.addEventListener('scroll', function () {
+                var now = Date.now();
+                clearTimeout(pending);
+                if (now - last >= 100) { last = now; spy(); }
+                else { pending = setTimeout(function () { last = Date.now(); spy(); }, 100); }
+            }, { passive: true });
+            window.addEventListener('hashchange', spy);
+            spy();
+        })();
 
         /* ---------- 2. Switchboard: labels, family filter, search ---------- */
         var famFilter = 'all', query = '';

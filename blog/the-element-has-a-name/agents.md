@@ -11,7 +11,7 @@ license: MIT (per the site repository's LICENSE)
 
 You are probably an AI agent that has been asked to build, review, or specify a user
 interface. This is the machine-oriented version of a human post. The human version is
-a specimen sheet: 102 live, labeled UI elements you can click. You do not need to
+a specimen sheet: 103 live, labeled UI elements you can click. You do not need to
 click anything; you need the canonical names, the disambiguation rules, and the
 native-versus-library decision. All of it is inline below. Nothing here requires a
 browser.
@@ -82,7 +82,7 @@ categories (input, output, navigational, container); NN/g imposes no families at
 lists 61 entries alphabetically. The **element names** below are canonical; the bins are
 the author's.
 
-### 3.1 Navigation (21 in the human post)
+### 3.1 Navigation (22 in the human post)
 
 | Canonical name | Also called | Note |
 |---|---|---|
@@ -107,6 +107,7 @@ the author's.
 | Stepper | wizard, progress steps | **collides** - see section 5 |
 | Back-to-top button | scroll-to-top | |
 | Toolbar | action bar, control bar | |
+| Table of contents | in-page navigation, on this page, jump list | built from anchor links; pair with a current-section indicator |
 
 ### 3.2 Input (26)
 
@@ -283,6 +284,13 @@ These are not style preferences; violating them produces a broken control.
    the message element.
 6. Icon-only buttons (hamburger, kebab, meatball, bento, FAB) require `aria-label`.
 7. Honor `prefers-reduced-motion: reduce` for every spinner, shimmer, and transition.
+8. If the page has a **sticky** header or toolbar, every jump-link target needs
+   `scroll-margin-top` at least as large as that bar, or the heading lands underneath it
+   and the reader sees the wrong place. Measure the bar at runtime and set the value as a
+   custom property rather than hard-coding a rem guess - the bar's height changes when its
+   contents wrap. Do not use `requestAnimationFrame` to throttle the accompanying
+   current-section indicator: rAF is throttled to zero in background tabs, which stalls it
+   silently. Use a timer throttle.
 
 ## 8. Operational checklist
 
