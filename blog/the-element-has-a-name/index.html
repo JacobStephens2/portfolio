@@ -158,6 +158,38 @@
             .switchboard .sb-count { white-space: nowrap; }
         }
 
+        /* ---------- Entry animations ----------
+           Every rule below states the FINAL, visible value as the base and uses
+           @starting-style only for the entry frame. An engine that ignores
+           @starting-style therefore shows the element immediately rather than
+           stranding it mid-transition. All of it is off under reduced motion. */
+
+        /* Dialogs: fade and scale, except the drawer which slides (see above). */
+        dialog:not(.drawer):not(.sheet) { opacity: 1; scale: 1; transition: opacity 0.2s ease, scale 0.2s ease, display 0.2s allow-discrete, overlay 0.2s allow-discrete; }
+        @starting-style { dialog:not(.drawer):not(.sheet)[open] { opacity: 0; scale: 0.96; } }
+        dialog::backdrop { opacity: 1; transition: opacity 0.2s ease, display 0.2s allow-discrete, overlay 0.2s allow-discrete; }
+        @starting-style { dialog[open]::backdrop { opacity: 0; } }
+        /* A bottom sheet slides up from the edge it is anchored to. */
+        dialog.sheet { opacity: 1; translate: 0 0; transition: translate 0.24s ease, opacity 0.24s ease, display 0.24s allow-discrete, overlay 0.24s allow-discrete; }
+        @starting-style { dialog.sheet[open] { translate: 0 100%; opacity: 0; } }
+
+        /* Menus, tooltips and hover cards lift in the way real ones do. */
+        [popover] { opacity: 1; translate: 0 0; transition: opacity 0.14s ease, translate 0.14s ease, display 0.14s allow-discrete, overlay 0.14s allow-discrete; }
+        @starting-style { [popover]:popover-open { opacity: 0; translate: 0 -6px; } }
+
+        /* Accordion: animate the disclosure with the native pseudo-element. */
+        :root { interpolate-size: allow-keywords; }
+        details.acc::details-content { block-size: 0; overflow: clip; transition: block-size 0.24s ease, content-visibility 0.24s allow-discrete; }
+        details.acc[open]::details-content { block-size: auto; }
+
+        /* Back-to-top fades rather than snapping between display values. */
+        .totop { opacity: 1; transition: opacity 0.18s ease, display 0.18s allow-discrete; }
+        @starting-style { .totop.show { opacity: 0; } }
+
+        /* Empty state cross-fades when you switch the reason. */
+        .empty.swap { animation: emptyIn 0.2s ease; }
+        @keyframes emptyIn { from { opacity: 0; translate: 0 4px; } to { opacity: 1; translate: 0 0; } }
+
         /* ---------- Page chrome specimens ---------- */
         .promo-bar { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; justify-content: center; padding: 0.4rem 0.9rem; background: var(--brand); color: var(--brand-ink); font-size: 0.85rem; }
         .promo-bar a { color: var(--brand-ink); text-decoration: underline; text-underline-offset: 0.15em; }
@@ -482,6 +514,9 @@
             input[role="switch"], input[role="switch"]::after { transition: none; }
             .toast.show { animation: none; }
             dialog.drawer, dialog.drawer::backdrop { transition: none; }
+            dialog, dialog::backdrop, [popover], .totop { transition: none; }
+            details.acc::details-content { transition: none; }
+            .empty.swap { animation: none; }
             .carousel .track { scroll-behavior: auto; }
             * { scroll-behavior: auto !important; }
         }
@@ -1412,7 +1447,7 @@
                     <li><span class="cite-title">Landingfolio</span> - the 37 page-block categories and their example counts (Feature 995, Hero 456, Footer 393, Header 390, Call To Action 297, Testimonial 296). <a href="https://landingfolio.com/components" rel="noopener">landingfolio.com/components</a></li>
                     <li>Geoffrey Litt, <span class="cite-title">"Understanding: the New Bottleneck"</span> (talk I attended) - demonstration over description, and the quiz-before-merge rule. <a href="https://www.youtube.com/watch?v=WkBPX-oDMnA" rel="noopener">youtube.com/watch?v=WkBPX-oDMnA</a></li>
                     <li>Andy Matuschak, <span class="cite-title">"Why Books Don't Work"</span> (2019) - reading produces the feeling of understanding without the retention. <a href="https://andymatuschak.org/books/" rel="noopener">andymatuschak.org/books</a></li>
-                    <li>Robert A. Bjork and Elizabeth L. Bjork, <span class="cite-title">"A New Theory of Disuse and an Old Theory of Stimulus Fluctuation"</span> (1992) - the fluency-strength versus storage-strength distinction, and <span class="cite-title">desirable difficulties</span>, which is why Fig. 9 asks you to type instead of choose.</li>
+                    <li>Robert A. Bjork and Elizabeth L. Bjork, <span class="cite-title">"A New Theory of Disuse and an Old Theory of Stimulus Fluctuation"</span> (1992) - the retrieval-strength versus storage-strength distinction, and <span class="cite-title">desirable difficulties</span>, which is why Fig. 9 asks you to type instead of choose.</li>
                     <li>Henry L. Roediger III and Jeffrey D. Karpicke, <span class="cite-title">"Test-Enhanced Learning: Taking Memory Tests Improves Long-Term Retention"</span>, <em>Psychological Science</em> 17(3) (2006) - the testing effect: retrieval beats restudying, while feeling worse at the time.</li>
                     <li>Matt Pocock, <span class="cite-title">the "teach" skill</span> - the workspace framework that prompted me to separate recall from recognition here, and to treat a tight feedback loop as the deliverable rather than a comprehension check at the end. <a href="https://github.com/mattpocock/skills/tree/main/skills/productivity/teach" rel="noopener">github.com/mattpocock/skills</a></li>
                 </ul>
@@ -1949,6 +1984,9 @@
                 '<strong>' + e.head + '</strong><br><span class="demo-note" style="margin:0">' + e.sub + '</span>' +
                 (e.act ? '<br><button type="button" class="btn sm" style="margin-top:0.4rem">' + e.act + '</button>' : '');
             emptyBox.classList.toggle('is-error', kind === 'error');
+            emptyBox.classList.remove('swap');
+            void emptyBox.offsetWidth;
+            emptyBox.classList.add('swap');
         }
         Array.prototype.forEach.call(document.querySelectorAll('#emptyPicker .chip'), function (c) {
             c.addEventListener('click', function () {
@@ -2375,7 +2413,7 @@
 
         /* ---------- 7b. Recall drill (Fig. 9) ---------- */
         /* Interleaved across all five families on purpose - blocked practice inflates
-           fluency strength without touching storage strength (Bjork & Bjork). */
+           retrieval strength without touching storage strength (Bjork & Bjork). */
         var DRILL_POOL = [
             'Breadcrumbs', 'Pagination', 'Navigation bar', 'Bottom navigation', 'Stepper',
             'Kebab menu', 'Meatball menu', 'Bento menu', 'Hamburger menu',
