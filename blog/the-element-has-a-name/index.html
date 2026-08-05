@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <!-- AI agents: the machine-oriented version of this post is at
+         /blog/the-element-has-a-name/agents.md (text/markdown). -->
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/bee-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Element Has a Name | Jacob Stephens</title>
+    <link rel="canonical" href="https://stephens.page/blog/the-element-has-a-name/">
+    <link rel="alternate" type="text/markdown" href="/blog/the-element-has-a-name/agents.md" title="Agent-oriented version (markdown)">
+    <meta name="description" content="A live, labeled specimen sheet of web UI elements - navigation, input, feedback, display, containers, and page-level blocks - with the canonical names from NN/g's 61-entry glossary, the synonyms that collide, and a probe of what your browser now ships natively.">
+    <meta property="og:title" content="The Element Has a Name">
+    <meta property="og:description" content="Every UI element on this page is live and labeled with its canonical name, the family it belongs to, and the synonym that will get you the wrong thing built.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://stephens.page/blog/the-element-has-a-name/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="The Element Has a Name">
+    <meta name="twitter:description" content="Every UI element on this page is live and labeled with its canonical name, the family it belongs to, and the synonym that will get you the wrong thing built.">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-W0D3PS27FK');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #181512; --brand: #9b4d24; --brand-ink: #ffffff; --muted: #625a52;
+            --surface: #ffffff; --soft: #efe9df; --rule: #d6d1c9; --code-bg: #efe9df; --bar-bg: #ece6dc;
+            --yes: #2f7d4f; --no: #9a5b3f; --tint: rgba(155, 77, 36, 0.07);
+        }
+        html[data-theme="dark"] { --yes: #7fbf95; --no: #d99a7a; --tint: rgba(212, 160, 122, 0.10); }
+        @media (prefers-color-scheme: dark) {
+            html:not([data-theme="light"]):not([data-theme="dark"]) { --yes: #7fbf95; --no: #d99a7a; --tint: rgba(212, 160, 122, 0.10); }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Sans 3', Arial, Helvetica, sans-serif; background: var(--surface); color: var(--ink); line-height: 1.7; min-height: 100vh; }
+        .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+        .back-link, .contact-link { color: var(--muted); text-decoration: none; font-size: 0.92rem; }
+        .back-link:hover, .contact-link:hover, .back-link:focus-visible, .contact-link:focus-visible { color: var(--brand); text-decoration: underline; text-underline-offset: 0.12em; }
+        article.note { padding: 0; }
+        .eyebrow { display: inline-block; margin-bottom: 0.9rem; color: var(--brand); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        h1.title { font-family: 'Source Serif 4', Georgia, serif; font-weight: 700; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.08; letter-spacing: -0.01em; margin-bottom: 1rem; }
+        .meta { color: var(--muted); font-size: 0.92rem; margin-bottom: 1.6rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--rule); }
+        .meta strong { color: var(--ink); font-weight: 700; }
+        h2 { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; color: var(--brand); margin-top: 2.2rem; margin-bottom: 0.8rem; scroll-margin-top: 4.6rem; }
+        p { margin-bottom: 1rem; color: var(--ink); }
+        ol, ul { margin-bottom: 1rem; padding-left: 1.4rem; }
+        ol li, ul li { margin-bottom: 0.4rem; }
+        code { background: var(--code-bg); padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.92em; }
+        pre { background: var(--code-bg); padding: 1rem 1.1rem; border-radius: 6px; overflow-x: auto; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.82rem; line-height: 1.5; margin-bottom: 1.2rem; }
+        pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+        a { color: var(--brand); text-decoration: none; }
+        a:hover, a:focus-visible { text-decoration: underline; text-underline-offset: 0.12em; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.93rem; }
+        th, td { text-align: left; padding: 0.5rem 0.6rem 0.5rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+        th { font-weight: 700; }
+
+        /* ---------- Figure component ---------- */
+        .fig { margin: 1.4rem 0 1.6rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); overflow: visible; }
+        .fig-head { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; justify-content: space-between; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--rule); background: var(--soft); border-radius: 8px 8px 0 0; }
+        .fig-title { font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); }
+        .fig-body { padding: 0.9rem; }
+        .fig-caption { padding: 0.65rem 0.9rem 0.75rem; color: var(--muted); font-size: 0.88rem; border-top: 1px dashed var(--rule); line-height: 1.55; }
+        .fig-scroll { overflow-x: auto; }
+        .fig svg text { font-family: 'Source Sans 3', Arial, sans-serif; }
+        .panel-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+
+        /* The catalogue figures break out of the 720px column. */
+        @media (min-width: 900px) and (max-width: 1099px) { .wide { width: 840px; margin-left: -80px; } }
+        @media (min-width: 1100px) { .wide { width: 1040px; margin-left: -180px; } }
+
+        /* ---------- Controls ---------- */
+        .ctl-row { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; align-items: center; }
+        .ctl-btn { font: inherit; font-size: 0.86rem; font-weight: 600; padding: 0.3rem 0.85rem; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); border-radius: 999px; cursor: pointer; }
+        .ctl-btn:hover, .ctl-btn:focus-visible { border-color: var(--brand); }
+        .ctl-btn[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+        .ctl-btn:disabled { cursor: default; opacity: 0.6; }
+
+        /* ---------- Specimen labelling ---------- */
+        .spec { position: relative; }
+        .spec-tag { display: none; align-items: baseline; gap: 0.4rem; margin-bottom: 0.4rem; font-size: 0.7rem; line-height: 1.35; }
+        body.labels-on .spec-tag { display: flex; flex-wrap: wrap; }
+        .spec-fam { flex: none; font-weight: 700; letter-spacing: 0.08em; color: var(--brand-ink); background: var(--brand); border-radius: 3px; padding: 0.05rem 0.28rem; font-size: 0.6rem; }
+        .spec-name { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); }
+        .spec-also { color: var(--muted); font-style: italic; }
+        .spec.dim { opacity: 0.18; }
+        .spec-box { border: 1px solid transparent; border-radius: 6px; padding: 0.55rem 0.6rem 0.65rem; }
+        body.labels-on .spec-box { border-color: var(--rule); background: var(--tint); }
+        .spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.75rem; align-items: start; }
+        .spec-grid.narrow { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+        .spec-grid.roomy { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+
+        /* ---------- Switchboard ---------- */
+        .switchboard { position: sticky; top: 0; z-index: 30; margin: 1.4rem 0 1.6rem; padding: 0.6rem 0.8rem; background: var(--soft); border: 1px solid var(--rule); border-radius: 8px; display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; font-size: 0.86rem; }
+        .switchboard .sb-count { color: var(--muted); margin-left: auto; font-variant-numeric: tabular-nums; }
+        .sb-search { display: inline-flex; align-items: center; gap: 0.35rem; }
+        .sb-search input { font: inherit; font-size: 0.85rem; padding: 0.22rem 0.5rem; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); color: var(--ink); width: 10.5rem; }
+        .sb-search input:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+        .chip { font: inherit; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.05em; padding: 0.15rem 0.6rem; border: 1px solid var(--rule); background: var(--surface); color: var(--muted); border-radius: 999px; cursor: pointer; }
+        .chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+        .chip:hover, .chip:focus-visible { border-color: var(--brand); }
+
+        /* ---------- Page chrome specimens ---------- */
+        .promo-bar { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; justify-content: center; padding: 0.4rem 0.9rem; background: var(--brand); color: var(--brand-ink); font-size: 0.85rem; }
+        .promo-bar a { color: var(--brand-ink); text-decoration: underline; text-underline-offset: 0.15em; }
+        .promo-bar button { font: inherit; font-size: 1rem; line-height: 1; background: none; border: 0; color: var(--brand-ink); cursor: pointer; padding: 0 0.2rem; }
+        .readbar { position: fixed; top: 0; left: 0; height: 3px; background: var(--brand); width: 0; z-index: 60; }
+        .crumbs { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.4rem; }
+        .crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0; margin: 0; }
+        .crumbs li::after { content: "/"; margin-left: 0.35rem; color: var(--rule); }
+        .crumbs li:last-child::after { content: ""; }
+        .crumbs [aria-current="page"] { color: var(--ink); font-weight: 600; }
+        .totop { position: fixed; right: 1rem; bottom: 1rem; z-index: 45; width: 2.6rem; height: 2.6rem; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); color: var(--brand); font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.14); display: none; }
+        .totop.show { display: block; }
+        .totop:hover, .totop:focus-visible { border-color: var(--brand); }
+
+        /* ---------- Generic demo widgets ---------- */
+        .btn { font: inherit; font-size: 0.86rem; font-weight: 600; padding: 0.3rem 0.8rem; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); border-radius: 6px; cursor: pointer; }
+        .btn:hover, .btn:focus-visible { border-color: var(--brand); }
+        .btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+        .btn[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+        .btn.sm { font-size: 0.78rem; padding: 0.18rem 0.55rem; }
+        /* A toggle switch must not look like a checkbox - that is the whole point of Fig. 3. */
+        input[role="switch"] { appearance: none; -webkit-appearance: none; flex: none; position: relative; width: 2.1rem; height: 1.15rem; margin: 0; border: 0; border-radius: 999px; background: var(--rule); cursor: pointer; transition: background 0.15s ease; }
+        input[role="switch"]::after { content: ""; position: absolute; top: 2px; left: 2px; width: calc(1.15rem - 4px); height: calc(1.15rem - 4px); border-radius: 999px; background: var(--surface); transition: transform 0.15s ease; }
+        input[role="switch"]:checked { background: var(--brand); }
+        input[role="switch"]:checked::after { transform: translateX(0.95rem); }
+        .icon-btn { font: inherit; width: 1.9rem; height: 1.9rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); border-radius: 6px; cursor: pointer; }
+        .icon-btn:hover, .icon-btn:focus-visible { border-color: var(--brand); }
+        .stackv { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+        .stackh { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+        .demo-note { font-size: 0.76rem; color: var(--muted); margin-top: 0.35rem; }
+        .mini { font-size: 0.84rem; }
+        input[type="text"], input[type="password"], input[type="search"], input[type="email"], input[type="number"], input[type="date"], input[type="time"], select { font: inherit; font-size: 0.86rem; padding: 0.25rem 0.45rem; border: 1px solid var(--rule); border-radius: 5px; background: var(--surface); color: var(--ink); max-width: 100%; }
+        textarea { font: inherit; font-size: 0.86rem; padding: 0.25rem 0.45rem; border: 1px solid var(--rule); border-radius: 5px; background: var(--surface); color: var(--ink); width: 100%; resize: vertical; }
+        input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+        label { font-size: 0.84rem; }
+        fieldset { border: 1px solid var(--rule); border-radius: 6px; padding: 0.5rem 0.6rem; }
+        legend { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 0 0.3rem; }
+
+        /* Navigation family */
+        .navbar { display: flex; align-items: center; gap: 0.7rem; padding: 0.35rem 0.6rem; border: 1px solid var(--rule); border-radius: 6px; background: var(--soft); font-size: 0.82rem; }
+        .navbar .brandmark { font-weight: 700; color: var(--brand); }
+        .navbar a { color: var(--muted); }
+        .navbar a[aria-current="page"] { color: var(--ink); font-weight: 700; border-bottom: 2px solid var(--brand); }
+        .sidebar { border: 1px solid var(--rule); border-radius: 6px; padding: 0.4rem; font-size: 0.82rem; max-width: 12rem; }
+        .sidebar .grp { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); padding: 0.25rem 0.4rem; }
+        .sidebar a { display: block; padding: 0.18rem 0.4rem; border-radius: 4px; color: var(--ink); }
+        .sidebar a[aria-current="page"] { background: var(--brand); color: var(--brand-ink); }
+        .tabs [role="tablist"] { display: flex; gap: 0.15rem; border-bottom: 1px solid var(--rule); }
+        .tabs [role="tab"] { font: inherit; font-size: 0.82rem; padding: 0.25rem 0.6rem; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); cursor: pointer; }
+        .tabs [role="tab"][aria-selected="true"] { color: var(--brand); border-bottom-color: var(--brand); font-weight: 700; }
+        .tabs [role="tabpanel"] { padding: 0.45rem 0.2rem; font-size: 0.84rem; }
+        .botnav { display: flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+        .botnav button { flex: 1; font: inherit; font-size: 0.68rem; padding: 0.3rem 0.2rem; border: 0; background: var(--surface); color: var(--muted); cursor: pointer; display: grid; gap: 0.1rem; justify-items: center; }
+        .botnav button[aria-current="page"] { color: var(--brand); font-weight: 700; }
+        .botnav .gl { font-size: 0.95rem; line-height: 1; }
+        .pager { display: flex; flex-wrap: wrap; gap: 0.2rem; align-items: center; }
+        .pager button { font: inherit; font-size: 0.8rem; min-width: 1.7rem; padding: 0.1rem 0.35rem; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); border-radius: 4px; cursor: pointer; }
+        .pager button[aria-current="page"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); font-weight: 700; }
+        .pager span { color: var(--muted); font-size: 0.8rem; }
+        .steps { display: flex; align-items: center; gap: 0.3rem; font-size: 0.76rem; }
+        .steps .st { display: flex; align-items: center; gap: 0.25rem; color: var(--muted); }
+        .steps .num { width: 1.25rem; height: 1.25rem; border-radius: 999px; border: 1px solid var(--rule); display: grid; place-items: center; font-size: 0.68rem; font-weight: 700; }
+        .steps .st.done .num { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+        .steps .st.now { color: var(--ink); font-weight: 700; }
+        .steps .st.now .num { border-color: var(--brand); color: var(--brand); }
+        .steps .bar { flex: 1; min-width: 0.7rem; height: 1px; background: var(--rule); }
+        .dots { display: inline-grid; gap: 2px; vertical-align: middle; }
+        .dots i { display: block; width: 3.5px; height: 3.5px; border-radius: 999px; background: currentColor; }
+        .dots.kebab { grid-template-columns: 1fr; }
+        .dots.meatball { grid-template-columns: repeat(3, auto); }
+        .dots.bento { grid-template-columns: repeat(3, auto); }
+        .burger { display: inline-grid; gap: 3px; vertical-align: middle; }
+        .burger i { display: block; width: 14px; height: 2px; border-radius: 2px; background: currentColor; }
+
+        /* Menus and popovers (top layer) */
+        [popover] { margin: 0; padding: 0; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); color: var(--ink); box-shadow: 0 8px 26px rgba(0,0,0,0.18); position: fixed; inset: auto; }
+        [popover]:not(:popover-open):not(.open) { display: none; }
+        [popover].open { display: block; }
+        .menu { min-width: 11rem; padding: 0.25rem; font-size: 0.85rem; }
+        .menu button.mi { display: block; width: 100%; text-align: left; font: inherit; font-size: 0.85rem; padding: 0.25rem 0.5rem; border: 0; background: none; color: var(--ink); border-radius: 4px; cursor: pointer; }
+        .menu button.mi:hover, .menu button.mi:focus-visible { background: var(--soft); }
+        .menu hr { border: 0; border-top: 1px solid var(--rule); margin: 0.25rem 0; }
+        .menu .mgrp { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); padding: 0.3rem 0.5rem 0.15rem; }
+        .megamenu { width: min(30rem, 92vw); padding: 0.7rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: 0.6rem; font-size: 0.83rem; }
+        .megamenu .mgrp { padding-left: 0; }
+        .bento-grid { display: grid; grid-template-columns: repeat(3, 4.5rem); gap: 0.3rem; padding: 0.5rem; }
+        .bento-grid a { display: grid; place-items: center; gap: 0.15rem; padding: 0.4rem 0.2rem; border-radius: 6px; font-size: 0.66rem; color: var(--ink); text-align: center; }
+        .bento-grid a:hover { background: var(--soft); text-decoration: none; }
+        .bento-grid .gl { font-size: 1.05rem; }
+        .pie { width: 9.5rem; height: 9.5rem; border-radius: 999px; padding: 0; overflow: hidden; }
+        .pie .wedge { position: absolute; width: 50%; height: 50%; border: 0; background: var(--soft); color: var(--ink); font: inherit; font-size: 0.7rem; cursor: pointer; display: grid; place-items: center; }
+        .pie .wedge:hover, .pie .wedge:focus-visible { background: var(--brand); color: var(--brand-ink); }
+        .pie .w1 { top: 0; left: 0; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+        .pie .w2 { top: 0; right: 0; border-bottom: 1px solid var(--rule); }
+        .pie .w3 { bottom: 0; left: 0; border-right: 1px solid var(--rule); }
+        .pie .w4 { bottom: 0; right: 0; }
+        .ctx-target { border: 1px dashed var(--rule); border-radius: 6px; padding: 0.8rem 0.5rem; text-align: center; font-size: 0.8rem; color: var(--muted); background: var(--soft); user-select: none; }
+        .tip { max-width: 15rem; padding: 0.3rem 0.55rem; font-size: 0.78rem; background: var(--ink); color: var(--surface); border: 0; border-radius: 5px; box-shadow: none; }
+        .hovercard { width: 15rem; padding: 0.6rem; font-size: 0.8rem; }
+
+        /* Dialogs */
+        dialog { border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); color: var(--ink); padding: 1rem 1.1rem; max-width: min(28rem, 92vw); box-shadow: 0 14px 40px rgba(0,0,0,0.28); }
+        dialog::backdrop { background: rgba(24, 21, 18, 0.55); }
+        dialog h4 { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.05rem; margin-bottom: 0.4rem; }
+        dialog p { font-size: 0.88rem; }
+        dialog .drow { display: flex; gap: 0.4rem; justify-content: flex-end; margin-top: 0.7rem; }
+        dialog.sheet { position: fixed; inset: auto 0 0 0; max-width: none; width: 100%; border-radius: 12px 12px 0 0; margin: 0; }
+        dialog.drawer { position: fixed; inset: 0 auto 0 0; height: 100%; max-height: 100%; width: min(19rem, 84vw); border-radius: 0 12px 12px 0; margin: 0; }
+        dialog.lightbox { padding: 0.5rem; background: var(--ink); border-color: var(--ink); }
+        dialog.lightbox svg { display: block; max-width: min(34rem, 88vw); height: auto; border-radius: 6px; }
+        dialog.nonmodal { position: fixed; top: auto; bottom: 5.5rem; right: 1rem; left: auto; margin: 0; width: min(19rem, 88vw); }
+        .toast { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); z-index: 70; display: none; align-items: center; gap: 0.8rem; padding: 0.55rem 0.9rem; font-size: 0.86rem; background: var(--ink); color: var(--surface); border: 0; border-radius: 8px; box-shadow: 0 8px 26px rgba(0,0,0,0.3); }
+        .toast.show { display: flex; }
+        .toast button { font: inherit; font-size: 0.8rem; font-weight: 700; background: none; border: 0; color: var(--surface); text-decoration: underline; cursor: pointer; }
+
+        /* Disambiguator table */
+        table.dis { font-size: 0.85rem; }
+        table.dis th { font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+        table.dis td, table.dis th { padding: 0.45rem 0.55rem 0.45rem 0; }
+        table.dis td.y { color: var(--yes); font-weight: 700; }
+        table.dis td.n { color: var(--muted); }
+
+        /* Status family */
+        progress { width: 100%; height: 0.55rem; accent-color: var(--brand); }
+        .bar-track { height: 0.55rem; border-radius: 999px; background: var(--bar-bg); overflow: hidden; }
+        .bar-track .fill { height: 100%; background: var(--brand); border-radius: 999px; }
+        .bar-track.indet .fill { width: 35%; animation: slide 1.4s ease-in-out infinite; }
+        @keyframes slide { 0% { margin-left: -35%; } 100% { margin-left: 100%; } }
+        .spinner { width: 1.5rem; height: 1.5rem; border-radius: 999px; border: 2.5px solid var(--rule); border-top-color: var(--brand); animation: spin 0.9s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .skel { display: grid; gap: 0.4rem; }
+        .skel i { display: block; height: 0.6rem; border-radius: 4px; background: linear-gradient(90deg, var(--bar-bg) 25%, var(--soft) 37%, var(--bar-bg) 63%); background-size: 400% 100%; animation: shimmer 1.5s linear infinite; }
+        @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+        .badge-wrap { position: relative; display: inline-flex; }
+        .badge { position: absolute; top: -0.35rem; right: -0.5rem; min-width: 1.05rem; height: 1.05rem; padding: 0 0.22rem; border-radius: 999px; background: var(--brand); color: var(--brand-ink); font-size: 0.66rem; font-weight: 700; display: grid; place-items: center; }
+        .badge.dot { min-width: 0.55rem; width: 0.55rem; height: 0.55rem; padding: 0; }
+        .alert { display: flex; gap: 0.5rem; padding: 0.4rem 0.6rem; border-radius: 6px; border-left: 3px solid var(--brand); background: var(--soft); font-size: 0.82rem; }
+        .alert .gl { flex: none; }
+        .alert.err { border-left-color: var(--no); }
+        .alert.ok { border-left-color: var(--yes); }
+        .empty { text-align: center; padding: 0.9rem 0.5rem; color: var(--muted); font-size: 0.82rem; }
+        .empty .gl { font-size: 1.5rem; display: block; margin-bottom: 0.25rem; }
+        .backdrop-demo { position: relative; height: 5.2rem; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; font-size: 0.78rem; padding: 0.4rem; color: var(--muted); }
+        .backdrop-demo .scrim { position: absolute; inset: 0; background: rgba(24, 21, 18, 0.55); display: grid; place-items: center; color: #fff; }
+        .field-err { color: var(--no); font-size: 0.76rem; }
+        input[aria-invalid="true"] { border-color: var(--no); }
+
+        /* Display family */
+        .card { border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--surface); font-size: 0.84rem; }
+        .card .media { height: 3.2rem; background: var(--bar-bg); }
+        .card .body { padding: 0.5rem 0.6rem 0.6rem; }
+        .card h5 { font-size: 0.9rem; margin-bottom: 0.15rem; }
+        .paper { background: var(--surface); border-radius: 8px; padding: 0.6rem; box-shadow: 0 2px 8px rgba(0,0,0,0.12); font-size: 0.84rem; }
+        .panel { border: 1px solid var(--rule); border-radius: 8px; font-size: 0.84rem; }
+        .panel > header { padding: 0.35rem 0.55rem; border-bottom: 1px solid var(--rule); background: var(--soft); font-weight: 700; font-size: 0.78rem; }
+        .panel > div { padding: 0.5rem 0.55rem; }
+        details.acc { border: 1px solid var(--rule); border-radius: 6px; margin-bottom: 0.3rem; font-size: 0.84rem; }
+        details.acc summary { cursor: pointer; padding: 0.3rem 0.5rem; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 0.5rem; }
+        details.acc summary::-webkit-details-marker { display: none; }
+        details.acc summary::after { content: "+"; color: var(--brand); font-weight: 700; }
+        details.acc[open] summary::after { content: "\2212"; }
+        details.acc .ab { padding: 0 0.5rem 0.45rem; color: var(--muted); }
+        table.grid { font-size: 0.8rem; }
+        table.grid th button { font: inherit; font-weight: 700; font-size: 0.8rem; background: none; border: 0; color: var(--ink); cursor: pointer; padding: 0; display: inline-flex; gap: 0.25rem; }
+        table.grid th[aria-sort] button { color: var(--brand); }
+        table.grid td, table.grid th { padding: 0.28rem 0.5rem 0.28rem 0; }
+        ul.plain { list-style: none; padding: 0; font-size: 0.84rem; }
+        ul.plain li { display: flex; gap: 0.5rem; align-items: center; padding: 0.25rem 0; border-bottom: 1px solid var(--rule); }
+        ul.plain li:last-child { border-bottom: 0; }
+        .tree { font-size: 0.84rem; }
+        .tree details { margin-left: 0.7rem; }
+        .tree > details { margin-left: 0; }
+        .tree summary { cursor: pointer; padding: 0.1rem 0; }
+        .tree .leaf { margin-left: 1.5rem; padding: 0.1rem 0; color: var(--muted); }
+        .timeline { list-style: none; padding: 0 0 0 0.9rem; border-left: 2px solid var(--rule); font-size: 0.82rem; }
+        .timeline li { position: relative; padding-bottom: 0.45rem; }
+        .timeline li::before { content: ""; position: absolute; left: -1.22rem; top: 0.45rem; width: 0.5rem; height: 0.5rem; border-radius: 999px; background: var(--brand); }
+        .timeline time { display: block; font-size: 0.7rem; color: var(--muted); }
+        .carousel { position: relative; }
+        .carousel .track { display: flex; gap: 0.4rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+        .carousel .track > figure { flex: 0 0 100%; scroll-snap-align: center; text-align: center; font-size: 0.78rem; color: var(--muted); }
+        .carousel .track > figure > div { height: 3.6rem; border-radius: 6px; background: var(--bar-bg); display: grid; place-items: center; font-size: 1.3rem; color: var(--brand); margin-bottom: 0.2rem; }
+        .carousel .cnav { display: flex; justify-content: center; align-items: center; gap: 0.35rem; margin-top: 0.3rem; }
+        .carousel .cdot { width: 0.45rem; height: 0.45rem; border-radius: 999px; border: 0; padding: 0; background: var(--rule); cursor: pointer; }
+        .carousel .cdot[aria-current="true"] { background: var(--brand); }
+        .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.25rem; }
+        .gallery button { aspect-ratio: 1; border: 0; border-radius: 4px; background: var(--bar-bg); cursor: pointer; display: grid; place-items: center; font-size: 1rem; color: var(--brand); }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center; }
+        .stats .n { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.35rem; font-weight: 700; color: var(--brand); line-height: 1.1; }
+        .stats .l { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+        .avatar { width: 2rem; height: 2rem; border-radius: 999px; background: var(--brand); color: var(--brand-ink); display: grid; place-items: center; font-size: 0.75rem; font-weight: 700; flex: none; }
+        .avatar.grp { margin-left: -0.55rem; border: 2px solid var(--surface); }
+        .tag { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.05rem 0.5rem; border-radius: 999px; border: 1px solid var(--rule); background: var(--soft); font-size: 0.74rem; color: var(--ink); }
+        .type-scale > * { margin: 0 0 0.15rem; line-height: 1.2; }
+        blockquote.bq { border-left: 3px solid var(--brand); padding-left: 0.7rem; font-style: italic; font-size: 0.86rem; color: var(--muted); }
+        .scrollbox { height: 4.2rem; overflow-y: scroll; border: 1px solid var(--rule); border-radius: 6px; padding: 0.4rem; font-size: 0.8rem; scrollbar-color: var(--brand) var(--bar-bg); scrollbar-width: thin; }
+        .prim-container { border: 1px dashed var(--brand); border-radius: 6px; padding: 0.3rem; font-size: 0.72rem; color: var(--muted); text-align: center; }
+        .prim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.25rem; }
+        .prim-grid i { display: block; height: 1.4rem; border-radius: 4px; background: var(--bar-bg); }
+        .chart-wrap { font-size: 0.72rem; color: var(--muted); }
+
+        /* Landing-page blocks */
+        .frame { border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; background: var(--surface); }
+        .frame .chrome { display: flex; align-items: center; gap: 0.3rem; padding: 0.35rem 0.6rem; background: var(--soft); border-bottom: 1px solid var(--rule); }
+        .frame .chrome i { width: 0.5rem; height: 0.5rem; border-radius: 999px; background: var(--rule); display: block; }
+        .frame .chrome span { margin-left: 0.5rem; font-size: 0.7rem; color: var(--muted); }
+        .lp { max-height: 30rem; overflow-y: auto; padding: 0.6rem; display: grid; gap: 0.5rem; }
+        .lp .blk { border-radius: 8px; padding: 0.6rem 0.7rem; background: var(--soft); font-size: 0.82rem; }
+        .lp .hero { text-align: center; padding: 1.1rem 0.8rem; }
+        .lp .hero h3 { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.35rem; line-height: 1.15; margin-bottom: 0.3rem; }
+        .lp .hero p { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.6rem; }
+        .lp .logos { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; justify-content: center; align-items: center; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; font-size: 0.76rem; opacity: 0.75; }
+        .lp .feat { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.5rem; }
+        .lp .feat > div { background: var(--surface); border-radius: 6px; padding: 0.45rem 0.55rem; font-size: 0.78rem; }
+        .lp .feat .gl { font-size: 1.05rem; color: var(--brand); }
+        .lp .prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: 0.5rem; }
+        .lp .prices > div { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 0.5rem; font-size: 0.78rem; text-align: center; }
+        .lp .prices .best { border-color: var(--brand); }
+        .lp .prices .amt { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.2rem; font-weight: 700; color: var(--brand); }
+        .lp .cta { background: var(--brand); color: var(--brand-ink); text-align: center; }
+        .lp .cta .btn { background: var(--surface); border-color: var(--surface); color: var(--brand); }
+        .lp .foot { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: 0.5rem; font-size: 0.74rem; color: var(--muted); }
+        .lp .sitebar { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0.7rem; }
+        .lp .quote { display: flex; gap: 0.6rem; align-items: flex-start; }
+        .lp .steps3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: 0.5rem; font-size: 0.78rem; }
+        .lp .steps3 .n { color: var(--brand); font-weight: 700; }
+        .lp .promo { background: var(--brand); color: var(--brand-ink); text-align: center; font-size: 0.76rem; padding: 0.3rem; border-radius: 6px; }
+        .lp .nl { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+        .lp .nl input { flex: 1; min-width: 8rem; }
+
+        /* Probe */
+        table.probe { font-size: 0.84rem; }
+        table.probe td.v { font-weight: 700; white-space: nowrap; }
+        table.probe td.v[data-ok="1"] { color: var(--yes); }
+        table.probe td.v[data-ok="0"] { color: var(--no); }
+        table.probe code { font-size: 0.78rem; }
+        .probe-sum { font-weight: 700; margin-top: 0.6rem; }
+
+        /* Shoelace side-by-side */
+        .sl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.9rem; }
+        .sl-cell { border: 1px solid var(--rule); border-radius: 6px; padding: 0.5rem 0.6rem; }
+        .sl-cell h5 { font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+        #slHost { --sl-color-primary-600: var(--brand); --sl-color-primary-500: var(--brand); --sl-font-sans: 'Source Sans 3', Arial, sans-serif; display: grid; gap: 0.6rem; }
+        .sl-fallback { font-size: 0.85rem; color: var(--muted); }
+
+        /* Collisions table */
+        table.collide td:first-child { font-weight: 700; white-space: nowrap; padding-right: 0.8rem; }
+
+        /* Quiz */
+        .qz { padding: 0.9rem 0 0.7rem; border-bottom: 1px dashed var(--rule); }
+        .qz:first-child { padding-top: 0.2rem; }
+        .qz:last-of-type { border-bottom: 0; }
+        .qz .q { font-weight: 700; margin-bottom: 0.55rem; }
+        .qz .opts { display: grid; gap: 0.4rem; }
+        .qz button.opt { font: inherit; font-size: 0.92rem; text-align: left; padding: 0.45rem 0.7rem; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); color: var(--ink); cursor: pointer; line-height: 1.45; }
+        .qz button.opt:hover:not(:disabled), .qz button.opt:focus-visible { border-color: var(--brand); }
+        .qz button.opt:disabled { cursor: default; }
+        .qz button.opt.correct { border-color: var(--brand); background: var(--soft); font-weight: 600; }
+        .qz button.opt.wrong { opacity: 0.75; }
+        .qz .expl { display: none; margin: 0.55rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); }
+        .qz.answered .expl { display: block; }
+        #qzTally { margin-top: 0.8rem; margin-bottom: 0; font-weight: 600; }
+
+        /* Sources + provenance */
+        .sources { margin-top: 1rem; font-size: 0.9rem; }
+        .sources h3 { font-family: 'Source Sans 3', Arial, sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 1rem 0 0.5rem; }
+        .sources ul { list-style: none; padding-left: 0; margin-bottom: 0; }
+        .sources li { padding: 0.3rem 0; border-bottom: 1px solid var(--rule); color: var(--muted); line-height: 1.5; }
+        .sources li:last-child { border-bottom: 0; }
+        .sources .cite-title { color: var(--ink); font-weight: 600; }
+        .ai-note { margin-top: 2rem; padding: 1rem 1.2rem; background: var(--soft); border-left: 3px solid var(--brand); border-radius: 0 6px 6px 0; color: var(--muted); font-size: 0.9rem; }
+        .footer { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); text-align: center; color: var(--muted); font-size: 0.85rem; }
+        @media (max-width: 640px) { .container { padding: 1.25rem 1rem 2.5rem; } .topbar { flex-direction: column; align-items: flex-start; } .switchboard { position: static; } }
+        @media (prefers-reduced-motion: reduce) {
+            .spinner { animation-duration: 3s; }
+            .skel i, .bar-track.indet .fill { animation: none; }
+            input[role="switch"], input[role="switch"]::after { transition: none; }
+            .carousel .track { scroll-behavior: auto; }
+            * { scroll-behavior: auto !important; }
+        }
+    </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+</head>
+<body class="labels-on">
+    <div class="readbar" id="readbar" aria-hidden="true"></div>
+
+    <div class="spec" data-el="Notification bar" data-fam="page" data-also="promo bar, announcement bar">
+        <div class="promo-bar" id="promoBar">
+            <span>This bar is a specimen too. Every element below is live and named.</span>
+            <a href="#switchboard">Jump to the controls</a>
+            <button type="button" id="promoClose" aria-label="Dismiss this notification bar">&times;</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="topbar">
+            <span style="display:flex;flex-wrap:wrap;gap:1.1rem">
+                <a href="/blog/" class="back-link">&larr; All posts</a>
+                <a href="https://github.com/JacobStephens2/portfolio/tree/main/blog/the-element-has-a-name/" class="back-link" rel="noopener">Source on GitHub</a>
+            </span>
+            <a href="mailto:jacob@stephens.page" class="contact-link">jacob@stephens.page</a>
+        </div>
+
+        <nav class="crumbs spec" data-el="Breadcrumbs" data-fam="nav" data-also="breadcrumb trail" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li aria-current="page">The Element Has a Name</li>
+            </ol>
+        </nav>
+
+        <article class="note">
+            <div class="eyebrow">Notes &middot; Interface Vocabulary</div>
+            <h1 class="title">The Element Has a Name</h1>
+            <p class="meta"><strong>August 5, 2026</strong> &middot; ~2,800 words &middot; 9 live figures and a quiz &middot; reading this as an AI agent? <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> is for you</p>
+
+            <p>The fastest way to get the wrong control built is to call it a "dropdown." That one word covers at least five different components with five different behaviors, and the agent writing my markup has to guess which one I meant. Last month I asked for "a dropdown to filter the chart" on the <a href="/blog/">server dashboard</a> and got a <code>&lt;select&gt;</code> element. I wanted a menu of actions. The word was the whole spec, and the word was wrong.</p>
+
+            <p>Nielsen Norman Group solved the vocabulary problem in February 2025: Raluca Budiu and Kara Rivenbark published a glossary that names <strong>61 interface elements</strong> with their alternate names and one-line definitions. The Component Gallery does the cross-referencing job from the other end - <strong>60 components as they appear across 95 real design systems</strong>, so you can see what Ant Design, Polaris, and the BBC's Global Experience Language each call the same thing. Between them, almost every argument I have ever had about a control has a settled answer.</p>
+
+            <p>So this post is not an article about UI elements. It is a <strong>specimen sheet</strong>: 102 live elements, each one labeled with its canonical name, the family it belongs to, and the synonym most likely to get you the wrong thing. Nothing here is a screenshot. Every menu opens, every dialog is a real <code>&lt;dialog&gt;</code>, every popover uses the browser's top layer. Toggle the labels off and this is an ordinary page; toggle them on and it is a catalog of itself.</p>
+
+            <p>The teaching structure comes from Geoffrey Litt's talk "Understanding: the New Bottleneck," which I keep raiding for this: demonstration over description, and a quiz at the end because, as Andy Matuschak puts it in "Why Books Don't Work," reading hands you the feeling of understanding and almost none of the retention. You will not remember the difference between a kebab and a meatball menu because I told you. You might remember it because you clicked both.</p>
+
+            <div class="switchboard spec" id="switchboard" data-el="Toolbar" data-fam="nav" data-also="action bar, control bar">
+                <button type="button" class="ctl-btn" id="labelToggle" aria-pressed="true">Labels on</button>
+                <span class="chip-row" role="group" aria-label="Filter by family">
+                    <button type="button" class="chip" data-fam="all" aria-pressed="true">All</button>
+                    <button type="button" class="chip" data-fam="nav" aria-pressed="false">Nav</button>
+                    <button type="button" class="chip" data-fam="input" aria-pressed="false">Input</button>
+                    <button type="button" class="chip" data-fam="status" aria-pressed="false">Status</button>
+                    <button type="button" class="chip" data-fam="display" aria-pressed="false">Display</button>
+                    <button type="button" class="chip" data-fam="page" aria-pressed="false">Page</button>
+                </span>
+                <span class="sb-search">
+                    <label for="sbq" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search element names</label>
+                    <input type="search" id="sbq" placeholder="Search names + synonyms" autocomplete="off">
+                </span>
+                <span class="sb-count" id="sbCount" aria-live="polite"></span>
+            </div>
+
+            <h2>Five controls, one word</h2>
+
+            <p>Start with the argument that started this. Below are the five things people mean by "dropdown," side by side and working. The differences are not cosmetic. Two of them run commands and three of them hold a value; two accept input that is not on the list; only one of the five is a single native HTML element.</p>
+
+            <div class="fig" id="fig1">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 1 &middot; The five controls people call a "dropdown"</span>
+                </div>
+                <div class="fig-body">
+                    <div class="spec-grid roomy">
+                        <div class="spec spec-box" data-el="Dropdown menu" data-fam="nav" data-also="pulldown menu, linear menu">
+                            <button type="button" class="btn" popovertarget="m-drop">Actions &#9662;</button>
+                            <div id="m-drop" popover class="menu">
+                                <button type="button" class="mi">Rename</button>
+                                <button type="button" class="mi">Duplicate</button>
+                                <hr>
+                                <button type="button" class="mi">Delete</button>
+                            </div>
+                            <p class="demo-note">Runs a <em>command</em>. Holds no value. Built from a button plus a popover.</p>
+                        </div>
+
+                        <div class="spec spec-box" data-el="Dropdown list" data-fam="input" data-also="picker, select">
+                            <label for="d-sel">Country</label><br>
+                            <select id="d-sel">
+                                <option>Canada</option>
+                                <option>Ireland</option>
+                                <option selected>United States</option>
+                            </select>
+                            <p class="demo-note">Holds a <em>value</em> from a closed set. One native element: <code>&lt;select&gt;</code>.</p>
+                        </div>
+
+                        <div class="spec spec-box" data-el="Listbox" data-fam="input" data-also="multi-select list">
+                            <label for="d-lb">Tags</label><br>
+                            <select id="d-lb" multiple size="3">
+                                <option selected>infra</option>
+                                <option>ui</option>
+                                <option selected>rust</option>
+                                <option>docs</option>
+                            </select>
+                            <p class="demo-note">Options always visible, multi-select. NN/g keeps this separate from the dropdown list.</p>
+                        </div>
+
+                        <div class="spec spec-box" data-el="Combo box" data-fam="input" data-also="editable dropdown">
+                            <label for="d-cb">Deploy target</label><br>
+                            <input type="text" id="d-cb" list="d-cb-opts" placeholder="pick or type">
+                            <datalist id="d-cb-opts">
+                                <option value="staging"></option>
+                                <option value="production"></option>
+                                <option value="canary"></option>
+                            </datalist>
+                            <p class="demo-note">Text field <em>plus</em> a list. Accepts a value that is not on the list.</p>
+                        </div>
+
+                        <div class="spec spec-box" data-el="Autocomplete" data-fam="input" data-also="typeahead, search suggestions">
+                            <label for="d-ac">Search posts</label><br>
+                            <input type="text" id="d-ac" autocomplete="off" placeholder="type 3+ letters">
+                            <div id="ac-out" class="demo-note" role="status">No suggestions yet.</div>
+                            <p class="demo-note">Suggestions are <em>fetched or filtered as you type</em>. The option set is open-ended.</p>
+                        </div>
+                    </div>
+
+                    <table class="dis" style="margin-top:0.9rem">
+                        <thead>
+                            <tr><th>Control</th><th>Holds a value?</th><th>Off-list input?</th><th>Options always visible?</th><th>Native HTML?</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Dropdown menu</td><td class="n">no - runs commands</td><td class="n">n/a</td><td class="n">no</td><td class="n">button + popover</td></tr>
+                            <tr><td>Dropdown list</td><td class="y">yes</td><td class="n">no</td><td class="n">no</td><td class="y">&lt;select&gt;</td></tr>
+                            <tr><td>Listbox</td><td class="y">yes (often many)</td><td class="n">no</td><td class="y">yes</td><td class="y">&lt;select multiple&gt;</td></tr>
+                            <tr><td>Combo box</td><td class="y">yes</td><td class="y">yes</td><td class="n">no</td><td class="y">input + &lt;datalist&gt;</td></tr>
+                            <tr><td>Autocomplete</td><td class="y">yes</td><td class="y">yes</td><td class="n">no</td><td class="n">JavaScript</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="fig-caption">All five are live. The menu and the autocomplete are the only ones with JavaScript behind them; the other three are native HTML elements styled with the site's tokens. The combo box uses <code>&lt;datalist&gt;</code>, which is the part people forget exists. Definitions follow NN/g's glossary, which lists Dropdown&nbsp;List, Dropdown&nbsp;Menu, Listbox, and Combo&nbsp;Box as four separate entries.</div>
+            </div>
+
+            <p>The obvious objection: does this level of pedantry pay for itself? It does now, and it did not five years ago. When I wrote the markup myself, a wrong word cost me the ten seconds it took to notice and fix. Now the word goes to an agent that produces 200 lines of confident, working, wrong component, and the cost is the review. Precision in the prompt is cheaper than precision in the diff.</p>
+
+            <h2>Five families, and the sources do not agree on how many</h2>
+
+            <p>Elements group into functional families, and here I have to be honest about the taxonomy: nobody agrees on the count. UXPin's guide sorts everything into <strong>four</strong> top-level categories - input, output, navigational, and container. NN/g's glossary does not impose top-level families at all; it is 61 alphabetical entries. The five-family split I use below - navigation, input, feedback and status, display and containers, and page-level blocks - is a working convention, not a standard. What matters is that the <em>element</em> names are canonical. The bins are mine.</p>
+
+            <p>The switchboard above filters by family and searches names plus synonyms, so if you only came for the input controls, click "Input" and the rest fade out.</p>
+
+            <h2>Navigation: how people move, and the four menu icons</h2>
+
+            <p>Navigation elements answer "where am I and where can I go." The four snack-food icons in the middle row are the ones I see mislabeled most. LogRocket's Rosie Allabarton gives the crisp version: the <strong>hamburger</strong> is three horizontal lines, the <strong>kebab</strong> is three dots arranged vertically, the <strong>meatball</strong> is three dots arranged horizontally, and the <strong>bento</strong> is a grid of squares. Click each one - the contents differ on purpose. Hamburger opens site navigation, kebab and meatball open item-scoped actions, bento switches between apps.</p>
+
+            <div class="fig wide" id="fig2">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 2 &middot; Navigation family</span>
+                    <span style="font-size:0.78rem;color:var(--muted)">18 specimens</span>
+                </div>
+                <div class="fig-body">
+                    <div class="spec-grid">
+                        <div class="spec spec-box" data-el="Navigation bar" data-fam="nav" data-also="navbar, app bar, header nav">
+                            <nav class="navbar"><span class="brandmark">stephens</span><a href="#fig2" aria-current="page">Blog</a><a href="#fig2">Stack</a><a href="#fig2">About</a></nav>
+                        </div>
+                        <div class="spec spec-box" data-el="Sidebar" data-fam="nav" data-also="side navigation, nav rail">
+                            <nav class="sidebar"><span class="grp">Fleet</span><a href="#fig2" aria-current="page">Services</a><a href="#fig2">Certs</a><a href="#fig2">Backups</a></nav>
+                        </div>
+                        <div class="spec spec-box" data-el="Tab bar" data-fam="nav" data-also="tabs">
+                            <div class="tabs" id="tabs1">
+                                <div role="tablist" aria-label="Example tabs">
+                                    <button role="tab" id="t1" aria-selected="true" aria-controls="p1">Overview</button>
+                                    <button role="tab" id="t2" aria-selected="false" aria-controls="p2">Logs</button>
+                                </div>
+                                <div role="tabpanel" id="p1" aria-labelledby="t1">Uptime 61 days.</div>
+                                <div role="tabpanel" id="p2" aria-labelledby="t2" hidden>No errors today.</div>
+                            </div>
+                        </div>
+                        <div class="spec spec-box" data-el="Bottom navigation" data-fam="nav" data-also="tab bar (mobile)">
+                            <nav class="botnav"><button aria-current="page"><span class="gl">&#9776;</span>Feed</button><button><span class="gl">&#9993;</span>Inbox</button><button><span class="gl">&#9881;</span>Settings</button></nav>
+                        </div>
+                        <div class="spec spec-box" data-el="Pagination" data-fam="nav" data-also="pager">
+                            <nav class="pager" aria-label="Pagination"><button>&laquo;</button><button aria-current="page">1</button><button>2</button><button>3</button><span>&hellip;</span><button>9</button><button>&raquo;</button></nav>
+                        </div>
+                        <div class="spec spec-box" data-el="Anchor link" data-fam="nav" data-also="in-page link, jump link">
+                            <a href="#fig7">Skip to the browser probe &darr;</a>
+                            <p class="demo-note">Same page, different position. NN/g: Anchor Link (In-Page Link, Jump Link).</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Hamburger menu" data-fam="nav" data-also="three horizontal lines">
+                            <button type="button" class="icon-btn" popovertarget="m-burger" aria-label="Open site navigation"><span class="burger"><i></i><i></i><i></i></span></button>
+                            <div id="m-burger" popover class="menu"><div class="mgrp">Site</div><button type="button" class="mi">Home</button><button type="button" class="mi">Blog</button><button type="button" class="mi">Projects</button></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Kebab menu" data-fam="nav" data-also="three vertical dots, overflow menu">
+                            <button type="button" class="icon-btn" popovertarget="m-kebab" aria-label="More actions"><span class="dots kebab"><i></i><i></i><i></i></span></button>
+                            <div id="m-kebab" popover class="menu"><div class="mgrp">This item</div><button type="button" class="mi">Pin</button><button type="button" class="mi">Archive</button></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Meatball menu" data-fam="nav" data-also="three horizontal dots">
+                            <button type="button" class="icon-btn" popovertarget="m-meat" aria-label="More options"><span class="dots meatball"><i></i><i></i><i></i></span></button>
+                            <div id="m-meat" popover class="menu"><div class="mgrp">This row</div><button type="button" class="mi">Share</button><button type="button" class="mi">Export</button></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Bento menu" data-fam="nav" data-also="grid menu, app switcher">
+                            <button type="button" class="icon-btn" popovertarget="m-bento" aria-label="Switch app"><span class="dots bento"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
+                            <div id="m-bento" popover><div class="bento-grid"><a href="#fig2"><span class="gl">&#9635;</span>Chart</a><a href="#fig2"><span class="gl">&#9993;</span>Mail</a><a href="#fig2"><span class="gl">&#9881;</span>Admin</a></div></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Megamenu" data-fam="nav" data-also="rectangular menu, square menu">
+                            <button type="button" class="btn" popovertarget="m-mega">Products &#9662;</button>
+                            <div id="m-mega" popover class="megamenu">
+                                <div><div class="mgrp">Track</div><a href="#fig2">Creighton</a><br><a href="#fig2">Daily Dozen</a></div>
+                                <div><div class="mgrp">Listen</div><a href="#fig2">Cascade</a><br><a href="#fig2">Sotto</a></div>
+                                <div><div class="mgrp">Ops</div><a href="#fig2">Dashboard</a><br><a href="#fig2">Newsletter</a></div>
+                            </div>
+                        </div>
+                        <div class="spec spec-box" data-el="Submenu" data-fam="nav" data-also="nested menu, flyout menu">
+                            <button type="button" class="btn" popovertarget="m-sub">File &#9662;</button>
+                            <div id="m-sub" popover class="menu">
+                                <button type="button" class="mi">New</button>
+                                <button type="button" class="mi" popovertarget="m-sub2">Export &#9656;</button>
+                                <div id="m-sub2" popover class="menu"><button type="button" class="mi">PDF</button><button type="button" class="mi">CSV</button></div>
+                            </div>
+                        </div>
+                        <div class="spec spec-box" data-el="Contextual menu" data-fam="nav" data-also="right-click menu, context menu">
+                            <div class="ctx-target" id="ctxTarget">Right-click (or long-press) here</div>
+                            <div id="m-ctx" popover class="menu"><button type="button" class="mi">Inspect</button><button type="button" class="mi">Copy name</button></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Pie menu" data-fam="nav" data-also="radial menu">
+                            <button type="button" class="btn" popovertarget="m-pie">Open pie menu</button>
+                            <div id="m-pie" popover class="pie"><button class="wedge w1">Cut</button><button class="wedge w2">Copy</button><button class="wedge w3">Paste</button><button class="wedge w4">Undo</button></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Search field" data-fam="nav" data-also="search input, search box">
+                            <form role="search" onsubmit="return false"><input type="search" placeholder="Search the fleet" aria-label="Search"> <button type="submit" class="btn sm">Go</button></form>
+                        </div>
+                        <div class="spec spec-box" data-el="Drawer" data-fam="nav" data-also="side sheet, flyout, drawer menu">
+                            <button type="button" class="btn" data-open="dlgDrawer">Open drawer</button>
+                            <p class="demo-note">NN/g files this as Side Sheet (Drawer, Flyout).</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Stepper" data-fam="nav" data-also="wizard, progress steps">
+                            <div class="steps"><span class="st done"><span class="num">&#10003;</span>Plan</span><span class="bar"></span><span class="st now"><span class="num">2</span>Build</span><span class="bar"></span><span class="st"><span class="num">3</span>Ship</span></div>
+                            <p class="demo-note">Not the same as an <em>input</em> stepper. See the collisions table.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Back-to-top button" data-fam="nav" data-also="scroll-to-top">
+                            <p class="demo-note" style="margin-top:0">Live in the bottom-right corner of this page once you have scrolled 600&nbsp;px. It is a real specimen, not a picture of one.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="fig-caption">Every menu here opens into the browser's <strong>top layer</strong> using the native <code>popover</code> attribute, positioned by a 17-line JavaScript helper against the trigger's bounding box. Nothing is a screenshot; the submenu really is a popover inside a popover.</div>
+            </div>
+
+            <h2>Input controls: the ones with the most synonyms</h2>
+
+            <p>Input is where the naming gets sloppiest, because every design system renames the same six things. NN/g's canonical entries are Textbox (Text Field, Input Field), Toggle (Toggle Switch, Switch), Segmented Button (Segmented Control), Floating Button (FAB), Range Control (Continuous Control), and Input Stepper. If you say "switch" to a designer and "toggle" to an engineer you are naming the same element twice.</p>
+
+            <div class="fig wide" id="fig3">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 3 &middot; Input family</span>
+                    <span style="font-size:0.78rem;color:var(--muted)">22 specimens</span>
+                </div>
+                <div class="fig-body">
+                    <form onsubmit="return false" class="spec spec-box" data-el="Form" data-fam="input" data-also="fieldset group">
+                    <div class="spec-grid">
+                        <div class="spec spec-box" data-el="Button" data-fam="input" data-also="push button, CTA">
+                            <div class="stackh"><button type="button" class="btn primary">Primary</button><button type="button" class="btn">Secondary</button><button type="button" class="btn" disabled>Disabled</button></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Split button" data-fam="input" data-also="dropdown button">
+                            <span class="stackh" style="gap:0">
+                                <button type="button" class="btn primary" style="border-radius:6px 0 0 6px">Deploy</button>
+                                <button type="button" class="btn primary" style="border-radius:0 6px 6px 0;border-left:1px solid rgba(255,255,255,0.35)" popovertarget="m-split" aria-label="More deploy options">&#9662;</button>
+                            </span>
+                            <div id="m-split" popover class="menu"><button type="button" class="mi">Deploy to staging</button><button type="button" class="mi">Deploy and tag</button></div>
+                            <p class="demo-note">Default action plus a menu of variants. One control, two hit areas.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Segmented control" data-fam="input" data-also="segmented button, button group">
+                            <div class="stackh" role="group" aria-label="View mode" style="gap:0" id="segCtl">
+                                <button type="button" class="btn" aria-pressed="true" style="border-radius:6px 0 0 6px">Day</button>
+                                <button type="button" class="btn" aria-pressed="false" style="border-radius:0">Week</button>
+                                <button type="button" class="btn" aria-pressed="false" style="border-radius:0 6px 6px 0">Month</button>
+                            </div>
+                        </div>
+                        <div class="spec spec-box" data-el="Floating action button" data-fam="input" data-also="FAB, floating button">
+                            <span style="display:inline-grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:999px;background:var(--brand);color:var(--brand-ink);font-size:1.3rem;box-shadow:0 3px 10px rgba(0,0,0,0.22)">+</span>
+                            <p class="demo-note">Persistent, hovers over content, one essential action.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Text field" data-fam="input" data-also="textbox, input field">
+                            <label for="i-txt">Service name</label><br><input type="text" id="i-txt" value="newsletter">
+                        </div>
+                        <div class="spec spec-box" data-el="Textarea" data-fam="input" data-also="multi-line text field">
+                            <label for="i-ta">Commit body</label><br><textarea id="i-ta" rows="2">Rotate the shared SMTP key.</textarea>
+                        </div>
+                        <div class="spec spec-box" data-el="Password field" data-fam="input" data-also="masked input">
+                            <label for="i-pw">Passphrase</label><br>
+                            <span class="stackh"><input type="password" id="i-pw" value="correcthorse"><button type="button" class="btn sm" id="pwToggle" aria-pressed="false">Show</button></span>
+                        </div>
+                        <div class="spec spec-box" data-el="Checkbox" data-fam="input" data-also="tick box">
+                            <label><input type="checkbox" checked> Sign commits</label><br>
+                            <label><input type="checkbox" id="cbInd"> Rotate keys</label>
+                            <p class="demo-note">The second one is <em>indeterminate</em>, the third checkbox state most people forget.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Radio group" data-fam="input" data-also="radio buttons, option buttons">
+                            <fieldset><legend>Env</legend>
+                                <label><input type="radio" name="env" checked> prod</label>
+                                <label><input type="radio" name="env"> staging</label>
+                            </fieldset>
+                        </div>
+                        <div class="spec spec-box" data-el="Toggle switch" data-fam="input" data-also="switch, state-switch control">
+                            <label class="stackh"><input type="checkbox" role="switch" checked> Auto-renew certs</label>
+                            <p class="demo-note">Applies immediately; a checkbox waits for submit. That is the real difference.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Rating" data-fam="input" data-also="star rating">
+                            <span id="rating" class="stackh" style="gap:0.1rem;font-size:1.1rem;color:var(--brand);cursor:pointer" role="radiogroup" aria-label="Rating"></span>
+                            <p class="demo-note" id="ratingOut">3 of 5</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Filter chip" data-fam="input" data-also="filter tag, choice chip">
+                            <span class="chip-row"><button type="button" class="chip" aria-pressed="true">Rust</button><button type="button" class="chip" aria-pressed="false">PHP</button><button type="button" class="chip" aria-pressed="false">Swift</button></span>
+                            <p class="demo-note">A chip you press is an input. A chip you cannot press is a tag.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Slider" data-fam="input" data-also="range control, continuous control">
+                            <label for="i-rng">Concurrency</label><br>
+                            <input type="range" id="i-rng" min="1" max="16" value="6" style="accent-color:var(--brand);width:100%">
+                            <output id="rngOut" class="demo-note">6</output>
+                        </div>
+                        <div class="spec spec-box" data-el="Input stepper" data-fam="input" data-also="number input, spin button">
+                            <label for="i-num">Replicas</label><br><input type="number" id="i-num" min="0" max="9" value="3" style="width:5rem">
+                            <p class="demo-note">NN/g: "adjusts numeric values in predefined steps." Not a wizard.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Knob" data-fam="input" data-also="virtual knob, dial">
+                            <div class="stackh"><svg id="knob" width="54" height="54" viewBox="0 0 54 54" role="img" aria-label="Knob at 40 percent"><circle cx="27" cy="27" r="21" fill="none" stroke="var(--rule)" stroke-width="5"></circle><circle id="knobArc" cx="27" cy="27" r="21" fill="none" stroke="var(--brand)" stroke-width="5" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="79" transform="rotate(-90 27 27)"></circle><text x="27" y="31" text-anchor="middle" font-size="12" fill="var(--ink)" id="knobTxt">40</text></svg><button type="button" class="btn sm" id="knobTurn">Turn</button></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Date picker" data-fam="input" data-also="calendar picker, date input">
+                            <label for="i-date">Cutover</label><br><input type="date" id="i-date" value="2026-08-05">
+                            <p class="demo-note">NN/g separates Date Picker, Calendar Picker, and Wheel-Style Date Picker.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Wheel picker" data-fam="input" data-also="spinner picker, drum picker">
+                            <div class="stackh" style="gap:0.3rem" id="wheel">
+                                <select aria-label="Hour"><option>07</option><option selected>08</option><option>09</option></select>
+                                <span>:</span>
+                                <select aria-label="Minute"><option>00</option><option selected>15</option><option>30</option></select>
+                            </div>
+                            <p class="demo-note">On iOS this renders as the rotating drum; the semantics are the same.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="File upload" data-fam="input" data-also="file input, dropzone">
+                            <input type="file" id="i-file" style="font-size:0.8rem;max-width:100%">
+                        </div>
+                        <div class="spec spec-box" data-el="Color picker" data-fam="input" data-also="colour input, swatch picker">
+                            <label for="i-color">Brand</label> <input type="color" id="i-color" value="#9b4d24" style="width:2.4rem;height:1.7rem;padding:0;border:1px solid var(--rule);background:none">
+                        </div>
+                        <div class="spec spec-box" data-el="Transfer list" data-fam="input" data-also="dual listbox, shuttle, pick list">
+                            <div class="stackh" style="align-items:center;gap:0.35rem">
+                                <select id="tlA" multiple size="3" style="flex:1;min-width:5rem"><option>alpha</option><option>beta</option></select>
+                                <span class="stackv" style="gap:0.15rem"><button type="button" class="btn sm" id="tlR">&rarr;</button><button type="button" class="btn sm" id="tlL">&larr;</button></span>
+                                <select id="tlB" multiple size="3" style="flex:1;min-width:5rem"><option>gamma</option></select>
+                            </div>
+                        </div>
+                        <div class="spec spec-box" data-el="Multiselect" data-fam="input" data-also="tag input, token field">
+                            <div class="stackh" id="msBox" style="border:1px solid var(--rule);border-radius:5px;padding:0.25rem;gap:0.25rem"></div>
+                            <p class="demo-note">Selected values become removable tokens. Click a token's &times; to drop it.</p>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+                <div class="fig-caption">Most of these are native HTML form controls carrying no JavaScript at all. The seven that do need script are the split-button menu, the segmented control, the rating, the knob, the transfer list, the multiselect, and the password reveal - plus one line to put the second checkbox into its <code>indeterminate</code> state. The <code>&lt;input type="range"&gt;</code> and <code>type="color"</code> controls are styled with <code>accent-color</code> so they follow the site palette in both themes.</div>
+            </div>
+
+            <h2>Feedback and status: modality is a property, not a component</h2>
+
+            <p>The distinction worth carrying out of this section: <strong>"modal" is not a component, it is a mode.</strong> A dialog is the component. Calling <code>showModal()</code> on a <code>&lt;dialog&gt;</code> puts it in the top layer, renders a <code>::backdrop</code>, and makes everything behind it inert. Calling <code>show()</code> on the same element gives you a non-modal dialog that leaves the page usable. Same element, same markup, different mode - and the bottom sheet, the drawer, and the lightbox in Fig. 4 are all that same <code>&lt;dialog&gt;</code> element with different CSS.</p>
+
+            <div class="fig wide" id="fig4">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 4 &middot; Feedback and status family</span>
+                    <span style="font-size:0.78rem;color:var(--muted)">19 specimens</span>
+                </div>
+                <div class="fig-body">
+                    <div class="spec-grid">
+                        <div class="spec spec-box" data-el="Alert" data-fam="status" data-also="inline message, callout">
+                            <div class="alert"><span class="gl">&#9432;</span><span>Certificate renews in 12 days.</span></div>
+                            <div class="alert ok" style="margin-top:0.3rem"><span class="gl">&#10003;</span><span>All 14 services healthy.</span></div>
+                            <div class="alert err" style="margin-top:0.3rem"><span class="gl">&#9888;</span><span>SMTP auth failed (535).</span></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Toast" data-fam="status" data-also="snackbar">
+                            <button type="button" class="btn" id="toastBtn">Show toast</button>
+                            <p class="demo-note">Transient, self-dismissing, non-blocking. NN/g: Snackbar (Toast).</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Modal dialog" data-fam="status" data-also="modal, blocking dialog">
+                            <button type="button" class="btn" data-open="dlgModal">Open modal</button>
+                            <p class="demo-note">Real <code>&lt;dialog&gt;.showModal()</code>. Try Escape.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Non-modal dialog" data-fam="status" data-also="modeless dialog">
+                            <button type="button" class="btn" data-open="dlgModeless" data-modal="0">Open non-modal</button>
+                            <p class="demo-note">Same element, <code>.show()</code>. The page stays usable.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Confirmation dialog" data-fam="status" data-also="confirm, are-you-sure">
+                            <button type="button" class="btn" data-open="dlgConfirm">Delete droplet</button>
+                            <p class="demo-note" id="confirmOut">No decision yet.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Bottom sheet" data-fam="status" data-also="action sheet">
+                            <button type="button" class="btn" data-open="dlgSheet">Open bottom sheet</button>
+                        </div>
+                        <div class="spec spec-box" data-el="Lightbox" data-fam="status" data-also="image overlay">
+                            <button type="button" class="btn" data-open="dlgLightbox">Open lightbox</button>
+                        </div>
+                        <div class="spec spec-box" data-el="Progress bar" data-fam="status" data-also="determinate progress">
+                            <label for="pb1" class="demo-note" style="margin:0">Backup 62%</label>
+                            <progress id="pb1" value="62" max="100">62%</progress>
+                            <p class="demo-note">The 3&nbsp;px bar at the very top of this page is the same element, tracking your scroll.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Progress indicator" data-fam="status" data-also="indeterminate progress">
+                            <div class="bar-track indet"><span class="fill"></span></div>
+                            <p class="demo-note">Indeterminate: work is happening, duration unknown.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Spinner" data-fam="status" data-also="loading spinner, activity indicator, wait animation">
+                            <div class="spinner" role="status" aria-label="Loading"></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Skeleton screen" data-fam="status" data-also="content placeholder, shimmer">
+                            <div class="skel" aria-hidden="true"><i style="width:80%"></i><i style="width:95%"></i><i style="width:60%"></i></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Backdrop" data-fam="status" data-also="scrim, overlay">
+                            <div class="backdrop-demo">Content behind<div class="scrim">Backdrop</div></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Badge" data-fam="status" data-also="notification dot, counter">
+                            <span class="stackh" style="gap:1.2rem">
+                                <span class="badge-wrap"><span class="icon-btn">&#9993;</span><span class="badge">12</span></span>
+                                <span class="badge-wrap"><span class="icon-btn">&#9881;</span><span class="badge dot"></span></span>
+                            </span>
+                            <p class="demo-note">Careful: Bootstrap's "badge" is what Material calls a chip.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Tooltip" data-fam="status" data-also="popup tip">
+                            <button type="button" class="btn" id="tipBtn" aria-describedby="tipPop">Hover or focus me</button>
+                            <div id="tipPop" popover="manual" class="tip" role="tooltip">Text only. No interactive content.</div>
+                        </div>
+                        <div class="spec spec-box" data-el="Popover" data-fam="status" data-also="popup">
+                            <button type="button" class="btn" popovertarget="popRich">Open popover</button>
+                            <div id="popRich" popover class="hovercard"><strong>Popover</strong><p style="margin:0.2rem 0 0;font-size:0.8rem">Unlike a tooltip, it can hold links and <a href="#fig4">focusable content</a>.</p></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Hover card" data-fam="status" data-also="preview card">
+                            <a href="#fig4" id="hcTrigger">@jacob</a>
+                            <div id="hcPop" popover="manual" class="hovercard"><span class="stackh"><span class="avatar">JS</span><span><strong>Jacob Stephens</strong><br><span class="demo-note">Ships one-engineer platforms.</span></span></span></div>
+                            <p class="demo-note">Opens on hover intent, holds rich content, dismisses on leave.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Empty state" data-fam="status" data-also="blank slate, zero state">
+                            <div class="empty"><span class="gl">&#9634;</span>No deploys yet.<br><button type="button" class="btn sm" style="margin-top:0.3rem">Create one</button></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Error state" data-fam="status" data-also="validation message, field error">
+                            <label for="i-err">Port</label><br>
+                            <input type="text" id="i-err" value="99999" aria-invalid="true" aria-describedby="errMsg">
+                            <div class="field-err" id="errMsg">Must be 1&ndash;65535.</div>
+                        </div>
+                        <div class="spec spec-box" data-el="Status indicator" data-fam="status" data-also="health dot, presence dot">
+                            <span class="stackh"><span style="width:0.55rem;height:0.55rem;border-radius:999px;background:var(--yes);display:inline-block"></span> newsletter &middot; running</span>
+                            <span class="stackh"><span style="width:0.55rem;height:0.55rem;border-radius:999px;background:var(--no);display:inline-block"></span> cascade-sync &middot; failed</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="fig-caption">The five overlay specimens - modal, non-modal, confirmation, bottom sheet, and lightbox - are one <code>&lt;dialog&gt;</code> element each, differing only in CSS and in whether the script calls <code>showModal()</code> or <code>show()</code>. The tooltip and hover card use <code>popover="manual"</code> so hover intent controls them rather than a click.</div>
+            </div>
+
+            <h2>Display and containers: the boxes everything else sits in</h2>
+
+            <p>Container names are the least standardized and the most consequential, because they set your layout vocabulary for the life of the codebase. MUI calls its elevated surface a Paper; Material 3 calls it a Surface; Bootstrap has no equivalent and you use a Card. The layout primitives at the end - Box, Stack, Grid, Container - come from MUI and have been widely copied; the Component Gallery lists Stack as a component in its own right.</p>
+
+            <div class="fig wide" id="fig5">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 5 &middot; Display and container family</span>
+                    <span style="font-size:0.78rem;color:var(--muted)">22 specimens</span>
+                </div>
+                <div class="fig-body">
+                    <div class="spec-grid">
+                        <div class="spec spec-box" data-el="Card" data-fam="display" data-also="tile">
+                            <div class="card"><div class="media"></div><div class="body"><h5>Cascade</h5><div class="demo-note" style="margin:0">One Rust core, six shells.</div></div></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Panel" data-fam="display" data-also="pane, section box">
+                            <div class="panel"><header>Services</header><div>14 running, 0 failed.</div></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Paper" data-fam="display" data-also="surface, elevated container">
+                            <div class="paper">Elevation without a border. MUI calls this Paper; Material&nbsp;3 calls it Surface.</div>
+                        </div>
+                        <div class="spec spec-box" data-el="Divider" data-fam="display" data-also="separator, rule">
+                            <div class="mini">Above</div><hr style="border:0;border-top:1px solid var(--rule);margin:0.4rem 0"><div class="mini">Below</div>
+                        </div>
+                        <div class="spec spec-box" data-el="Accordion" data-fam="display" data-also="disclosure group, expander">
+                            <details class="acc" name="acc1"><summary>What is an accordion?</summary><div class="ab">A group of disclosures where opening one closes the others.</div></details>
+                            <details class="acc" name="acc1"><summary>Why the name attribute?</summary><div class="ab">HTML now enforces exclusivity natively via <code>&lt;details name&gt;</code>.</div></details>
+                        </div>
+                        <div class="spec spec-box" data-el="Table" data-fam="display" data-also="static table">
+                            <table class="grid"><thead><tr><th>Service</th><th>Port</th></tr></thead><tbody><tr><td>newsletter</td><td>3462</td></tr><tr><td>dashboard</td><td>3460</td></tr></tbody></table>
+                        </div>
+                        <div class="spec spec-box" data-el="Data grid" data-fam="display" data-also="sortable table, datatable">
+                            <table class="grid" id="dgrid"><thead><tr><th aria-sort="ascending"><button type="button" data-k="0">Repo &#9650;</button></th><th><button type="button" data-k="1">Commits</button></th></tr></thead>
+                            <tbody><tr><td>cascade</td><td>412</td></tr><tr><td>chart35</td><td>1108</td></tr><tr><td>newsletter</td><td>97</td></tr></tbody></table>
+                            <p class="demo-note">A table you can sort. Click a header.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="List" data-fam="display" data-also="list view, item list">
+                            <ul class="plain"><li><span class="avatar" style="width:1.4rem;height:1.4rem;font-size:0.6rem">CA</span> Cascade</li><li><span class="avatar" style="width:1.4rem;height:1.4rem;font-size:0.6rem">SO</span> Sotto</li></ul>
+                        </div>
+                        <div class="spec spec-box" data-el="Tree view" data-fam="display" data-also="file tree, hierarchy view">
+                            <div class="tree"><details open><summary>/var/www</summary><details><summary>stephens.page</summary><div class="leaf">blog/</div><div class="leaf">theme.css</div></details><div class="leaf">quadrille.app</div></details></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Timeline" data-fam="display" data-also="activity feed, history">
+                            <ul class="timeline"><li><time>Aug 5</time>Specimen sheet shipped</li><li><time>Aug 1</time>Hello World ladder</li></ul>
+                        </div>
+                        <div class="spec spec-box" data-el="Carousel" data-fam="display" data-also="slider, slideshow">
+                            <div class="carousel" id="car1">
+                                <div class="track"><figure><div>&#9635;</div>Slide 1</figure><figure><div>&#9636;</div>Slide 2</figure><figure><div>&#9637;</div>Slide 3</figure></div>
+                                <div class="cnav"><button type="button" class="btn sm" data-car="-1" aria-label="Previous slide">&larr;</button><span class="stackh" style="gap:0.25rem" id="carDots"></span><button type="button" class="btn sm" data-car="1" aria-label="Next slide">&rarr;</button></div>
+                            </div>
+                        </div>
+                        <div class="spec spec-box" data-el="Image list" data-fam="display" data-also="gallery, image grid">
+                            <div class="gallery"><button type="button" data-open="dlgLightbox">&#9635;</button><button type="button" data-open="dlgLightbox">&#9636;</button><button type="button" data-open="dlgLightbox">&#9637;</button></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Chart" data-fam="display" data-also="graph, plot">
+                            <div class="chart-wrap">
+                                <div class="panel-label" style="margin-bottom:0.2rem">Deploys per day</div>
+                                <svg width="100%" height="46" viewBox="0 0 180 46" role="img" aria-label="Bar chart of deploys per day, Monday through Friday: 4, 7, 3, 9, 6">
+                                    <g fill="var(--brand)">
+                                        <rect x="4" y="24" width="24" height="18" rx="4"></rect>
+                                        <rect x="38" y="12" width="24" height="30" rx="4"></rect>
+                                        <rect x="72" y="29" width="24" height="13" rx="4"></rect>
+                                        <rect x="106" y="4" width="24" height="38" rx="4"></rect>
+                                        <rect x="140" y="18" width="24" height="24" rx="4"></rect>
+                                    </g>
+                                    <line x1="0" y1="42.5" x2="180" y2="42.5" stroke="var(--rule)" stroke-width="1"></line>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="spec spec-box" data-el="Sparkline" data-fam="display" data-also="inline chart, micro chart">
+                            <span class="mini">Latency&nbsp;
+                            <svg width="80" height="20" viewBox="0 0 80 20" role="img" aria-label="Sparkline of response latency, trending down"><polyline points="2,15 14,9 26,12 38,5 50,8 62,3 78,6" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+                            &nbsp;<strong>41&nbsp;ms</strong></span>
+                            <p class="demo-note">One series, no axes, reads inside a sentence.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Stats block" data-fam="display" data-also="stat tile, KPI row, metric card">
+                            <div class="stats"><div><div class="n">61</div><div class="l">NN/g terms</div></div><div><div class="n">60</div><div class="l">Components</div></div><div><div class="n">95</div><div class="l">Design systems</div></div></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Avatar" data-fam="display" data-also="profile image, user pic">
+                            <span class="stackh" style="gap:0"><span class="avatar">JS</span><span class="avatar grp" style="background:var(--muted)">MK</span><span class="avatar grp" style="background:var(--ink)">+3</span></span>
+                            <p class="demo-note">Overlapped, this is an avatar group.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Icon" data-fam="display" data-also="glyph, pictogram">
+                            <span class="stackh" style="font-size:1.15rem;color:var(--brand)"><span>&#9881;</span><span>&#9993;</span><span>&#9635;</span><span>&#9888;</span></span>
+                        </div>
+                        <div class="spec spec-box" data-el="Tag" data-fam="display" data-also="chip, pill, label, badge (Bootstrap)">
+                            <span class="stackh"><span class="tag">rust</span><span class="tag">infra</span><span class="tag">v1.4.2</span></span>
+                            <p class="demo-note">Non-interactive. The interactive one is a filter chip, up in Fig. 3.</p>
+                        </div>
+                        <div class="spec spec-box" data-el="Typography scale" data-fam="display" data-also="type ramp">
+                            <div class="type-scale"><div style="font-family:'Source Serif 4',Georgia,serif;font-size:1.3rem;font-weight:700">Display</div><div style="font-size:1rem;font-weight:700">Heading</div><div style="font-size:0.86rem">Body</div><div style="font-size:0.72rem;color:var(--muted)">Caption</div></div>
+                        </div>
+                        <div class="spec spec-box" data-el="Blockquote" data-fam="display" data-also="pull quote">
+                            <blockquote class="bq">"The diagram is never the source of truth."</blockquote>
+                        </div>
+                        <div class="spec spec-box" data-el="Layout primitives" data-fam="display" data-also="box, stack, grid, container">
+                            <div class="prim-container">Container
+                                <div class="prim-grid" style="margin-top:0.25rem"><i></i><i></i><i></i></div>
+                                <div class="demo-note" style="margin-top:0.2rem">Grid &middot; Stack &middot; Box</div>
+                            </div>
+                        </div>
+                        <div class="spec spec-box" data-el="Scrollbar" data-fam="display" data-also="scroll track">
+                            <div class="scrollbox">Scroll me. The scrollbar is styled with <code>scrollbar-color</code>, which is the standards-track property - not the old <code>::-webkit-scrollbar</code> pseudo-elements.<br><br>Keep going.<br><br>End.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fig-caption">The accordion uses the native <code>&lt;details name&gt;</code> attribute for exclusivity, so opening one closes the other with no JavaScript. The two chart marks are hand-written inline SVG on one series each, colored with <code>--brand</code> and labeled in text tokens; a single-series chart needs no legend, and neither of these needs an axis.</div>
+            </div>
+
+            <h2>Page-level blocks: the vocabulary marketing pages actually use</h2>
+
+            <p>Landing pages are not assembled from atomic controls; they are assembled from <em>blocks</em>, and the block names are their own vocabulary. Landingfolio's component library sorts its catalog into 37 categories, and the top of that list by count is Feature (995 examples), Hero (456), Footer (393), Header (390), Call To Action (297), and Testimonial (296). If you brief a designer or an agent in these words, you get a page back in one pass.</p>
+
+            <div class="fig" id="fig6">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 6 &middot; A landing page, block by block</span>
+                    <span style="font-size:0.78rem;color:var(--muted)">scroll inside the frame</span>
+                </div>
+                <div class="fig-body">
+                    <div class="frame">
+                        <div class="chrome"><i></i><i></i><i></i><span>example.test &middot; a fictional product page</span></div>
+                        <div class="lp">
+                            <div class="spec" data-el="Promotion bar" data-fam="page" data-also="promo bar"><div class="promo">Free through August &middot; no card needed</div></div>
+                            <div class="spec" data-el="Header" data-fam="page" data-also="site header, masthead"><div class="blk sitebar"><strong>Widgetly</strong><span class="stackh mini"><a href="#fig6">Features</a><a href="#fig6">Pricing</a><button type="button" class="btn sm primary">Sign up</button></span></div></div>
+                            <div class="spec" data-el="Hero" data-fam="page" data-also="above the fold, banner"><div class="blk hero"><h3>Ship the thing you keep describing</h3><p>One sentence of positioning, one button, no scrolling required.</p><button type="button" class="btn primary">Start free</button></div></div>
+                            <div class="spec" data-el="Logo cloud" data-fam="page" data-also="social proof bar, customer logos"><div class="blk"><div class="logos"><span>NORTHWIND</span><span>ACME</span><span>UMBRA</span><span>KELVIN</span></div></div></div>
+                            <div class="spec" data-el="Feature grid" data-fam="page" data-also="feature section, benefits grid"><div class="blk feat"><div><span class="gl">&#9635;</span><br><strong>Fast</strong><br>Under 100&nbsp;ms.</div><div><span class="gl">&#9881;</span><br><strong>Configurable</strong><br>One YAML file.</div><div><span class="gl">&#9993;</span><br><strong>Quiet</strong><br>No noisy alerts.</div></div></div>
+                            <div class="spec" data-el="How it works" data-fam="page" data-also="steps section, process section"><div class="blk steps3"><div><span class="n">1</span> Connect</div><div><span class="n">2</span> Configure</div><div><span class="n">3</span> Ship</div></div></div>
+                            <div class="spec" data-el="Testimonial" data-fam="page" data-also="quote block, social proof"><div class="blk quote"><span class="avatar">MK</span><div><em>"Replaced three tools with one."</em><div class="demo-note">Fictional Person, Fictional Co.</div></div></div></div>
+                            <div class="spec" data-el="Stats band" data-fam="page" data-also="metrics section"><div class="blk"><div class="stats"><div><div class="n">99.9%</div><div class="l">Uptime</div></div><div><div class="n">41ms</div><div class="l">p50</div></div><div><div class="n">14</div><div class="l">Regions</div></div></div></div></div>
+                            <div class="spec" data-el="Pricing table" data-fam="page" data-also="plan comparison"><div class="blk prices"><div><strong>Free</strong><div class="amt">$0</div>1 project</div><div class="best"><strong>Pro</strong><div class="amt">$12</div>Unlimited</div><div><strong>Team</strong><div class="amt">$40</div>SSO</div></div></div>
+                            <div class="spec" data-el="FAQ" data-fam="page" data-also="frequently asked questions"><div class="blk"><details class="acc" name="faq"><summary>Is there a free tier?</summary><div class="ab">Yes, one project.</div></details><details class="acc" name="faq"><summary>Can I self-host?</summary><div class="ab">Yes.</div></details></div></div>
+                            <div class="spec" data-el="CTA band" data-fam="page" data-also="call to action, conversion band"><div class="blk cta"><strong>Ready?</strong> <button type="button" class="btn sm">Start free</button></div></div>
+                            <div class="spec" data-el="Newsletter signup" data-fam="page" data-also="email capture, subscribe block"><div class="blk"><div class="mini" style="margin-bottom:0.3rem"><strong>Get the monthly note</strong></div><form class="nl" onsubmit="return false"><input type="email" placeholder="you@example.com" aria-label="Email"><button type="submit" class="btn sm primary">Subscribe</button></form></div></div>
+                            <div class="spec" data-el="Footer" data-fam="page" data-also="site footer"><div class="blk foot"><div><strong>Product</strong><br>Features<br>Pricing</div><div><strong>Company</strong><br>About<br>Careers</div><div><strong>Legal</strong><br>Privacy<br>Terms</div></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fig-caption">Thirteen page-level blocks in the order they usually appear, inside a scrollable frame. The product is fictional and the domain is <code>example.test</code>, which is reserved by RFC&nbsp;2606 and resolves nowhere. Turn the labels off in the switchboard and it reads as an ordinary marketing page - that is the point of the exercise.</div>
+            </div>
+
+            <h2>How much of this does the browser ship already?</h2>
+
+            <p>Before you scroll into Fig. 7, make a prediction. Of the 18 interface capabilities listed there - dialogs, popovers, exclusive accordions, anchor positioning, customizable selects, scroll-driven animation, and so on - <strong>how many do you think your browser supports natively today?</strong> Write the number down. Most engineers I have asked guess somewhere between 6 and 10, and they are reliably low, because the mental model was set when jQuery plugins were how you got a modal.</p>
+
+            <p>Then press the button. The probe runs real feature detection in your browser - <code>CSS.supports()</code>, prototype checks, and element construction - and reports what is actually there.</p>
+
+            <div class="fig" id="fig7">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 7 &middot; What your browser ships natively</span>
+                    <button type="button" class="ctl-btn" id="probeRun">Run the probe</button>
+                </div>
+                <div class="fig-body">
+                    <div class="fig-scroll">
+                        <table class="probe" id="probeTable">
+                            <thead><tr><th>Capability</th><th>Test</th><th>Supported</th></tr></thead>
+                            <tbody id="probeBody"><tr><td colspan="3" class="demo-note">Press "Run the probe" to test this browser.</td></tr></tbody>
+                        </table>
+                    </div>
+                    <p class="probe-sum" id="probeSum"></p>
+                </div>
+                <div class="fig-caption">Live feature detection, not a compatibility table copied from elsewhere - the result describes the browser you are reading this in. On Google Chrome 142.0.7444.175, which is what I verified this page against, <strong>all 18 pass</strong>, including the newest item on the list, the CSS carousel pseudo-elements (<code>::scroll-button()</code>). Firefox and Safari will score lower on the last five rows, which is the whole reason to run the test in your browser instead of trusting my number.</div>
+            </div>
+
+            <p>The result I did not expect when I built this: on Chrome 142 the score is <strong>18 out of 18</strong>. The modal dialog, the popover menu, the exclusive accordion, the anchor-positioned tooltip, the color picker, and even the carousel scroll buttons are native now. A component library still earns its place on theming, on keyboard behavior in the edge cases, and on consistency across a team - but no longer on making the browser do things it cannot do. That was not true in 2019, and my instincts had not caught up.</p>
+
+            <h2>The same three controls, mine and a real design system's</h2>
+
+            <p>Every specimen above is hand-rolled from native HTML with 340 lines of CSS. That is a deliberate choice for a teaching page, not a recommendation. To show what you get for the extra weight, Fig. 8 loads <a href="https://shoelace.style/" rel="noopener">Shoelace 2.20.1</a> - a real, unmodified web-component library, straight from jsDelivr - and puts three of its components next to mine.</p>
+
+            <div class="fig" id="fig8">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 8 &middot; Hand-rolled vs. Shoelace 2.20.1</span>
+                    <button type="button" class="ctl-btn" id="slLoad">Load Shoelace (~84 KB)</button>
+                </div>
+                <div class="fig-body">
+                    <div class="sl-grid">
+                        <div class="sl-cell">
+                            <h5>Hand-rolled, native HTML</h5>
+                            <div class="stackv">
+                                <label for="sl-mine-sel">Environment</label>
+                                <select id="sl-mine-sel"><option>staging</option><option selected>production</option></select>
+                                <label class="stackh"><input type="checkbox" role="switch" checked> Notifications</label>
+                                <span class="stackh" style="gap:0.1rem;font-size:1.1rem;color:var(--brand)">&#9733;&#9733;&#9733;&#9734;&#9734;</span>
+                            </div>
+                        </div>
+                        <div class="sl-cell">
+                            <h5>Shoelace web components</h5>
+                            <div id="slHost"><p class="sl-fallback" id="slMsg">Not loaded. Press the button above to fetch the real library from jsDelivr.</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fig-caption">Click-to-load, because the library is real and costs real bytes. The Shoelace column renders <code>&lt;sl-select&gt;</code>, <code>&lt;sl-switch&gt;</code>, and <code>&lt;sl-rating&gt;</code> as actual custom elements, themed to the site palette by mapping <code>--sl-color-primary-600</code> onto <code>--brand</code>, and it follows the light/dark toggle by swapping the <code>sl-theme-dark</code> class. If jsDelivr is unreachable the cell says so and the hand-rolled column is unaffected.</div>
+            </div>
+
+            <h2>The names that collide</h2>
+
+            <p>These are the collisions that have actually cost me time. Each one is a case where two sources use the same word for different components, or different words for the same component.</p>
+
+            <div class="fig-scroll">
+                <table class="collide">
+                    <thead><tr><th>Name</th><th>The collision</th></tr></thead>
+                    <tbody>
+                        <tr><td>Stepper</td><td>The Component Gallery's "Stepper" is the multi-step wizard. NN/g's "Input Stepper" is the numeric increment/decrement control. Two unrelated components, one word. Say "wizard" or "number input" and the ambiguity disappears.</td></tr>
+                        <tr><td>Badge</td><td>Bootstrap's badge is a small inline label - what Material calls a chip and Polaris calls a tag. Material's badge is the count bubble on an icon. NN/g follows Material: "notification indicator (dot) or item counter."</td></tr>
+                        <tr><td>Modal</td><td>Not a component. It is a property of a dialog: <code>showModal()</code> versus <code>show()</code>. Ask for "a modal" and you have specified the mode but not the content pattern.</td></tr>
+                        <tr><td>Snackbar / toast</td><td>Material says snackbar, everyone else says toast. NN/g lists it as "Snackbar (Toast)." Same element.</td></tr>
+                        <tr><td>Drawer / side sheet / flyout</td><td>Three names, one element. NN/g's entry is "Side Sheet (Drawer, Flyout)"; it also lists "Drawer Menu" separately for the navigation-specific case.</td></tr>
+                        <tr><td>Segmented control</td><td>Apple's name. Material 3 says segmented button; NN/g lists "Segmented Button (Segmented Control)." Bootstrap has no equivalent and you build it from a button group.</td></tr>
+                        <tr><td>Popover</td><td>Ambiguous in a way the others are not: it is both a component name (NN/g "Popup (Popover)") <em>and</em> an HTML attribute that is a top-layer mechanism. The menus, tooltips, and hover cards in this page are all built <em>with</em> <code>popover</code> but are not all <em>a</em> popover.</td></tr>
+                        <tr><td>Card</td><td>The most overloaded container in the industry. NN/g pins it usefully: "container resembling playing card size holding related brief information." If it fills the page it is a panel or a surface, not a card.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>The quiz at the door</h2>
+
+            <p>Litt's rule for his own agents is that a PR does not ship unless he could pass a quiz on it. Same rule here, and the same warning from Matuschak: if you scrolled and nodded, you kept almost none of it. Six questions.</p>
+
+            <div class="fig" id="fig9">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 9 &middot; Pass the quiz before you name it</span>
+                </div>
+                <div class="fig-body" id="quiz">
+                    <div class="qz">
+                        <div class="q">1. A user must pick exactly one of twelve known countries, and must not be able to enter anything else. Which control is that?</div>
+                        <div class="opts">
+                            <button type="button" class="opt">Combo box</button>
+                            <button type="button" class="opt" data-c="1">Dropdown list</button>
+                            <button type="button" class="opt">Dropdown menu</button>
+                            <button type="button" class="opt">Autocomplete</button>
+                        </div>
+                        <p class="expl">A dropdown list - one native <code>&lt;select&gt;</code>. A combo box would let them type "Freedonia," a dropdown menu runs commands rather than holding a value, and an autocomplete implies an open-ended option set.</p>
+                    </div>
+                    <div class="qz">
+                        <div class="q">2. What actually makes a dialog "modal"?</div>
+                        <div class="opts">
+                            <button type="button" class="opt">It is centered on the screen</button>
+                            <button type="button" class="opt">It has a close button in the corner</button>
+                            <button type="button" class="opt" data-c="1">It is opened with <code>showModal()</code>, so it enters the top layer with a backdrop and makes the rest of the page inert</button>
+                            <button type="button" class="opt">It is a different HTML element than a non-modal dialog</button>
+                        </div>
+                        <p class="expl">Modality is a mode, not a component. The same <code>&lt;dialog&gt;</code> element gives you both: <code>showModal()</code> for modal, <code>show()</code> for modeless. Both are in Fig. 4.</p>
+                    </div>
+                    <div class="qz">
+                        <div class="q">3. Three dots arranged vertically. What is that icon called?</div>
+                        <div class="opts">
+                            <button type="button" class="opt">Meatball menu</button>
+                            <button type="button" class="opt" data-c="1">Kebab menu</button>
+                            <button type="button" class="opt">Bento menu</button>
+                            <button type="button" class="opt">Hamburger menu</button>
+                        </div>
+                        <p class="expl">Kebab is vertical, meatball is horizontal, hamburger is three lines, bento is a grid. Picture the skewer standing up.</p>
+                    </div>
+                    <div class="qz">
+                        <div class="q">4. Your ticket says "add a stepper." Why is that ticket ambiguous?</div>
+                        <div class="opts">
+                            <button type="button" class="opt">Because steppers are deprecated</button>
+                            <button type="button" class="opt" data-c="1">Because it could mean a numeric increment control or a multi-step wizard, and the two sources disagree</button>
+                            <button type="button" class="opt">Because steppers only exist on mobile</button>
+                            <button type="button" class="opt">Because a stepper is really a slider</button>
+                        </div>
+                        <p class="expl">NN/g's "Input Stepper" adjusts a number in fixed increments. The Component Gallery's "Stepper" is the wizard with numbered stages. Both are in this page, in Figs. 3 and 2 respectively.</p>
+                    </div>
+                    <div class="qz">
+                        <div class="q">5. A checkbox and a toggle switch both hold a boolean. When do you reach for the switch?</div>
+                        <div class="opts">
+                            <button type="button" class="opt">When the label is longer than three words</button>
+                            <button type="button" class="opt" data-c="1">When the change takes effect immediately, with no submit step</button>
+                            <button type="button" class="opt">When there is only one option in the group</button>
+                            <button type="button" class="opt">When the form is on mobile</button>
+                        </div>
+                        <p class="expl">A switch is an immediate state change - flip it and the setting is applied. A checkbox collects a value the form submits later. NN/g files the switch under "State-Switch Control."</p>
+                    </div>
+                    <div class="qz">
+                        <div class="q">6. Which of these is a browser <em>mechanism</em> rather than a named component?</div>
+                        <div class="opts">
+                            <button type="button" class="opt">Hover card</button>
+                            <button type="button" class="opt">Bottom sheet</button>
+                            <button type="button" class="opt" data-c="1">The HTML <code>popover</code> attribute</button>
+                            <button type="button" class="opt">Megamenu</button>
+                        </div>
+                        <p class="expl"><code>popover</code> is a top-layer primitive with light-dismiss and focus management built in. The dropdown menus, tooltips, hover cards, and pie menu in this page are all built with it, and none of them <em>is</em> "a popover" as a component name.</p>
+                    </div>
+                    <p id="qzTally">0 of 6 answered.</p>
+                </div>
+                <div class="fig-caption">Answers are graded in the browser with no network call, and the explanation appears whichever option you pick.</div>
+            </div>
+
+            <h2>What's still open</h2>
+
+            <p>The honest limit of this page is that a vocabulary does not settle an argument by existing. NN/g published 61 canonical names in February 2025 and the design systems in the Component Gallery still disagree with each other and with NN/g - 95 systems, and "stepper" still means two different things depending on which door you came in. I have not adopted a house glossary across my own repositories yet, and until I do, this post is a reference I wrote rather than a standard I follow. That is the next piece of work: a short names file in each project so the agent and I are reading from the same list, which is a smaller and more useful artifact than another design system.</p>
+
+            <p>The second open question is whether the labels helped. Litt's own caveat about interactive figures is that they can become a crutch - you push the buttons, feel competent, and retain nothing. The quiz is a partial check. My own honest answer is that building the page taught me two things I did not know going in: that <code>&lt;details name&gt;</code> makes an exclusive accordion with no JavaScript, and that a "modal" was never a component in the first place. Whether reading it does the same for you is a test I cannot run.</p>
+
+            <h2>Sources</h2>
+
+            <div class="sources">
+                <h3>Ideas and authorities</h3>
+                <ul>
+                    <li>Raluca Budiu and Kara Rivenbark, <span class="cite-title">"User-Interface Elements: Glossary"</span>, Nielsen Norman Group, February 28, 2025 - the 61 canonical element names, their alternate names, and the definitions quoted throughout. <a href="https://www.nngroup.com/articles/ui-elements-glossary/" rel="noopener">nngroup.com/articles/ui-elements-glossary</a></li>
+                    <li><span class="cite-title">The Component Gallery</span> - 60 components cross-referenced across 95 real design systems, the source for the naming collisions. <a href="https://component.gallery/" rel="noopener">component.gallery</a></li>
+                    <li>Rosie Allabarton, <span class="cite-title">"40 essential UI elements every designer should know"</span>, LogRocket, April 14, 2025 - the hamburger / kebab / meatball / bento icon distinctions. <a href="https://blog.logrocket.com/ux-design/40-essential-ui-elements/" rel="noopener">blog.logrocket.com/ux-design/40-essential-ui-elements</a></li>
+                    <li><span class="cite-title">UXPin</span>, "User Interface Elements Every Designer Should Know", May 22, 2026 - the four-family grouping (input, output, navigational, container) that my five-family split departs from. <a href="https://www.uxpin.com/studio/blog/user-interface-elements-every-designer-should-know/" rel="noopener">uxpin.com/studio/blog</a></li>
+                    <li><span class="cite-title">Landingfolio</span> - the 37 page-block categories and their example counts (Feature 995, Hero 456, Footer 393, Header 390, Call To Action 297, Testimonial 296). <a href="https://landingfolio.com/components" rel="noopener">landingfolio.com/components</a></li>
+                    <li>Geoffrey Litt, <span class="cite-title">"Understanding: the New Bottleneck"</span> (talk I attended) - demonstration over description, and the quiz-before-merge rule. <a href="https://www.youtube.com/watch?v=WkBPX-oDMnA" rel="noopener">youtube.com/watch?v=WkBPX-oDMnA</a></li>
+                    <li>Andy Matuschak, <span class="cite-title">"Why Books Don't Work"</span> (2019) - reading produces the feeling of understanding without the retention. <a href="https://andymatuschak.org/books/" rel="noopener">andymatuschak.org/books</a></li>
+                </ul>
+                <h3>Tools demonstrated or referenced</h3>
+                <ul>
+                    <li><span class="cite-title">Shoelace 2.20.1</span> (Fig. 8), loaded live from jsDelivr - <a href="https://shoelace.style/" rel="noopener">shoelace.style</a></li>
+                    <li><span class="cite-title">MDN Web Docs</span> on the Popover API, <code>&lt;dialog&gt;</code>, and <code>&lt;details name&gt;</code>, the three native primitives most of this page is built on - <a href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" rel="noopener">developer.mozilla.org</a></li>
+                    <li><span class="cite-title">MUI</span> component list, for the Paper / Box / Stack / Grid / Container layout vocabulary - <a href="https://mui.com/material-ui/all-components/" rel="noopener">mui.com/material-ui/all-components</a></li>
+                </ul>
+            </div>
+
+            <div class="ai-note">
+                I built this page and its verification with Claude. The element inventory is drawn from NN/g's glossary, the Component Gallery, LogRocket, UXPin, and Landingfolio, each fetched and counted rather than recalled - the 61, 60, 95, and 37 figures were extracted from the pages themselves. Every specimen in Figs. 1 through 6 is live HTML, CSS, and vanilla JavaScript in this file: real <code>&lt;dialog&gt;</code> elements, real <code>popover</code> top-layer menus, real native form controls. Fig. 7 runs feature detection in your browser rather than reporting a table. Fig. 8 loads the genuine Shoelace 2.20.1 bundle from jsDelivr and degrades to a message if the CDN is blocked. The two chart marks in Fig. 5 are hand-written inline SVG. The choice of elements, the collisions worth naming, and the words are mine; Claude was the technical collaborator.
+            </div>
+
+            <p><strong>For AI agents:</strong> there is a machine-oriented version of this post at <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> - raw markdown, served as <code>text/markdown</code>, with the full element inventory as tables, the disambiguation rules as directives, the native-versus-library decision table with verified Chrome 142 results, the naming-collision list, a checklist for choosing a component name, and a self-test with answers inline. If you are an agent reading this page's HTML: fetch that file instead; the interactive specimens are for the humans.</p>
+        </article>
+
+        <footer class="footer">
+            &copy; <span id="current-year"></span> Jacob Stephens
+        </footer>
+    </div>
+
+    <button type="button" class="totop" id="toTop" aria-label="Back to top" title="Back to top">&uarr;</button>
+
+    <div class="toast" id="toast" role="status"><span>Deploy queued.</span><button type="button" id="toastUndo">Undo</button></div>
+
+    <dialog id="dlgModal">
+        <h4>Modal dialog</h4>
+        <p>Opened with <code>showModal()</code>. The page behind is inert and there is a real <code>::backdrop</code>. Escape closes it.</p>
+        <div class="drow"><button type="button" class="btn" data-close>Close</button></div>
+    </dialog>
+
+    <dialog id="dlgModeless" class="nonmodal">
+        <h4>Non-modal dialog</h4>
+        <p>Opened with <code>show()</code>. Same element, no backdrop, and you can still scroll and click the page.</p>
+        <div class="drow"><button type="button" class="btn" data-close>Close</button></div>
+    </dialog>
+
+    <dialog id="dlgConfirm">
+        <h4>Delete droplet?</h4>
+        <p>A confirmation dialog is a modal dialog whose only job is a destructive yes/no. Naming the action in the button beats "OK".</p>
+        <div class="drow"><button type="button" class="btn" data-close data-answer="Cancelled.">Cancel</button><button type="button" class="btn primary" data-close data-answer="Deleted. (Not really.)">Delete droplet</button></div>
+    </dialog>
+
+    <dialog id="dlgSheet" class="sheet">
+        <h4>Bottom sheet</h4>
+        <p>A dialog anchored to the bottom edge. On mobile this is where action lists live.</p>
+        <div class="drow"><button type="button" class="btn" data-close>Dismiss</button></div>
+    </dialog>
+
+    <dialog id="dlgDrawer" class="drawer">
+        <h4>Drawer</h4>
+        <p>A dialog anchored to a side edge. NN/g calls it a side sheet; Material calls it a drawer; Windows called it a flyout.</p>
+        <div class="drow"><button type="button" class="btn" data-close>Close</button></div>
+    </dialog>
+
+    <dialog id="dlgLightbox" class="lightbox">
+        <svg viewBox="0 0 480 260" width="480" height="260" role="img" aria-label="Placeholder image in a lightbox">
+            <rect width="480" height="260" fill="#2a2521"></rect>
+            <circle cx="150" cy="90" r="34" fill="#9b4d24"></circle>
+            <path d="M40 230 L180 120 L280 200 L360 150 L440 230 Z" fill="#4a4038"></path>
+            <text x="240" y="250" text-anchor="middle" fill="#c9bfb4" font-size="13">Lightbox: a non-fullscreen overlay, usually for media</text>
+        </svg>
+        <div class="drow"><button type="button" class="btn" data-close>Close</button></div>
+    </dialog>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+    <script>
+    (function () {
+        'use strict';
+
+        var FAM = { nav: 'NAV', input: 'INPUT', status: 'STATUS', display: 'DISPLAY', page: 'PAGE' };
+        var specs = Array.prototype.slice.call(document.querySelectorAll('.spec'));
+        var body = document.body;
+
+        /* ---------- 1. Label every specimen from its data attributes ---------- */
+        specs.forEach(function (el) {
+            var tag = document.createElement('span');
+            tag.className = 'spec-tag';
+            var f = document.createElement('span');
+            f.className = 'spec-fam';
+            f.textContent = FAM[el.getAttribute('data-fam')] || 'ELEMENT';
+            var n = document.createElement('span');
+            n.className = 'spec-name';
+            n.textContent = el.getAttribute('data-el') || '';
+            tag.appendChild(f);
+            tag.appendChild(n);
+            var also = el.getAttribute('data-also');
+            if (also) {
+                var a = document.createElement('span');
+                a.className = 'spec-also';
+                a.textContent = 'also: ' + also;
+                tag.appendChild(a);
+            }
+            el.insertBefore(tag, el.firstChild);
+            el.__hay = ((el.getAttribute('data-el') || '') + ' ' + (also || '')).toLowerCase();
+        });
+
+        /* ---------- 2. Switchboard: labels, family filter, search ---------- */
+        var famFilter = 'all', query = '';
+        var sbCount = document.getElementById('sbCount');
+
+        function applyFilter() {
+            var shown = 0;
+            specs.forEach(function (el) {
+                var okFam = famFilter === 'all' || el.getAttribute('data-fam') === famFilter;
+                var okQ = !query || el.__hay.indexOf(query) !== -1;
+                var ok = okFam && okQ;
+                el.classList.toggle('dim', !ok);
+                if (ok) shown++;
+            });
+            sbCount.textContent = shown === specs.length
+                ? specs.length + ' named elements'
+                : shown + ' of ' + specs.length + ' shown';
+        }
+
+        var labelToggle = document.getElementById('labelToggle');
+        labelToggle.addEventListener('click', function () {
+            var on = !body.classList.contains('labels-on');
+            body.classList.toggle('labels-on', on);
+            labelToggle.setAttribute('aria-pressed', String(on));
+            labelToggle.textContent = on ? 'Labels on' : 'Labels off';
+        });
+
+        Array.prototype.forEach.call(document.querySelectorAll('.switchboard .chip'), function (c) {
+            c.addEventListener('click', function () {
+                famFilter = c.getAttribute('data-fam');
+                Array.prototype.forEach.call(document.querySelectorAll('.switchboard .chip'), function (o) {
+                    o.setAttribute('aria-pressed', String(o === c));
+                });
+                applyFilter();
+            });
+        });
+
+        var sbq = document.getElementById('sbq');
+        sbq.addEventListener('input', function () {
+            query = sbq.value.trim().toLowerCase();
+            applyFilter();
+        });
+        applyFilter();
+
+        /* ---------- 3. Popovers: position against the trigger ---------- */
+        var supportsPopover = Object.prototype.hasOwnProperty.call(HTMLElement.prototype, 'popover');
+
+        function place(pop, x, y, isPoint) {
+            var pw = pop.offsetWidth, ph = pop.offsetHeight;
+            var left = isPoint ? x : x;
+            var top = isPoint ? y : y;
+            if (left + pw > window.innerWidth - 8) left = Math.max(8, window.innerWidth - pw - 8);
+            if (top + ph > window.innerHeight - 8) top = Math.max(8, window.innerHeight - ph - 8);
+            pop.style.left = Math.max(8, left) + 'px';
+            pop.style.top = Math.max(8, top) + 'px';
+        }
+
+        function placeUnder(pop, trigger) {
+            var r = trigger.getBoundingClientRect();
+            var ph = pop.offsetHeight;
+            var top = r.bottom + 6;
+            if (top + ph > window.innerHeight - 8) top = Math.max(8, r.top - ph - 6);
+            place(pop, r.left, top, false);
+        }
+
+        function openPop(pop, trigger) {
+            if (supportsPopover) { if (!pop.matches(':popover-open')) pop.showPopover(); }
+            else pop.classList.add('open');
+            placeUnder(pop, trigger);
+        }
+        function closePop(pop) {
+            if (supportsPopover) { if (pop.matches(':popover-open')) pop.hidePopover(); }
+            else pop.classList.remove('open');
+        }
+
+        Array.prototype.forEach.call(document.querySelectorAll('[popovertarget]'), function (btn) {
+            var pop = document.getElementById(btn.getAttribute('popovertarget'));
+            if (!pop) return;
+            if (supportsPopover) {
+                pop.addEventListener('toggle', function (e) {
+                    if (e.newState === 'open') placeUnder(pop, btn);
+                });
+            } else {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (pop.classList.contains('open')) closePop(pop);
+                    else openPop(pop, btn);
+                });
+            }
+        });
+
+        if (!supportsPopover) {
+            document.addEventListener('click', function (e) {
+                Array.prototype.forEach.call(document.querySelectorAll('[popover].open'), function (p) {
+                    if (!p.contains(e.target) && !(e.target.getAttribute && e.target.closest('[popovertarget]'))) {
+                        p.classList.remove('open');
+                    }
+                });
+            });
+        }
+
+        /* Contextual menu on right-click */
+        var ctxTarget = document.getElementById('ctxTarget');
+        var ctxPop = document.getElementById('m-ctx');
+        ctxTarget.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            if (supportsPopover) { if (!ctxPop.matches(':popover-open')) ctxPop.showPopover(); }
+            else ctxPop.classList.add('open');
+            place(ctxPop, e.clientX, e.clientY, true);
+        });
+
+        /* Tooltip + hover card: hover intent, manual popovers */
+        function hoverPop(triggerId, popId, delay) {
+            var t = document.getElementById(triggerId), p = document.getElementById(popId), timer = null;
+            function show() {
+                clearTimeout(timer);
+                timer = setTimeout(function () { openPop(p, t); }, delay);
+            }
+            function hide() { clearTimeout(timer); timer = setTimeout(function () { closePop(p); }, 120); }
+            t.addEventListener('mouseenter', show);
+            t.addEventListener('focus', show);
+            t.addEventListener('mouseleave', hide);
+            t.addEventListener('blur', hide);
+            p.addEventListener('mouseenter', function () { clearTimeout(timer); });
+            p.addEventListener('mouseleave', hide);
+        }
+        hoverPop('tipBtn', 'tipPop', 120);
+        hoverPop('hcTrigger', 'hcPop', 260);
+
+        /* ---------- 4. Dialogs ---------- */
+        Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (btn) {
+            btn.addEventListener('click', function () {
+                var d = document.getElementById(btn.getAttribute('data-open'));
+                if (!d) return;
+                if (btn.getAttribute('data-modal') === '0') d.show();
+                else d.showModal();
+            });
+        });
+        Array.prototype.forEach.call(document.querySelectorAll('dialog [data-close]'), function (btn) {
+            btn.addEventListener('click', function () {
+                var ans = btn.getAttribute('data-answer');
+                if (ans) document.getElementById('confirmOut').textContent = ans;
+                btn.closest('dialog').close();
+            });
+        });
+
+        /* ---------- 5. Toast ---------- */
+        var toast = document.getElementById('toast'), toastTimer = null;
+        document.getElementById('toastBtn').addEventListener('click', function () {
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 3500);
+        });
+        document.getElementById('toastUndo').addEventListener('click', function () {
+            toast.classList.remove('show');
+        });
+
+        /* ---------- 6. Small live behaviours ---------- */
+        /* Notification bar dismiss */
+        document.getElementById('promoClose').addEventListener('click', function () {
+            document.getElementById('promoBar').style.display = 'none';
+        });
+
+        /* Tabs */
+        var tabs = document.querySelectorAll('#tabs1 [role="tab"]');
+        Array.prototype.forEach.call(tabs, function (t) {
+            t.addEventListener('click', function () {
+                Array.prototype.forEach.call(tabs, function (o) {
+                    var sel = o === t;
+                    o.setAttribute('aria-selected', String(sel));
+                    document.getElementById(o.getAttribute('aria-controls')).hidden = !sel;
+                });
+            });
+        });
+
+        /* Segmented control */
+        var seg = document.querySelectorAll('#segCtl button');
+        Array.prototype.forEach.call(seg, function (b) {
+            b.addEventListener('click', function () {
+                Array.prototype.forEach.call(seg, function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+            });
+        });
+
+        /* Filter chips inside Fig. 3 (decorative, but they must actually toggle) */
+        Array.prototype.forEach.call(document.querySelectorAll('.spec[data-el="Filter chip"] .chip'), function (c) {
+            c.addEventListener('click', function () {
+                c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+            });
+        });
+
+        /* Password reveal */
+        var pw = document.getElementById('i-pw'), pwT = document.getElementById('pwToggle');
+        pwT.addEventListener('click', function () {
+            var show = pw.type === 'password';
+            pw.type = show ? 'text' : 'password';
+            pwT.textContent = show ? 'Hide' : 'Show';
+            pwT.setAttribute('aria-pressed', String(show));
+        });
+
+        /* Indeterminate checkbox */
+        document.getElementById('cbInd').indeterminate = true;
+
+        /* Rating */
+        var rating = document.getElementById('rating'), ratingOut = document.getElementById('ratingOut'), ratingVal = 3;
+        function drawRating() {
+            rating.innerHTML = '';
+            for (var i = 1; i <= 5; i++) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'icon-btn';
+                b.style.cssText = 'border:0;background:none;width:1.3rem;height:1.3rem;color:inherit;font-size:1.1rem';
+                b.textContent = i <= ratingVal ? '★' : '☆';
+                b.setAttribute('aria-label', i + ' of 5');
+                (function (v) { b.addEventListener('click', function () { ratingVal = v; drawRating(); }); })(i);
+                rating.appendChild(b);
+            }
+            ratingOut.textContent = ratingVal + ' of 5';
+        }
+        drawRating();
+
+        /* Slider output */
+        var rng = document.getElementById('i-rng'), rngOut = document.getElementById('rngOut');
+        rng.addEventListener('input', function () { rngOut.textContent = rng.value; });
+
+        /* Knob */
+        var knobVal = 40, knobArc = document.getElementById('knobArc'), knobTxt = document.getElementById('knobTxt');
+        document.getElementById('knobTurn').addEventListener('click', function () {
+            knobVal = (knobVal + 15) % 105;
+            if (knobVal > 100) knobVal = 0;
+            knobArc.setAttribute('stroke-dashoffset', String(132 - (132 * knobVal / 100)));
+            knobTxt.textContent = String(knobVal);
+            document.getElementById('knob').setAttribute('aria-label', 'Knob at ' + knobVal + ' percent');
+        });
+
+        /* Transfer list */
+        function move(from, to) {
+            Array.prototype.slice.call(from.selectedOptions).forEach(function (o) { to.appendChild(o); o.selected = false; });
+        }
+        document.getElementById('tlR').addEventListener('click', function () {
+            move(document.getElementById('tlA'), document.getElementById('tlB'));
+        });
+        document.getElementById('tlL').addEventListener('click', function () {
+            move(document.getElementById('tlB'), document.getElementById('tlA'));
+        });
+
+        /* Multiselect tokens */
+        var msBox = document.getElementById('msBox'), msVals = ['rust', 'infra'];
+        function drawMs() {
+            msBox.innerHTML = '';
+            msVals.forEach(function (v, i) {
+                var t = document.createElement('span');
+                t.className = 'tag';
+                t.textContent = v;
+                var x = document.createElement('button');
+                x.type = 'button';
+                x.textContent = '×';
+                x.setAttribute('aria-label', 'Remove ' + v);
+                x.style.cssText = 'border:0;background:none;cursor:pointer;font:inherit;color:inherit;padding:0 0 0 0.2rem';
+                x.addEventListener('click', function () { msVals.splice(i, 1); drawMs(); });
+                t.appendChild(x);
+                msBox.appendChild(t);
+            });
+            var add = document.createElement('button');
+            add.type = 'button';
+            add.className = 'btn sm';
+            add.textContent = '+ add';
+            add.addEventListener('click', function () {
+                var pool = ['docs', 'swift', 'php', 'ops'];
+                var next = pool.find(function (p) { return msVals.indexOf(p) === -1; });
+                if (next) { msVals.push(next); drawMs(); }
+            });
+            msBox.appendChild(add);
+        }
+        drawMs();
+
+        /* Autocomplete */
+        var ac = document.getElementById('d-ac'), acOut = document.getElementById('ac-out');
+        var acPool = ['The Diagram Is Not the Model', 'The Animation Is a Replay', 'The Boring Deploy Script', 'The Agents I Run', 'Byte Counts Lie'];
+        ac.addEventListener('input', function () {
+            var q = ac.value.trim().toLowerCase();
+            if (q.length < 3) { acOut.textContent = 'No suggestions yet.'; return; }
+            var hits = acPool.filter(function (p) { return p.toLowerCase().indexOf(q) !== -1; });
+            acOut.textContent = hits.length ? hits.slice(0, 3).join(' · ') : 'No match.';
+        });
+
+        /* Data grid sort */
+        var dgrid = document.getElementById('dgrid');
+        Array.prototype.forEach.call(dgrid.querySelectorAll('th button'), function (b) {
+            b.addEventListener('click', function () {
+                var k = parseInt(b.getAttribute('data-k'), 10);
+                var th = b.parentNode;
+                var asc = th.getAttribute('aria-sort') !== 'ascending';
+                Array.prototype.forEach.call(dgrid.querySelectorAll('th'), function (o) {
+                    o.removeAttribute('aria-sort');
+                    var ob = o.querySelector('button');
+                    ob.textContent = ob.textContent.replace(/ [▲▼]$/, '');
+                });
+                th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+                b.textContent = b.textContent.replace(/ [▲▼]$/, '') + (asc ? ' ▲' : ' ▼');
+                var tb = dgrid.querySelector('tbody');
+                var rows = Array.prototype.slice.call(tb.querySelectorAll('tr'));
+                rows.sort(function (r1, r2) {
+                    var a = r1.cells[k].textContent, b2 = r2.cells[k].textContent;
+                    var na = parseFloat(a), nb = parseFloat(b2);
+                    var cmp = (!isNaN(na) && !isNaN(nb)) ? na - nb : a.localeCompare(b2);
+                    return asc ? cmp : -cmp;
+                });
+                rows.forEach(function (r) { tb.appendChild(r); });
+            });
+        });
+
+        /* Carousel */
+        var car = document.getElementById('car1'), track = car.querySelector('.track'), dotsWrap = document.getElementById('carDots');
+        var slides = track.querySelectorAll('figure');
+        for (var i = 0; i < slides.length; i++) {
+            (function (idx) {
+                var d = document.createElement('button');
+                d.type = 'button';
+                d.className = 'cdot';
+                d.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+                d.setAttribute('aria-current', idx === 0 ? 'true' : 'false');
+                d.addEventListener('click', function () { track.scrollTo({ left: idx * track.clientWidth, behavior: 'smooth' }); });
+                dotsWrap.appendChild(d);
+            })(i);
+        }
+        Array.prototype.forEach.call(car.querySelectorAll('[data-car]'), function (b) {
+            b.addEventListener('click', function () {
+                track.scrollBy({ left: parseInt(b.getAttribute('data-car'), 10) * track.clientWidth, behavior: 'smooth' });
+            });
+        });
+        track.addEventListener('scroll', function () {
+            var idx = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+            Array.prototype.forEach.call(dotsWrap.children, function (d, j) {
+                d.setAttribute('aria-current', j === idx ? 'true' : 'false');
+            });
+        });
+
+        /* Reading progress bar + back-to-top */
+        var readbar = document.getElementById('readbar'), toTop = document.getElementById('toTop');
+        function onScroll() {
+            var h = document.documentElement.scrollHeight - window.innerHeight;
+            var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+            readbar.style.width = pct.toFixed(1) + '%';
+            toTop.classList.toggle('show', window.scrollY > 600);
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+        toTop.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+        /* ---------- 7. Native-capability probe (Fig. 7) ---------- */
+        var PROBES = [
+            ['Modal dialog', '<dialog>.showModal()', function () { return typeof HTMLDialogElement !== 'undefined' && typeof HTMLDialogElement.prototype.showModal === 'function'; }],
+            ['Popover (top layer)', 'popover attribute', function () { return Object.prototype.hasOwnProperty.call(HTMLElement.prototype, 'popover'); }],
+            ['Exclusive accordion', '<details name>', function () { return 'name' in document.createElement('details'); }],
+            ['Combo box list', '<datalist>', function () { return 'options' in document.createElement('datalist'); }],
+            ['Search landmark', '<search> element', function () { return !(document.createElement('search') instanceof HTMLUnknownElement); }],
+            ['Progress bar', '<progress>', function () { return 'max' in document.createElement('progress'); }],
+            ['Slider', 'input type=range', function () { var i = document.createElement('input'); i.type = 'range'; return i.type === 'range'; }],
+            ['Date picker', 'input type=date', function () { var i = document.createElement('input'); i.type = 'date'; return i.type === 'date'; }],
+            ['Color picker', 'input type=color', function () { var i = document.createElement('input'); i.type = 'color'; return i.type === 'color'; }],
+            ['Inert background', 'inert property', function () { return 'inert' in HTMLElement.prototype; }],
+            ['Anchor positioning', 'CSS anchor-name', function () { return CSS.supports('anchor-name: --a'); }],
+            ['Customizable select', 'appearance: base-select', function () { return CSS.supports('appearance: base-select'); }],
+            ['Parent selector', ':has()', function () { return CSS.supports('selector(:has(a))'); }],
+            ['Auto-sizing input', 'field-sizing: content', function () { return CSS.supports('field-sizing: content'); }],
+            ['Balanced headings', 'text-wrap: balance', function () { return CSS.supports('text-wrap: balance'); }],
+            ['View transitions', 'document.startViewTransition', function () { return 'startViewTransition' in document; }],
+            ['Scroll-driven animation', 'animation-timeline: scroll()', function () { return CSS.supports('animation-timeline: scroll()'); }],
+            ['CSS carousel buttons', '::scroll-button()', function () { return CSS.supports('selector(::scroll-button(*))'); }]
+        ];
+
+        document.getElementById('probeRun').addEventListener('click', function () {
+            var tb = document.getElementById('probeBody');
+            tb.innerHTML = '';
+            var pass = 0;
+            PROBES.forEach(function (p) {
+                var ok = false;
+                try { ok = !!p[2](); } catch (e) { ok = false; }
+                if (ok) pass++;
+                var tr = document.createElement('tr');
+                var td1 = document.createElement('td');
+                td1.textContent = p[0];
+                var td2 = document.createElement('td');
+                var c = document.createElement('code');
+                c.textContent = p[1];
+                td2.appendChild(c);
+                var td3 = document.createElement('td');
+                td3.className = 'v';
+                td3.setAttribute('data-ok', ok ? '1' : '0');
+                td3.textContent = ok ? 'yes' : 'no';
+                tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+                tb.appendChild(tr);
+            });
+            document.getElementById('probeSum').textContent =
+                pass + ' of ' + PROBES.length + ' supported in this browser. How close was your guess?';
+        });
+
+        /* ---------- 8. Quiz ---------- */
+        var answered = 0, total = document.querySelectorAll('#quiz .qz').length;
+        Array.prototype.forEach.call(document.querySelectorAll('#quiz .qz'), function (q) {
+            Array.prototype.forEach.call(q.querySelectorAll('button.opt'), function (b) {
+                b.addEventListener('click', function () {
+                    if (q.classList.contains('answered')) return;
+                    q.classList.add('answered');
+                    answered++;
+                    Array.prototype.forEach.call(q.querySelectorAll('button.opt'), function (o) {
+                        o.disabled = true;
+                        if (o.getAttribute('data-c') === '1') o.classList.add('correct');
+                        else if (o === b) o.classList.add('wrong');
+                    });
+                    document.getElementById('qzTally').textContent = answered + ' of ' + total + ' answered.';
+                });
+            });
+        });
+
+        /* ---------- 9. Shoelace (Fig. 8), loaded on demand ---------- */
+        var slBtn = document.getElementById('slLoad'), slHost = document.getElementById('slHost'), slLoaded = false;
+        var SL = 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/';
+
+        function isDark() {
+            var t = document.documentElement.getAttribute('data-theme');
+            if (t === 'dark') return true;
+            if (t === 'light') return false;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        function syncSlTheme() {
+            if (!slLoaded) return;
+            slHost.classList.toggle('sl-theme-dark', isDark());
+        }
+        function loadCss(href) {
+            return new Promise(function (res, rej) {
+                var l = document.createElement('link');
+                l.rel = 'stylesheet';
+                l.href = href;
+                l.onload = function () { res(); };
+                l.onerror = function () { rej(new Error('css')); };
+                document.head.appendChild(l);
+            });
+        }
+
+        slBtn.addEventListener('click', function () {
+            if (slLoaded) return;
+            slBtn.disabled = true;
+            slBtn.textContent = 'Loading…';
+            document.getElementById('slMsg').textContent = 'Fetching Shoelace 2.20.1 from jsDelivr…';
+            Promise.all([
+                loadCss(SL + 'themes/light.css'),
+                loadCss(SL + 'themes/dark.css'),
+                import(SL + 'components/select/select.js'),
+                import(SL + 'components/option/option.js'),
+                import(SL + 'components/switch/switch.js'),
+                import(SL + 'components/rating/rating.js')
+            ]).then(function () {
+                slHost.innerHTML =
+                    '<sl-select label="Environment" value="production" size="small">' +
+                    '<sl-option value="staging">staging</sl-option>' +
+                    '<sl-option value="production">production</sl-option></sl-select>' +
+                    '<sl-switch checked>Notifications</sl-switch>' +
+                    '<sl-rating label="Rating" value="3"></sl-rating>';
+                return Promise.all(['sl-select', 'sl-option', 'sl-switch', 'sl-rating'].map(function (t) {
+                    return customElements.whenDefined(t);
+                }));
+            }).then(function () {
+                slLoaded = true;
+                syncSlTheme();
+                slBtn.textContent = 'Shoelace loaded';
+            }).catch(function () {
+                slBtn.disabled = false;
+                slBtn.textContent = 'Retry Shoelace';
+                slHost.innerHTML = '<p class="sl-fallback">Shoelace could not be fetched from jsDelivr - the CDN is blocked or offline. The hand-rolled column on the left is unaffected, which is the argument for native elements in one sentence. Library: <a href="https://shoelace.style/" rel="noopener">shoelace.style</a></p>';
+            });
+        });
+
+        /* ---------- 10. Theme observer ---------- */
+        new MutationObserver(syncSlTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncSlTheme);
+    })();
+    </script>
+    <script src="/blog/newsletter-widget.js" defer></script>
+</body>
+</html>
