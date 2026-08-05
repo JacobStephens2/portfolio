@@ -226,7 +226,8 @@
         dialog.lightbox svg { display: block; max-width: min(34rem, 88vw); height: auto; border-radius: 6px; }
         dialog.nonmodal { position: fixed; top: auto; bottom: 5.5rem; right: 1rem; left: auto; margin: 0; width: min(19rem, 88vw); }
         .toast { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); z-index: 70; display: none; align-items: center; gap: 0.8rem; padding: 0.55rem 0.9rem; font-size: 0.86rem; background: var(--ink); color: var(--surface); border: 0; border-radius: 8px; box-shadow: 0 8px 26px rgba(0,0,0,0.3); }
-        .toast.show { display: flex; }
+        .toast.show { display: flex; animation: toastIn 0.24s ease-out; }
+        @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 1.4rem); } to { opacity: 1; transform: translate(-50%, 0); } }
         .toast button { font: inherit; font-size: 0.8rem; font-weight: 700; background: none; border: 0; color: var(--surface); text-decoration: underline; cursor: pointer; }
 
         /* Disambiguator table */
@@ -362,6 +363,17 @@
         /* Collisions table */
         table.collide td:first-child { font-weight: 700; white-space: nowrap; padding-right: 0.8rem; }
 
+        /* Recall drill */
+        .drill { display: grid; gap: 0.7rem; }
+        .drill-stage { min-height: 7rem; display: grid; place-items: center; padding: 1rem 0.9rem; border: 1px dashed var(--rule); border-radius: 8px; background: var(--soft); }
+        .drill-stage > * { pointer-events: none; max-width: 100%; }
+        .drill-row { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; }
+        .drill-row input { flex: 1 1 11rem; min-width: 9rem; font-size: 0.9rem; padding: 0.35rem 0.6rem; }
+        .drill-fb { font-size: 0.88rem; min-height: 1.5rem; line-height: 1.5; }
+        .drill-fb .ok { color: var(--yes); font-weight: 700; }
+        .drill-fb .no { color: var(--no); font-weight: 700; }
+        .drill-score { font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
         /* Quiz */
         .qz { padding: 0.9rem 0 0.7rem; border-bottom: 1px dashed var(--rule); }
         .qz:first-child { padding-top: 0.2rem; }
@@ -391,6 +403,7 @@
             .spinner { animation-duration: 3s; }
             .skel i, .bar-track.indet .fill { animation: none; }
             input[role="switch"], input[role="switch"]::after { transition: none; }
+            .toast.show { animation: none; }
             .carousel .track { scroll-behavior: auto; }
             * { scroll-behavior: auto !important; }
         }
@@ -429,7 +442,7 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Interface Vocabulary</div>
             <h1 class="title">The Element Has a Name</h1>
-            <p class="meta"><strong>August 5, 2026</strong> &middot; ~2,800 words &middot; 9 live figures and a quiz &middot; reading this as an AI agent? <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> is for you</p>
+            <p class="meta"><strong>August 5, 2026</strong> &middot; ~3,500 words &middot; 10 live figures, a recall drill, and a quiz &middot; reading this as an AI agent? <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> is for you</p>
 
             <p>The fastest way to get the wrong control built is to call it a "dropdown." That one word covers at least five different components with five different behaviors, and the agent writing my markup has to guess which one I meant. Last month I asked for "a dropdown to filter the chart" on the <a href="/blog/">server dashboard</a> and got a <code>&lt;select&gt;</code> element. I wanted a menu of actions. The word was the whole spec, and the word was wrong.</p>
 
@@ -769,7 +782,7 @@
                         </div>
                         <div class="spec spec-box" data-el="Toast" data-fam="status" data-also="snackbar">
                             <button type="button" class="btn" id="toastBtn">Show toast</button>
-                            <p class="demo-note">Transient, self-dismissing, non-blocking. NN/g: Snackbar (Toast).</p>
+                            <p class="demo-note">Transient, self-dismissing, non-blocking. NN/g: Snackbar (Toast). <strong>Look at the bottom center of the window, not at this button</strong> - a toast is anchored to the viewport, which is exactly what distinguishes it from an inline alert.</p>
                         </div>
                         <div class="spec spec-box" data-el="Modal dialog" data-fam="status" data-also="modal, blocking dialog">
                             <button type="button" class="btn" data-open="dlgModal">Open modal</button>
@@ -1058,13 +1071,42 @@
                 </table>
             </div>
 
-            <h2>The quiz at the door</h2>
+            <h2>Recognition is not the skill you need</h2>
 
-            <p>Litt's rule for his own agents is that a PR does not ship unless he could pass a quiz on it. Same rule here, and the same warning from Matuschak: if you scrolled and nodded, you kept almost none of it. Six questions.</p>
+            <p>I built the quiz below before I had thought hard enough about what it measures. It is multiple choice, so it tests <strong>recognition</strong>: shown four names, can you pick the right one. But the thing this post is supposed to buy you happens at a blank prompt box, where nobody offers you four options. That is <strong>recall</strong>, and the two are not the same skill. Robert and Elizabeth Bjork's distinction between <em>fluency strength</em> (how easily something comes to mind right now) and <em>storage strength</em> (how durably it is learned) is the reason multiple choice feels productive and mostly is not: recognizing a name you just read scores high on fluency and adds almost nothing to storage.</p>
+
+            <p>Their prescription is <strong>desirable difficulty</strong> - make the retrieval harder on purpose - and the cleanest instance of it is the testing effect that Henry Roediger and Jeffrey Karpicke measured in 2006: students who were tested on material retained substantially more than students who restudied it for the same time, even though the restudy group felt more confident. Matt Pocock's <a href="https://github.com/mattpocock/skills/tree/main/skills/productivity/teach" rel="noopener">teach skill</a> builds a whole workspace around the same pair of ideas, and it names the thing I had skipped: skills require effort and a tight feedback loop, not a comprehension check at the end.</p>
+
+            <p>So Fig. 9 is the harder version. It shows you a specimen lifted live out of this page - the actual DOM node, cloned, with its label stripped - and asks you to type what it is called. No options. It accepts the canonical name or any of the synonyms this page has taught you, which is the honest grading rule: "side sheet" and "flyout" are both correct for a drawer.</p>
 
             <div class="fig" id="fig9">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 9 &middot; Pass the quiz before you name it</span>
+                    <span class="fig-title">Fig. 9 &middot; Name the element (recall, not recognition)</span>
+                    <span class="drill-score" id="drillScore">Not started</span>
+                </div>
+                <div class="fig-body">
+                    <div class="drill">
+                        <div class="drill-stage" id="drillStage"><p class="demo-note" style="margin:0">Press <strong>Start</strong>. A specimen from this page appears here, unlabeled. Type what it is called.</p></div>
+                        <form class="drill-row" id="drillForm">
+                            <label for="drillInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Element name</label>
+                            <input type="text" id="drillInput" placeholder="Type the element name" autocomplete="off" autocapitalize="off" spellcheck="false" disabled>
+                            <button type="submit" class="btn primary" id="drillCheck" disabled>Check</button>
+                            <button type="button" class="btn" id="drillReveal" disabled>Show answer</button>
+                            <button type="button" class="btn" id="drillStart">Start</button>
+                        </form>
+                        <div class="drill-fb" id="drillFb" role="status"></div>
+                    </div>
+                </div>
+                <div class="fig-caption">Each round clones a real <code>.spec</code> node out of the page, removes its label and its explanatory note, strips the ids so nothing collides, and disables pointer events so you cannot poke the answer out of it. Grading normalizes case and punctuation and accepts every synonym in the specimen's own <code>data-also</code> attribute. 24 specimens are in the pool, drawn from all five families so the practice is interleaved rather than blocked.</div>
+            </div>
+
+            <h2>The quiz at the door</h2>
+
+            <p>Litt's rule for his own agents is that a PR does not ship unless he could pass a quiz on it. Same rule here, and the same warning from Matuschak: if you scrolled and nodded, you kept almost none of it. Six questions - and having just done the recall drill, notice how much easier these feel. That gap is the point.</p>
+
+            <div class="fig" id="fig10">
+                <div class="fig-head">
+                    <span class="fig-title">Fig. 10 &middot; Pass the quiz before you name it</span>
                 </div>
                 <div class="fig-body" id="quiz">
                     <div class="qz">
@@ -1136,7 +1178,7 @@
 
             <p>The honest limit of this page is that a vocabulary does not settle an argument by existing. NN/g published 61 canonical names in February 2025 and the design systems in the Component Gallery still disagree with each other and with NN/g - 95 systems, and "stepper" still means two different things depending on which door you came in. I have not adopted a house glossary across my own repositories yet, and until I do, this post is a reference I wrote rather than a standard I follow. That is the next piece of work: a short names file in each project so the agent and I are reading from the same list, which is a smaller and more useful artifact than another design system.</p>
 
-            <p>The second open question is whether the labels helped. Litt's own caveat about interactive figures is that they can become a crutch - you push the buttons, feel competent, and retain nothing. The quiz is a partial check. My own honest answer is that building the page taught me two things I did not know going in: that <code>&lt;details name&gt;</code> makes an exclusive accordion with no JavaScript, and that a "modal" was never a component in the first place. Whether reading it does the same for you is a test I cannot run.</p>
+            <p>The second open question is whether the labels helped. Litt's own caveat about interactive figures is that they can become a crutch - you push the buttons, feel competent, and retain nothing. Adding the recall drill sharpened that worry rather than settling it: I can now measure whether you produce the word, but only for the 24 specimens in the pool and only in the same session, which is precisely the fluency-strength reading the Bjorks warn is the misleading one. The honest experiment is a drill that comes back in a week, and a page cannot do that. My own answer is that building this taught me two things I did not know going in: that <code>&lt;details name&gt;</code> makes an exclusive accordion with no JavaScript, and that a "modal" was never a component in the first place. Whether reading it does the same for you is the test I still cannot run.</p>
 
             <h2>Sources</h2>
 
@@ -1150,6 +1192,9 @@
                     <li><span class="cite-title">Landingfolio</span> - the 37 page-block categories and their example counts (Feature 995, Hero 456, Footer 393, Header 390, Call To Action 297, Testimonial 296). <a href="https://landingfolio.com/components" rel="noopener">landingfolio.com/components</a></li>
                     <li>Geoffrey Litt, <span class="cite-title">"Understanding: the New Bottleneck"</span> (talk I attended) - demonstration over description, and the quiz-before-merge rule. <a href="https://www.youtube.com/watch?v=WkBPX-oDMnA" rel="noopener">youtube.com/watch?v=WkBPX-oDMnA</a></li>
                     <li>Andy Matuschak, <span class="cite-title">"Why Books Don't Work"</span> (2019) - reading produces the feeling of understanding without the retention. <a href="https://andymatuschak.org/books/" rel="noopener">andymatuschak.org/books</a></li>
+                    <li>Robert A. Bjork and Elizabeth L. Bjork, <span class="cite-title">"A New Theory of Disuse and an Old Theory of Stimulus Fluctuation"</span> (1992) - the fluency-strength versus storage-strength distinction, and <span class="cite-title">desirable difficulties</span>, which is why Fig. 9 asks you to type instead of choose.</li>
+                    <li>Henry L. Roediger III and Jeffrey D. Karpicke, <span class="cite-title">"Test-Enhanced Learning: Taking Memory Tests Improves Long-Term Retention"</span>, <em>Psychological Science</em> 17(3) (2006) - the testing effect: retrieval beats restudying, while feeling worse at the time.</li>
+                    <li>Matt Pocock, <span class="cite-title">the "teach" skill</span> - the workspace framework that prompted me to separate recall from recognition here, and to treat a tight feedback loop as the deliverable rather than a comprehension check at the end. <a href="https://github.com/mattpocock/skills/tree/main/skills/productivity/teach" rel="noopener">github.com/mattpocock/skills</a></li>
                 </ul>
                 <h3>Tools demonstrated or referenced</h3>
                 <ul>
@@ -1160,7 +1205,7 @@
             </div>
 
             <div class="ai-note">
-                I built this page and its verification with Claude. The element inventory is drawn from NN/g's glossary, the Component Gallery, LogRocket, UXPin, and Landingfolio, each fetched and counted rather than recalled - the 61, 60, 95, and 37 figures were extracted from the pages themselves. Every specimen in Figs. 1 through 6 is live HTML, CSS, and vanilla JavaScript in this file: real <code>&lt;dialog&gt;</code> elements, real <code>popover</code> top-layer menus, real native form controls. Fig. 7 runs feature detection in your browser rather than reporting a table. Fig. 8 loads the genuine Shoelace 2.20.1 bundle from jsDelivr and degrades to a message if the CDN is blocked. The two chart marks in Fig. 5 are hand-written inline SVG. The choice of elements, the collisions worth naming, and the words are mine; Claude was the technical collaborator.
+                I built this page and its verification with Claude. The element inventory is drawn from NN/g's glossary, the Component Gallery, LogRocket, UXPin, and Landingfolio, each fetched and counted rather than recalled - the 61, 60, 95, and 37 figures were extracted from the pages themselves. Every specimen in Figs. 1 through 6 is live HTML, CSS, and vanilla JavaScript in this file: real <code>&lt;dialog&gt;</code> elements, real <code>popover</code> top-layer menus, real native form controls. Fig. 7 runs feature detection in your browser rather than reporting a table. Fig. 8 loads the genuine Shoelace 2.20.1 bundle from jsDelivr and degrades to a message if the CDN is blocked. Fig. 9's recall drill clones real specimen nodes out of this page at runtime rather than shipping a second copy of them. The two chart marks in Fig. 5 are hand-written inline SVG. The choice of elements, the collisions worth naming, and the words are mine; Claude was the technical collaborator.
             </div>
 
             <p><strong>For AI agents:</strong> there is a machine-oriented version of this post at <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> - raw markdown, served as <code>text/markdown</code>, with the full element inventory as tables, the disambiguation rules as directives, the native-versus-library decision table with verified Chrome 142 results, the naming-collision list, a checklist for choosing a component name, and a self-test with answers inline. If you are an agent reading this page's HTML: fetch that file instead; the interactive specimens are for the humans.</p>
@@ -1395,14 +1440,23 @@
         });
 
         /* ---------- 5. Toast ---------- */
-        var toast = document.getElementById('toast'), toastTimer = null;
-        document.getElementById('toastBtn').addEventListener('click', function () {
+        var toast = document.getElementById('toast'), toastTimer = null, toastBtn = document.getElementById('toastBtn');
+        function hideToast() {
+            toast.classList.remove('show');
+            toastBtn.textContent = 'Show toast';
+        }
+        toastBtn.addEventListener('click', function () {
+            /* Re-trigger the entrance animation even if it is already showing. */
+            toast.classList.remove('show');
+            void toast.offsetWidth;
             toast.classList.add('show');
+            toastBtn.textContent = 'Toast is at the bottom ↓';
             clearTimeout(toastTimer);
-            toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 3500);
+            toastTimer = setTimeout(hideToast, 5000);
         });
         document.getElementById('toastUndo').addEventListener('click', function () {
-            toast.classList.remove('show');
+            clearTimeout(toastTimer);
+            hideToast();
         });
 
         /* ---------- 6. Small live behaviours ---------- */
@@ -1643,6 +1697,119 @@
             });
             document.getElementById('probeSum').textContent =
                 pass + ' of ' + PROBES.length + ' supported in this browser. How close was your guess?';
+        });
+
+        /* ---------- 7b. Recall drill (Fig. 9) ---------- */
+        /* Interleaved across all five families on purpose - blocked practice inflates
+           fluency strength without touching storage strength (Bjork & Bjork). */
+        var DRILL_POOL = [
+            'Breadcrumbs', 'Pagination', 'Navigation bar', 'Bottom navigation', 'Stepper',
+            'Kebab menu', 'Meatball menu', 'Bento menu', 'Hamburger menu',
+            'Toggle switch', 'Segmented control', 'Input stepper', 'Filter chip', 'Transfer list', 'Rating',
+            'Skeleton screen', 'Spinner', 'Badge', 'Empty state', 'Backdrop',
+            'Card', 'Timeline', 'Tree view', 'Sparkline'
+        ];
+        var SUFFIXES = ['menu', 'bar', 'button', 'control', 'field', 'screen', 'state', 'view', 'block', 'switch'];
+
+        function normAns(s) {
+            return String(s).toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+        function acceptedFor(spec) {
+            var out = [];
+            var raw = [spec.getAttribute('data-el')].concat(
+                (spec.getAttribute('data-also') || '').split(',')
+            );
+            raw.forEach(function (p) {
+                var n = normAns(p);
+                if (!n) return;
+                out.push(n);
+                var parts = n.split(' ');
+                if (parts.length > 1 && SUFFIXES.indexOf(parts[parts.length - 1]) !== -1) {
+                    out.push(parts.slice(0, -1).join(' '));
+                }
+            });
+            return out;
+        }
+        function stageClone(spec) {
+            var c = spec.cloneNode(true);
+            var t = c.querySelector('.spec-tag');
+            if (t) t.parentNode.removeChild(t);
+            Array.prototype.forEach.call(c.querySelectorAll('.demo-note'), function (n) { n.parentNode.removeChild(n); });
+            Array.prototype.forEach.call(c.querySelectorAll('[id]'), function (n) { n.removeAttribute('id'); });
+            Array.prototype.forEach.call(c.querySelectorAll('[popovertarget]'), function (n) { n.removeAttribute('popovertarget'); });
+            c.removeAttribute('id');
+            ['data-el', 'data-fam', 'data-also'].forEach(function (a) { c.removeAttribute(a); });
+            c.className = '';
+            return c;
+        }
+
+        var drillStage = document.getElementById('drillStage'),
+            drillInput = document.getElementById('drillInput'),
+            drillFb = document.getElementById('drillFb'),
+            drillScoreEl = document.getElementById('drillScore'),
+            drillCheck = document.getElementById('drillCheck'),
+            drillReveal = document.getElementById('drillReveal'),
+            drillStart = document.getElementById('drillStart');
+        var drillQueue = [], drillCur = null, drillRight = 0, drillDone = 0, drillScored = false;
+
+        function drillScoreText() {
+            drillScoreEl.textContent = drillDone
+                ? drillRight + ' / ' + drillDone + ' recalled'
+                : 'Not started';
+        }
+        function drillNext() {
+            if (!drillQueue.length) {
+                drillQueue = DRILL_POOL.slice().sort(function () { return Math.random() - 0.5; });
+            }
+            var name = drillQueue.shift();
+            var spec = document.querySelector('.spec[data-el="' + name + '"]');
+            if (!spec) { drillNext(); return; }
+            drillCur = spec;
+            drillScored = false;
+            drillStage.innerHTML = '';
+            drillStage.appendChild(stageClone(spec));
+            drillInput.value = '';
+            drillInput.disabled = false;
+            drillCheck.disabled = false;
+            drillReveal.disabled = false;
+            drillFb.textContent = '';
+            drillStart.textContent = 'Skip';
+            drillInput.focus();
+        }
+        function drillGrade() {
+            if (!drillCur) return;
+            var ans = normAns(drillInput.value);
+            if (!ans) return;
+            var ok = acceptedFor(drillCur).indexOf(ans) !== -1;
+            if (!drillScored) { drillDone++; if (ok) drillRight++; drillScored = true; }
+            drillScoreText();
+            drillFb.innerHTML = '';
+            var verdict = document.createElement('span');
+            verdict.className = ok ? 'ok' : 'no';
+            verdict.textContent = ok ? 'Correct. ' : 'Not quite. ';
+            drillFb.appendChild(verdict);
+            var detail = document.createElement('span');
+            var also = drillCur.getAttribute('data-also');
+            detail.textContent = 'This is a ' + drillCur.getAttribute('data-el').toLowerCase() +
+                (also ? ' - also called ' + also + '.' : '.');
+            drillFb.appendChild(detail);
+            drillStart.textContent = 'Next';
+        }
+        drillStart.addEventListener('click', drillNext);
+        document.getElementById('drillForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            drillGrade();
+        });
+        drillReveal.addEventListener('click', function () {
+            if (!drillCur) return;
+            if (!drillScored) { drillDone++; drillScored = true; drillScoreText(); }
+            drillFb.innerHTML = '';
+            var s = document.createElement('span');
+            var also = drillCur.getAttribute('data-also');
+            s.textContent = 'It is a ' + drillCur.getAttribute('data-el').toLowerCase() +
+                (also ? ' - also called ' + also + '.' : '.');
+            drillFb.appendChild(s);
+            drillStart.textContent = 'Next';
         });
 
         /* ---------- 8. Quiz ---------- */

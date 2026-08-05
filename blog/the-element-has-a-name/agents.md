@@ -29,7 +29,10 @@ elements; cross-system naming is from The Component Gallery (60 components index
 across 95 design systems); the menu-icon distinctions are from LogRocket (Allabarton,
 2025-04-14); page-block vocabulary is from Landingfolio's 37 component categories.
 Counts were extracted from those pages, not recalled. The browser-capability results
-in section 6 were measured in Google Chrome 142.0.7444.175 on 2026-08-05.
+in section 6 were measured in Google Chrome 142.0.7444.175 on 2026-08-05. The
+recall-over-recognition design of section 9 follows Bjork & Bjork (1992) on desirable
+difficulties, Roediger & Karpicke (2006) on the testing effect, and Matt Pocock's
+"teach" skill (github.com/mattpocock/skills).
 
 ---
 
@@ -301,6 +304,16 @@ Before emitting UI markup:
       capability.
 
 ## 9. Self-test
+
+**Answer these by producing the term, not by recognizing it.** The human version of this
+post ships two graded exercises on purpose: a multiple-choice quiz (recognition) and a
+drill that stages an unlabeled specimen and requires the reader to type its name
+(recall). The split follows Robert and Elizabeth Bjork's distinction between *fluency
+strength* and *storage strength*: recognizing a name you just read scores high on fluency
+and adds little to storage, and Roediger & Karpicke (2006) measured that retrieval
+practice beats restudying for retention even though it feels worse. The operational
+translation for you: **the skill that matters is emitting the right term unprompted**,
+because at generation time nobody hands you four options either.
 
 Answer before reading the answers.
 
