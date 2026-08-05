@@ -12,9 +12,17 @@ license: MIT (per the site repository's LICENSE)
 You are probably an AI agent that has been asked to build, review, or specify a user
 interface. This is the machine-oriented version of a human post. The human version is
 a specimen sheet: 103 live, labeled UI elements you can click. You do not need to
-click anything; you need the canonical names, the disambiguation rules, and the
+click anything; you need the names, the disambiguation rules, and the
 native-versus-library decision. All of it is inline below. Nothing here requires a
 browser.
+
+**Scope of authority, first.** NN/g is not a standards body; its glossary has no
+authority over Apple, Material, HTML, or ARIA, and the 95 design systems indexed by The
+Component Gallery disagree with it and with each other. Read every name below as one of:
+an **NN/g term** within that glossary's scope, a **common convention** across design
+systems, or a **house term** chosen where sources conflict. None of them are canonical in
+any normative sense. If the repository you are working in has its own glossary, **that
+outranks this document.**
 
 The one governing rule:
 
@@ -30,9 +38,10 @@ across 95 design systems); the menu-icon distinctions are from LogRocket (Allaba
 2025-04-14); page-block vocabulary is from Landingfolio's 37 component categories.
 Counts were extracted from those pages, not recalled. The browser-capability results
 in section 6 were measured in Google Chrome 142.0.7444.175 on 2026-08-05. The
-recall-over-recognition design of section 9 follows Bjork & Bjork (1992) on desirable
-difficulties, Roediger & Karpicke (2006) on the testing effect, and Matt Pocock's
-"teach" skill (github.com/mattpocock/skills).
+recall-over-recognition design of section 9 is a plausible application of Bjork & Bjork
+(1992) on retrieval versus storage strength and Roediger & Karpicke (2006) on the testing
+effect, prompted by Matt Pocock's "teach" skill (github.com/mattpocock/skills) - not a
+result those citations establish.
 
 ---
 
@@ -75,16 +84,16 @@ inert, focus return, and Escape handling worse than the browser does.
 **Directive:** never introduce a component named `Modal`. Name it `Dialog` and take
 modality as a prop.
 
-## 3. Canonical names by family
+## 3. Names by family
 
 The five-family split is a working convention, not a standard. UXPin's guide uses four
 categories (input, output, navigational, container); NN/g imposes no families at all and
-lists 61 entries alphabetically. The **element names** below are canonical; the bins are
-the author's.
+lists 61 entries alphabetically. The **element names** below are sourced (see the scope
+note at the top); the bins are the author's.
 
 ### 3.1 Navigation (22 in the human post)
 
-| Canonical name | Also called | Note |
+| Name | Also called | Note |
 |---|---|---|
 | Navigation bar | navbar, app bar, header nav | |
 | Sidebar | side navigation, nav rail | |
@@ -103,7 +112,7 @@ the author's.
 | Contextual menu | right-click menu, context menu | |
 | Pie menu | radial menu | |
 | Search field | search input, search box | |
-| Drawer | side sheet, flyout, drawer menu | NN/g: "Side Sheet (Drawer, Flyout)" |
+| Drawer | side sheet, flyout | NN/g: "Side Sheet (Drawer, Flyout)"; it lists Drawer Menu separately |
 | Stepper | wizard, progress steps | **collides** - see section 5 |
 | Back-to-top button | scroll-to-top | |
 | Toolbar | action bar, control bar | |
@@ -111,7 +120,7 @@ the author's.
 
 ### 3.2 Input (26)
 
-| Canonical name | Also called | Native element |
+| Name | Also called | Native element |
 |---|---|---|
 | Button | push button, CTA | `<button>` |
 | Split button | dropdown button | `<button>` + popover |
@@ -128,13 +137,13 @@ the author's.
 | Slider | range control, continuous control | `<input type=range>` |
 | Input stepper | number input, spin button | `<input type=number>` |
 | Knob | virtual knob, dial | none |
-| Date picker | calendar picker, date input | `<input type=date>` |
+| Date picker | date input | `<input type=date>`; NN/g lists Calendar Picker separately |
 | Wheel picker | spinner picker, drum picker | platform-dependent |
 | File upload | file input, dropzone | `<input type=file>` |
 | Color picker | colour input, swatch picker | `<input type=color>` |
 | Transfer list | dual listbox, shuttle, pick list | none |
 | Multiselect | tag input, token field | none |
-| Form | fieldset group | `<form>` |
+| Form | - | `<form>`; a `<fieldset>` groups controls and is not a synonym |
 | Dropdown list, Listbox, Combo box, Autocomplete | see section 1 | |
 
 **Directive:** checkbox vs toggle switch is decided by *when the change applies*. A
@@ -143,7 +152,7 @@ submits later. If your UI has a Save button, use checkboxes.
 
 ### 3.3 Feedback and status (19)
 
-| Canonical name | Also called | Note |
+| Name | Also called | Note |
 |---|---|---|
 | Alert | inline message, callout | in the document flow |
 | Toast | snackbar | transient, self-dismissing, non-blocking |
@@ -200,9 +209,9 @@ table, FAQ, CTA band, Newsletter signup, Footer.
 comments or component names. It makes the output reviewable in one pass and matches the
 vocabulary the requester is already using.
 
-## 4. NN/g's 61 canonical entries, verbatim
+## 4. NN/g's 61 entries, verbatim
 
-Use this list when you need the authoritative name. Parentheses are NN/g's own alternate
+Use this list when you need NN/g's own wording. Parentheses are NN/g's own alternate
 names.
 
 2D-Matrix Input Control; Accordion; Anchor Link (In-Page Link, Jump Link); Back-to-Top
@@ -261,18 +270,40 @@ re-measure rather than trusting this table for a non-Chrome target.
 | Scroll-driven animation | `CSS.supports('animation-timeline: scroll()')` | yes |
 | CSS carousel buttons | `CSS.supports('selector(::scroll-button(*))')` | yes |
 
-**Directive:** do **not** add a component library to obtain a dialog, a menu, a tooltip
-anchor, an accordion, a slider, a date input, or a color input. Those are native. A
-library earns its place on theming, on keyboard behavior in edge cases, and on
-cross-team consistency - not on capability.
+**These probes detect API exposure. They do not establish component readiness.**
+`CSS.supports(...)` tells you an expression parses. Reflecting `input.type = 'date'`
+tells you the type is recognized. Neither tells you about usable rendering, complete
+keyboard interaction, accessibility, localization, your browser matrix, or
+implementation bugs. `anchor-name` support is not a working tooltip; `::scroll-button()`
+support is not a carousel.
+
+**Directive:** treat capability detection as **one input to a decision, not the
+decision.** Before adding or refusing a component dependency, answer in order:
+
+1. Does the **whole target browser matrix** expose the primitive, not just current Chrome?
+2. Does the primitive supply the **semantics and interaction pattern** the component name
+   implies - roles, states, focus management, keyboard behavior?
+3. What behavior, styling, validation, localization, and **test** code remains yours?
+4. Is that remainder smaller and safer than the abstraction the project already has?
+
+Keyboard behavior belongs in question 2. For a composite widget it is part of the
+component's definition, not an edge case: a tab bar that ignores arrow keys is not a tab
+bar. What "18 of 18" retires is exactly one claim - that you need a dependency to get the
+**primitive**. It retires nothing about finishing the component.
 
 Measured cost of the alternative, for calibration: loading Shoelace 2.20.1's `sl-select`,
 `sl-option`, `sl-switch`, and `sl-rating` from jsDelivr took **54 requests and ~84 KB
 transferred** to render three controls.
 
-## 7. Accessibility invariants
+## 7. Selected accessibility notes
 
-These are not style preferences; violating them produces a broken control.
+**This is not a complete accessibility checklist and must not be used as an acceptance
+gate.** It is short enough to look complete and is not: it says nothing about focus
+order, reflow, target size, contrast in both themes, reduced motion, or forced colors.
+Run an automated checker (axe, Lighthouse) **and** a full keyboard pass. Automated tools
+catch none of the composite-widget defects in section 7b.
+
+The items below are the ones most often skipped when generating component markup.
 
 1. Tooltips (`role="tooltip"`) contain **text only**. Interactive content goes in a
    popover.
@@ -291,6 +322,27 @@ These are not style preferences; violating them produces a broken control.
    contents wrap. Do not use `requestAnimationFrame` to throttle the accompanying
    current-section indicator: rAF is throttled to zero in background tabs, which stalls it
    silently. Use a timer throttle.
+
+## 7b. Minimum behavior contracts
+
+A name is a promise about roles, state, focus, and keyboard behavior. Emitting the markup
+without the behavior is the exact failure this document exists to prevent - and the human
+version of this post shipped several of these wrong before an adversarial review caught
+them. If you cannot meet the contract, **say so in a comment and use the weaker name**
+("sortable table", not "data grid").
+
+| Name | Minimum contract before you may use the name |
+|---|---|
+| Tab bar | `tablist`/`tab`/`tabpanel`, one tab stop, Left/Right + Home/End, non-selected panels hidden |
+| Menu (action) | `aria-haspopup="menu"`, `role="menu"`/`menuitem`, focus moves in on open, Up/Down/Home/End, Escape closes and returns focus, activating an item runs the command and closes |
+| Combobox / autocomplete | `role="combobox"`, `aria-expanded`, `aria-controls`, a real `listbox` of `option`s, `aria-activedescendant`, Up/Down/Enter/Escape |
+| Radio group / rating | actual `radio` roles with `aria-checked`, one tab stop, arrow keys move and select |
+| Data grid | APG grid: cell-level focus management with arrow keys. Otherwise it is a **sortable table** |
+| Tree view | APG tree: tree roles, one tab stop, arrow-key traversal and expand/collapse. Otherwise it is **nested disclosures** |
+| Dialog | `<dialog>`; `showModal()` for modal (top layer, backdrop, rest inert, Escape) |
+| Context menu | reachable by keyboard - the target must be focusable and answer Enter / Shift+F10 / ContextMenu |
+| Toast | reachable action before it auto-dismisses; pause the timer on hover and focus |
+| FAB / icon button | a real `<button>` with an `aria-label`, never a styled `<span>` |
 
 ## 8. Operational checklist
 
@@ -316,10 +368,13 @@ Before emitting UI markup:
 **Answer these by producing the term, not by recognizing it.** The human version of this
 post ships two graded exercises on purpose: a multiple-choice quiz (recognition) and a
 drill that stages an unlabeled specimen and requires the reader to type its name
-(recall). The split follows Robert and Elizabeth Bjork's distinction between *fluency
-strength* and *storage strength*: recognizing a name you just read scores high on fluency
-and adds little to storage, and Roediger & Karpicke (2006) measured that retrieval
-practice beats restudying for retention even though it feels worse. The operational
+(recall). The split follows Robert and Elizabeth Bjork's distinction between *retrieval
+strength* and *storage strength* (the New Theory of Disuse, 1992): something can be highly
+retrievable right now and barely stored. Roediger & Karpicke (2006) compared repeated
+**studying** against repeated **free recall** - not multiple choice against typing - and
+the result was time-dependent: restudying won at a 5-minute delay, retrieval practice won
+at 2 days and 1 week. So retrieval practice beats rereading for durable retention; it does
+not establish that multiple choice is worthless. The operational
 translation for you: **the skill that matters is emitting the right term unprompted**,
 because at generation time nobody hands you four options either.
 
@@ -356,7 +411,7 @@ Answer before reading the answers.
 
 ## 10. What is still open
 
-The vocabulary does not settle arguments by existing. NN/g published 61 canonical names
+The vocabulary does not settle arguments by existing. NN/g published 61 element names
 in February 2025, and the 95 design systems indexed by The Component Gallery still
 disagree with each other and with NN/g - "stepper" continues to mean two different
 things. The author has not yet adopted a house glossary across his own repositories; the

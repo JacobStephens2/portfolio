@@ -17,14 +17,14 @@
     <title>The Element Has a Name | Jacob Stephens</title>
     <link rel="canonical" href="https://stephens.page/blog/the-element-has-a-name/">
     <link rel="alternate" type="text/markdown" href="/blog/the-element-has-a-name/agents.md" title="Agent-oriented version (markdown)">
-    <meta name="description" content="A live, labeled specimen sheet of web UI elements - navigation, input, feedback, display, containers, and page-level blocks - with the canonical names from NN/g's 61-entry glossary, the synonyms that collide, and a probe of what your browser now ships natively.">
+    <meta name="description" content="A live, labeled specimen sheet of web UI elements - navigation, input, feedback, display, containers, and page-level blocks - with the NN/g glossary's 61 element names, the synonyms that collide, and a probe of what your browser now ships natively.">
     <meta property="og:title" content="The Element Has a Name">
-    <meta property="og:description" content="Every UI element on this page is live and labeled with its canonical name, the family it belongs to, and the synonym that will get you the wrong thing built.">
+    <meta property="og:description" content="Every UI element on this page is live and labeled with its primary name, the family it belongs to, and the synonym that will get you the wrong thing built.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://stephens.page/blog/the-element-has-a-name/">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="The Element Has a Name">
-    <meta name="twitter:description" content="Every UI element on this page is live and labeled with its canonical name, the family it belongs to, and the synonym that will get you the wrong thing built.">
+    <meta name="twitter:description" content="Every UI element on this page is live and labeled with its primary name, the family it belongs to, and the synonym that will get you the wrong thing built.">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
     <script>
@@ -63,6 +63,13 @@
         pre { background: var(--code-bg); padding: 1rem 1.1rem; border-radius: 6px; overflow-x: auto; font-family: 'SFMono-Regular', Consolas, Menlo, monospace; font-size: 0.82rem; line-height: 1.5; margin-bottom: 1.2rem; }
         pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
         a { color: var(--brand); text-decoration: none; }
+        /* Links sitting inside running text are underlined: brand-vs-ink is only
+           1.12:1, so colour alone does not distinguish them (WCAG 1.4.1). */
+        article.note p a, .meta a, .sources a, .fig-caption a, .ai-note a,
+        table.collide a, .demo-note a, article.note ol a, article.note ul a,
+        .spec[data-el="Anchor link"] a {
+            text-decoration: underline; text-underline-offset: 0.12em;
+        }
         a:hover, a:focus-visible { text-decoration: underline; text-underline-offset: 0.12em; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.93rem; }
         th, td { text-align: left; padding: 0.5rem 0.6rem 0.5rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
@@ -110,7 +117,7 @@
         .toc-note { font-size: 0.76rem; color: var(--muted); }
         .toc ol { list-style: none; margin: 0; padding: 0.5rem 0.65rem 0.7rem; display: grid; gap: 0.05rem; }
         /* Column-major so the list reads 1-7 down the left, then 8-14 down the right. */
-        @media (min-width: 700px) { .toc ol { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(7, auto); grid-auto-flow: column; column-gap: 1.1rem; } }
+        @media (min-width: 700px) { .toc ol { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(8, auto); grid-auto-flow: column; column-gap: 1.1rem; } }
         .toc li { margin: 0; }
         .toc a { display: flex; align-items: baseline; gap: 0.5rem; padding: 0.24rem 0.35rem; border-radius: 5px; color: var(--ink); font-size: 0.87rem; line-height: 1.35; }
         .toc a:hover, .toc a:focus-visible { background: var(--soft); text-decoration: none; }
@@ -276,7 +283,7 @@
         .empty { text-align: center; padding: 0.9rem 0.5rem; color: var(--muted); font-size: 0.82rem; }
         .empty .gl { font-size: 1.5rem; display: block; margin-bottom: 0.25rem; }
         .backdrop-demo { position: relative; height: 5.2rem; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; font-size: 0.78rem; padding: 0.4rem; color: var(--muted); }
-        .backdrop-demo .scrim { position: absolute; inset: 0; background: rgba(24, 21, 18, 0.55); display: grid; place-items: center; color: #fff; }
+        .backdrop-demo .scrim { position: absolute; inset: 0; background: rgba(24, 21, 18, 0.74); display: grid; place-items: center; color: #fff; }
         .field-err { color: var(--no); font-size: 0.76rem; }
         input[aria-invalid="true"] { border-color: var(--no); }
 
@@ -316,8 +323,9 @@
         .carousel .track > figure { flex: 0 0 100%; scroll-snap-align: center; text-align: center; font-size: 0.78rem; color: var(--muted); }
         .carousel .track > figure > div { height: 3.6rem; border-radius: 6px; background: var(--bar-bg); display: grid; place-items: center; font-size: 1.3rem; color: var(--brand); margin-bottom: 0.2rem; }
         .carousel .cnav { display: flex; justify-content: center; align-items: center; gap: 0.35rem; margin-top: 0.3rem; }
-        .carousel .cdot { width: 0.45rem; height: 0.45rem; border-radius: 999px; border: 0; padding: 0; background: var(--rule); cursor: pointer; }
-        .carousel .cdot[aria-current="true"] { background: var(--brand); }
+        .carousel .cdot { width: 24px; height: 24px; border: 0; padding: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+        .carousel .cdot::after { content: ""; display: block; width: 0.45rem; height: 0.45rem; border-radius: 999px; background: var(--rule); }
+        .carousel .cdot[aria-current="true"]::after { background: var(--brand); }
         .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.25rem; }
         .gallery button { aspect-ratio: 1; border: 0; border-radius: 4px; background: var(--bar-bg); cursor: pointer; display: grid; place-items: center; font-size: 1rem; color: var(--brand); }
         .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; text-align: center; }
@@ -344,7 +352,7 @@
         .lp .hero { text-align: center; padding: 1.1rem 0.8rem; }
         .lp .hero h3 { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.35rem; line-height: 1.15; margin-bottom: 0.3rem; }
         .lp .hero p { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.6rem; }
-        .lp .logos { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; justify-content: center; align-items: center; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; font-size: 0.76rem; opacity: 0.75; }
+        .lp .logos { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; justify-content: center; align-items: center; color: var(--ink); font-weight: 700; letter-spacing: 0.06em; font-size: 0.76rem; }
         .lp .feat { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.5rem; }
         .lp .feat > div { background: var(--surface); border-radius: 6px; padding: 0.45rem 0.55rem; font-size: 0.78rem; }
         .lp .feat .gl { font-size: 1.05rem; color: var(--brand); }
@@ -380,6 +388,13 @@
 
         /* Collisions table */
         table.collide td:first-child { font-weight: 700; white-space: nowrap; padding-right: 0.8rem; }
+
+        /* Autocomplete listbox */
+        .ac-wrap { position: relative; display: inline-block; }
+        .ac-wrap ul { list-style: none; margin: 0.15rem 0 0; padding: 0.2rem; position: absolute; z-index: 20; left: 0; top: 100%; min-width: 12rem; max-width: 18rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; box-shadow: 0 6px 20px rgba(0,0,0,0.16); }
+        .ac-wrap li { margin: 0; padding: 0.22rem 0.45rem; border-radius: 4px; font-size: 0.82rem; cursor: pointer; }
+        .ac-wrap li.active, .ac-wrap li:hover { background: var(--soft); }
+        .ac-wrap li[aria-selected="true"] { font-weight: 600; }
 
         /* Recall drill */
         .drill { display: grid; gap: 0.7rem; }
@@ -460,13 +475,15 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; Interface Vocabulary</div>
             <h1 class="title">The Element Has a Name</h1>
-            <p class="meta"><strong>August 5, 2026</strong> &middot; ~3,500 words &middot; 10 live figures, a recall drill, and a quiz &middot; reading this as an AI agent? <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> is for you</p>
+            <p class="meta"><strong>August 5, 2026</strong> &middot; ~4,400 words of prose (~5,800 including the specimen labels and captions) &middot; 10 live figures, a recall drill, and a quiz &middot; reading this as an AI agent? <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> is for you</p>
 
             <p>The fastest way to get the wrong control built is to call it a "dropdown." That one word covers at least five different components with five different behaviors, and the agent writing my markup has to guess which one I meant. Last month I asked for "a dropdown to filter the chart" on the <a href="/blog/">server dashboard</a> and got a <code>&lt;select&gt;</code> element. I wanted a menu of actions. The word was the whole spec, and the word was wrong.</p>
 
-            <p>Nielsen Norman Group solved the vocabulary problem in February 2025: Raluca Budiu and Kara Rivenbark published a glossary that names <strong>61 interface elements</strong> with their alternate names and one-line definitions. The Component Gallery does the cross-referencing job from the other end - <strong>60 components as they appear across 95 real design systems</strong>, so you can see what Ant Design, Polaris, and the BBC's Global Experience Language each call the same thing. Between them, almost every argument I have ever had about a control has a settled answer.</p>
+            <p>Two references get you most of the way out. In February 2025 Raluca Budiu and Kara Rivenbark of Nielsen Norman Group published a glossary that names <strong>61 interface elements</strong> with their alternate names and one-line definitions. The Component Gallery does the cross-referencing job from the other end - <strong>60 components as they appear across 95 real design systems</strong>, so you can see what Ant Design, Polaris, and the BBC's Global Experience Language each call the same thing.</p>
 
-            <p>So this post is not an article about UI elements. It is a <strong>specimen sheet</strong>: 103 live elements, each one labeled with its canonical name, the family it belongs to, and the synonym most likely to get you the wrong thing. Nothing here is a screenshot. Every menu opens, every dialog is a real <code>&lt;dialog&gt;</code>, every popover uses the browser's top layer. Toggle the labels off and this is an ordinary page; toggle them on and it is a catalog of itself.</p>
+            <p>A caveat I have to put up front, because the rest of this page depends on it. <strong>NN/g is not a standards body.</strong> Its glossary has no authority over Apple, Material, HTML, or ARIA, and the 95 design systems in the Component Gallery still disagree with it and with each other. So when I write that an element has a name, I mean one of three much smaller things, and I try to say which: an <strong>NN/g term</strong> within the scope of that glossary, a <strong>common convention</strong> observed across design systems, or a <strong>house term</strong> I picked where the sources conflict. "Canonical" would be the wrong word for any of them.</p>
+
+            <p>So this post is not an article about UI elements. It is a <strong>specimen sheet</strong>: 103 live elements, each labeled with its primary name, the family it belongs to, and the synonym most likely to get you the wrong thing. Nothing here is a screenshot. Every menu opens, every dialog is a real <code>&lt;dialog&gt;</code>, every popover uses the browser's top layer. Toggle the labels off and this is an ordinary page; toggle them on and it is a catalog of itself.</p>
 
             <p>The teaching structure comes from Geoffrey Litt's talk "Understanding: the New Bottleneck," which I keep raiding for this: demonstration over description, and a quiz at the end because, as Andy Matuschak puts it in "Why Books Don't Work," reading hands you the feeling of understanding and almost none of the retention. You will not remember the difference between a kebab and a meatball menu because I told you. You might remember it because you clicked both.</p>
 
@@ -483,13 +500,14 @@
                     <li class="fam"><a href="#feedback"><span class="n">5</span><span class="t">Feedback and status</span><span class="c" data-toc-fam="status"></span></a></li>
                     <li class="fam"><a href="#display"><span class="n">6</span><span class="t">Display and containers</span><span class="c" data-toc-fam="display"></span></a></li>
                     <li class="fam"><a href="#page-blocks"><span class="n">7</span><span class="t">Page-level blocks</span><span class="c" data-toc-fam="page"></span></a></li>
-                    <li><a href="#native"><span class="n">8</span><span class="t">What the browser ships natively</span><span class="c">Fig. 7</span></a></li>
+                    <li><a href="#native"><span class="n">8</span><span class="t">What the browser exposes</span><span class="c">Fig. 7</span></a></li>
                     <li><a href="#shoelace"><span class="n">9</span><span class="t">Hand-rolled vs. a design system</span><span class="c">Fig. 8</span></a></li>
-                    <li><a href="#collisions"><span class="n">10</span><span class="t">The names that collide</span></a></li>
-                    <li><a href="#recall"><span class="n">11</span><span class="t">Recognition is not the skill</span><span class="c">Fig. 9</span></a></li>
-                    <li><a href="#quiz-section"><span class="n">12</span><span class="t">The quiz at the door</span><span class="c">Fig. 10</span></a></li>
-                    <li><a href="#still-open"><span class="n">13</span><span class="t">What's still open</span></a></li>
-                    <li><a href="#sources"><span class="n">14</span><span class="t">Sources</span></a></li>
+                    <li><a href="#contract"><span class="n">10</span><span class="t">A name is a behavioral contract</span></a></li>
+                    <li><a href="#collisions"><span class="n">11</span><span class="t">The names that collide</span></a></li>
+                    <li><a href="#recall"><span class="n">12</span><span class="t">Recognition is not the skill</span><span class="c">Fig. 9</span></a></li>
+                    <li><a href="#quiz-section"><span class="n">13</span><span class="t">The quiz at the door</span><span class="c">Fig. 10</span></a></li>
+                    <li><a href="#still-open"><span class="n">14</span><span class="t">What's still open</span></a></li>
+                    <li><a href="#sources"><span class="n">15</span><span class="t">Sources</span></a></li>
                 </ol>
             </nav>
 
@@ -512,7 +530,7 @@
 
             <h2 id="five-controls">Five controls, one word</h2>
 
-            <p>Start with the argument that started this. Below are the five things people mean by "dropdown," side by side and working. The differences are not cosmetic. Two of them run commands and three of them hold a value; two accept input that is not on the list; only one of the five is a single native HTML element.</p>
+            <p>Start with the argument that started this. Below are the five things people mean by "dropdown," side by side and working. The differences are not cosmetic. One of them runs commands and the other four hold a value; two accept input that is not on the list; two are a single native HTML element and the rest are assemblies.</p>
 
             <div class="fig" id="fig1">
                 <div class="fig-head">
@@ -565,9 +583,15 @@
 
                         <div class="spec spec-box" data-el="Autocomplete" data-fam="input" data-also="typeahead, search suggestions">
                             <label for="d-ac">Search posts</label><br>
-                            <input type="text" id="d-ac" autocomplete="off" placeholder="type 3+ letters">
-                            <div id="ac-out" class="demo-note" role="status">No suggestions yet.</div>
-                            <p class="demo-note">Suggestions are <em>fetched or filtered as you type</em>. The option set is open-ended.</p>
+                            <span class="ac-wrap">
+                                <input type="text" id="d-ac" autocomplete="off" placeholder="type 2+ letters"
+                                       role="combobox" aria-expanded="false" aria-controls="ac-list"
+                                       aria-autocomplete="list" aria-describedby="ac-help">
+                                <ul id="ac-list" role="listbox" aria-label="Suggestions" hidden></ul>
+                            </span>
+                            <div id="ac-help" class="demo-note">Type, then Down/Up to move, Enter to choose, Escape to close.</div>
+                            <div id="ac-out" class="demo-note" role="status"></div>
+                            <p class="demo-note">Suggestions are <em>filtered as you type</em>. The option set is open-ended.</p>
                         </div>
                     </div>
 
@@ -591,7 +615,7 @@
 
             <h2 id="families">Five families, and the sources do not agree on how many</h2>
 
-            <p>Elements group into functional families, and here I have to be honest about the taxonomy: nobody agrees on the count. UXPin's guide sorts everything into <strong>four</strong> top-level categories - input, output, navigational, and container. NN/g's glossary does not impose top-level families at all; it is 61 alphabetical entries. The five-family split I use below - navigation, input, feedback and status, display and containers, and page-level blocks - is a working convention, not a standard. What matters is that the <em>element</em> names are canonical. The bins are mine.</p>
+            <p>Elements group into functional families, and here I have to be honest about the taxonomy: nobody agrees on the count. UXPin's guide sorts everything into <strong>four</strong> top-level categories - input, output, navigational, and container. NN/g's glossary does not impose top-level families at all; it is 61 alphabetical entries. The five-family split I use below - navigation, input, feedback and status, display and containers, and page-level blocks - is a working convention, not a standard. The <em>element</em> names below are sourced; the bins are mine.</p>
 
             <p>The switchboard above filters by family and searches names plus synonyms, so if you only came for the input controls, click "Input" and the rest fade out.</p>
 
@@ -665,7 +689,7 @@
                             </div>
                         </div>
                         <div class="spec spec-box" data-el="Contextual menu" data-fam="nav" data-also="right-click menu, context menu">
-                            <div class="ctx-target" id="ctxTarget">Right-click (or long-press) here</div>
+                            <div class="ctx-target" id="ctxTarget" tabindex="0" role="button" aria-haspopup="menu" aria-label="Context menu target. Press the menu key, Shift+F10, or Enter.">Right-click here, or focus and press Enter</div>
                             <div id="m-ctx" popover class="menu"><button type="button" class="mi">Inspect</button><button type="button" class="mi">Copy name</button></div>
                         </div>
                         <div class="spec spec-box" data-el="Pie menu" data-fam="nav" data-also="radial menu">
@@ -675,7 +699,7 @@
                         <div class="spec spec-box" data-el="Search field" data-fam="nav" data-also="search input, search box">
                             <form role="search" onsubmit="return false"><input type="search" placeholder="Search the fleet" aria-label="Search"> <button type="submit" class="btn sm">Go</button></form>
                         </div>
-                        <div class="spec spec-box" data-el="Drawer" data-fam="nav" data-also="side sheet, flyout, drawer menu">
+                        <div class="spec spec-box" data-el="Drawer" data-fam="nav" data-also="side sheet, flyout">
                             <button type="button" class="btn" data-open="dlgDrawer">Open drawer</button>
                             <p class="demo-note">NN/g files this as Side Sheet (Drawer, Flyout).</p>
                         </div>
@@ -693,7 +717,7 @@
 
             <h2 id="input-controls">Input controls: the ones with the most synonyms</h2>
 
-            <p>Input is where the naming gets sloppiest, because every design system renames the same six things. NN/g's canonical entries are Textbox (Text Field, Input Field), Toggle (Toggle Switch, Switch), Segmented Button (Segmented Control), Floating Button (FAB), Range Control (Continuous Control), and Input Stepper. If you say "switch" to a designer and "toggle" to an engineer you are naming the same element twice.</p>
+            <p>Input is where the naming gets sloppiest, because every design system renames the same six things. NN/g's entries are Textbox (Text Field, Input Field), Toggle (Toggle Switch, Switch), Segmented Button (Segmented Control), Floating Button (FAB), Range Control (Continuous Control), and Input Stepper. If you say "switch" to a designer and "toggle" to an engineer you are naming the same element twice.</p>
 
             <div class="fig wide" id="fig3">
                 <div class="fig-head">
@@ -701,7 +725,7 @@
                     <span class="fig-count" style="font-size:0.78rem;color:var(--muted)" data-figid="fig3" data-fam="input"></span>
                 </div>
                 <div class="fig-body">
-                    <form onsubmit="return false" class="spec spec-box" data-el="Form" data-fam="input" data-also="fieldset group">
+                    <form onsubmit="return false" class="spec spec-box" data-el="Form" data-fam="input">
                     <div class="spec-grid">
                         <div class="spec spec-box" data-el="Button" data-fam="input" data-also="push button, CTA">
                             <div class="stackh"><button type="button" class="btn primary">Primary</button><button type="button" class="btn">Secondary</button><button type="button" class="btn" disabled>Disabled</button></div>
@@ -722,7 +746,7 @@
                             </div>
                         </div>
                         <div class="spec spec-box" data-el="Floating action button" data-fam="input" data-also="FAB, floating button">
-                            <span style="display:inline-grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:999px;background:var(--brand);color:var(--brand-ink);font-size:1.3rem;box-shadow:0 3px 10px rgba(0,0,0,0.22)">+</span>
+                            <button type="button" aria-label="New deploy" style="font:inherit;border:0;display:inline-grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:999px;background:var(--brand);color:var(--brand-ink);font-size:1.3rem;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.22)">+</button>
                             <p class="demo-note">Persistent, hovers over content, one essential action.</p>
                         </div>
                         <div class="spec spec-box" data-el="Text field" data-fam="input" data-also="textbox, input field">
@@ -770,7 +794,7 @@
                         <div class="spec spec-box" data-el="Knob" data-fam="input" data-also="virtual knob, dial">
                             <div class="stackh"><svg id="knob" width="54" height="54" viewBox="0 0 54 54" role="img" aria-label="Knob at 40 percent"><circle cx="27" cy="27" r="21" fill="none" stroke="var(--rule)" stroke-width="5"></circle><circle id="knobArc" cx="27" cy="27" r="21" fill="none" stroke="var(--brand)" stroke-width="5" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="79" transform="rotate(-90 27 27)"></circle><text x="27" y="31" text-anchor="middle" font-size="12" fill="var(--ink)" id="knobTxt">40</text></svg><button type="button" class="btn sm" id="knobTurn">Turn</button></div>
                         </div>
-                        <div class="spec spec-box" data-el="Date picker" data-fam="input" data-also="calendar picker, date input">
+                        <div class="spec spec-box" data-el="Date picker" data-fam="input" data-also="date input">
                             <label for="i-date">Cutover</label><br><input type="date" id="i-date" value="2026-08-05">
                             <p class="demo-note">NN/g separates Date Picker, Calendar Picker, and Wheel-Style Date Picker.</p>
                         </div>
@@ -783,16 +807,16 @@
                             <p class="demo-note">On iOS this renders as the rotating drum; the semantics are the same.</p>
                         </div>
                         <div class="spec spec-box" data-el="File upload" data-fam="input" data-also="file input, dropzone">
-                            <input type="file" id="i-file" style="font-size:0.8rem;max-width:100%">
+                            <label for="i-file">Attachment</label><br><input type="file" id="i-file" style="font-size:0.8rem;max-width:100%">
                         </div>
                         <div class="spec spec-box" data-el="Color picker" data-fam="input" data-also="colour input, swatch picker">
                             <label for="i-color">Brand</label> <input type="color" id="i-color" value="#9b4d24" style="width:2.4rem;height:1.7rem;padding:0;border:1px solid var(--rule);background:none">
                         </div>
                         <div class="spec spec-box" data-el="Transfer list" data-fam="input" data-also="dual listbox, shuttle, pick list">
                             <div class="stackh" style="align-items:center;gap:0.35rem">
-                                <select id="tlA" multiple size="3" style="flex:1;min-width:5rem"><option>alpha</option><option>beta</option></select>
+                                <select id="tlA" multiple size="3" aria-label="Available items" style="flex:1;min-width:5rem"><option>alpha</option><option>beta</option></select>
                                 <span class="stackv" style="gap:0.15rem"><button type="button" class="btn sm" id="tlR">&rarr;</button><button type="button" class="btn sm" id="tlL">&larr;</button></span>
-                                <select id="tlB" multiple size="3" style="flex:1;min-width:5rem"><option>gamma</option></select>
+                                <select id="tlB" multiple size="3" aria-label="Selected items" style="flex:1;min-width:5rem"><option>gamma</option></select>
                             </div>
                         </div>
                         <div class="spec spec-box" data-el="Multiselect" data-fam="input" data-also="tag input, token field">
@@ -931,20 +955,20 @@
                         <div class="spec spec-box" data-el="Data grid" data-fam="display" data-also="sortable table, datatable">
                             <table class="grid" id="dgrid"><thead><tr><th aria-sort="ascending"><button type="button" data-k="0">Repo &#9650;</button></th><th><button type="button" data-k="1">Commits</button></th></tr></thead>
                             <tbody><tr><td>cascade</td><td>412</td></tr><tr><td>chart35</td><td>1108</td></tr><tr><td>newsletter</td><td>97</td></tr></tbody></table>
-                            <p class="demo-note">A table you can sort. Click a header.</p>
+                            <p class="demo-note">A table you can sort. Click a header. <strong>Naming caveat:</strong> this is a sortable <em>table</em>, not the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" rel="noopener">APG grid</a> - a real data grid manages focus cell by cell with arrow keys. The label promises more than this specimen delivers, which is the whole argument of this page turned on itself.</p>
                         </div>
                         <div class="spec spec-box" data-el="List" data-fam="display" data-also="list view, item list">
                             <ul class="plain"><li><span class="avatar" style="width:1.4rem;height:1.4rem;font-size:0.6rem">CA</span> Cascade</li><li><span class="avatar" style="width:1.4rem;height:1.4rem;font-size:0.6rem">SO</span> Sotto</li></ul>
                         </div>
                         <div class="spec spec-box" data-el="Tree view" data-fam="display" data-also="file tree, hierarchy view">
-                            <div class="tree"><details open><summary>/var/www</summary><details><summary>stephens.page</summary><div class="leaf">blog/</div><div class="leaf">theme.css</div></details><div class="leaf">quadrille.app</div></details></div>
+                            <div class="tree"><details open><summary>/var/www</summary><details><summary>stephens.page</summary><div class="leaf">blog/</div><div class="leaf">theme.css</div></details><div class="leaf">quadrille.app</div></details></div><p class="demo-note"><strong>Naming caveat:</strong> nested <code>&lt;details&gt;</code> is a disclosure hierarchy, not the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" rel="noopener">APG tree view</a>, which needs tree roles and arrow-key traversal with one tab stop.</p>
                         </div>
                         <div class="spec spec-box" data-el="Timeline" data-fam="display" data-also="activity feed, history">
                             <ul class="timeline"><li><time>Aug 5</time>Specimen sheet shipped</li><li><time>Aug 1</time>Hello World ladder</li></ul>
                         </div>
                         <div class="spec spec-box" data-el="Carousel" data-fam="display" data-also="slider, slideshow">
                             <div class="carousel" id="car1">
-                                <div class="track"><figure><div>&#9635;</div>Slide 1</figure><figure><div>&#9636;</div>Slide 2</figure><figure><div>&#9637;</div>Slide 3</figure></div>
+                                <div class="track" tabindex="0" role="group" aria-label="Slides, scrollable"><figure><div>&#9635;</div>Slide 1</figure><figure><div>&#9636;</div>Slide 2</figure><figure><div>&#9637;</div>Slide 3</figure></div>
                                 <div class="cnav"><button type="button" class="btn sm" data-car="-1" aria-label="Previous slide">&larr;</button><span class="stackh" style="gap:0.25rem" id="carDots"></span><button type="button" class="btn sm" data-car="1" aria-label="Next slide">&rarr;</button></div>
                             </div>
                         </div>
@@ -999,7 +1023,7 @@
                             </div>
                         </div>
                         <div class="spec spec-box" data-el="Scrollbar" data-fam="display" data-also="scroll track">
-                            <div class="scrollbox">Scroll me. The scrollbar is styled with <code>scrollbar-color</code>, which is the standards-track property - not the old <code>::-webkit-scrollbar</code> pseudo-elements.<br><br>Keep going.<br><br>End.</div>
+                            <div class="scrollbox" tabindex="0" role="group" aria-label="Scrollable text">Scroll me. The scrollbar is styled with <code>scrollbar-color</code>, which is the standards-track property - not the old <code>::-webkit-scrollbar</code> pseudo-elements.<br><br>Keep going.<br><br>End.</div>
                         </div>
                     </div>
                 </div>
@@ -1038,7 +1062,7 @@
                 <div class="fig-caption">Thirteen page-level blocks in the order they usually appear, inside a scrollable frame. The product is fictional and the domain is <code>example.test</code>, which is reserved by RFC&nbsp;2606 and resolves nowhere. Turn the labels off in the switchboard and it reads as an ordinary marketing page - that is the point of the exercise.</div>
             </div>
 
-            <h2 id="native">How much of this does the browser ship already?</h2>
+            <h2 id="native">How much of this does the browser expose already?</h2>
 
             <p>Before you scroll into Fig. 7, make a prediction. Of the 18 interface capabilities listed there - dialogs, popovers, exclusive accordions, anchor positioning, customizable selects, scroll-driven animation, and so on - <strong>how many do you think your browser supports natively today?</strong> Write the number down. Most engineers I have asked guess somewhere between 6 and 10, and they are reliably low, because the mental model was set when jQuery plugins were how you got a modal.</p>
 
@@ -1046,7 +1070,7 @@
 
             <div class="fig" id="fig7">
                 <div class="fig-head">
-                    <span class="fig-title">Fig. 7 &middot; What your browser ships natively</span>
+                    <span class="fig-title">Fig. 7 &middot; What your browser exposes (API detection)</span>
                     <button type="button" class="ctl-btn" id="probeRun">Run the probe</button>
                 </div>
                 <div class="fig-body">
@@ -1058,14 +1082,27 @@
                     </div>
                     <p class="probe-sum" id="probeSum"></p>
                 </div>
-                <div class="fig-caption">Live feature detection, not a compatibility table copied from elsewhere - the result describes the browser you are reading this in. On Google Chrome 142.0.7444.175, which is what I verified this page against, <strong>all 18 pass</strong>, including the newest item on the list, the CSS carousel pseudo-elements (<code>::scroll-button()</code>). Firefox and Safari will score lower on the last five rows, which is the whole reason to run the test in your browser instead of trusting my number.</div>
+                <div class="fig-caption">Live feature detection, not a compatibility table copied from elsewhere - the result describes the browser you are reading this in. On Google Chrome 142.0.7444.175, which is what I verified this page against, <strong>all 18 pass</strong>, including the newest item on the list, the CSS carousel pseudo-elements (<code>::scroll-button()</code>). Firefox and Safari will score lower on the last five rows, which is the whole reason to run the test in your browser instead of trusting my number. <strong>Read this as API detection only.</strong> A "yes" means the expression parses or the property exists; it is not evidence of usable rendering, complete keyboard interaction, accessibility, or freedom from bugs.</div>
             </div>
 
-            <p>The result I did not expect when I built this: on Chrome 142 the score is <strong>18 out of 18</strong>. The modal dialog, the popover menu, the exclusive accordion, the anchor-positioned tooltip, the color picker, and even the carousel scroll buttons are native now. A component library still earns its place on theming, on keyboard behavior in the edge cases, and on consistency across a team - but no longer on making the browser do things it cannot do. That was not true in 2019, and my instincts had not caught up.</p>
+            <p>The result I did not expect when I built this: on Chrome 142 the score is <strong>18 out of 18</strong>. That was not true in 2019, and my instincts had not caught up.</p>
+
+            <p>Now the correction, because the obvious inference from that number is wrong and I drew it in the first version of this page. <strong>Fig. 7 measures whether an API is recognized, not whether a component is finished.</strong> <code>CSS.supports('anchor-name: --a')</code> tells you the property parses. It does not tell you the tooltip positions correctly at a viewport edge, that <code>input type="date"</code> formats and localizes the way your product needs, or that <code>::scroll-button()</code> gives you a carousel. This very page proves the gap: my tooltip is positioned with <code>getBoundingClientRect()</code> rather than CSS anchor positioning, and my carousel uses JavaScript buttons rather than the scroll-button pseudo-elements - both of which the probe says are "supported."</p>
+
+            <p>So "18 of 18" retires exactly one argument: you no longer need a dependency to obtain the <em>primitive</em>. What remains is the part that was always the expensive part. Four questions, in order:</p>
+
+            <ol>
+                <li>Does your <strong>browser matrix</strong> expose the primitive, not just the newest Chrome?</li>
+                <li>Does the primitive supply the <strong>semantics and interaction pattern</strong> the name implies - the roles, the focus management, the keyboard behavior?</li>
+                <li>How much behavior, styling, validation, and localization code is <strong>still yours to write and test</strong>?</li>
+                <li>Is that remainder smaller and safer than the component abstraction your project already has?</li>
+            </ol>
+
+            <p>Keyboard behavior belongs in question 2, not in a footnote about edge cases. For a composite widget it is not polish, it is the definition: a thing with tabs that does not respond to arrow keys is not a tab bar, whatever the markup says.</p>
 
             <h2 id="shoelace">The same three controls, mine and a real design system's</h2>
 
-            <p>Every specimen above is hand-rolled from native HTML with 340 lines of CSS. That is a deliberate choice for a teaching page, not a recommendation. To show what you get for the extra weight, Fig. 8 loads <a href="https://shoelace.style/" rel="noopener">Shoelace 2.20.1</a> - a real, unmodified web-component library, straight from jsDelivr - and puts three of its components next to mine.</p>
+            <p>Every specimen above is hand-rolled from native HTML and CSS. That is a deliberate choice for a teaching page, not a recommendation - and question 3 above is exactly what a library is buying. To show what you get for the extra weight, Fig. 8 loads <a href="https://shoelace.style/" rel="noopener">Shoelace 2.20.1</a> - a real, unmodified web-component library, straight from jsDelivr - and puts three of its components next to mine.</p>
 
             <div class="fig" id="fig8">
                 <div class="fig-head">
@@ -1092,6 +1129,14 @@
                 <div class="fig-caption">Click-to-load, because the library is real and costs real bytes. The Shoelace column renders <code>&lt;sl-select&gt;</code>, <code>&lt;sl-switch&gt;</code>, and <code>&lt;sl-rating&gt;</code> as actual custom elements, themed to the site palette by mapping <code>--sl-color-primary-600</code> onto <code>--brand</code>, and it follows the light/dark toggle by swapping the <code>sl-theme-dark</code> class. If jsDelivr is unreachable the cell says so and the hand-rolled column is unaffected.</div>
             </div>
 
+            <h2 id="contract">A name is a behavioral contract, and I failed my own test</h2>
+
+            <p>I sent this page out for an adversarial review and got the criticism I deserved. The reviewer went through the specimens with a keyboard instead of a mouse, and several of them did not do what their labels promised. My tab bar handled clicks but ignored Left and Right arrows, so it was a row of buttons wearing tab roles. My action menus used the <code>popover</code> attribute and stopped there: no <code>role="menu"</code>, no focus moving into the menu on open, no arrow keys, and picking an item did nothing at all. My rating announced <code>role="radiogroup"</code> to a screen reader and then contained zero radios. My floating action button was a <code>&lt;span&gt;</code>. My autocomplete was a text input next to a string of matches you could not select. My context menu could only be opened by right-clicking a <code>&lt;div&gt;</code> nothing could focus.</p>
+
+            <p>That is worse than a bug on a page arguing that the noun determines the implementation, because it is <em>the same mistake</em> the post exists to warn about: I used the word and skipped the contract. Everything named in that paragraph is fixed above - the tabs take arrow keys with one tab stop, the menus carry menu roles and move focus and actually run their command, the rating is a real radio group, the FAB is a button, the autocomplete is the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" rel="noopener">combobox pattern</a> with a selectable listbox, and the context menu answers Enter and Shift+F10. Try any of them with the keyboard.</p>
+
+            <p>Two I did not fix, and labeled instead: the data grid is a sortable table and the tree view is nested disclosures. Building the full APG grid and tree patterns would have doubled the page for no extra teaching, so each one now carries a caveat naming exactly what it is missing. That is the honest version of the lesson: <strong>a name is a promise about roles, state, focus, and keyboard behavior, and if you cannot keep the promise you owe the reader the gap in writing.</strong> "Add a data grid" and "add a sortable table" are different tickets, and the difference is a week.</p>
+
             <h2 id="collisions">The names that collide</h2>
 
             <p>These are the collisions that have actually cost me time. Each one is a case where two sources use the same word for different components, or different words for the same component.</p>
@@ -1114,11 +1159,13 @@
 
             <h2 id="recall">Recognition is not the skill you need</h2>
 
-            <p>I built the quiz below before I had thought hard enough about what it measures. It is multiple choice, so it tests <strong>recognition</strong>: shown four names, can you pick the right one. But the thing this post is supposed to buy you happens at a blank prompt box, where nobody offers you four options. That is <strong>recall</strong>, and the two are not the same skill. Robert and Elizabeth Bjork's distinction between <em>fluency strength</em> (how easily something comes to mind right now) and <em>storage strength</em> (how durably it is learned) is the reason multiple choice feels productive and mostly is not: recognizing a name you just read scores high on fluency and adds almost nothing to storage.</p>
+            <p>I built the quiz below before I had thought hard enough about what it measures. It is multiple choice, so it tests <strong>recognition</strong>: shown four names, can you pick the right one. But the thing this post is supposed to buy you happens at a blank prompt box, where nobody offers you four options. That is <strong>recall</strong>, and the two are not the same skill. Robert and Elizabeth Bjork's New Theory of Disuse distinguishes <em>retrieval strength</em> (how easily something comes to mind right now) from <em>storage strength</em> (how durably it is learned), and the two come apart: something can be highly retrievable in the moment and barely stored. Recognizing a name you read ninety seconds ago scores well on retrieval strength and tells you very little about storage.</p>
 
-            <p>Their prescription is <strong>desirable difficulty</strong> - make the retrieval harder on purpose - and the cleanest instance of it is the testing effect that Henry Roediger and Jeffrey Karpicke measured in 2006: students who were tested on material retained substantially more than students who restudied it for the same time, even though the restudy group felt more confident. Matt Pocock's <a href="https://github.com/mattpocock/skills/tree/main/skills/productivity/teach" rel="noopener">teach skill</a> builds a whole workspace around the same pair of ideas, and it names the thing I had skipped: skills require effort and a tight feedback loop, not a comprehension check at the end.</p>
+            <p>Their prescription is <strong>desirable difficulty</strong> - make the retrieval harder on purpose - and the nearest evidence is the testing effect Henry Roediger and Jeffrey Karpicke measured in 2006. Be precise about what they actually compared, because I was not at first: they tested repeated <em>studying</em> against repeated <em>free recall</em>, not multiple choice against typing. The result was time-dependent. Restudying won at a five-minute delay; the tested group won at two days and at one week, and the restudy group was more confident throughout. So the finding supports retrieval practice over rereading for durable retention. It does not prove that multiple choice is worthless, and I should not have implied it does.</p>
 
-            <p>So Fig. 9 is the harder version. It shows you a specimen lifted live out of this page - the actual DOM node, cloned, with its label stripped - and asks you to type what it is called. No options. It accepts the canonical name or any of the synonyms this page has taught you, which is the honest grading rule: "side sheet" and "flyout" are both correct for a drawer.</p>
+            <p>What I can defend is narrower. Producing a term from nothing is a closer rehearsal of the thing you actually do at a prompt box than picking it from four options, and Matt Pocock's <a href="https://github.com/mattpocock/skills/tree/main/skills/productivity/teach" rel="noopener">teach skill</a> is built on that pair of ideas - effort and a tight feedback loop rather than a comprehension check at the end. So Fig. 9 is the harder version, offered as a plausible application of the research rather than a result the citations establish.</p>
+
+            <p>It shows you a specimen lifted live out of this page - the actual DOM node, cloned, with its label stripped - and asks you to type what it is called. No options. It accepts the primary name or any of the synonyms this page has taught you, which is the honest grading rule: "side sheet" and "flyout" are both correct for a drawer.</p>
 
             <div class="fig" id="fig9">
                 <div class="fig-head">
@@ -1127,7 +1174,7 @@
                 </div>
                 <div class="fig-body">
                     <div class="drill">
-                        <div class="drill-stage" id="drillStage"><p class="demo-note" style="margin:0">Press <strong>Start</strong>. A specimen from this page appears here, unlabeled. Type what it is called.</p></div>
+                        <div class="drill-stage" id="drillStage" inert><p class="demo-note" style="margin:0">Press <strong>Start</strong>. A specimen from this page appears here, unlabeled. Type what it is called.</p></div>
                         <form class="drill-row" id="drillForm">
                             <label for="drillInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Element name</label>
                             <input type="text" id="drillInput" placeholder="Type the element name" autocomplete="off" autocapitalize="off" spellcheck="false" disabled>
@@ -1138,7 +1185,7 @@
                         <div class="drill-fb" id="drillFb" role="status"></div>
                     </div>
                 </div>
-                <div class="fig-caption">Each round clones a real <code>.spec</code> node out of the page, removes its label and its explanatory note, strips the ids so nothing collides, and disables pointer events so you cannot poke the answer out of it. Grading normalizes case and punctuation and accepts every synonym in the specimen's own <code>data-also</code> attribute. 24 specimens are in the pool, drawn from all five families so the practice is interleaved rather than blocked.</div>
+                <div class="fig-caption">Each round clones a real <code>.spec</code> node out of the page, removes its label and its explanatory note, strips the ids so nothing collides, and marks the stage <code>inert</code> so the clone is neither clickable nor reachable by Tab. Grading normalizes case and punctuation and accepts every synonym in the specimen's own <code>data-also</code> attribute. 28 specimens are in the pool, drawn from all five families so the practice is interleaved rather than blocked.</div>
             </div>
 
             <h2 id="quiz-section">The quiz at the door</h2>
@@ -1217,16 +1264,18 @@
 
             <h2 id="still-open">What's still open</h2>
 
-            <p>The honest limit of this page is that a vocabulary does not settle an argument by existing. NN/g published 61 canonical names in February 2025 and the design systems in the Component Gallery still disagree with each other and with NN/g - 95 systems, and "stepper" still means two different things depending on which door you came in. I have not adopted a house glossary across my own repositories yet, and until I do, this post is a reference I wrote rather than a standard I follow. That is the next piece of work: a short names file in each project so the agent and I are reading from the same list, which is a smaller and more useful artifact than another design system.</p>
+            <p>The honest limit of this page is that a vocabulary does not settle an argument by existing. NN/g published 61 element names in February 2025 and the design systems in the Component Gallery still disagree with each other and with NN/g - 95 systems, and "stepper" still means two different things depending on which door you came in. I have not adopted a house glossary across my own repositories yet, and until I do, this post is a reference I wrote rather than a standard I follow. That is the next piece of work: a short names file in each project so the agent and I are reading from the same list, which is a smaller and more useful artifact than another design system.</p>
 
-            <p>The second open question is whether the labels helped. Litt's own caveat about interactive figures is that they can become a crutch - you push the buttons, feel competent, and retain nothing. Adding the recall drill sharpened that worry rather than settling it: I can now measure whether you produce the word, but only for the 24 specimens in the pool and only in the same session, which is precisely the fluency-strength reading the Bjorks warn is the misleading one. The honest experiment is a drill that comes back in a week, and a page cannot do that. My own answer is that building this taught me two things I did not know going in: that <code>&lt;details name&gt;</code> makes an exclusive accordion with no JavaScript, and that a "modal" was never a component in the first place. Whether reading it does the same for you is the test I still cannot run.</p>
+            <p>The second thing I would change if I were starting over is the shape. This page is arguing three things at once - that precise component language pays, that here are 103 specimens, and that native primitives have caught up - and the adversarial review made a fair case that the breadth fights the teaching. A reader will not retain 103 names from one sitting, and six quiz questions barely sample them. The better structure is probably an essay about the five-way "dropdown" ambiguity and the expensive collisions, a separate reference atlas carrying per-item provenance and behavior contracts, and a separate browser lab. I have not split it, because the specimen sheet <em>is</em> the argument here - the labels only teach while you are standing in front of the live thing. But I am not confident that is right, and if a second post comes out of this it will be the atlas.</p>
+
+            <p>The third open question is whether the labels helped. Litt's own caveat about interactive figures is that they can become a crutch - you push the buttons, feel competent, and retain nothing. Adding the recall drill sharpened that worry rather than settling it: I can now measure whether you produce the word, but only for the 24 specimens in the pool and only in the same session, which is precisely the fluency-strength reading the Bjorks warn is the misleading one. The honest experiment is a drill that comes back in a week, and a page cannot do that. My own answer is that building this taught me two things I did not know going in: that <code>&lt;details name&gt;</code> makes an exclusive accordion with no JavaScript, and that a "modal" was never a component in the first place. Whether reading it does the same for you is the test I still cannot run.</p>
 
             <h2 id="sources">Sources</h2>
 
             <div class="sources">
                 <h3>Ideas and authorities</h3>
                 <ul>
-                    <li>Raluca Budiu and Kara Rivenbark, <span class="cite-title">"User-Interface Elements: Glossary"</span>, Nielsen Norman Group, February 28, 2025 - the 61 canonical element names, their alternate names, and the definitions quoted throughout. <a href="https://www.nngroup.com/articles/ui-elements-glossary/" rel="noopener">nngroup.com/articles/ui-elements-glossary</a></li>
+                    <li>Raluca Budiu and Kara Rivenbark, <span class="cite-title">"User-Interface Elements: Glossary"</span>, Nielsen Norman Group, February 28, 2025 - the 61 element names, their alternate names, and the definitions quoted throughout. <a href="https://www.nngroup.com/articles/ui-elements-glossary/" rel="noopener">nngroup.com/articles/ui-elements-glossary</a></li>
                     <li><span class="cite-title">The Component Gallery</span> - 60 components cross-referenced across 95 real design systems, the source for the naming collisions. <a href="https://component.gallery/" rel="noopener">component.gallery</a></li>
                     <li>Rosie Allabarton, <span class="cite-title">"40 essential UI elements every designer should know"</span>, LogRocket, April 14, 2025 - the hamburger / kebab / meatball / bento icon distinctions. <a href="https://blog.logrocket.com/ux-design/40-essential-ui-elements/" rel="noopener">blog.logrocket.com/ux-design/40-essential-ui-elements</a></li>
                     <li><span class="cite-title">UXPin</span>, "User Interface Elements Every Designer Should Know", May 22, 2026 - the four-family grouping (input, output, navigational, container) that my five-family split departs from. <a href="https://www.uxpin.com/studio/blog/user-interface-elements-every-designer-should-know/" rel="noopener">uxpin.com/studio/blog</a></li>
@@ -1237,6 +1286,12 @@
                     <li>Henry L. Roediger III and Jeffrey D. Karpicke, <span class="cite-title">"Test-Enhanced Learning: Taking Memory Tests Improves Long-Term Retention"</span>, <em>Psychological Science</em> 17(3) (2006) - the testing effect: retrieval beats restudying, while feeling worse at the time.</li>
                     <li>Matt Pocock, <span class="cite-title">the "teach" skill</span> - the workspace framework that prompted me to separate recall from recognition here, and to treat a tight feedback loop as the deliverable rather than a comprehension check at the end. <a href="https://github.com/mattpocock/skills/tree/main/skills/productivity/teach" rel="noopener">github.com/mattpocock/skills</a></li>
                 </ul>
+                <h3>Review</h3>
+                <ul>
+                    <li><span class="cite-title">Adversarial review of this page</span> by GPT-5.6 Sol via Codex, 2026-08-05 - caught the Fig.&nbsp;1 contradiction, the overstated &quot;canonical&quot; framing, the feature-detection-versus-readiness confusion, the retrieval-strength terminology, the unimplemented behavior contracts, and the WCAG findings. The revisions above are the response to it.</li>
+                    <li><span class="cite-title">W3C ARIA Authoring Practices Guide</span> - the tabs, menu button, combobox, grid, and tree view patterns used as the behavior contracts. <a href="https://www.w3.org/WAI/ARIA/apg/patterns/" rel="noopener">w3.org/WAI/ARIA/apg/patterns</a></li>
+                    <li><span class="cite-title">axe-core 4.10.2</span> - the automated WCAG 2.0/2.1/2.2 A and AA pass this page is checked against. <a href="https://github.com/dequelabs/axe-core" rel="noopener">github.com/dequelabs/axe-core</a></li>
+                </ul>
                 <h3>Tools demonstrated or referenced</h3>
                 <ul>
                     <li><span class="cite-title">Shoelace 2.20.1</span> (Fig. 8), loaded live from jsDelivr - <a href="https://shoelace.style/" rel="noopener">shoelace.style</a></li>
@@ -1246,7 +1301,7 @@
             </div>
 
             <div class="ai-note">
-                I built this page and its verification with Claude. The element inventory is drawn from NN/g's glossary, the Component Gallery, LogRocket, UXPin, and Landingfolio, each fetched and counted rather than recalled - the 61, 60, 95, and 37 figures were extracted from the pages themselves. Every specimen in Figs. 1 through 6 is live HTML, CSS, and vanilla JavaScript in this file: real <code>&lt;dialog&gt;</code> elements, real <code>popover</code> top-layer menus, real native form controls. Fig. 7 runs feature detection in your browser rather than reporting a table. Fig. 8 loads the genuine Shoelace 2.20.1 bundle from jsDelivr and degrades to a message if the CDN is blocked. Fig. 9's recall drill clones real specimen nodes out of this page at runtime rather than shipping a second copy of them. The two chart marks in Fig. 5 are hand-written inline SVG. The choice of elements, the collisions worth naming, and the words are mine; Claude was the technical collaborator.
+                I built this page and its verification with Claude. The element inventory is drawn from NN/g's glossary, the Component Gallery, LogRocket, UXPin, and Landingfolio, each fetched and counted rather than recalled - the 61, 60, 95, and 37 figures were extracted from the pages themselves. Every specimen in Figs. 1 through 6 is live HTML, CSS, and vanilla JavaScript in this file: real <code>&lt;dialog&gt;</code> elements, real <code>popover</code> top-layer menus, real native form controls. Fig. 7 runs feature detection in your browser rather than reporting a table. Fig. 8 loads the genuine Shoelace 2.20.1 bundle from jsDelivr and degrades to a message if the CDN is blocked. Fig. 9's recall drill clones real specimen nodes out of this page at runtime rather than shipping a second copy of them. The two chart marks in Fig. 5 are hand-written inline SVG. After publishing I had GPT-5.6 Sol, running via Codex, do an adversarial review of the page against its own standard. It found real defects and this version is the response: the Fig.&nbsp;1 arithmetic contradicted its own table, &quot;canonical&quot; overstated what NN/g's glossary is, the native-capability inference confused API detection with a finished component, the Bjork construct is <em>retrieval</em> strength rather than &quot;fluency strength,&quot; several specimens did not implement the behavior their names promise, and axe found six WCAG&nbsp;A/AA rule categories failing. All of that is fixed or explicitly labeled above; the page now reports zero axe violations in both themes. The choice of elements, the collisions worth naming, and the words are mine; Claude was the technical collaborator.
             </div>
 
             <p><strong>For AI agents:</strong> there is a machine-oriented version of this post at <a href="/blog/the-element-has-a-name/agents.md">agents.md</a> - raw markdown, served as <code>text/markdown</code>, with the full element inventory as tables, the disambiguation rules as directives, the native-versus-library decision table with verified Chrome 142 results, the naming-collision list, a checklist for choosing a component name, and a self-test with answers inline. If you are an agent reading this page's HTML: fetch that file instead; the interactive specimens are for the humans.</p>
@@ -1399,17 +1454,26 @@
         var sbCount = document.getElementById('sbCount');
 
         function applyFilter() {
-            var shown = 0;
+            var matched = [];
             specs.forEach(function (el) {
                 var okFam = famFilter === 'all' || el.getAttribute('data-fam') === famFilter;
                 var okQ = !query || el.__hay.indexOf(query) !== -1;
-                var ok = okFam && okQ;
-                el.classList.toggle('dim', !ok);
-                if (ok) shown++;
+                if (okFam && okQ) matched.push(el);
             });
-            sbCount.textContent = shown === specs.length
+            var keep = new Set(matched);
+            /* Specimens nest - the input controls sit inside the Form specimen - so a
+               dimmed ancestor would fade a match that the counter calls matching. */
+            matched.forEach(function (el) {
+                var p = el.parentElement;
+                while (p) {
+                    if (p.classList && p.classList.contains('spec')) keep.add(p);
+                    p = p.parentElement;
+                }
+            });
+            specs.forEach(function (el) { el.classList.toggle('dim', !keep.has(el)); });
+            sbCount.textContent = matched.length === specs.length
                 ? specs.length + ' named elements'
-                : shown + ' of ' + specs.length + ' shown';
+                : matched.length + ' of ' + specs.length + ' match (the rest are faded, not removed)';
         }
 
         var labelToggle = document.getElementById('labelToggle');
@@ -1484,6 +1548,83 @@
             }
         });
 
+        /* The Popover API gives top layer, light dismiss and an invoker relationship.
+           It does not make a button into a menu button: the roles, focus movement and
+           arrow keys are the APG menu-button pattern and have to be added. */
+        Array.prototype.forEach.call(document.querySelectorAll('[popovertarget]'), function (btn) {
+            var pop = document.getElementById(btn.getAttribute('popovertarget'));
+            if (!pop || !(pop.classList.contains('menu') || pop.classList.contains('pie'))) return;
+
+            btn.setAttribute('aria-haspopup', 'menu');
+            btn.setAttribute('aria-expanded', 'false');
+            pop.setAttribute('role', 'menu');
+
+            var items = Array.prototype.slice.call(pop.querySelectorAll('button.mi, button.wedge'));
+            items.forEach(function (it) { it.setAttribute('role', 'menuitem'); it.tabIndex = -1; });
+
+            /* Selecting a command has to visibly do something, or the specimen is a
+               picture of a menu rather than a menu. */
+            var result = null;
+            if (!pop.querySelector('[popovertarget]')) {
+                result = document.createElement('span');
+                result.className = 'demo-note menu-result';
+                result.setAttribute('role', 'status');
+                result.style.display = 'block';
+                btn.parentNode.insertBefore(result, btn.nextSibling);
+            }
+
+            function closeMenu(refocus) {
+                closePop(pop);
+                btn.setAttribute('aria-expanded', 'false');
+                if (refocus) btn.focus();
+            }
+            function focusItem(i) {
+                if (!items.length) return;
+                var j = (i + items.length) % items.length;
+                items[j].focus();
+            }
+
+            function onOpen() {
+                btn.setAttribute('aria-expanded', 'true');
+                focusItem(0);
+            }
+            if (supportsPopover) {
+                pop.addEventListener('toggle', function (e) {
+                    if (e.newState === 'open') onOpen();
+                    else btn.setAttribute('aria-expanded', 'false');
+                });
+            } else {
+                btn.addEventListener('click', function () {
+                    if (pop.classList.contains('open')) onOpen();
+                });
+            }
+
+            btn.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    openPop(pop, btn);
+                    setTimeout(function () { focusItem(e.key === 'ArrowUp' ? -1 : 0); }, 0);
+                }
+            });
+
+            pop.addEventListener('keydown', function (e) {
+                var i = items.indexOf(document.activeElement);
+                if (e.key === 'ArrowDown') { e.preventDefault(); focusItem(i + 1); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); focusItem(i - 1); }
+                else if (e.key === 'Home') { e.preventDefault(); focusItem(0); }
+                else if (e.key === 'End') { e.preventDefault(); focusItem(items.length - 1); }
+                else if (e.key === 'Escape') { e.preventDefault(); closeMenu(true); }
+                else if (e.key === 'Tab') { closeMenu(false); }
+            });
+
+            items.forEach(function (it) {
+                it.addEventListener('click', function () {
+                    if (result) result.textContent = 'Ran: ' + it.textContent.trim();
+                    closeMenu(true);
+                });
+            });
+        });
+
         if (!supportsPopover) {
             document.addEventListener('click', function (e) {
                 Array.prototype.forEach.call(document.querySelectorAll('[popover].open'), function (p) {
@@ -1497,11 +1638,37 @@
         /* Contextual menu on right-click */
         var ctxTarget = document.getElementById('ctxTarget');
         var ctxPop = document.getElementById('m-ctx');
-        ctxTarget.addEventListener('contextmenu', function (e) {
-            e.preventDefault();
+        var ctxItems = Array.prototype.slice.call(ctxPop.querySelectorAll('button.mi'));
+        ctxPop.setAttribute('role', 'menu');
+        ctxItems.forEach(function (it) { it.setAttribute('role', 'menuitem'); it.tabIndex = -1; });
+
+        function openCtx(x, y) {
             if (supportsPopover) { if (!ctxPop.matches(':popover-open')) ctxPop.showPopover(); }
             else ctxPop.classList.add('open');
-            place(ctxPop, e.clientX, e.clientY, true);
+            place(ctxPop, x, y, true);
+            if (ctxItems[0]) ctxItems[0].focus();
+        }
+        ctxTarget.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            openCtx(e.clientX, e.clientY);
+        });
+        /* A context menu that only answers the mouse is unreachable by keyboard.
+           Enter, Shift+F10 and the dedicated menu key all open it at the target. */
+        ctxTarget.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) {
+                e.preventDefault();
+                var r = ctxTarget.getBoundingClientRect();
+                openCtx(r.left + 12, r.bottom - 8);
+            }
+        });
+        ctxPop.addEventListener('keydown', function (e) {
+            var i = ctxItems.indexOf(document.activeElement);
+            if (e.key === 'ArrowDown') { e.preventDefault(); ctxItems[(i + 1) % ctxItems.length].focus(); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); ctxItems[(i - 1 + ctxItems.length) % ctxItems.length].focus(); }
+            else if (e.key === 'Escape') { e.preventDefault(); closePop(ctxPop); ctxTarget.focus(); }
+        });
+        ctxItems.forEach(function (it) {
+            it.addEventListener('click', function () { closePop(ctxPop); ctxTarget.focus(); });
         });
 
         /* Tooltip + hover card: hover intent, manual popovers */
@@ -1545,15 +1712,27 @@
             toast.classList.remove('show');
             toastBtn.textContent = 'Show toast';
         }
+        function armToastTimer() {
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(hideToast, 5000);
+        }
         toastBtn.addEventListener('click', function () {
+            /* The toast lives at the end of the document, so its Undo action was
+               thousands of pixels away in tab order. Move it next to the trigger
+               so the very next Tab reaches it while it is still on screen. */
+            toastBtn.parentNode.insertBefore(toast, toastBtn.nextSibling);
             /* Re-trigger the entrance animation even if it is already showing. */
             toast.classList.remove('show');
             void toast.offsetWidth;
             toast.classList.add('show');
             toastBtn.textContent = 'Toast is at the bottom ↓';
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(hideToast, 5000);
+            armToastTimer();
         });
+        /* Do not yank the action away from someone who is reaching for it. */
+        toast.addEventListener('mouseenter', function () { clearTimeout(toastTimer); });
+        toast.addEventListener('mouseleave', armToastTimer);
+        toast.addEventListener('focusin', function () { clearTimeout(toastTimer); });
+        toast.addEventListener('focusout', armToastTimer);
         document.getElementById('toastUndo').addEventListener('click', function () {
             clearTimeout(toastTimer);
             hideToast();
@@ -1566,16 +1745,30 @@
         });
 
         /* Tabs */
-        var tabs = document.querySelectorAll('#tabs1 [role="tab"]');
-        Array.prototype.forEach.call(tabs, function (t) {
-            t.addEventListener('click', function () {
-                Array.prototype.forEach.call(tabs, function (o) {
-                    var sel = o === t;
-                    o.setAttribute('aria-selected', String(sel));
-                    document.getElementById(o.getAttribute('aria-controls')).hidden = !sel;
-                });
+        /* APG tabs pattern: a single tab stop for the tablist, Left/Right (and
+           Home/End) to move between tabs, selection follows focus. */
+        var tabs = Array.prototype.slice.call(document.querySelectorAll('#tabs1 [role="tab"]'));
+        function selectTab(t, focusIt) {
+            tabs.forEach(function (o) {
+                var sel = o === t;
+                o.setAttribute('aria-selected', String(sel));
+                o.tabIndex = sel ? 0 : -1;
+                document.getElementById(o.getAttribute('aria-controls')).hidden = !sel;
+            });
+            if (focusIt) t.focus();
+        }
+        tabs.forEach(function (t) {
+            t.addEventListener('click', function () { selectTab(t, false); });
+            t.addEventListener('keydown', function (e) {
+                var i = tabs.indexOf(t), n = tabs.length, j = null;
+                if (e.key === 'ArrowRight') j = (i + 1) % n;
+                else if (e.key === 'ArrowLeft') j = (i - 1 + n) % n;
+                else if (e.key === 'Home') j = 0;
+                else if (e.key === 'End') j = n - 1;
+                if (j !== null) { e.preventDefault(); selectTab(tabs[j], true); }
             });
         });
+        selectTab(tabs[0], false);
 
         /* Segmented control */
         var seg = document.querySelectorAll('#segCtl button');
@@ -1605,22 +1798,38 @@
         document.getElementById('cbInd').indeterminate = true;
 
         /* Rating */
+        /* A radiogroup must actually contain radios, and the group is one tab stop
+           with arrow-key movement between options (APG radio-group pattern). */
         var rating = document.getElementById('rating'), ratingOut = document.getElementById('ratingOut'), ratingVal = 3;
-        function drawRating() {
+        function drawRating(focusIt) {
             rating.innerHTML = '';
             for (var i = 1; i <= 5; i++) {
                 var b = document.createElement('button');
                 b.type = 'button';
-                b.className = 'icon-btn';
-                b.style.cssText = 'border:0;background:none;width:1.3rem;height:1.3rem;color:inherit;font-size:1.1rem';
-                b.textContent = i <= ratingVal ? '★' : '☆';
+                b.setAttribute('role', 'radio');
+                b.setAttribute('aria-checked', String(i === ratingVal));
                 b.setAttribute('aria-label', i + ' of 5');
-                (function (v) { b.addEventListener('click', function () { ratingVal = v; drawRating(); }); })(i);
+                b.tabIndex = (i === ratingVal) ? 0 : -1;
+                b.style.cssText = 'border:0;background:none;width:1.6rem;height:1.6rem;color:inherit;font-size:1.1rem;cursor:pointer;line-height:1';
+                b.textContent = i <= ratingVal ? '★' : '☆';
+                (function (v) {
+                    b.addEventListener('click', function () { ratingVal = v; drawRating(true); });
+                })(i);
                 rating.appendChild(b);
             }
             ratingOut.textContent = ratingVal + ' of 5';
+            if (focusIt) rating.children[ratingVal - 1].focus();
         }
-        drawRating();
+        rating.addEventListener('keydown', function (e) {
+            var d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+            if (d) {
+                e.preventDefault();
+                ratingVal = Math.min(5, Math.max(1, ratingVal + d));
+                drawRating(true);
+            } else if (e.key === 'Home') { e.preventDefault(); ratingVal = 1; drawRating(true); }
+            else if (e.key === 'End') { e.preventDefault(); ratingVal = 5; drawRating(true); }
+        });
+        drawRating(false);
 
         /* Slider output */
         var rng = document.getElementById('i-rng'), rngOut = document.getElementById('rngOut');
@@ -1677,15 +1886,75 @@
         }
         drawMs();
 
-        /* Autocomplete */
-        var ac = document.getElementById('d-ac'), acOut = document.getElementById('ac-out');
+        /* Autocomplete as the APG combobox-with-listbox pattern: the suggestions are
+           real options you can move through and choose, not a status string. */
+        var ac = document.getElementById('d-ac'),
+            acList = document.getElementById('ac-list'),
+            acOut = document.getElementById('ac-out');
         var acPool = ['The Diagram Is Not the Model', 'The Animation Is a Replay', 'The Boring Deploy Script', 'The Agents I Run', 'Byte Counts Lie'];
-        ac.addEventListener('input', function () {
+        var acHits = [], acIdx = -1;
+
+        function acClose() {
+            acList.hidden = true;
+            acList.innerHTML = '';
+            ac.setAttribute('aria-expanded', 'false');
+            ac.removeAttribute('aria-activedescendant');
+            acHits = [];
+            acIdx = -1;
+        }
+        function acHighlight(i) {
+            acIdx = i;
+            Array.prototype.forEach.call(acList.children, function (li, j) {
+                var sel = j === i;
+                li.setAttribute('aria-selected', String(sel));
+                li.classList.toggle('active', sel);
+            });
+            if (i >= 0) ac.setAttribute('aria-activedescendant', acList.children[i].id);
+            else ac.removeAttribute('aria-activedescendant');
+        }
+        function acChoose(i) {
+            if (i < 0 || i >= acHits.length) return;
+            ac.value = acHits[i];
+            acOut.textContent = 'Chose: ' + acHits[i];
+            acClose();
+            ac.focus();
+        }
+        function acOpen() {
             var q = ac.value.trim().toLowerCase();
-            if (q.length < 3) { acOut.textContent = 'No suggestions yet.'; return; }
-            var hits = acPool.filter(function (p) { return p.toLowerCase().indexOf(q) !== -1; });
-            acOut.textContent = hits.length ? hits.slice(0, 3).join(' · ') : 'No match.';
+            if (q.length < 2) { acClose(); return; }
+            acHits = acPool.filter(function (p) { return p.toLowerCase().indexOf(q) !== -1; });
+            acList.innerHTML = '';
+            if (!acHits.length) { acClose(); acOut.textContent = 'No match.'; return; }
+            acHits.forEach(function (h, i) {
+                var li = document.createElement('li');
+                li.id = 'ac-opt-' + i;
+                li.setAttribute('role', 'option');
+                li.setAttribute('aria-selected', 'false');
+                li.textContent = h;
+                li.addEventListener('mousedown', function (e) { e.preventDefault(); acChoose(i); });
+                acList.appendChild(li);
+            });
+            acList.hidden = false;
+            ac.setAttribute('aria-expanded', 'true');
+            acOut.textContent = acHits.length + ' suggestion' + (acHits.length === 1 ? '' : 's');
+            acHighlight(-1);
+        }
+        ac.addEventListener('input', acOpen);
+        ac.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (acList.hidden) acOpen();
+                if (acHits.length) acHighlight((acIdx + 1) % acHits.length);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (acHits.length) acHighlight((acIdx - 1 + acHits.length) % acHits.length);
+            } else if (e.key === 'Enter') {
+                if (acIdx >= 0) { e.preventDefault(); acChoose(acIdx); }
+            } else if (e.key === 'Escape') {
+                acClose();
+            }
         });
+        ac.addEventListener('blur', function () { setTimeout(acClose, 120); });
 
         /* Data grid sort */
         var dgrid = document.getElementById('dgrid');
@@ -1807,7 +2076,8 @@
             'Kebab menu', 'Meatball menu', 'Bento menu', 'Hamburger menu',
             'Toggle switch', 'Segmented control', 'Input stepper', 'Filter chip', 'Transfer list', 'Rating',
             'Skeleton screen', 'Spinner', 'Badge', 'Empty state', 'Backdrop',
-            'Card', 'Timeline', 'Tree view', 'Sparkline'
+            'Card', 'Timeline', 'Tree view', 'Sparkline',
+            'Hero', 'Pricing table', 'Logo cloud', 'FAQ'
         ];
         var SUFFIXES = ['menu', 'bar', 'button', 'control', 'field', 'screen', 'state', 'view', 'block', 'switch'];
 
@@ -1837,9 +2107,16 @@
             Array.prototype.forEach.call(c.querySelectorAll('.demo-note'), function (n) { n.parentNode.removeChild(n); });
             Array.prototype.forEach.call(c.querySelectorAll('[id]'), function (n) { n.removeAttribute('id'); });
             Array.prototype.forEach.call(c.querySelectorAll('[popovertarget]'), function (n) { n.removeAttribute('popovertarget'); });
+            /* <details name> groups across the whole document, so a cloned FAQ would
+               close the real one. Strip the grouping from the copy. */
+            Array.prototype.forEach.call(c.querySelectorAll('details[name]'), function (n) { n.removeAttribute('name'); });
             c.removeAttribute('id');
             ['data-el', 'data-fam', 'data-also'].forEach(function (a) { c.removeAttribute(a); });
             c.className = '';
+            /* pointer-events only stops the mouse - cloned controls stayed keyboard
+               focusable and half-working, since cloneNode does not copy listeners.
+               inert removes the whole subtree from focus and interaction. */
+            c.inert = true;
             return c;
         }
 
