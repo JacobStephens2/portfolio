@@ -13,18 +13,19 @@
     <link rel="icon" type="image/png" href="/bee-favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#9b4d24">
-    <title>vaulted-agent | stephens.page</title>
+    <title>vaulted-agent | vaultedagent.com</title>
     <meta name="description" content="Rust launcher for Claude Code, Codex, Grok, and Kimi. Vault-resolved secrets in-process (Bitwarden SM, 1Password, pass, sops). Install, setup, va claude. v0.4.2.">
     <meta property="og:title" content="vaulted-agent - secrets for AI agents, not a pile of .env files">
     <meta property="og:description" content="One Rust binary (va). Per-agent manifests. Bitwarden SM / 1Password / pass / sops. Optional prompt auth. macOS + Linux.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://stephens.page/vaulted-agent">
-    <meta property="og:image" content="https://stephens.page/vaulted-agent/tool.png">
-    <meta property="og:site_name" content="Jacob Stephens">
+    <meta property="og:url" content="https://vaultedagent.com/">
+    <meta property="og:image" content="https://vaultedagent.com/tool.png">
+    <meta property="og:site_name" content="vaulted-agent">
+    <link rel="canonical" href="https://vaultedagent.com/">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="vaulted-agent v0.4.2">
     <meta name="twitter:description" content="Install with one curl. Wire a vault with va setup. Launch with va claude / va grok.">
-    <meta name="twitter:image" content="https://stephens.page/vaulted-agent/tool.png">
+    <meta name="twitter:image" content="https://vaultedagent.com/tool.png">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -78,6 +79,47 @@
             align-items: center;
             gap: 1rem;
             margin-bottom: 1rem;
+        }
+
+        .topbar-right {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .github-topbar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--theme-toggle-size);
+            height: var(--theme-toggle-size);
+            padding: 0;
+            border: 1px solid var(--rule);
+            border-radius: 999px;
+            background: var(--soft);
+            color: var(--ink);
+            flex-shrink: 0;
+            line-height: 1;
+            transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+        }
+
+        .github-topbar:hover,
+        .github-topbar:focus-visible {
+            border-color: var(--brand);
+            color: var(--brand);
+            text-decoration: none;
+            outline: none;
+        }
+
+        .github-topbar:focus-visible {
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 28%, transparent);
+        }
+
+        .github-topbar svg {
+            width: 1.05rem;
+            height: 1.05rem;
+            display: block;
         }
 
         .back-link {
@@ -556,7 +598,7 @@
         .term-session .out { color: #d7d1c7; }
         .term-session .ok  { color: #6fdc8c; }
 
-        /* Product illustration (gpt-image) */
+        /* Product illustration (inkvoke) */
         .product-shot {
             margin: 0.85rem 0 1.1rem;
             border: 1px solid var(--rule);
@@ -587,7 +629,21 @@
 <body>
     <div class="container">
         <div class="topbar">
-            <a class="back-link" href="/">← stephens.page</a>
+            <a class="back-link" href="https://stephens.page/">← stephens.page</a>
+            <span class="topbar-right">
+                <a
+                    class="github-topbar"
+                    href="https://github.com/JacobStephens2/vaulted-agent-launcher"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="GitHub repository: JacobStephens2/vaulted-agent-launcher"
+                    title="GitHub"
+                >
+                    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                </a>
+            </span>
         </div>
 
         <span class="eyebrow">Open source · secrets for agents · macOS · Linux</span>
@@ -600,7 +656,7 @@
 
         <figure class="product-shot">
             <img
-                src="/vaulted-agent/tool.png"
+                src="/tool.png"
                 width="1536"
                 height="1024"
                 alt="Product illustration of vaulted-agent: a terminal running va claude with secrets resolving from a vault into the process for Claude, Codex, and Grok agents"
@@ -609,7 +665,7 @@
             >
             <figcaption>
                 <code>va claude</code> - vault-resolved secrets in-process, not a pile of <code>.env</code> files.
-                Illustration made with <a href="/gpt-image/">gpt-image</a>.
+                Illustration made with <a href="https://inkvoke.dev">inkvoke</a>.
             </figcaption>
         </figure>
 
@@ -633,7 +689,7 @@
                             <path d="M20 6 9 17l-5-5"></path>
                         </svg>
                     </button>
-                    <pre id="cmd-oneliner"><code>curl -fsSL https://stephens.page/vaulted-agent/install.sh | bash</code></pre>
+                    <pre id="cmd-oneliner"><code>curl -fsSL https://vaultedagent.com/install.sh | bash</code></pre>
                 </div>
                 <p class="note" style="margin-top:0.4rem">macOS · Linux. Pins release <code>v0.4.2</code> (Rust). Linux binaries are static musl (no glibc floor). Detects agents on PATH.</p>
             </li>
@@ -689,8 +745,8 @@ va kimi</code></pre>
                 </svg>
                 GitHub
             </a>
-            <a class="cta cta-secondary" href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">The writeup</a>
-            <a class="cta cta-secondary" href="/vaulted-agent/install.sh">install.sh</a>
+            <a class="cta cta-secondary" href="https://stephens.page/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">The writeup</a>
+            <a class="cta cta-secondary" href="/install.sh">install.sh</a>
         </div>
 
         <h2 id="commands" class="install-heading">Everyday commands</h2>
@@ -804,13 +860,13 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
         <p style="color:var(--muted);font-size:0.95rem;margin:0.5rem 0 0">
             The pattern was proven under a Bash prototype, then rewritten as a Rust
             runtime (v0.4.0). Full walkthrough:
-            <a href="/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">One Vault, Three Agents</a>.
+            <a href="https://stephens.page/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">One Vault, Three Agents</a>.
         </p>
 
                 <h2 id="install-notes">More</h2>
         <p class="note" style="margin-top:0">
             Prefer not to pipe to bash? Download
-            <a href="/vaulted-agent/install.sh">install.sh</a>, read it, then run it.
+            <a href="/install.sh">install.sh</a>, read it, then run it.
             Flags after <code>bash -s --</code>:
             <code>--backend bitwarden --auth-mode prompt</code>,
             <code>--user agent</code>, <code>--no-auto-harness</code>.
@@ -828,7 +884,7 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                 Full docs on GitHub
             </a>
             <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.4.2">v0.4.2 release notes</a>
-            <a class="cta cta-secondary" href="/gpt-image">gpt-image example</a>
+            <a class="cta cta-secondary" href="https://inkvoke.dev">inkvoke</a>
         </div>
 
         <footer>
@@ -840,7 +896,7 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                     </svg>
                     JacobStephens2/vaulted-agent-launcher
                 </a>
-                · MIT · v0.4.2 · <a href="/">stephens.page</a>
+                · MIT · v0.4.2 · <a href="https://stephens.page/">stephens.page</a>
             </p>
             <p>&copy; <span id="current-year"></span> Stephens Page LLC</p>
         </footer>

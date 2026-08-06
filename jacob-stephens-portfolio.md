@@ -397,7 +397,7 @@ Bitwarden SM
 AI Agents
 Secrets
 
-[Product page](/vaulted-agent/)
+[Product page](https://vaultedagent.com/)
 [Write-up →](/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/)
 [GitHub](https://github.com/JacobStephens2/vaulted-agent-launcher)
 

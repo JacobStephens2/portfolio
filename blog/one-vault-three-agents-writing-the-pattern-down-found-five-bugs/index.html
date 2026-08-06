@@ -415,11 +415,11 @@
         <article class="note">
             <div class="eyebrow">Notes &middot; AI Infrastructure &middot; Security &middot; Interactive</div>
             <h1 class="title">One Vault, Three Agents: Writing the Pattern Down Found Five Bugs In It</h1>
-            <p class="meta"><strong>July 29, 2026</strong> &middot; ~1,400 words &middot; Publishing <a href="/vaulted-agent/">vaulted-agent</a> &middot; click-to-run CLI demos</p>
+            <p class="meta"><strong>July 29, 2026</strong> &middot; ~1,400 words &middot; Publishing <a href="https://vaultedagent.com/">vaulted-agent</a> &middot; click-to-run CLI demos</p>
 
             <p>I launch Claude Code, Codex, and Grok from one 1Password vault, with the secrets resolved into each agent’s process environment at the moment it starts and never written to disk. I had been doing this with three near-identical shell wrappers. When I sat down to generalize them into a public repo, the act of writing the pattern down found five bugs in it - one of which had been handing every agent session the credential that unlocks the entire vault.</p>
 
-            <p>The repo is at <a href="https://github.com/JacobStephens2/vaulted-agent-launcher">https://github.com/JacobStephens2/vaulted-agent-launcher</a>, with a short product page and install commands at <a href="/vaulted-agent/">https://stephens.page/vaulted-agent</a>. This post is about what publishing it taught me, not about how to use it.</p>
+            <p>The repo is at <a href="https://github.com/JacobStephens2/vaulted-agent-launcher">https://github.com/JacobStephens2/vaulted-agent-launcher</a>, with a short product page and install commands at <a href="https://vaultedagent.com/">https://vaultedagent.com</a>. This post is about what publishing it taught me, not about how to use it.</p>
 
             <h2>What the launcher actually does</h2>
             <p>One command, <code>vaulted-agent claude</code>, which becomes a dedicated service account, resolves a manifest of <code>op://</code> references into its own environment, drops the vault token, and <code>exec</code>s the agent. A second file per harness says what each agent may reach:</p>
