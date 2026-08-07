@@ -1,31 +1,41 @@
-# vaulted-agent v0.4.10 - handoff for agents on other hosts
+# vaulted-agent v0.4.11 - handoff for agents on other hosts
 
-Current release is **v0.4.10**.
+Current release is **v0.4.11**.
 
 ## Upgrade
 
 ```bash
 curl -fsSL https://vaultedagent.com/install.sh | bash
-# or pin:
-VAULTED_AGENT_VERSION=v0.4.10 curl -fsSL https://vaultedagent.com/install.sh | bash
 ```
 
 - Product: **https://vaultedagent.com/**
-- Release: https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.4.10
+- Release: https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.4.11
 
-## New in v0.4.10 (#61)
+## New in v0.4.11 (#62)
 
-Doctor legacy-name warning for 1Password `*_ADD_MORE_*` variables:
+`va -m MANIFEST harness` launches a harness against another refs file for one session:
 
-- Counts as a real warning in the summary (no more `0 warning(s)` under a printed WARN)
-- Samples the first few names plus “and N more” instead of dumping every name
-- Once per shared manifest, not once per harness pointing at it
+```bash
+va -m readonly.env.tpl claude
+```
 
-## Earlier (v0.4.9 #60)
+- Flag before the harness name
+- Replaces configured manifest (no merge)
+- Missing file fails before agent start
+- Refused under `*-conductor` (fixed entitlement)
+- Allowed with `va -m … pick`
 
-1Password refresh: drop default “add more” from env names, merge dedupe, `--exclude`. Re-run `va refresh` if you still have old names; see MIGRATION.md.
+## Add one credential (quick)
+
+1. Create the secret in the vault (Bitwarden SM or 1Password).
+2. Map it: `va refresh` (interactive merge) or append one line under `/etc/vaulted-agent/manifests/`
+   - Bitwarden: `OPENAI_API_KEY=name:openai-api-key`
+   - 1Password: `OPENAI_API_KEY=op://Vault/item/field`
+3. Ensure the harness conf has `manifest = that-file`.
+
+Rotating a value in the vault needs no command. Adding a mapping needs refresh or a hand-edited line.
 
 ## Done when
 
-- `vaulted-agent version` → 0.4.10
-- `va doctor` summary matches printed warnings; legacy-name lines stay short
+- `vaulted-agent version` → 0.4.11
+- `va -m … harness` works on the direct `va` path
