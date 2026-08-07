@@ -710,8 +710,10 @@ va doctor</code></pre>
                 </div>
                 <p class="note" style="margin-top:0.4rem">
                     Pick Bitwarden SM, 1Password, pass, or sops.
-                    <code>va refresh</code> can build a <em>refs</em> file for Bitwarden or
+                    <code>va refresh</code> builds a <em>refs</em> file for Bitwarden or
                     1Password (env var → secret id/name or <code>op://</code> path only - never secret values).
+                    For 1Password, refresh output is ready for <code>op inject</code> (skips notes,
+                    falls back to item IDs when titles would break the scanner).
                 </p>
             </li>
             <li>
@@ -765,7 +767,7 @@ va kimi</code></pre>
                 </svg>
             </button>
             <pre id="cmd-ops"><code>va                        # list harnesses
-va doctor                 # health check (as service_user, same as a launch)
+va doctor                 # as service_user; flags unparseable op:// refs
 va secrets list           # Bitwarden SM
 va refresh                # build/update refs (Bitwarden or 1Password)
 va auth-mode prompt       # or: file
@@ -782,9 +784,10 @@ sudo va uninstall</code></pre>
             <code>OP_SERVICE_ACCOUNT_TOKEN</code>;
             <code>va refresh</code> lists items the token can see, asks which to
             include, and writes <code>VAR=op://VAULT/ITEM/FIELD</code> lines
-            (section-qualified when labels collide).
+            (section-qualified when labels collide; unparseable titles use the item id).
             Rotating a secret’s value needs no command; adding a new mapping:
             <code>va refresh</code>.
+            <code>va doctor</code> fails closed on references <code>op</code> cannot parse.
         </p>
         <p class="note">
             <strong>Auth:</strong> <code>prompt</code> = paste token each launch (nothing on disk).
@@ -857,7 +860,9 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                     <li><code>va run</code> for tools and scripts without a harness file</li>
                     <li><code>doctor</code> / <code>secrets validate</code> fail closed on placeholders</li>
                     <li><code>doctor</code> answers as the service account a launch would use</li>
+                    <li><code>doctor</code> distinguishes missing vs unreadable token files</li>
                     <li>Per-harness sudoers rules match (privilege hop no longer prefixes <code>env</code>)</li>
+                    <li>1Password <code>refresh</code> output injects without hand-editing</li>
                 </ul>
             </div>
             <div class="card warn">
@@ -874,8 +879,8 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
         </div>
         <p style="color:var(--muted);font-size:0.95rem;margin:0.5rem 0 0">
             The pattern was proven under a Bash prototype, then rewritten as a Rust
-            runtime (v0.4.0). v0.4.3–v0.4.5 harden shared-host delegation and multi-line
-            secrets. Full walkthrough:
+            runtime (v0.4.0). v0.4.3–v0.4.5 harden shared-host delegation, multi-line
+            secrets, injectable refresh, and honest token-file diagnostics. Full walkthrough:
             <a href="https://stephens.page/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">One Vault, Three Agents</a>.
         </p>
 
