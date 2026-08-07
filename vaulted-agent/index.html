@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#9b4d24">
     <title>vaulted-agent | vaultedagent.com</title>
-    <meta name="description" content="Rust launcher for Claude Code, Codex, Grok, and Kimi. Vault-resolved secrets in-process (Bitwarden SM, 1Password, pass, sops). Install, setup, va claude. v0.4.5.">
+    <meta name="description" content="Rust launcher for Claude Code, Codex, Grok, and Kimi. Vault-resolved secrets in-process (Bitwarden SM, 1Password, pass, sops). Install, setup, va claude. v0.4.6.">
     <meta property="og:title" content="vaulted-agent - secrets for AI agents, not a pile of .env files">
     <meta property="og:description" content="One Rust binary (va). Per-agent manifests. Bitwarden SM / 1Password / pass / sops. Optional prompt auth. macOS + Linux.">
     <meta property="og:type" content="website">
@@ -23,7 +23,7 @@
     <meta property="og:site_name" content="vaulted-agent">
     <link rel="canonical" href="https://vaultedagent.com/">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="vaulted-agent v0.4.5">
+    <meta name="twitter:title" content="vaulted-agent v0.4.6">
     <meta name="twitter:description" content="Install with one curl. Wire a vault with va setup. Launch with va claude / va grok.">
     <meta name="twitter:image" content="https://vaultedagent.com/tool.png">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
@@ -647,7 +647,7 @@
         </div>
 
         <span class="eyebrow">Open source · secrets for agents · macOS · Linux</span>
-        <h1>vaulted-agent <span class="version-pill">v0.4.5</span></h1>
+        <h1>vaulted-agent <span class="version-pill">v0.4.6</span></h1>
         <p class="lede">
             Launch Claude Code, Codex, Grok, or Kimi with vault-resolved secrets
             <strong>in the process</strong> - not a pile of <code>.env</code> files.
@@ -691,7 +691,7 @@
                     </button>
                     <pre id="cmd-oneliner"><code>curl -fsSL https://vaultedagent.com/install.sh | bash</code></pre>
                 </div>
-                <p class="note" style="margin-top:0.4rem">macOS · Linux. Pins release <code>v0.4.5</code> (Rust). Linux binaries are static musl (no glibc floor). Detects agents on PATH.</p>
+                <p class="note" style="margin-top:0.4rem">macOS · Linux. Pins release <code>v0.4.6</code> (Rust). Linux binaries are static musl (no glibc floor). Detects agents on PATH.</p>
             </li>
             <li>
                 <strong>Wire a vault</strong>
@@ -767,7 +767,7 @@ va kimi</code></pre>
                 </svg>
             </button>
             <pre id="cmd-ops"><code>va                        # list harnesses
-va doctor                 # as service_user; flags bad op:// refs only
+va doctor                 # as service_user; flags bad op:// refs only (not plain literals)
 va secrets list           # Bitwarden SM
 va refresh                # build/update refs (Bitwarden or 1Password)
 va auth-mode prompt       # or: file
@@ -811,7 +811,7 @@ sudo va uninstall</code></pre>
                 </svg>
             </button>
             <pre id="cmd-github"><code># From source instead of the one-liner:
-git clone --branch v0.4.5 --depth 1 \
+git clone --branch v0.4.6 --depth 1 \
   https://github.com/JacobStephens2/vaulted-agent-launcher
 cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
         </div>
@@ -879,7 +879,7 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
         </div>
         <p style="color:var(--muted);font-size:0.95rem;margin:0.5rem 0 0">
             The pattern was proven under a Bash prototype, then rewritten as a Rust
-            runtime (v0.4.0). v0.4.3–v0.4.5 harden shared-host delegation, multi-line
+            runtime (v0.4.0). v0.4.3–v0.4.6 harden shared-host delegation, multi-line
             secrets, injectable refresh, and honest token-file diagnostics. Full walkthrough:
             <a href="https://stephens.page/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">One Vault, Three Agents</a>.
         </p>
@@ -904,7 +904,7 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                 </svg>
                 Full docs on GitHub
             </a>
-            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.4.5">v0.4.5 release notes</a>
+            <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.4.6">v0.4.6 release notes</a>
             <a class="cta cta-secondary" href="https://inkvoke.dev">inkvoke</a>
         </div>
 
@@ -917,7 +917,7 @@ cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
                     </svg>
                     JacobStephens2/vaulted-agent-launcher
                 </a>
-                · MIT · v0.4.5 · <a href="https://stephens.page/">stephens.page</a>
+                · MIT · v0.4.6 · <a href="https://stephens.page/">stephens.page</a>
             </p>
             <p>&copy; <span id="current-year"></span> Stephens Page LLC</p>
         </footer>
