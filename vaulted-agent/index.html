@@ -14,9 +14,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#9b4d24">
     <title>vaulted-agent | vaultedagent.com</title>
-    <meta name="description" content="Rust launcher for Claude Code, Codex, Grok, and Kimi. Vault-resolved secrets in-process (Bitwarden SM, 1Password, pass, sops). Install, setup, va claude. v0.4.12.">
-    <meta property="og:title" content="vaulted-agent - secrets for AI agents, not a pile of .env files">
-    <meta property="og:description" content="One Rust binary (va). Per-agent manifests. Bitwarden SM / 1Password / pass / sops. Optional prompt auth. macOS + Linux.">
+    <meta name="description" content="vaulted-agent is a launcher. It resolves secret values from a vault backend into the child environment, then execs Claude Code, Codex, Grok, or Kimi. v0.4.12.">
+    <meta property="og:title" content="vaulted-agent - launcher for agents with vault-backed secrets">
+    <meta property="og:description" content="Harness, manifest, backend. Manager token stays out of the child environment. Bitwarden SM, 1Password, pass, sops. macOS and Linux.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://vaultedagent.com/">
     <meta property="og:image" content="https://vaultedagent.com/tool.png">
@@ -24,7 +24,7 @@
     <link rel="canonical" href="https://vaultedagent.com/">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="vaulted-agent v0.4.12">
-    <meta name="twitter:description" content="Install with one curl. Wire a vault with va setup. Launch with va claude / va grok.">
+    <meta name="twitter:description" content="Install the launcher. Run va setup. Start an agent with va claude or va grok.">
     <meta name="twitter:image" content="https://vaultedagent.com/tool.png">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0D3PS27FK"></script>
     <script>
@@ -655,12 +655,17 @@
             </span>
         </div>
 
-        <span class="eyebrow">Open source · secrets for agents · macOS · Linux</span>
+        <span class="eyebrow">Open source · macOS · Linux · v0.4.12</span>
         <h1>vaulted-agent <span class="version-pill">v0.4.12</span></h1>
         <p class="lede">
-            Launch Claude Code, Codex, Grok, or Kimi with vault-resolved secrets
-            <strong>in the process</strong> - not a pile of <code>.env</code> files.
-            One Rust binary (<code>va</code>), per-agent blast radius, optional prompt auth.
+            AI coding agents need secret values (API keys and related credentials).
+            Many setups put those values in local <code>.env</code> files.
+            <strong>vaulted-agent</strong> is a <strong>launcher</strong> (<code>va</code>).
+            It is not a long-running daemon.
+            You select a <strong>harness</strong>. The launcher resolves a <strong>manifest</strong>
+            from a vault <strong>backend</strong>, builds the <strong>child environment</strong>,
+            and <code>exec</code>s the agent. Secret values stay in that process.
+            They are not stored as a local secret file for each tool.
         </p>
 
         <figure class="product-shot">
@@ -668,28 +673,49 @@
                 src="/tool.png"
                 width="1536"
                 height="1024"
-                alt="Product illustration of vaulted-agent: a terminal running va claude with secrets resolving from a vault into the process for Claude, Codex, and Grok agents"
+                alt="Illustration: the vaulted-agent launcher resolves secret values from a vault into the child environment, then execs an agent"
                 decoding="async"
                 fetchpriority="high"
             >
             <figcaption>
-                <code>va claude</code> - vault-resolved secrets in-process, not a pile of <code>.env</code> files.
-                Illustration made with <a href="https://inkvoke.dev">inkvoke</a>.
+                Launch path: scrub → resolve → drop the manager token → exec.
+                Illustration by <a href="https://inkvoke.dev">inkvoke</a>.
             </figcaption>
         </figure>
 
         <nav class="toc" aria-label="On this page">
-            <a href="#quick-start">Quick start</a>
+            <a href="#context">Context</a>
+            <a href="#quick-start">Install</a>
             <a href="#recipes">Recipes</a>
             <a href="#commands">Commands</a>
-            <a href="#what-it-does">How it works</a>
+            <a href="#what-it-does">Launch path</a>
             <a href="/AGENTS.md">Agents</a>
         </nav>
 
-        <h2 id="quick-start" class="install-heading">Quick start</h2>
+        <h2 id="context" class="install-heading">Context</h2>
+        <p class="note" style="margin-top:0">
+            A <strong>harness</strong> is a named launch profile
+            (<code>harnesses.d/&lt;name&gt;.conf</code>).
+            It names a <strong>backend</strong>, a <strong>manifest</strong>, and a command.
+            A <strong>manifest</strong> is often a <strong>refs file</strong>:
+            lines such as <code>VAR=reference</code> with no secret values on disk.
+            A <strong>manager token</strong> opens the vault
+            (<code>BWS_ACCESS_TOKEN</code> or <code>OP_SERVICE_ACCOUNT_TOKEN</code>).
+            The launcher uses that token only to resolve secret values.
+            The manager token must not appear in the child environment.
+            <strong>Auth mode</strong> is <code>file</code> (token on disk) or
+            <code>prompt</code> (paste on each launch).
+            An optional <strong>service user</strong> runs the agent under
+            <code>sudo -u</code>.
+            Terms and invariants: repo
+            <a href="https://github.com/JacobStephens2/vaulted-agent-launcher/blob/main/CONTEXT.md">CONTEXT.md</a>
+            and <a href="/AGENTS.md">AGENTS.md</a>.
+        </p>
+
+        <h2 id="quick-start" class="install-heading">Install and start</h2>
         <ol class="lifecycle">
             <li>
-                <strong>Install</strong>
+                <strong>Install the launcher</strong>
                 <div class="install-block" data-copy-block style="margin-top:0.5rem">
                     <button type="button" class="copy-btn" data-copy-target="cmd-oneliner" aria-label="Copy install" title="Copy">
                         <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -702,10 +728,15 @@
                     </button>
                     <pre id="cmd-oneliner"><code>curl -fsSL https://vaultedagent.com/install.sh | bash</code></pre>
                 </div>
-                <p class="note" style="margin-top:0.4rem">macOS · Linux. Pins release <code>v0.4.12</code> (Rust). Linux binaries are static musl (no glibc floor). Detects agents on PATH.</p>
+                <p class="note" style="margin-top:0.4rem">
+                    Supported systems: macOS and Linux.
+                    The install script pins release <code>v0.4.12</code>.
+                    Linux assets are static musl binaries.
+                    The installer can create harnesses for agents found on <code>PATH</code>.
+                </p>
             </li>
             <li>
-                <strong>Wire a vault</strong>
+                <strong>Configure a backend</strong>
                 <div class="install-block" data-copy-block style="margin-top:0.5rem">
                     <button type="button" class="copy-btn" data-copy-target="cmd-setup" aria-label="Copy setup" title="Copy">
                         <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -720,28 +751,23 @@
 va doctor</code></pre>
                 </div>
                 <p class="note" style="margin-top:0.4rem">
-                    Interactive setup also asks who agents run as (you vs a
-                    <code>service_user</code>) and where they start
-                    (<code>workdir = caller</code> vs a fixed path), and warns when those
-                    two meet a locked-down home.
-                    Pick Bitwarden SM, 1Password, pass, or sops.
-                    <code>va refresh</code> builds a <em>refs</em> file for Bitwarden or
-                    1Password (env var → secret id/name or <code>op://</code> path only - never secret values).
-                    If the file is root-owned, refresh fails <em>before</em> vault work and tells you
-                    to re-run as <code>sudo /usr/local/bin/vaulted-agent refresh</code>.
-                    For 1Password, refresh output is ready for <code>op inject</code> (skips notes,
-                    falls back to item IDs when titles would break the scanner,
-                    drops the default “add more” section from variable names,
-                    and dedupes fields already mapped under a curated name).
-                    Item menus accept ranges (<code>1-5, 9</code>).
-                    Use <code>va refresh --exclude '*_USERNAME'</code> to skip fields;
-                    exclusions persist in the manifest as <code># exclude:</code> lines.
-                    To hand-edit a refs file with the same checks doctor uses:
-                    <code>va edit-manifest</code> (uses <code>sudoedit</code> when needed).
+                    <code>va setup</code> selects a backend (Bitwarden SM, 1Password, pass, or sops),
+                    auth mode, optional service user, and workdir
+                    (<code>caller</code> or a fixed path).
+                    <code>va doctor</code> checks the config as the same user a launch would use.
+                    <code>va refresh</code> writes or updates a refs file for Bitwarden or 1Password.
+                    A refs file holds env var → reference lines only.
+                    Do not put secret values in a refs file.
+                    If the refs file is root-owned, refresh stops before vault work and prints
+                    <code>sudo /usr/local/bin/vaulted-agent refresh</code>.
+                    Item menus accept ranges such as <code>1-5, 9</code>.
+                    Use <code>va refresh --exclude '*_USERNAME'</code> to skip field names.
+                    To edit a refs file with checks, run <code>va edit-manifest</code>
+                    (uses <code>sudoedit</code> when you cannot write the file).
                 </p>
             </li>
             <li>
-                <strong>Launch</strong>
+                <strong>Start a harness</strong>
                 <div class="install-block" data-copy-block style="margin-top:0.5rem">
                     <button type="button" class="copy-btn" data-copy-target="cmd-usage" aria-label="Copy launch" title="Copy">
                         <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -758,14 +784,14 @@ va grok
 va kimi</code></pre>
                 </div>
                 <p class="note" style="margin-top:0.4rem">
-                    With prompt auth, paste the vault token when asked. Force once:
-                    <code>va grok -p</code>.
-                    One session against a different refs file:
-                    <code>va -m readonly.env.tpl claude</code> (launcher flag, before the harness name).
-                    Conductor links pass <code>-p</code> through to the agent; use
-                    <code>VAULTED_AGENT_PROMPT_AUTH=1</code> for prompt auth there.
-                    <code>va kimi</code> defaults to <code>--auto</code> (same unattended
-                    posture as the Claude harness).
+                    With auth mode <code>prompt</code>, paste the manager token when asked.
+                    Use <code>va grok -p</code> once to force prompt auth.
+                    A <strong>manifest override</strong> for this launch only:
+                    <code>va -m readonly.env.tpl claude</code>
+                    (launcher flag before the harness name).
+                    A <strong>conductor link</strong> does not accept <code>-m</code> or <code>-H</code>.
+                    For prompt auth under a conductor link, set
+                    <code>VAULTED_AGENT_PROMPT_AUTH=1</code>.
                 </p>
             </li>
         </ol>
@@ -785,22 +811,23 @@ va kimi</code></pre>
 
         <h2 id="recipes" class="install-heading">Recipes</h2>
 
-        <h3 class="recipe-h">Add one credential to a harness</h3>
+        <h3 class="recipe-h">Add one secret mapping to a harness</h3>
         <p class="note" style="margin-top:0">
-            A harness points at a <em>manifest</em> (refs file). The vault holds the secret value;
-            the manifest only holds the mapping (env var → reference). Never put secret values
-            in the refs file.
+            The harness points at a manifest.
+            The vault holds the secret value.
+            The refs file holds only the mapping (env var → reference).
+            Do not put secret values in the refs file.
         </p>
         <ol class="lifecycle">
             <li>
                 <strong>Create the secret in the vault</strong>
                 <p class="note" style="margin-top:0.35rem">
-                    Bitwarden Secrets Manager: create a secret (remember the name or UUID).
-                    1Password: create an item field the service account can read.
+                    Bitwarden Secrets Manager: create a secret. Keep the name or UUID.
+                    1Password: create an item field that the service account can read.
                 </p>
             </li>
             <li>
-                <strong>Map it into a refs file</strong>
+                <strong>Map it in a refs file</strong>
                 <div class="install-block" data-copy-block style="margin-top:0.5rem">
                     <button type="button" class="copy-btn" data-copy-target="cmd-add-cred" aria-label="Copy refresh" title="Copy">
                         <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -811,37 +838,39 @@ va kimi</code></pre>
                             <path d="M20 6 9 17l-5-5"></path>
                         </svg>
                     </button>
-                    <pre id="cmd-add-cred"><code># Interactive: pick what is not yet mapped (merge)
+                    <pre id="cmd-add-cred"><code># Merge unmapped secrets into the refs file
 va refresh
-# or rewrite from the vault for one backend:
+# Or replace the refs file for one backend:
 va refresh --backend onepassword --replace --all
 
-# Edit with checks (sudoedit when root-owned):
+# Edit the refs file with checks:
 va edit-manifest
 # or: va edit-manifest full.env.tpl
 
-# Or append one line by hand under /etc/vaulted-agent/manifests/:
+# Or add one line under /etc/vaulted-agent/manifests/:
 # Bitwarden:  OPENAI_API_KEY=name:openai-api-key
 # 1Password:  OPENAI_API_KEY=op://Vault/openai/credential
-# Never put illustrative op://… in comments — op inject resolves them too.</code></pre>
+# Do not put sample op://… in comments. op inject reads comments.</code></pre>
                 </div>
             </li>
             <li>
-                <strong>Point the harness at that manifest</strong>
+                <strong>Set the harness manifest</strong>
                 <p class="note" style="margin-top:0.35rem">
-                    In <code>/etc/vaulted-agent/harnesses.d/claude.conf</code> (example):
-                    <code>manifest = full.env.tpl</code> (or whatever file you wrote).
-                    Rotating the secret’s <em>value</em> in the vault needs no command - the next launch fetches live.
-                    Adding a <em>new mapping</em> is what needs <code>va refresh</code> or <code>va edit-manifest</code>.
+                    Example in <code>/etc/vaulted-agent/harnesses.d/claude.conf</code>:
+                    <code>manifest = full.env.tpl</code>.
+                    If you change only the secret value in the vault, run no command.
+                    The next launch fetches the new value.
+                    If you add a new mapping, run <code>va refresh</code> or
+                    <code>va edit-manifest</code>.
                 </p>
             </li>
         </ol>
 
-        <h3 class="recipe-h">Launch with a particular manifest (one session)</h3>
+        <h3 class="recipe-h">Use a manifest override for one launch</h3>
         <p class="note" style="margin-top:0">
-            The harness still decides the command, workdir, and backend.
-            Only which credentials this launch carries changes. The override
-            <strong>replaces</strong> the harness’s configured manifest - it does not merge.
+            The harness still sets the command, workdir, and backend.
+            The <strong>manifest override</strong> replaces the harness manifest for this launch.
+            It does not merge with the configured manifest.
         </p>
         <div class="install-block" data-copy-block>
             <button type="button" class="copy-btn" data-copy-target="cmd-m-override" aria-label="Copy -m launch" title="Copy">
@@ -853,23 +882,23 @@ va edit-manifest
                     <path d="M20 6 9 17l-5-5"></path>
                 </svg>
             </button>
-            <pre id="cmd-m-override"><code># Launcher flag BEFORE the harness name (not after - that goes to the agent)
+            <pre id="cmd-m-override"><code># Launcher flag before the harness name (not after)
 va -m readonly.env.tpl claude
 va --manifest=/etc/vaulted-agent/manifests/narrow.env.tpl claude --resume &lt;id&gt;
 
-# Also works with pick:
+# Also with pick:
 va -m readonly.env.tpl pick</code></pre>
         </div>
         <p class="note">
-            File is relative to <code>/etc/vaulted-agent/manifests/</code> unless absolute.
-            Missing file fails before the agent starts. Each override prints which
-            manifest was used (searchable in scrollback).
-            <strong>Not allowed</strong> under a <code>*-conductor</code> symlink - that path
-            is for a fixed entitlement (one harness → one credential set).
-            Use the direct <code>va</code> path for <code>-m</code>.
+            A relative name is under <code>/etc/vaulted-agent/manifests/</code>.
+            A missing file fails before the agent starts.
+            The launcher prints the manifest in use.
+            Do not use <code>-m</code> under a <strong>conductor link</strong>
+            (<code>*-conductor</code>). That path has a fixed entitlement.
+            Use the direct <code>va</code> binary for a manifest override.
         </p>
 
-        <h2 id="commands" class="install-heading">Everyday commands</h2>
+        <h2 id="commands" class="install-heading">Commands</h2>
         <div class="install-block" data-copy-block>
             <button type="button" class="copy-btn" data-copy-target="cmd-ops" aria-label="Copy commands" title="Copy">
                 <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -881,41 +910,40 @@ va -m readonly.env.tpl pick</code></pre>
                 </svg>
             </button>
             <pre id="cmd-ops"><code>va                        # list harnesses
-va doctor                 # as service_user; flags bad op:// refs (incl. in comments)
+va doctor                 # check as the launch user; flag bad op:// refs
 va secrets list           # Bitwarden SM
-va refresh                # add/update mappings; 1Password: --exclude PATTERN
-va edit-manifest          # open a refs file; check on save
-va -m readonly.env.tpl claude   # this launch: different manifest
+va refresh                # write or update a refs file
+va edit-manifest          # edit a refs file; check on save
+va -m readonly.env.tpl claude   # manifest override for this launch
 va auth-mode prompt       # or: file
 va run -m REFS --backend bitwarden -p -- your-cmd
 sudo va uninstall</code></pre>
         </div>
         <p class="note">
             <strong>Bitwarden:</strong> use a Machine Account access token
-            (<code>BWS_ACCESS_TOKEN</code>), not your vault password.
-            Refs look like <code>OPENAI_API_KEY=name:openai-api-key</code>.
-            Bare multi-line values (PEMs, pretty-printed JSON) parse correctly when
-            the vault injects them unquoted.
-            <strong>1Password:</strong> service account token in
-            <code>OP_SERVICE_ACCOUNT_TOKEN</code>;
-            <code>va refresh</code> lists items the token can see, asks which to
-            include, and writes <code>VAR=op://VAULT/ITEM/FIELD</code> lines
-            (section-qualified when labels collide; unparseable titles use the item id).
-            Rotating a secret’s value needs no command; adding a new mapping:
-            <code>va refresh</code> or <code>va edit-manifest</code>.
-            <code>va doctor</code> fails closed on references <code>op</code> cannot parse,
-            including illustrative <code>op://</code> inside comments (inject reads those too).
+            (<code>BWS_ACCESS_TOKEN</code>) as the manager token.
+            Do not use your personal vault password.
+            Refs file lines look like <code>OPENAI_API_KEY=name:openai-api-key</code>.
+            <strong>1Password:</strong> put the service account token in
+            <code>OP_SERVICE_ACCOUNT_TOKEN</code>.
+            <code>va refresh</code> lists items, asks which to include, and writes
+            <code>VAR=op://VAULT/ITEM/FIELD</code> lines.
+            If you change only a secret value in the vault, run no command.
+            If you add a mapping, run <code>va refresh</code> or <code>va edit-manifest</code>.
+            <code>va doctor</code> fails closed on references that <code>op</code> cannot parse.
+            Doctor also flags <code>op://</code> tokens in comments
+            (<code>op inject</code> resolves comments).
         </p>
         <p class="note">
-            <strong>Auth:</strong> <code>prompt</code> = paste token each launch (nothing on disk).
-            <code>file</code> = <code>/etc/vaulted-agent/bws.env</code> or <code>op.env</code>.
-            Override once with <code>-p</code> on <code>va …</code> (not under conductor links).
-            With a <code>service_user</code>, <code>va run</code> is off unless
-            <code>allow_run = yes</code> in machine defaults - that is intentional
-            for delegated sudoers grants.
-            An unreadable token file is reported as permission denied (with a
-            <code>service_user</code> hint), not as missing - so doctor and launch
-            do not send you hunting for a file that is already there.
+            <strong>Auth mode:</strong>
+            <code>prompt</code> - paste the manager token on each launch (no token file).
+            <code>file</code> - read <code>/etc/vaulted-agent/bws.env</code> or
+            <code>op.env</code>.
+            Use <code>-p</code> on a direct <code>va</code> launch for one prompt.
+            Do not use <code>-p</code> under a conductor link for launcher prompt auth.
+            If a service user is set, <code>va run</code> is off unless
+            <code>allow_run = yes</code> in machine defaults.
+            An unreadable manager-token file is reported as permission denied, not as missing.
         </p>
         <div class="install-block" data-copy-block>
             <button type="button" class="copy-btn" data-copy-target="cmd-github" aria-label="Copy clone install" title="Copy">
@@ -933,102 +961,101 @@ git clone --branch v0.4.12 --depth 1 \
 cd vaulted-agent-launcher && sudo ./install.sh</code></pre>
         </div>
 
-<h2 id="what-it-does">How it works</h2>
+        <h2 id="what-it-does">Launch path</h2>
         <p>
-            Treat the agent as the unit of authorization. A harness names a command
-            and a manifest; the launcher becomes the service account, scrubs the
-            environment, resolves that manifest into the process, drops the vault
-            token, and <code>exec</code>s. Diff the manifests and you have a written
-            answer to “which agent could reach what.” Secrets live in that process
-            until it exits.
+            The harness is the unit of launch configuration.
+            It names a command and a manifest.
+            The launch path is: scrub → resolve → drop the manager token → exec.
+            If a service user is set, the launcher re-execs with
+            <code>sudo -u</code> first.
+            Secret values live in the child environment until the process exits.
+            Compare manifests to see which harness can resolve which references.
         </p>
-        <pre class="flow" aria-label="Launch flow">you $ va claude --resume &lt;id&gt;
+        <pre class="flow" aria-label="Launch path">you $ va claude --resume &lt;id&gt;
       │
       ▼
   /usr/local/bin/vaulted-agent   (alias: va)
-      ├─ optional sudo -u &lt;service&gt;    become the service account
-      ├─ cd workdir                    caller cwd by default (sessions / resume)
-      ├─ scrub environment             allowlist only; nothing inherited rides along
-      ├─ load vault auth               op.env / bws.env, or prompt (auth_mode)
-      ├─ resolve manifest refs         op inject / bws secret get / …
-      ├─ unset vault token             agent must not inherit the master key
+      ├─ optional sudo -u &lt;service&gt;    service-user re-exec
+      ├─ cd workdir                    caller cwd by default
+      ├─ scrub environment             child environment allowlist only
+      ├─ load manager token            op.env / bws.env, or prompt (auth mode)
+      ├─ resolve manifest              op inject / bws secret get / …
+      ├─ drop manager token            must not enter the child environment
       └─ exec claude … --resume &lt;id&gt;
-             └─ secrets live here, until the process exits</pre>
+             └─ secret values stay here until exit</pre>
 
         <div class="chips">
-            <span class="chip">Claude Code</span>
-            <span class="chip">Codex</span>
-            <span class="chip">Grok</span>
-            <span class="chip">Kimi Code</span>
-            <span class="chip">va run</span>
-            <span class="chip">1Password · Bitwarden SM · pass · sops</span>
-            <span class="chip">prompt auth</span>
-            <span class="chip">Rust · sudo</span>
+            <span class="chip">launcher</span>
+            <span class="chip">harness</span>
+            <span class="chip">manifest</span>
+            <span class="chip">backend</span>
+            <span class="chip">refs file</span>
+            <span class="chip">manager token</span>
+            <span class="chip">auth mode</span>
+            <span class="chip">service user</span>
         </div>
 
         <div class="grid-2">
             <div class="card good">
-                <h3>What you get</h3>
+                <h3>Properties</h3>
                 <ul>
-                    <li>One vault token on disk (or none, with prompt auth) instead of a fleet of <code>.env</code> files</li>
-                    <li>Central rotation - change the vault, every future launch picks it up</li>
-                    <li>Diffable manifests: which agent can reach what</li>
-                    <li>Nothing secret on the command line (<code>ps</code> stays clean)</li>
-                    <li><code>va run</code> for tools and scripts without a harness file</li>
-                    <li><code>doctor</code> / <code>secrets validate</code> fail closed on placeholders</li>
-                    <li><code>doctor</code> answers as the service account a launch would use</li>
-                    <li><code>doctor</code> distinguishes missing vs unreadable token files</li>
-                    <li>Per-harness sudoers rules match (privilege hop no longer prefixes <code>env</code>)</li>
-                    <li>1Password <code>refresh</code> output injects without hand-editing</li>
-                    <li>Cleaner 1Password names (no default “add more” section); merge dedupe; <code>--exclude</code></li>
-                    <li>Launch fails closed when <code>service_user</code> cannot traverse the workdir (names <code>setfacl</code> fix)</li>
-                                        <li><code>doctor</code> probes workdir traversal (warns only when it actually fails)</li>
-                    <li><code>va -m MANIFEST harness</code> for one-session narrower (or different) credentials</li>
-                    <li><code>va edit-manifest</code> opens a refs file with checks (sudoedit when root-owned)</li>
-                    <li><code>doctor</code> flags <code>op://</code> in comments (inject aborts the whole file)</li>
-                    <li><code>refresh</code> fails closed on writability before vault work; item menus take ranges</li>
+                    <li>One manager token on disk in auth mode <code>file</code>, or none in auth mode <code>prompt</code></li>
+                    <li>Change a secret value in the vault; the next launch fetches it</li>
+                    <li>Manifests are plain files you can diff</li>
+                    <li>No secret material on the agent argv</li>
+                    <li><code>va run</code> for a one-shot command without a harness file</li>
+                    <li><code>doctor</code> and <code>secrets validate</code> fail closed on bad or placeholder refs</li>
+                    <li><code>doctor</code> runs as the same user a launch would use</li>
+                    <li>Unreadable manager-token files are not reported as missing</li>
+                    <li>Service-user re-exec keeps original argv for sudoers</li>
+                    <li>1Password <code>refresh</code> writes inject-ready refs lines</li>
+                    <li>Launch fails closed if the service user cannot traverse the workdir</li>
+                    <li>Manifest override: <code>va -m MANIFEST harness</code></li>
+                    <li><code>va edit-manifest</code> checks the refs file on save</li>
+                    <li><code>doctor</code> flags <code>op://</code> in comments</li>
+                    <li><code>refresh</code> checks write access before vault work</li>
                 </ul>
             </div>
             <div class="card warn">
-                <h3>Honest limits</h3>
+                <h3>Limits</h3>
                 <ul>
-                    <li>Not “zero secrets on disk” when using <code>auth_mode=file</code> - one service-account token remains</li>
-                    <li>The agent can read its own environment (and so can anything as that user)</li>
-                    <li>Manifests are blast-radius control, not containment - with file auth the agent can still open the token file</li>
-                    <li>No TTY for token prompt when one agent shells out to another - use file auth or export the token in the parent</li>
-                    <li>With <code>service_user</code>, <code>va run</code> is disabled unless you set <code>allow_run = yes</code></li>
-                    <li>Root on the host can still read everything</li>
+                    <li>Auth mode <code>file</code> keeps one manager token on disk</li>
+                    <li>The agent can read its own child environment</li>
+                    <li>A manifest limits which secret values resolve; it is not a sandbox</li>
+                    <li>With auth mode <code>file</code>, the agent process can still open the token file if permissions allow it</li>
+                    <li>Auth mode <code>prompt</code> needs a TTY; nested agent launches often need auth mode <code>file</code></li>
+                    <li>With a service user, <code>va run</code> stays off unless <code>allow_run = yes</code></li>
+                    <li>Root on the host can still read all local files</li>
                 </ul>
             </div>
         </div>
         <p style="color:var(--muted);font-size:0.95rem;margin:0.5rem 0 0">
-            The pattern was proven under a Bash prototype, then rewritten as a Rust
-            runtime (v0.4.0). v0.4.3–v0.4.12 harden shared-host delegation, multi-line
-            secrets, injectable refresh, and honest token-file diagnostics. Full walkthrough:
+            Current release: <code>v0.4.12</code> (Rust launcher since <code>v0.4.0</code>).
+            Design walkthrough:
             <a href="https://stephens.page/blog/one-vault-three-agents-writing-the-pattern-down-found-five-bugs/">One Vault, Three Agents</a>.
         </p>
 
-                <h2 id="install-notes">More</h2>
+        <h2 id="install-notes">More</h2>
         <p class="note" style="margin-top:0">
-            Prefer not to pipe to bash? Download
+            To install without a pipe, download
             <a href="/install.sh">install.sh</a>, read it, then run it.
-            Flags after <code>bash -s --</code>:
+            Pass flags after <code>bash -s --</code>, for example
             <code>--backend bitwarden --auth-mode prompt</code>,
-            <code>--user agent</code>, <code>--no-auto-harness</code>.
-            Full reference on
-            <a href="https://github.com/JacobStephens2/vaulted-agent-launcher#install-details">GitHub</a>.
-            Agent-oriented contract:
+            <code>--user agent</code>, or <code>--no-auto-harness</code>.
+            Full reference:
+            <a href="https://github.com/JacobStephens2/vaulted-agent-launcher#install-details">GitHub README</a>.
+            Operator contract for agents:
             <a href="/AGENTS.md">AGENTS.md</a>.
-            Resume works as usual: <code>va claude --resume &lt;id&gt;</code>,
+            Session resume: <code>va claude --resume &lt;id&gt;</code>,
             <code>va codex resume &lt;id&gt;</code>, <code>va kimi --continue</code>.
         </p>
 
-<div class="cta-row">
+        <div class="cta-row">
             <a class="cta cta-primary" href="https://github.com/JacobStephens2/vaulted-agent-launcher#usage">
                 <svg class="gh-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
                 </svg>
-                Full docs on GitHub
+                Docs on GitHub
             </a>
             <a class="cta cta-secondary" href="https://github.com/JacobStephens2/vaulted-agent-launcher/releases/tag/v0.4.12">v0.4.12 release notes</a>
             <a class="cta cta-secondary" href="https://inkvoke.dev">inkvoke</a>
